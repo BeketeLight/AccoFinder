@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="org.qtproject.example"
+    android:installLocation="auto"
+    android:versionCode="-- %%INSERT_VERSION_CODE%% --"
+    android:versionName="-- %%INSERT_VERSION_NAME%% --">
+    <!-- %%INSERT_PERMISSIONS -->
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM"/>
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.GET_TASKS"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- Additional permissions for better reliability -->
+    <uses-permission android:name="com.huawei.permission.external_app_settings.USE_COMPONENT"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SYSTEM_EXEMPTION" tools:ignore="ProtectedPermissions"/>
+    <uses-permission android:name="android.permission.GET_RUNNING_SERVICES" tools:ignore="ProtectedPermissions"/>
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" tools:ignore="ProtectedPermissions"/>
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" tools:ignore="ProtectedPermissions"/>
+<!-- %%INSERT_FEATURES -->
+    <supports-screens
+        android:anyDensity="true"
+        android:largeScreens="true"
+        android:normalScreens="true"
+        android:smallScreens="true" />
+    <application
+        android:name="org.qtproject.qt.android.bindings.QtApplication"
+        android:hardwareAccelerated="true"
+        android:label="AccoFinder"
+        android:icon="@mipmap/icon"
+        android:requestLegacyExternalStorage="true"
+        android:enableOnBackInvokedCallback="false"
+        android:allowBackup="true"
+        android:fullBackupOnly="false"
+        android:theme="@style/LaunchTheme">
+        <activity
+            android:name="org.qtproject.qt.android.bindings.QtActivity"
+            android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|layoutDirection|locale|fontScale|keyboard|keyboardHidden|navigation|mcc|mnc|density"
+            android:label="AccoFinder"
+            android:launchMode="singleTop"
+            android:screenOrientation="unspecified"
+            android:exported="true"
+            android:theme="@style/QtAppTheme">>
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+          <meta-data
+                android:name="android.app.lib_name"
+                android:value="-- %%INSERT_APP_LIB_NAME%% --" />
+
+          <meta-data
+                android:name="android.app.arguments"
+                android:value="-- %%INSERT_APP_ARGUMENTS%% --" />
+        </activity>
+        <!-- ========================= -->
+         <!-- ALARM RECEIVER -->
+         <!-- ========================= -->
+         <receiver
+             android:name=".AlarmReceiver"
+             android:enabled="true"
+             android:exported="true">
+
+             <intent-filter>
+                 <action android:name="com.plantdoctor.ALARM_TRIGGERED"/>
+                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
+             </intent-filter>
+         </receiver>
+
+         <!-- ========================= -->
+         <!-- FOREGROUND SERVICE -->
+         <!-- ========================= -->
+         <service
+             android:name=".AlarmService"
+             android:enabled="true"
+             android:exported="false"
+             android:stopWithTask="false"
+             android:foregroundServiceType="dataSync|specialUse">
+             <property
+                 android:name="android.foreground_service_type_special_use"
+                 android:value="Alarm service for scheduled tasks"/>
+         </service>
+
+
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.qtprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/qtprovider_paths"/>
+        </provider>
+    </application>
+</manifest>
