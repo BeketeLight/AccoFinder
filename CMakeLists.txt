@@ -62,6 +62,11 @@ qt_add_qml_module(appAccoFinder
         SOURCES src/models/client.h src/models/client.cpp
         SOURCES src/models/notification.h src/models/notification.cpp
         SOURCES src/repositories/interfaces/INotification.h
+        SOURCES
+        SOURCES src/presentation/viewmodels/bookingviewmodel.h src/presentation/viewmodels/bookingviewmodel.cpp
+        SOURCES src/presentation/viewmodels/propertyviewmodel.h src/presentation/viewmodels/propertyviewmodel.cpp
+        SOURCES src/presentation/viewmodels/reviewviewmodel.h src/presentation/viewmodels/reviewviewmodel.cpp
+        SOURCES src/presentation/viewmodels/roomviewmodel.h src/presentation/viewmodels/roomviewmodel.cpp
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

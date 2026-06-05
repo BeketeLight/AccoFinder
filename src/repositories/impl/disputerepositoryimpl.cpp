@@ -1,3 +1,18 @@
 #include "disputerepositoryimpl.h"
 
-DisputeRepositoryImpl::DisputeRepositoryImpl() {}
+DisputeRepositoryImpl::DisputeRepositoryImpl()
+{
+
+}
+
+Dispute *DisputeRepositoryImpl::raiseDispute()
+{
+    return dispute;
+}
+
+Dispute *DisputeRepositoryImpl::resolveDispute()
+{
+    return dispute;
+}
+
+

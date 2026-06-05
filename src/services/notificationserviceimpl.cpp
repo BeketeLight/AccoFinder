@@ -1,3 +1,11 @@
 #include "notificationserviceimpl.h"
 
-NotificationServiceImpl::NotificationServiceImpl() {}
+NotificationServiceImpl::NotificationServiceImpl()
+{
+
+}
+
+Notification *NotificationServiceImpl::sendNotification()
+{
+    return notification;
+}
