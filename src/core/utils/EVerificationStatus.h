@@ -2,9 +2,8 @@
 #define EVERIFICATIONSTATUS_H
 
 enum VerificationStatus {
-    Pending,
     Approved,
     Rejected
-}
+};
 
 #endif // EVERIFICATIONSTATUS_H

@@ -2,9 +2,9 @@
 #define EPROPERTYSTATUS_H
 
 enum PropertyStatus {
-    Pending,
+    NotVerified,
     Verified,
     Booked
-}
+};
 
 #endif // EPROPERTYSTATUS_H

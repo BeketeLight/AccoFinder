@@ -5,6 +5,6 @@ enum PaymentStatus {
     Initiated,
     Success,
     Failed
-}
+};
 
 #endif // EPAYMENTSTATUS_H

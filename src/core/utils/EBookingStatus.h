@@ -6,6 +6,6 @@ enum BookingStatus {
     Paid,
     Confirmed,
     Cancelled
-}
+};
 
 #endif // EBOOKINGSTATUS_H

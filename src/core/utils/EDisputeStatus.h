@@ -3,8 +3,7 @@
 
 enum DisputeStatus {
     Open,
-    Resolved,
-    Rejected
-}
+    Resolved
+};
 
 #endif // EDISPUTESTATUS_H
