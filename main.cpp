@@ -3,9 +3,17 @@
 #include <QCoreApplication>
 #include "src/core/utils/appsettings.h"
 #include <QQmlContext>
+#include <QTimer>
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
+    //SplashScreen
+    auto androidApp = app.nativeInterface<QNativeInterface::QAndroidApplication>();
+    if (androidApp) {
+        QTimer::singleShot(3000, [androidApp]() {
+            androidApp->hideSplashScreen(300);
+        });
+    }
 
     QQmlApplicationEngine engine;
     //Appsettings

@@ -4,27 +4,33 @@
     <!-- Launch theme with dark text on light background -->
     <style name="LaunchTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowNoTitle">true</item>
-        <item name="android:windowLightStatusBar">true</item>  <!-- Dark text -->
-        <item name="android:statusBarColor">#FFFFFF</item>     <!-- Light background -->
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:statusBarColor">#FFFFFF</item>
     </style>
 
     <!-- Main app theme with dark text on light background -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowBackground">@android:color/white</item>
-        <item name="android:windowLightStatusBar">true</item>   <!-- Dark text -->
+        <item name="android:windowLightStatusBar">true</item>
         <item name="android:statusBarColor">@android:color/white</item>
     </style>
 
-    <!-- Qt specific theme -->
+    <!-- Qt specific theme - THIS IS IMPORTANT -->
+    <style name="qtActivityTheme">
+        <item name="android:windowBackground">@drawable/qtsplashscreen</item>
+        <item name="android:windowDisablePreview">false</item>
+        <item name="android:windowIsTranslucent">false</item>
+    </style>
+
+    <!-- Your existing QtAppTheme -->
     <style name="QtAppTheme" parent="AppTheme">
         <item name="android:colorPrimary">@android:color/white</item>
         <item name="android:colorPrimaryDark">@android:color/white</item>
         <item name="colorAccent">#FF6200EE</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:statusBarColor">#ffffff</item>
-        <item name="android:windowLightStatusBar">true</item>   <!-- Dark text -->
-        <item name="android:statusBarColor">@android:color/transparent</item>  <!-- or #00000000 -->
+        <item name="android:windowLightStatusBar">true</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
     </style>
 

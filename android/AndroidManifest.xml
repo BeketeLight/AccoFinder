@@ -1,10 +1,11 @@
 <?xml version="1.0"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="org.qtproject.example"
+    package="com.accofinder"
     android:installLocation="auto"
     android:versionCode="-- %%INSERT_VERSION_CODE%% --"
     android:versionName="-- %%INSERT_VERSION_NAME%% --">
+
     <!-- %%INSERT_PERMISSIONS -->
     <uses-permission android:name="android.permission.CAMERA"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
@@ -24,12 +25,14 @@
     <uses-permission android:name="android.permission.GET_RUNNING_SERVICES" tools:ignore="ProtectedPermissions"/>
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" tools:ignore="ProtectedPermissions"/>
     <uses-permission android:name="android.permission.WRITE_SETTINGS" tools:ignore="ProtectedPermissions"/>
-<!-- %%INSERT_FEATURES -->
+
+    <!-- %%INSERT_FEATURES -->
     <supports-screens
         android:anyDensity="true"
         android:largeScreens="true"
         android:normalScreens="true"
         android:smallScreens="true" />
+
     <application
         android:name="org.qtproject.qt.android.bindings.QtApplication"
         android:hardwareAccelerated="true"
@@ -40,6 +43,20 @@
         android:allowBackup="true"
         android:fullBackupOnly="false"
         android:theme="@style/LaunchTheme">
+
+        <!-- Splash Activity - Launcher -->
+        <activity
+            android:name="com.accofinder.SplashActivity"
+            android:exported="true"
+            android:theme="@style/qtActivityTheme">
+            android:noHistory="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Main Qt Activity -->
         <activity
             android:name="org.qtproject.qt.android.bindings.QtActivity"
             android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|layoutDirection|locale|fontScale|keyboard|keyboardHidden|navigation|mcc|mnc|density"
@@ -47,49 +64,51 @@
             android:launchMode="singleTop"
             android:screenOrientation="unspecified"
             android:exported="true"
-            android:theme="@style/QtAppTheme">>
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            android:theme="@style/QtAppTheme">
 
-          <meta-data
+            <meta-data
                 android:name="android.app.lib_name"
                 android:value="-- %%INSERT_APP_LIB_NAME%% --" />
 
-          <meta-data
+            <meta-data
                 android:name="android.app.arguments"
                 android:value="-- %%INSERT_APP_ARGUMENTS%% --" />
+
+            <!-- Qt Splash Screen Configuration -->
+            <meta-data
+                android:name="android.app.splash_screen_drawable"
+                 android:resource="@drawable/qtsplashscreen" />
+            <meta-data
+                android:name="android.app.splash_screen_sticky"
+                android:value="true" />
         </activity>
+
         <!-- ========================= -->
-         <!-- ALARM RECEIVER -->
-         <!-- ========================= -->
-         <receiver
-             android:name=".AlarmReceiver"
-             android:enabled="true"
-             android:exported="true">
+        <!-- ALARM RECEIVER -->
+        <!-- ========================= -->
+        <receiver
+            android:name=".AlarmReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.plantdoctor.ALARM_TRIGGERED"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
 
-             <intent-filter>
-                 <action android:name="com.plantdoctor.ALARM_TRIGGERED"/>
-                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
-             </intent-filter>
-         </receiver>
-
-         <!-- ========================= -->
-         <!-- FOREGROUND SERVICE -->
-         <!-- ========================= -->
-         <service
-             android:name=".AlarmService"
-             android:enabled="true"
-             android:exported="false"
-             android:stopWithTask="false"
-             android:foregroundServiceType="dataSync|specialUse">
-             <property
-                 android:name="android.foreground_service_type_special_use"
-                 android:value="Alarm service for scheduled tasks"/>
-         </service>
-
-
+        <!-- ========================= -->
+        <!-- FOREGROUND SERVICE -->
+        <!-- ========================= -->
+        <service
+            android:name=".AlarmService"
+            android:enabled="true"
+            android:exported="false"
+            android:stopWithTask="false"
+            android:foregroundServiceType="dataSync|specialUse">
+            <property
+                android:name="android.foreground_service_type_special_use"
+                android:value="Alarm service for scheduled tasks"/>
+        </service>
 
         <provider
             android:name="androidx.core.content.FileProvider"
