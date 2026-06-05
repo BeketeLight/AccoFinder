@@ -81,6 +81,14 @@ qt_add_qml_module(appAccoFinder
         src/presentation/models/bookinglistmodel.cpp
         src/presentation/models/reviewlistmodel.h
         src/presentation/models/reviewlistmodel.cpp
+        src/presentation/viewmodels/bookingviewmodel.h
+        src/presentation/viewmodels/bookingviewmodel.cpp
+        src/presentation/viewmodels/propertyviewmodel.h
+        src/presentation/viewmodels/propertyviewmodel.cpp
+        src/presentation/viewmodels/reviewviewmodel.h
+        src/presentation/viewmodels/reviewviewmodel.cpp
+        src/presentation/viewmodels/roomviewmodel.h
+        src/presentation/viewmodels/roomviewmodel.cpp
         src/models/client.h src/models/client.cpp
         src/models/notification.h
         src/models/notification.cpp
