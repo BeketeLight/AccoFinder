@@ -8,9 +8,12 @@ class IPaymentGateway : public QObject
 {
     Q_OBJECT
 public:
-    explicit IPaymentGateway(QObject *parent = nullptr);
-    virtual Payment processPayment() = 0;
-    virtual Payment refundPayment() = 0;
+    explicit IPaymentGateway(QObject *parent = nullptr)
+        : QObject(parent) {}
+    virtual Payment* processPayment() = 0;
+    virtual Payment* refundPayment() = 0;
+
+    virtual ~IPaymentGateway() {}
 };
 
 #endif // IPAYMENTGATEWAY_H

@@ -5,7 +5,7 @@ ApplicationWindow {
     width: 640
     height: 480
     visible: true
-    title: qsTr("Hello World")
+    title: qsTr("AccoFinder")
     flags: {
         if (Qt.platform.os === "android") {
             return Qt.Window | Qt.ExpandedClientAreaHint | Qt.NoTitleBarBackgroundHint

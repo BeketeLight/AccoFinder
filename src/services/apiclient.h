@@ -1,10 +1,22 @@
 #ifndef APICLIENT_H
 #define APICLIENT_H
 
-class ApiClient
+#include <QObject>
+
+
+class ApiClient : public QObject
 {
+    Q_OBJECT
 public:
-    ApiClient();
+   explicit ApiClient(QObject *parent = nullptr);
+    void getRequest();
+    void postRequest();
+    void deleteRequest();
+    void putRequest();
+private:
+signals:
+    void requestSuccess();
+    void requestFailed();
 };
 
 #endif // APICLIENT_H

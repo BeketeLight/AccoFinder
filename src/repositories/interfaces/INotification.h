@@ -8,8 +8,11 @@ class INotificationRepository : public QObject
 {
     Q_OBJECT
 public:
-    explicit INotificationRepository(QObject *prent = nullptr);
-    virtual Notification sendNotification() = 0;
+    explicit INotificationRepository(QObject *parent = nullptr)
+        : QObject(parent) {}
+    virtual Notification* sendNotification() = 0;
+
+    virtual ~INotificationRepository() {}
 };
 
 #endif // INOTIFICATION_H

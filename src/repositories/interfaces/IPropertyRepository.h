@@ -8,10 +8,13 @@ class IPropertyRepository : public QObject
 {
     Q_OBJECT
 public:
-    explicit IPropertyRepository(QObject *parent = nullptr);
-    virtual Property getProperties() = 0;
-    virtual Property getPropertyById() = 0;
-    virtual Property updateProperty() = 0;
+    explicit IPropertyRepository(QObject *parent = nullptr)
+        : QObject(parent) {}
+    virtual Property* getProperties() = 0;
+    virtual Property* getPropertyById() = 0;
+    virtual Property* updateProperty() = 0;
+
+    virtual ~IPropertyRepository() {}
 private:
 signals:
 };

@@ -85,7 +85,9 @@ qt_add_qml_module(appAccoFinder
         src/models/notification.h
         src/models/notification.cpp
         src/repositories/interfaces/INotification.h
-        SOURCES src/core/utils/appsettings.h src/core/utils/appsettings.cpp
+        src/core/utils/appsettings.h
+        src/core/utils/appsettings.cpp
+
 )
 
 # ─────────────────────────────────────────────────────────────
