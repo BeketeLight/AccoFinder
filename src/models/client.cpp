@@ -10,6 +10,7 @@ bool Client::getIsStudent() const
 void Client::setIsStudent(bool newIsStudent)
 {
     isStudent = newIsStudent;
+    emit isStudentChanged();
 }
 
 QString Client::getPrefferedLOcation() const
@@ -20,6 +21,7 @@ QString Client::getPrefferedLOcation() const
 void Client::setPrefferedLOcation(const QString &newPrefferedLOcation)
 {
     prefferedLOcation = newPrefferedLOcation;
+    emit preferredLocationChanged();
 }
 
 double Client::getBudgetMin() const
@@ -30,6 +32,7 @@ double Client::getBudgetMin() const
 void Client::setBudgetMin(double newBudgetMin)
 {
     budgetMin = newBudgetMin;
+    emit budgetMinChanged();
 }
 
 double Client::getBudgetMax() const
@@ -40,4 +43,5 @@ double Client::getBudgetMax() const
 void Client::setBudgetMax(double newBudgetMax)
 {
     budgetMax = newBudgetMax;
+    emit budgetMaxChanged();
 }

@@ -3,7 +3,27 @@
 Payment::Payment(QObject *parent)
     :QObject(parent)
 {}
-
+Payment::Payment(const QString &newId,
+                 const QString &newBookingId,
+                 double newAmount,
+                 const QString &newMethod,
+                 PaymentStatus newStatus,
+                 const QString &newTransactionRef,
+                 const QString &newPayoutStatus,
+                 const QDateTime &newPayoutDate,
+                 QObject *parent)
+    :id(newId)
+    ,bookingId(newBookingId)
+    ,amount(newAmount)
+    ,status(newStatus)
+    ,transactionalRef(newTransactionRef)
+    ,payoutStatus(newPayoutStatus)
+    ,payoutDate(newPayoutDate)
+    ,QObject(parent)
+{
+    emit paymentCreated();
+    emit paymentProcessed();
+}
 QString Payment::getId() const
 {
     return id;
@@ -52,6 +72,14 @@ PaymentStatus Payment::getStatus() const
 void Payment::setStatus(PaymentStatus newStatus)
 {
     status = newStatus;
+    if (getStatus() == PaymentStatus::Failed)
+    {
+        emit paymentFailed();
+    }
+    else if (getStatus() == PaymentStatus::Success)
+    {
+        emit paymentProcessed();
+    }
 }
 
 QString Payment::getTransactionalRef() const

@@ -5,6 +5,7 @@
 
 class Client : public User
 {
+    Q_OBJECT
 public:
     Client();
     bool getIsStudent() const;
@@ -26,6 +27,10 @@ private:
     double budgetMax;
 
 signals:
+    void isStudentChanged();
+    void preferredLocationChanged();
+    void budgetMinChanged();
+    void budgetMaxChanged();
     void bookingRequested(QString roomId);
 };
 

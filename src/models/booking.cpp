@@ -4,6 +4,20 @@ Booking::Booking(QObject *parent)
     :QObject(parent)
 {}
 
+Booking::Booking(QString &newId, QString newClientId, QString newRoomId, QDateTime newBookingDate, BookingStatus newStatus, double newAmount, double newCommissionAmount)
+{
+    id =newId;
+    clientId = newClientId;
+    roomId = newRoomId;
+    bookingDate = newBookingDate;
+    status = newStatus;
+    amount = newAmount;
+    commissionAmount = newCommissionAmount;
+
+    emit bookingConfirmed();
+
+}
+
 QString Booking::getId() const
 {
     return id;
@@ -52,6 +66,8 @@ BookingStatus Booking::getStatus() const
 void Booking::setStatus(BookingStatus newStatus)
 {
     status = newStatus;
+    if (getStatus() == BookingStatus::Cancelled)
+        emit bookingCancelled();
 }
 
 double Booking::getAmount() const

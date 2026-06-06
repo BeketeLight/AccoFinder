@@ -3,6 +3,18 @@
 Review::Review(QObject *parent)
     :QObject(parent)
 {}
+Review::Review(const QString& newId,
+               int newRating,
+               const QString& newComment,
+               const QDateTime& newCreatedAt,
+               QObject* parent)
+    : QObject(parent)
+    , id(newId)
+    , rating(newRating)
+    , comment(newComment)
+    , createdAt(newCreatedAt)
+{
+}
 
 QString Review::getId() const
 {

@@ -1,7 +1,7 @@
 #ifndef EPAYMENTSTATUS_H
 #define EPAYMENTSTATUS_H
 
-enum PaymentStatus {
+enum class PaymentStatus {
     Initiated,
     Success,
     Failed

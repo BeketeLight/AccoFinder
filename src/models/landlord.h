@@ -2,11 +2,13 @@
 #define LANDLORD_H
 
 #include <QString>
+#include "models/user.h"
 
-class Landlord
+class Landlord : public User
 {
+    Q_OBJECT
 public:
-    Landlord();
+    Landlord(QString& newId,QString& newName, QString& newPhone,QString& newPaymentDetails);
     QString getId() const;
     void setId(const QString &newId);
     QString getName() const;
@@ -21,6 +23,9 @@ private:
     QString name;
     QString phone;
     QString paymentDetails;
+signals:
+    void landlordProfileCreated();
+    void landlordPaymentDetailsChanged();
 };
 
 #endif // LANDLORD_H

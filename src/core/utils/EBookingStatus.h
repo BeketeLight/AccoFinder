@@ -1,7 +1,7 @@
 #ifndef EBOOKINGSTATUS_H
 #define EBOOKINGSTATUS_H
 
-enum BookingStatus {
+enum class BookingStatus {
     Pending,
     Paid,
     Confirmed,

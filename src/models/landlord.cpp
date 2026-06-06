@@ -1,6 +1,13 @@
 #include "landlord.h"
 
-Landlord::Landlord() {}
+Landlord::Landlord(QString& newId,QString& newName, QString& newPhone,QString& newPaymentDetails)
+{
+    id = newId;
+    name = newName;
+    phone = newPhone;
+    paymentDetails = newPaymentDetails;
+    emit landlordProfileCreated();
+}
 
 QString Landlord::getId() const
 {
@@ -40,4 +47,5 @@ QString Landlord::getPaymentDetails() const
 void Landlord::setPaymentDetails(const QString &newPaymentDetails)
 {
     paymentDetails = newPaymentDetails;
+    emit landlordPaymentDetailsChanged();
 }

@@ -9,6 +9,11 @@ class Room : public QObject
     Q_OBJECT
 public:
     explicit Room(QObject *parent = nullptr);
+    Room(const QString& newId,
+         const QString& newPropertyId,
+         const QString& newType,
+         bool newAvailable = true,
+         QObject* parent = nullptr);
     QString getId() const;
     void setId(const QString &newId);
     QString getPropertyId() const;
@@ -25,6 +30,7 @@ private:
     bool available;
 signals:
     void availabilityChanged();
+    void newRoomCreated();
 };
 
 #endif // ROOM_H

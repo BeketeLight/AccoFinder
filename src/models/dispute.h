@@ -9,6 +9,7 @@ class Dispute : public QObject
     Q_OBJECT
 public:
     explicit Dispute(QObject *parent = nullptr);
+    Dispute(QString &newId, QString &newBookingId, QString &newIssue, DisputeStatus newStatus);
     QString getId() const;
     void setId(const QString &newId);
 

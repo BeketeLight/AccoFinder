@@ -1,7 +1,7 @@
 #ifndef EDISPUTESTATUS_H
 #define EDISPUTESTATUS_H
 
-enum DisputeStatus {
+enum class DisputeStatus {
     Open,
     Resolved
 };

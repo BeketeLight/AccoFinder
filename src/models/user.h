@@ -10,6 +10,7 @@ class User : public QObject
     Q_OBJECT
 public:
     explicit User(QObject *parent = nullptr);
+    User(QString& newId, QString& newName, QString& newEmail, QString& newPhone, QDateTime& newCreatedAt);
     QString getId() const;
     void setId(const QString &newId);
 
@@ -36,6 +37,8 @@ signals:
 
     // this signal will be emitted whenever user profile changes
     void profileUpdated();
+    // this for when the profileis created
+    void profileCreated();
 };
 
 #endif // USER_H

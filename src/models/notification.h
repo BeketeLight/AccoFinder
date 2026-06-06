@@ -9,6 +9,7 @@ class Notification : public QObject
     Q_OBJECT
 public:
     explicit Notification(QObject *parent = nullptr);
+    Notification(QString& newId, QString& newMessage, QString& newType);
     QString getId() const;
     void setId(const QString &newId);
     QString getMessage() const;

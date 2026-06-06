@@ -4,6 +4,9 @@ Notification::Notification(QObject *parent)
     : QObject{parent}
 {}
 
+Notification::Notification(QString& newId, QString& newMessage, QString& newType)
+{}
+
 QString Notification::getId() const
 {
     return id;

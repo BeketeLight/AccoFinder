@@ -3,6 +3,19 @@
 Room::Room(QObject *parent)
     :QObject(parent)
 {}
+Room::Room(const QString& newId,
+           const QString& newPropertyId,
+           const QString& newType,
+           bool newAvailable,
+           QObject* parent)
+    : QObject(parent)
+    , id(newId)
+    , propertyId(newPropertyId)
+    , type(newType)
+    , available(newAvailable)
+{
+    emit newRoomCreated();
+}
 
 QString Room::getId() const
 {
@@ -42,4 +55,5 @@ bool Room::getAvailable() const
 void Room::setAvailable(bool newAvailable)
 {
     available = newAvailable;
+    emit availabilityChanged();
 }

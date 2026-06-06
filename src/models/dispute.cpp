@@ -4,6 +4,16 @@ Dispute::Dispute(QObject *parent)
     :QObject(parent)
 {}
 
+Dispute::Dispute(QString &newId, QString &newBookingId, QString &newIssue, DisputeStatus newStatus)
+{
+    id =newId;
+    bookingId =newBookingId;
+    issue = newIssue;
+    status = newStatus;
+
+    emit disputeRaised();
+}
+
 QString Dispute::getId() const
 {
     return id;
@@ -42,4 +52,8 @@ DisputeStatus Dispute::getStatus() const
 void Dispute::setStatus(DisputeStatus newStatus)
 {
     status = newStatus;
+    if (getStatus() == DisputeStatus::Resolved)
+    {
+        emit disputeResolved();
+    }
 }

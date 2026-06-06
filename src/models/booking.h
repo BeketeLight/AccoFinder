@@ -10,6 +10,7 @@ class Booking : public QObject
     Q_OBJECT
 public:
     explicit Booking(QObject *parent = nullptr);
+    Booking(QString &id, QString clientId, QString roomId, QDateTime bookingDate, BookingStatus status, double amount, double commissionAmount);
     QString getId() const;
     void setId(const QString &newId);
     QString getClientId() const;

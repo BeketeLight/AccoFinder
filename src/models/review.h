@@ -9,6 +9,11 @@ class Review : public QObject
     Q_OBJECT
 public:
     explicit Review(QObject *parent = nullptr);
+    Review(const QString& newId,
+           int newRating,
+           const QString& newComment,
+           const QDateTime& newCreatedAt = QDateTime(),
+           QObject* parent = nullptr);
     QString getId() const;
     void setId(const QString &newId);
 

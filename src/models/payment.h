@@ -11,6 +11,15 @@ class Payment : public QObject
     Q_OBJECT
 public:
     explicit Payment(QObject *parent = nullptr);
+    Payment(const QString& newId,
+            const QString& newBookingId,
+            double newAmount,
+            const QString& newMethod,
+            PaymentStatus newStatus,
+            const QString& newTransactionRef = "",
+            const QString& newPayoutStatus = "",
+            const QDateTime& newPayoutDate = QDateTime(),
+            QObject* parent = nullptr);
     QString getId() const;
     void setId(const QString &newId);
     QString getBookingId() const;
@@ -41,6 +50,7 @@ private:
 signals:
     void paymentProcessed();
     void paymentFailed();
+    void paymentCreated();
 
 };
 
