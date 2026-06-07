@@ -7,7 +7,7 @@
 
 class BookingRepositoryImpl : public IBookingRepository
 {
-
+    Q_OBJECT
 public:
     BookingRepositoryImpl();
 
@@ -15,7 +15,6 @@ public:
     Booking* getBooking() override;
     Booking* cancelBooking() override;
 private:
-    Booking* booking = new Booking;
 };
 
 #endif // BOOKINGREPOSITORYIMPL_H

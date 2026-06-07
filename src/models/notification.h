@@ -8,20 +8,21 @@ class Notification : public QObject
 {
     Q_OBJECT
 public:
-    explicit Notification(QObject *parent = nullptr);
-    Notification(QString& newId, QString& newMessage, QString& newType);
+    explicit Notification(const QString& id,
+                          const QString& message,
+                          const QString& type,
+                          QObject *parent = nullptr);
     QString getId() const;
-    void setId(const QString &newId);
     QString getMessage() const;
-    void setMessage(const QString &newMessage);
     QString getType() const;
-    void setType(const QString &newType);
+
 
 private:
-    QString id;
-    QString message;
-    QString type;
+    QString m_id;
+    QString m_message;
+    QString m_type;
 signals:
+    void notificationCreated();
     void notificationSent();
 };
 

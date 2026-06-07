@@ -7,5 +7,5 @@ NotificationServiceImpl::NotificationServiceImpl()
 
 Notification *NotificationServiceImpl::sendNotification()
 {
-    return notification;
+
 }

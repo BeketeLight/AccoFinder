@@ -1,43 +1,58 @@
 #include "agent.h"
 
-Agent::Agent() {}
+Agent::Agent(const QString& employeeId,
+             const QString& assignedArea,
+             const double& commissionRate,
+             const bool& isActive,
+             const QString& name,
+             const QString& email,
+             const QString& phone,
+             const QDateTime& createdAt,
+             QObject* parent)
+    :User(employeeId,name,email,phone,createdAt)
+    ,m_employeeId(employeeId)
+    ,m_assignedArea(assignedArea)
+    ,m_commissionRate(commissionRate)
+    ,m_isActive(isActive)
+{
+    emit agentProfileCreated();
+}
 
 QString Agent::getEmployeeId() const
 {
-    return employeeId;
+    return m_employeeId;
 }
 
-void Agent::setEmployeeId(const QString &newEmployeeId)
-{
-    employeeId = newEmployeeId;
-}
 
 QString Agent::getAssignedArea() const
 {
-    return assignedArea;
+    return m_assignedArea;
 }
 
-void Agent::setAssignedArea(const QString &newAssignedArea)
+void Agent::setAssignedArea(const QString &assignedArea)
 {
-    assignedArea = newAssignedArea;
+    m_assignedArea = assignedArea;
+    emit assignedAreaChanged();
 }
 
 double Agent::getCommissionRate() const
 {
-    return commissionRate;
+    return m_commissionRate;
 }
 
-void Agent::setCommissionRate(double newCommissionRate)
+void Agent::setCommissionRate(double commissionRate)
 {
-    commissionRate = newCommissionRate;
+    m_commissionRate = commissionRate;
+    emit commissionRateChanged();
 }
 
 bool Agent::getIsActive() const
 {
-    return isActive;
+    return m_isActive;
 }
 
-void Agent::setIsActive(bool newIsActive)
+void Agent::setIsActive(bool isActive)
 {
-    isActive = newIsActive;
+    m_isActive = isActive;
+    emit isActiveChanged();
 }

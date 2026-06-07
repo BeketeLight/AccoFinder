@@ -9,35 +9,35 @@ class User : public QObject
 {
     Q_OBJECT
 public:
-    explicit User(QObject *parent = nullptr);
-    User(QString& newId, QString& newName, QString& newEmail, QString& newPhone, QDateTime& newCreatedAt);
+    explicit User(const QString& id,
+         const QString& name,
+         const QString& email,
+         const QString& phone,
+         const QDateTime& createdAt,
+         QObject *parent = nullptr);
     QString getId() const;
-    void setId(const QString &newId);
 
     QString getName() const;
-    void setName(const QString &newName);
+    void setName(const QString &name);
 
     QString getEmail() const;
-    void setEmail(const QString &newEmail);
+    void setEmail(const QString &email);
 
     QString getPhone() const;
-    void setPhone(const QString &newPhone);
+    void setPhone(const QString &phone);
 
     QDateTime getCreatedAt() const;
-    void setCreatedAt(const QDateTime &newCreatedAt);
+    void setCreatedAt(const QDateTime &createdAt);
 
 private:
-    QString id;
-    QString name;
-    QString email;
-    QString phone;
-    QDateTime createdAt;
+    QString m_id;
+    QString m_name;
+    QString m_email;
+    QString m_phone;
+    QDateTime m_createdAt;
 
 signals:
-
-    // this signal will be emitted whenever user profile changes
     void profileUpdated();
-    // this for when the profileis created
     void profileCreated();
 };
 

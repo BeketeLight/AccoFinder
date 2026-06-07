@@ -1,57 +1,49 @@
 #include "dispute.h"
 
-Dispute::Dispute(QObject *parent)
-    :QObject(parent)
-{}
-
-Dispute::Dispute(QString &newId, QString &newBookingId, QString &newIssue, DisputeStatus newStatus)
+Dispute::Dispute(const QString &id,
+                 const QString &bookingId,
+                 const QString &issue,
+                 const DisputeStatus &status,
+                 QObject *parent)
+    :m_id(id)
+    ,m_bookingId(bookingId)
+    ,m_issue(issue)
+    ,m_status(status)
+    ,QObject(parent)
 {
-    id =newId;
-    bookingId =newBookingId;
-    issue = newIssue;
-    status = newStatus;
-
     emit disputeRaised();
+
 }
 
 QString Dispute::getId() const
 {
-    return id;
-}
-
-void Dispute::setId(const QString &newId)
-{
-    id = newId;
+    return m_id;
 }
 
 QString Dispute::getBookingId() const
 {
-    return bookingId;
+    return m_bookingId;
 }
 
-void Dispute::setBookingId(const QString &newBookingId)
-{
-    bookingId = newBookingId;
-}
 
 QString Dispute::getIssue() const
 {
-    return issue;
+    return m_issue;
 }
 
-void Dispute::setIssue(const QString &newIssue)
+void Dispute::setIssue(const QString &issue)
 {
-    issue = newIssue;
+    m_issue = issue;
 }
 
 DisputeStatus Dispute::getStatus() const
 {
-    return status;
+    return m_status;
 }
 
-void Dispute::setStatus(DisputeStatus newStatus)
+void Dispute::setStatus(DisputeStatus status)
 {
-    status = newStatus;
+    m_status = status;
     if (getStatus() == DisputeStatus::Resolved)
     {
         emit disputeResolved();

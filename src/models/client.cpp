@@ -1,47 +1,58 @@
 #include "client.h"
 
-Client::Client() {}
+
+Client::Client(const QString &id,
+               const QString &name,
+               const QString &email,
+               const QString &phone,
+               const QDateTime &createdAt,
+               QObject *parent)
+    :User(id,name,email,phone,createdAt,parent)
+{
+    emit clientProfileCreated();
+
+}
 
 bool Client::getIsStudent() const
 {
-    return isStudent;
+    return m_isStudent;
 }
 
-void Client::setIsStudent(bool newIsStudent)
+void Client::setIsStudent(bool isStudent)
 {
-    isStudent = newIsStudent;
+    m_isStudent = isStudent;
     emit isStudentChanged();
 }
 
 QString Client::getPrefferedLOcation() const
 {
-    return prefferedLOcation;
+    return m_prefferedLOcation;
 }
 
-void Client::setPrefferedLOcation(const QString &newPrefferedLOcation)
+void Client::setPrefferedLOcation(const QString &prefferedLOcation)
 {
-    prefferedLOcation = newPrefferedLOcation;
+    m_prefferedLOcation = prefferedLOcation;
     emit preferredLocationChanged();
 }
 
 double Client::getBudgetMin() const
 {
-    return budgetMin;
+    return m_budgetMin;
 }
 
-void Client::setBudgetMin(double newBudgetMin)
+void Client::setBudgetMin(double budgetMin)
 {
-    budgetMin = newBudgetMin;
+    m_budgetMin = budgetMin;
     emit budgetMinChanged();
 }
 
 double Client::getBudgetMax() const
 {
-    return budgetMax;
+    return m_budgetMax;
 }
 
-void Client::setBudgetMax(double newBudgetMax)
+void Client::setBudgetMax(double budgetMax)
 {
-    budgetMax = newBudgetMax;
+    m_budgetMax = budgetMax;
     emit budgetMaxChanged();
 }

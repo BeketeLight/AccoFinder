@@ -11,7 +11,6 @@ public:
     Dispute* raiseDispute() override;
     Dispute* resolveDispute() override;
 private:
-    Dispute* dispute = new Dispute;
 
 };
 

@@ -1,51 +1,56 @@
 #include "landlord.h"
 
-Landlord::Landlord(QString& newId,QString& newName, QString& newPhone,QString& newPaymentDetails)
+Landlord::Landlord(const QString &id,
+                   const QString &name,
+                   const QString &email,
+                   const QString &phone,
+                   const QDateTime &createdAt,
+                   const QString &paymentDetails,
+                   QObject *parent)
+    :User(id,name,email,phone,createdAt,parent)
+    ,m_id(id)
+    ,m_name(name)
+    ,m_phone(phone)
+    ,m_paymentDetails(paymentDetails)
 {
-    id = newId;
-    name = newName;
-    phone = newPhone;
-    paymentDetails = newPaymentDetails;
     emit landlordProfileCreated();
+
 }
 
 QString Landlord::getId() const
 {
-    return id;
+    return m_id;
 }
 
-void Landlord::setId(const QString &newId)
-{
-    id = newId;
-}
+
 
 QString Landlord::getName() const
 {
-    return name;
+    return m_name;
 }
 
-void Landlord::setName(const QString &newName)
+void Landlord::setName(const QString &name)
 {
-    name = newName;
+    m_name = name;
 }
 
 QString Landlord::getPhone() const
 {
-    return phone;
+    return m_phone;
 }
 
-void Landlord::setPhone(const QString &newPhone)
+void Landlord::setPhone(const QString &phone)
 {
-    phone = newPhone;
+    m_phone = phone;
 }
 
 QString Landlord::getPaymentDetails() const
 {
-    return paymentDetails;
+    return m_paymentDetails;
 }
 
-void Landlord::setPaymentDetails(const QString &newPaymentDetails)
+void Landlord::setPaymentDetails(const QString &paymentDetails)
 {
-    paymentDetails = newPaymentDetails;
+    m_paymentDetails = paymentDetails;
     emit landlordPaymentDetailsChanged();
 }

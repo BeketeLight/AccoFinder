@@ -1,43 +1,36 @@
 #include "user.h"
 
-User::User(QObject *parent)
-    : QObject{parent}
-{}
-
-User::User(QString &newId, QString &newName, QString &newEmail, QString &newPhone, QDateTime &newCreatedAt)
+User::User(const QString &id,
+           const QString &name,
+           const QString &email,
+           const QString &phone,
+           const QDateTime &createdAt,
+           QObject *parent)
+    :m_id(id)
+    ,m_name(name)
+    ,m_email(email)
+    ,m_createdAt(createdAt)
+    ,QObject(parent)
 {
-    id = newId;
-    name = newName;
-    email = newEmail;
-    phone = newPhone;
-    createdAt = newCreatedAt;
-
     emit profileCreated();
 }
 
 QString User::getId() const
 {
-    return id;
+    return m_id;
 }
 
-void User::setId(const QString &newId)
-{
-    id = newId;
-    if (getId() == newId)
-    {
-        emit profileUpdated();
-    }
-}
+
 
 QString User::getName() const
 {
-    return name;
+    return m_name;
 }
 
-void User::setName(const QString &newName)
+void User::setName(const QString &name)
 {
-    name = newName;
-    if(getName() == newName)
+    m_name = name;
+    if(getName() == name)
     {
         emit profileUpdated();
     }
@@ -45,13 +38,13 @@ void User::setName(const QString &newName)
 
 QString User::getEmail() const
 {
-    return email;
+    return m_email;
 }
 
-void User::setEmail(const QString &newEmail)
+void User::setEmail(const QString &email)
 {
-    email = newEmail;
-    if (getEmail() == newEmail)
+    m_email = email;
+    if (getEmail() == email)
     {
         emit profileUpdated();
     }
@@ -59,13 +52,13 @@ void User::setEmail(const QString &newEmail)
 
 QString User::getPhone() const
 {
-    return phone;
+    return m_phone;
 }
 
-void User::setPhone(const QString &newPhone)
+void User::setPhone(const QString &phone)
 {
-    phone = newPhone;
-    if(getPhone() == newPhone)
+    m_phone = phone;
+    if(getPhone() == phone)
     {
         emit profileUpdated();
     }
@@ -73,14 +66,5 @@ void User::setPhone(const QString &newPhone)
 
 QDateTime User::getCreatedAt() const
 {
-    return createdAt;
-}
-
-void User::setCreatedAt(const QDateTime &newCreatedAt)
-{
-    createdAt = newCreatedAt;
-    if (getCreatedAt() == newCreatedAt)
-    {
-        emit profileUpdated();
-    }
+    return m_createdAt;
 }

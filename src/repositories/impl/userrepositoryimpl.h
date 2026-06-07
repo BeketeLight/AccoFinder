@@ -12,7 +12,6 @@ public:
     User* signUp() override;
     User* logOut() override;
 private:
-    User* user = new User;
 
 };
 

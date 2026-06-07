@@ -1,91 +1,64 @@
 #include "booking.h"
 
-Booking::Booking(QObject *parent)
-    :QObject(parent)
-{}
-
-Booking::Booking(QString &newId, QString newClientId, QString newRoomId, QDateTime newBookingDate, BookingStatus newStatus, double newAmount, double newCommissionAmount)
+Booking::Booking(const QString &id,
+                 const QString &clientId,
+                 const QString &roomId,
+                 const QDateTime &bookingDate,
+                 const double &amount,
+                 const double &commissionAmount,
+                 QObject *parent)
+    :m_id(id)
+    ,m_clientId(clientId)
+    ,m_bookingDate(bookingDate)
+    ,m_amount(amount)
+    ,m_commissionAmount(commissionAmount)
+    ,QObject(parent)
 {
-    id =newId;
-    clientId = newClientId;
-    roomId = newRoomId;
-    bookingDate = newBookingDate;
-    status = newStatus;
-    amount = newAmount;
-    commissionAmount = newCommissionAmount;
-
-    emit bookingConfirmed();
+    emit bookingCreated();
 
 }
 
 QString Booking::getId() const
 {
-    return id;
+    return m_id;
 }
 
-void Booking::setId(const QString &newId)
-{
-    id = newId;
-}
-
-QString Booking::getClientId() const
-{
-    return clientId;
-}
-
-void Booking::setClientId(const QString &newClientId)
-{
-    clientId = newClientId;
-}
 
 QString Booking::getRoomId() const
 {
-    return roomId;
+    return m_roomId;
 }
 
-void Booking::setRoomId(const QString &newRoomId)
-{
-    roomId = newRoomId;
-}
 
 QDateTime Booking::getBookingDate() const
 {
-    return bookingDate;
+    return m_bookingDate;
 }
 
-void Booking::setBookingDate(const QDateTime &newBookingDate)
-{
-    bookingDate = newBookingDate;
-}
 
 BookingStatus Booking::getStatus() const
 {
-    return status;
+    return m_status;
 }
 
-void Booking::setStatus(BookingStatus newStatus)
+void Booking::setStatus(const BookingStatus& status)
 {
-    status = newStatus;
+    m_status = status;
     if (getStatus() == BookingStatus::Cancelled)
         emit bookingCancelled();
+    else if (getStatus() == BookingStatus::Paid)
+        emit bookingFeePaid();
+    else if (getStatus() == BookingStatus::Confirmed)
+        emit bookingConfirmed();
 }
 
 double Booking::getAmount() const
 {
-    return amount;
-}
-
-void Booking::setAmount(double newAmount)
-{
-    amount = newAmount;
+    return m_amount;
 }
 
 double Booking::getCommissionAmount() const
 {
-    return commissionAmount;
+    return m_commissionAmount;
 }
 
-void Booking::setCommissionAmount(double newCommissionAmount)
-{
-    commissionAmount = newCommissionAmount;
-}

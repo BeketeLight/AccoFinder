@@ -10,7 +10,7 @@ public:
     NotificationServiceImpl();
     Notification* sendNotification() override;
 private:
-    Notification* notification = new Notification;
+
 };
 
 #endif // NOTIFICATIONSERVICEIMPL_H

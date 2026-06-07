@@ -3,75 +3,56 @@
 Payment::Payment(QObject *parent)
     :QObject(parent)
 {}
-Payment::Payment(const QString &newId,
-                 const QString &newBookingId,
-                 double newAmount,
-                 const QString &newMethod,
-                 PaymentStatus newStatus,
-                 const QString &newTransactionRef,
-                 const QString &newPayoutStatus,
-                 const QDateTime &newPayoutDate,
+Payment::Payment(const QString &id,
+                 const QString &bookingId,
+                 double amount,
+                 const QString &method,
+                 PaymentStatus status,
+                 const QString &transactionRef,
+                 const QString &payoutStatus,
+                 const QDateTime &payoutDate,
                  QObject *parent)
-    :id(newId)
-    ,bookingId(newBookingId)
-    ,amount(newAmount)
-    ,status(newStatus)
-    ,transactionalRef(newTransactionRef)
-    ,payoutStatus(newPayoutStatus)
-    ,payoutDate(newPayoutDate)
+    :m_id(id)
+    ,m_bookingId(bookingId)
+    ,m_amount(amount)
+    ,m_status(status)
+    ,m_transactionalRef(transactionRef)
+    ,m_payoutStatus(payoutStatus)
+    ,m_payoutDate(payoutDate)
     ,QObject(parent)
 {
     emit paymentCreated();
-    emit paymentProcessed();
 }
 QString Payment::getId() const
 {
-    return id;
-}
-
-void Payment::setId(const QString &newId)
-{
-    id = newId;
+    return m_id;
 }
 
 QString Payment::getBookingId() const
 {
-    return bookingId;
+    return m_bookingId;
 }
 
-void Payment::setBookingId(const QString &newBookingId)
-{
-    bookingId = newBookingId;
-}
 
 double Payment::getAmount() const
 {
-    return amount;
+    return m_amount;
 }
 
-void Payment::setAmount(double newAmount)
-{
-    amount = newAmount;
-}
 
 QString Payment::getMethod() const
 {
-    return method;
-}
-
-void Payment::setMethod(const QString &newMethod)
-{
-    method = newMethod;
+    return m_method;
 }
 
 PaymentStatus Payment::getStatus() const
 {
-    return status;
+    return m_status;
 }
 
-void Payment::setStatus(PaymentStatus newStatus)
+void Payment::setStatus(PaymentStatus status)
 {
-    status = newStatus;
+    m_status = status;
     if (getStatus() == PaymentStatus::Failed)
     {
         emit paymentFailed();
@@ -84,30 +65,18 @@ void Payment::setStatus(PaymentStatus newStatus)
 
 QString Payment::getTransactionalRef() const
 {
-    return transactionalRef;
+    return m_transactionalRef;
 }
 
-void Payment::setTransactionalRef(const QString &newTransactionalRef)
-{
-    transactionalRef = newTransactionalRef;
-}
 
 QString Payment::getPayoutStatus() const
 {
-    return payoutStatus;
-}
-
-void Payment::setPayoutStatus(const QString &newPayoutStatus)
-{
-    payoutStatus = newPayoutStatus;
+    return m_payoutStatus;
 }
 
 QDateTime Payment::getPayoutDate() const
 {
-    return payoutDate;
+    return m_payoutDate;
 }
 
-void Payment::setPayoutDate(const QDateTime &newPayoutDate)
-{
-    payoutDate = newPayoutDate;
-}
+

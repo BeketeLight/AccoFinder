@@ -8,25 +8,28 @@ class Dispute : public QObject
 {
     Q_OBJECT
 public:
-    explicit Dispute(QObject *parent = nullptr);
-    Dispute(QString &newId, QString &newBookingId, QString &newIssue, DisputeStatus newStatus);
+    explicit Dispute(const QString &id,
+                     const QString &bookingId,
+                     const QString &issue,
+                     const DisputeStatus& status,
+                     QObject *parent = nullptr);
     QString getId() const;
-    void setId(const QString &newId);
+    void setId(const QString &nid);
 
     QString getBookingId() const;
-    void setBookingId(const QString &newBookingId);
+    void setBookingId(const QString &bookingId);
 
     QString getIssue() const;
-    void setIssue(const QString &newIssue);
+    void setIssue(const QString &issue);
 
     DisputeStatus getStatus() const;
-    void setStatus(DisputeStatus newStatus);
+    void setStatus(DisputeStatus status);
 
 private:
-    QString id;
-    QString bookingId;
-    QString issue;
-    DisputeStatus status;
+    QString m_id;
+    QString m_bookingId;
+    QString m_issue;
+    DisputeStatus m_status;
 signals:
     void disputeRaised();
     void disputeResolved();

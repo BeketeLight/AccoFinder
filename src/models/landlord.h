@@ -8,21 +8,26 @@ class Landlord : public User
 {
     Q_OBJECT
 public:
-    Landlord(QString& newId,QString& newName, QString& newPhone,QString& newPaymentDetails);
+    explicit Landlord(const QString& id,
+             const QString& name,
+             const QString& email,
+             const QString& phone,
+             const QDateTime& createdAt,
+             const QString& paymentDetails,
+             QObject* parent= nullptr);
     QString getId() const;
-    void setId(const QString &newId);
     QString getName() const;
-    void setName(const QString &newName);
+    void setName(const QString &name);
     QString getPhone() const;
-    void setPhone(const QString &newPhone);
+    void setPhone(const QString &phone);
     QString getPaymentDetails() const;
-    void setPaymentDetails(const QString &newPaymentDetails);
+    void setPaymentDetails(const QString &paymentDetails);
 
 private:
-    QString id;
-    QString name;
-    QString phone;
-    QString paymentDetails;
+    QString m_id;
+    QString m_name;
+    QString m_phone;
+    QString m_paymentDetails;
 signals:
     void landlordProfileCreated();
     void landlordPaymentDetailsChanged();

@@ -11,41 +11,35 @@ class Payment : public QObject
     Q_OBJECT
 public:
     explicit Payment(QObject *parent = nullptr);
-    Payment(const QString& newId,
-            const QString& newBookingId,
-            double newAmount,
-            const QString& newMethod,
-            PaymentStatus newStatus,
-            const QString& newTransactionRef = "",
-            const QString& newPayoutStatus = "",
-            const QDateTime& newPayoutDate = QDateTime(),
+    Payment(const QString& id,
+            const QString& bookingId,
+            double amount,
+            const QString& method,
+            PaymentStatus status,
+            const QString& transactionRef = "",
+            const QString& payoutStatus = "",
+            const QDateTime& payoutDate = QDateTime(),
             QObject* parent = nullptr);
     QString getId() const;
-    void setId(const QString &newId);
-    QString getBookingId() const;
-    void setBookingId(const QString &newBookingId);
-    double getAmount() const;
-    void setAmount(double newAmount);
-    QString getMethod() const;
-    void setMethod(const QString &newMethod);
-    PaymentStatus getStatus() const;
-    void setStatus(PaymentStatus newStatus);
-    QString getTransactionalRef() const;
-    void setTransactionalRef(const QString &newTransactionalRef);
-    QString getPayoutStatus() const;
-    void setPayoutStatus(const QString &newPayoutStatus);
-    QDateTime getPayoutDate() const;
-    void setPayoutDate(const QDateTime &newPayoutDate);
 
+    QString getBookingId() const;
+
+    double getAmount() const;
+    QString getMethod() const;
+    PaymentStatus getStatus() const;
+    void setStatus(PaymentStatus status);
+    QString getTransactionalRef() const;
+    QString getPayoutStatus() const;
+    QDateTime getPayoutDate() const;
 private:
-    QString id;
-    QString bookingId;
-    double amount;
-    QString method;
-    PaymentStatus status;
-    QString transactionalRef;
-    QString payoutStatus;
-    QDateTime payoutDate;
+    QString m_id;
+    QString m_bookingId;
+    double m_amount;
+    QString m_method;
+    PaymentStatus m_status;
+    QString m_transactionalRef;
+    QString m_payoutStatus;
+    QDateTime m_payoutDate;
 
 signals:
     void paymentProcessed();

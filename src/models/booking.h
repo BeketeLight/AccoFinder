@@ -9,34 +9,36 @@ class Booking : public QObject
 {
     Q_OBJECT
 public:
-    explicit Booking(QObject *parent = nullptr);
-    Booking(QString &id, QString clientId, QString roomId, QDateTime bookingDate, BookingStatus status, double amount, double commissionAmount);
+    explicit Booking(const QString& id,
+            const QString& clientId,
+            const QString& roomId,
+            const QDateTime& bookingDate,
+            const double& amount,
+            const double& commissionAmount,
+            QObject *parent = nullptr);
     QString getId() const;
-    void setId(const QString &newId);
     QString getClientId() const;
-    void setClientId(const QString &newClientId);
     QString getRoomId() const;
-    void setRoomId(const QString &newRoomId);
     QDateTime getBookingDate() const;
-    void setBookingDate(const QDateTime &newBookingDate);
     BookingStatus getStatus() const;
-    void setStatus(BookingStatus newStatus);
+    void setStatus(const BookingStatus& status);
     double getAmount() const;
-    void setAmount(double newAmount);
     double getCommissionAmount() const;
-    void setCommissionAmount(double newCommissionAmount);
+
 
 private:
-    QString id;
-    QString clientId;
-    QString roomId;
-    QDateTime bookingDate;
-    BookingStatus status;
-    double amount;
-    double commissionAmount;
+    QString m_id;
+    QString m_clientId;
+    QString m_roomId;
+    QDateTime m_bookingDate;
+    BookingStatus m_status;
+    double m_amount;
+    double m_commissionAmount;
 signals:
+    void bookingCreated();
     void bookingConfirmed();
     void bookingCancelled();
+    void bookingFeePaid();
 };
 
 #endif // BOOKING_H
