@@ -12,7 +12,6 @@ public:
     Property* getPropertyById() override;
     Property* updateProperty() override;
 private:
-    Property* property = new Property;
 };
 
 #endif // PROPERTYREPOSITORYIMPL_H

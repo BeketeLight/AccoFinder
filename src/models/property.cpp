@@ -1,128 +1,98 @@
 #include "property.h"
 
-Property::Property(QObject *parent)
-    :QObject(parent)
-{}
-
-Property::Property(const QString& newId,
-                   const QString& newTitle,
-                   const QString& newLocation,
-                   double newPrice,
-                   const QString& newDescription,
-                   PropertyStatus  newStatus,
-                   const QString& newAgentId,
-                   const QString& newLandlordId,
-                   const QDateTime& newCreatedAt,
+Property::Property(const QString& id,
+                   const QString& title,
+                   const QString& location,
+                   const QString& agentId,
+                   const QString& landlordId,
+                   const QDateTime& createdAt,
                    QObject* parent)
     : QObject(parent)
-    , id(newId)
-    , title(newTitle)
-    , location(newLocation)
-    , price(newPrice)
-    , description(newDescription)
-    , status(newStatus)
-    , agentId(newAgentId)
-    , landlordId(newLandlordId)
-    , createdAt(newCreatedAt)
+    , m_id(id)
+    , m_title(title)
+    , m_location(location)
+    , m_agentId(agentId)
+    , m_landlordId(landlordId)
+    , m_createdAt(createdAt)
 {
     emit propertyCreated();
 }
 
 QString Property::getId() const
 {
-    return id;
+    return m_id;
 }
 
-void Property::setId(const QString &newId)
-{
-    id = newId;
-    emit propertyUpdated();
-}
 
 QString Property::getTitle() const
 {
-    return title;
+    return m_title;
 }
 
-void Property::setTitle(const QString &newTitle)
+void Property::setTitle(const QString &title)
 {
-    title = newTitle;
+    m_title = title;
     emit propertyUpdated();
 }
 
 QString Property::getlocation() const
 {
-    return location;
+    return m_location;
 }
 
-void Property::setlocation(const QString &newlocation)
+void Property::setlocation(const QString &location)
 {
-    location = newlocation;
+    m_location = location;
     emit propertyUpdated();
 }
 
 double Property::getPrice() const
 {
-    return price;
+    return m_price;
 }
 
-void Property::setPrice(double newPrice)
+void Property::setPrice(double price)
 {
-    price = newPrice;
+    m_price = price;
     emit propertyUpdated();
 }
 
 QString Property::getDescription() const
 {
-    return description;
+    return m_description;
 }
 
-void Property::setDescription(const QString &newDescription)
+void Property::setDescription(const QString &description)
 {
-    description = newDescription;
+    m_description = description;
     emit propertyUpdated();
 }
 
 PropertyStatus Property::getStatus() const
 {
-    return status;
+    return m_status;
 }
 
-void Property::setStatus(PropertyStatus newStatus)
+void Property::setStatus(PropertyStatus status)
 {
-    status = newStatus;
+    status = status;
     emit propertyUpdated();
 }
 
 QString Property::getAgentId() const
 {
-    return agentId;
+    return m_agentId;
 }
 
-void Property::setAgentId(const QString &newAgentId)
-{
-    agentId = newAgentId;
-    emit propertyUpdated();
-}
+
 
 QString Property::getLandlordId() const
 {
-    return landlordId;
+    return m_landlordId;
 }
 
-void Property::setLandlordId(const QString &newLandlordId)
-{
-    landlordId = newLandlordId;
-    emit propertyUpdated();
-}
 
 QDateTime Property::getCreatedAt() const
 {
-    return createdAt;
-}
-
-void Property::setCreatedAt(const QDateTime &newCreatedAt)
-{
-    createdAt = newCreatedAt;
-    emit propertyUpdated();
+    return m_createdAt;
 }

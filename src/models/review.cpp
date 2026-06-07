@@ -1,57 +1,34 @@
 #include "review.h"
 
-Review::Review(QObject *parent)
-    :QObject(parent)
-{}
-Review::Review(const QString& newId,
-               int newRating,
-               const QString& newComment,
-               const QDateTime& newCreatedAt,
+Review::Review(const QString& id,
+               int rating,
+               const QString& comment,
+               const QDateTime& createdAt,
                QObject* parent)
     : QObject(parent)
-    , id(newId)
-    , rating(newRating)
-    , comment(newComment)
-    , createdAt(newCreatedAt)
+    , m_id(id)
+    , m_rating(rating)
+    , m_comment(comment)
+    , m_createdAt(createdAt)
 {
 }
 
 QString Review::getId() const
 {
-    return id;
-}
-
-void Review::setId(const QString &newId)
-{
-    id = newId;
+    return m_id;
 }
 
 int Review::getRating() const
 {
-    return rating;
-}
-
-void Review::setRating(int newRating)
-{
-    rating = newRating;
+    return m_rating;
 }
 
 QString Review::getComment() const
 {
-    return comment;
-}
-
-void Review::setComment(const QString &newComment)
-{
-    comment = newComment;
+    return m_comment;
 }
 
 QDateTime Review::getCreatedAt() const
 {
-    return createdAt;
-}
-
-void Review::setCreatedAt(const QDateTime &newCreatedAt)
-{
-    createdAt = newCreatedAt;
+    return m_createdAt;
 }

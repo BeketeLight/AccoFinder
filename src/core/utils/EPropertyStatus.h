@@ -1,7 +1,7 @@
 #ifndef EPROPERTYSTATUS_H
 #define EPROPERTYSTATUS_H
 
-enum PropertyStatus {
+enum class PropertyStatus {
     NotVerified,
     Verified,
     Booked

@@ -1,7 +1,7 @@
 #ifndef EVERIFICATIONSTATUS_H
 #define EVERIFICATIONSTATUS_H
 
-enum VerificationStatus {
+enum class VerificationStatus {
     Approved,
     Rejected
 };

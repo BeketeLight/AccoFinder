@@ -10,23 +10,37 @@ class Verification : public QObject
 {
     Q_OBJECT
 public:
-    explicit Verification(QObject *parent  = nullptr);
+    explicit Verification(const QString& id,
+                          const QString agentId,
+                          const QString propertyId,
+                          const QString notes,
+                          const QDateTime verifiedAt,
+                          const VerificationStatus& status,
+                          QObject *parent  = nullptr);
     QString getId() const;
-    void setId(const QString &newId);
 
     QString getPropertyId() const;
-    void setPropertyId(const QString &newPropertyId);
 
     VerificationStatus getStatus() const;
-    void setStatus(VerificationStatus newStatus);
+    void setStatus(VerificationStatus& status);
+
+    QString agentId() const;
+    QString notes() const;
+    void setNotes(const QString &newNotes);
+    QDateTime verifiedAt() const;
 
 private:
-    QString id;
-    QString propertyId;
-    VerificationStatus status;
+    QString m_id;
+    QString m_agentId;
+    QString m_propertyId;
+    QString m_notes;
+    VerificationStatus m_status;
+    QDateTime m_verifiedAt;
 
 signals:
-    void verificationCompleted();
+    void verificationApproved();
+    void verificationRejected();
+    void verificationNotesChanged();
 };
 
 #endif // VERIFICATION_H

@@ -8,29 +8,22 @@ class Review : public QObject
 {
     Q_OBJECT
 public:
-    explicit Review(QObject *parent = nullptr);
-    Review(const QString& newId,
-           int newRating,
-           const QString& newComment,
-           const QDateTime& newCreatedAt = QDateTime(),
-           QObject* parent = nullptr);
+    explicit Review(const QString& id,
+                    int rating,
+                    const QString& comment,
+                    const QDateTime& createdAt = QDateTime(),
+                    QObject* parent = nullptr);
     QString getId() const;
-    void setId(const QString &newId);
-
     int getRating() const;
-    void setRating(int newRating);
-
     QString getComment() const;
-    void setComment(const QString &newComment);
-
     QDateTime getCreatedAt() const;
-    void setCreatedAt(const QDateTime &newCreatedAt);
+
 
 private:
-    QString id;
-    int rating;
-    QString comment;
-    QDateTime createdAt;
+    QString m_id;
+    int m_rating;
+    QString m_comment;
+    QDateTime m_createdAt;
 signals:
     void reviewSubmitted();
 

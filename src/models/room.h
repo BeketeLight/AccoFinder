@@ -3,31 +3,34 @@
 
 #include <QObject>
 #include <QString>
+#include "models/property.h"
 
-class Room : public QObject
+class Room : public Property
 {
     Q_OBJECT
 public:
-    explicit Room(QObject *parent = nullptr);
-    Room(const QString& newId,
-         const QString& newPropertyId,
-         const QString& newType,
-         bool newAvailable = true,
+    explicit Room(const QString& id,
+         const QString& propertyId,
+         const QString& agentId,
+         const QString& landlordId,
+         const QString& type,
+         bool available ,
+         const QString& title,
+         const QString& location,
+         const QDateTime& createdAt = QDateTime(),
          QObject* parent = nullptr);
     QString getId() const;
-    void setId(const QString &newId);
     QString getPropertyId() const;
-    void setPropertyId(const QString &newPropertyId);
     QString getType() const;
-    void setType(const QString &newType);
+    void setType(const QString &type);
     bool getAvailable() const;
-    void setAvailable(bool newAvailable);
+    void setAvailable(bool available);
 
 private:
-    QString id;
-    QString propertyId;
-    QString type;
-    bool available;
+    QString m_id;
+    QString m_propertyId;
+    QString m_type;
+    bool m_available;
 signals:
     void availabilityChanged();
     void newRoomCreated();

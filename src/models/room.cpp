@@ -1,59 +1,53 @@
 #include "room.h"
 
-Room::Room(QObject *parent)
-    :QObject(parent)
-{}
-Room::Room(const QString& newId,
-           const QString& newPropertyId,
-           const QString& newType,
-           bool newAvailable,
-           QObject* parent)
-    : QObject(parent)
-    , id(newId)
-    , propertyId(newPropertyId)
-    , type(newType)
-    , available(newAvailable)
+Room::Room(const QString &id,
+           const QString &propertyId,
+           const QString &agentId,
+           const QString &landlordId,
+           const QString &type,
+           bool available,
+           const QString& title,
+           const QString &location,
+           const QDateTime &createdAt,
+           QObject *parent)
+    :Property(id,title,location,agentId,landlordId,createdAt,parent)
+    ,m_id(id)
+    ,m_propertyId(propertyId)
+    ,m_type(type)
+    ,m_available(available)
 {
     emit newRoomCreated();
 }
 
 QString Room::getId() const
 {
-    return id;
+    return m_id;
 }
 
-void Room::setId(const QString &newId)
-{
-    id = newId;
-}
 
 QString Room::getPropertyId() const
 {
-    return propertyId;
+    return m_propertyId;
 }
 
-void Room::setPropertyId(const QString &newPropertyId)
-{
-    propertyId = newPropertyId;
-}
 
 QString Room::getType() const
 {
-    return type;
+    return m_type;
 }
 
-void Room::setType(const QString &newType)
+void Room::setType(const QString &type)
 {
-    type = newType;
+    m_type = type;
 }
 
 bool Room::getAvailable() const
 {
-    return available;
+    return m_available;
 }
 
-void Room::setAvailable(bool newAvailable)
+void Room::setAvailable(bool available)
 {
-    available = newAvailable;
+    m_available = available;
     emit availabilityChanged();
 }

@@ -10,46 +10,40 @@ class Property : public QObject
 {
     Q_OBJECT
 public:
-    explicit Property(QObject *parent = nullptr);
-    Property(const QString& newId,
-             const QString& newTitle,
-             const QString& newLocation,
-             double newPrice,
-             const QString& newDescription,
-             PropertyStatus newStatus,
-             const QString& newAgentId,
-             const QString& newLandlordId,
-             const QDateTime& newCreatedAt = QDateTime(),
+    explicit Property(const QString& id,
+             const QString& title,
+             const QString& location,
+             const QString& agentId,
+             const QString& landlordId,
+             const QDateTime& createdAt = QDateTime(),
              QObject* parent = nullptr);
     QString getId() const;
-    void setId(const QString &newId);
+
     QString getTitle() const;
-    void setTitle(const QString &newTitle);
+    void setTitle(const QString &title);
     QString getlocation() const;
-    void setlocation(const QString &newlocation);
+    void setlocation(const QString &location);
     double getPrice() const;
-    void setPrice(double newPrice);
+    void setPrice(double price);
     QString getDescription() const;
-    void setDescription(const QString &newDescription);
+    void setDescription(const QString &description);
     PropertyStatus getStatus() const;
-    void setStatus(PropertyStatus newStatus);
+    void setStatus(PropertyStatus status);
     QString getAgentId() const;
-    void setAgentId(const QString &newAgentId);
+    void setAgentId(const QString &agentId);
     QString getLandlordId() const;
-    void setLandlordId(const QString &newLandlordId);
     QDateTime getCreatedAt() const;
-    void setCreatedAt(const QDateTime &newCreatedAt);
 
 private:
-    QString id;
-    QString title;
-    QString location;
-    double price;
-    QString description;
-    PropertyStatus status;
-    QString agentId;
-    QString landlordId;
-    QDateTime createdAt;
+    QString m_id;
+    QString m_title;
+    QString m_location;
+    double m_price;
+    QString m_description;
+    PropertyStatus m_status;
+    QString m_agentId;
+    QString m_landlordId;
+    QDateTime m_createdAt;
 signals:
     void propertyVerfied();
     void propertyBooked();

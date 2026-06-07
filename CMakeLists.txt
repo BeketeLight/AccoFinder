@@ -95,8 +95,13 @@ qt_add_qml_module(appAccoFinder
         src/repositories/interfaces/INotification.h
         src/core/utils/appsettings.h
         src/core/utils/appsettings.cpp
+        src/repositories/interfaces/IVerificationRepository.h
+        src/application/controllers/verificationcontroller.h src/application/controllers/verificationcontroller.cpp
+        src/repositories/impl/verificationrepositoryimpl.h src/repositories/impl/verificationrepositoryimpl.cpp
     RESOURCES
         android/src/com/accofinder/SplashActivity.java
+
+
 
 )
 
