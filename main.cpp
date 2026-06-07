@@ -7,6 +7,14 @@
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
+
+    qputenv("QT_ANDROID_NO_EXIT_CALL", "true");
+
+    //Settings
+    QCoreApplication::setOrganizationName("accofinder");
+    QCoreApplication::setOrganizationDomain("accofinder.com");
+    QCoreApplication::setApplicationName("accofinder");
+
     //SplashScreen
     auto androidApp = app.nativeInterface<QNativeInterface::QAndroidApplication>();
     if (androidApp) {
