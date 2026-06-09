@@ -8,6 +8,7 @@
 #include <QJsonObject>
 #include <functional>
 #include <QMap>
+#include "core/utils/appsettings.h"
 
 class APIClient : public QObject
 {

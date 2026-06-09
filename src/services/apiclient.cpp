@@ -8,6 +8,7 @@
 APIClient::APIClient(QObject *parent)
     : QObject(parent),
     m_networkManager(new QNetworkAccessManager(this))
+    ,m_authToken(AppSettings::instance().token())
 {
     connect(
         m_networkManager,
