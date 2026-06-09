@@ -18,6 +18,12 @@ APIClient::APIClient(QObject *parent)
         );
 }
 
+APIClient& APIClient::instance()
+{
+    static APIClient instance;
+    return instance;
+}
+
 void APIClient::setBaseUrl(const QString &url)
 {
     m_baseUrl = url;
