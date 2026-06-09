@@ -8,8 +8,17 @@ class UserRepositoryImpl : public IUserRepository
 {
 public:
     UserRepositoryImpl();
-    User* signIn() override;
-    User* signUp() override;
+    User* signIn(
+        const QString& email,
+        const QString& password) override;
+        
+    User* signUp(
+        const QString& name,
+        const QString& email,
+        const QString& password,
+        const QString& confirmPassword,
+        const QString& residentialAddress) override;
+        
     User* logOut() override;
 private:
 
