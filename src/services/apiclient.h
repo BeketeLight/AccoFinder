@@ -19,8 +19,7 @@ public:
     using SuccessCallback =
         std::function<void(bool success,
                            const QJsonObject& response)>;
-
-    explicit APIClient(QObject *parent = nullptr);
+    static APIClient& instance();
 
     void setBaseUrl(const QString& url);
     void setAuthToken(const QString& token);
@@ -57,6 +56,9 @@ private slots:
     void onReplyFinished(QNetworkReply* reply);
 
 private:
+    explicit APIClient(QObject *parent = nullptr);
+    APIClient(const APIClient&) = delete;
+    APIClient& operator=(const APIClient&) = delete;
 
     struct PendingRequest
     {
