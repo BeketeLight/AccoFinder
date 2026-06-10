@@ -1,11 +1,15 @@
 #include "userrepositoryimpl.h"
 #include <QJsonObject>
 #include <QJsonValue>
+#include "services/apiclient.h"
 
-UserRepositoryImpl::UserRepositoryImpl
-:IUserRepository(parent) {}
+UserRepositoryImpl::UserRepositoryImpl(QObject *parent)
+:IUserRepository(parent) 
+{
+    
+}
 
-User *UserRepositoryImpl::signIn(
+void UserRepositoryImpl::signIn(
     const QString& email,
     const QString& password)
 {
@@ -14,7 +18,7 @@ User *UserRepositoryImpl::signIn(
     payload["email"] = email;   
     payload["password"] = password;
 
-    APiClient::instance().post(
+    APIClient::instance().post(
         "api/auth/login",
         payload,
         [this](bool success, 
@@ -22,20 +26,25 @@ User *UserRepositoryImpl::signIn(
         {
          
         if(success){
-            user* user = new User();
-            user->setName(response["name"].toString());
-
+            User* user = new User(
+                response["id"].toString(),
+                response["name"].toString(),
+                response["email"].toString(),
+                response["phone"].toString(),
+                QDateTime::fromString(response["createdAt"].toString(), Qt::ISODate),
+                this
+            );
             emit signInSucceded(user);
         }
         else{
-            
+            QString error = response["message"].toString();
             emit signInFailed(error);      
 
         }
     }); 
 }
 
-User *UserRepositoryImpl::signUp(
+void UserRepositoryImpl::signUp(
     const QString& name,
     const QString& email,
     const QString& password,
@@ -50,7 +59,7 @@ User *UserRepositoryImpl::signUp(
     payload["confirmPassword"] = confirmPassword;
     payload["residentialAddress"] = residentialAddress;
 
-    APiClient::instance().post(
+    APIClient::instance().post(
         "api/auth/register",
         payload,
         [this](bool success, 
@@ -58,11 +67,15 @@ User *UserRepositoryImpl::signUp(
         {
          
         if(success){
-            user* user = new User();
-            user->setName(response["name"].toString());
-            user->setEmail(response["email"].toString());
-
-            emit signUpSuccess(user);
+            User* user = new User(
+                response["id"].toString(),
+                response["name"].toString(),
+                response["email"].toString(),
+                response["phone"].toString(),
+                QDateTime::fromString(response["createdAt"].toString(), Qt::ISODate),
+                this
+            );
+            emit signUpSucceded(user);
         }
         else{
             QString error = response["message"].toString();   
@@ -72,9 +85,9 @@ User *UserRepositoryImpl::signUp(
     });
 }
 
-User *UserRepositoryImpl::logOut()
+void UserRepositoryImpl::logOut()
 {
-    APiClient::instance().post(
+    APIClient::instance().post(
         "api/auth/logout",
         QJsonObject(),
         [this](bool success, 
@@ -82,7 +95,7 @@ User *UserRepositoryImpl::logOut()
         {
          
         if(success){
-            APIClient::instance().clearToken("");
+            APIClient::instance().setAuthToken("");
             emit logOutSuccess();
         }
         else{

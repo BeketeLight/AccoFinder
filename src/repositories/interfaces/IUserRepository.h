@@ -10,29 +10,21 @@ class IUserRepository : public QObject
 public:
     explicit IUserRepository(QObject *parent =nullptr)
         : QObject(parent) {}
-    virtual User* signIn(
+    virtual void signIn(
         const QString& email,
         const QString& password) = 0;
 
-    virtual User* signUp(
+    virtual void signUp(
         const QString& name,
         const QString& email,
         const QString& password,
         const QString& confirmPassword,
         const QString& residentialAddress) = 0;
 
-    virtual User* logOut() = 0;
+    virtual void logOut() = 0;
 
     virtual ~IUserRepository(){}
-private:
-signals:
-    void signInSucceded(User* user);
-    void signInFailed(const QString& error);
 
-    void signUpSuccess(User* user);
-    void signUpFailed(const QString& error);    
-
-    void logOutSuccess();
 };
 
 #endif // IUSERREPOSITORY_H

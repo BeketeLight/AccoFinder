@@ -6,22 +6,30 @@
 
 class UserRepositoryImpl : public IUserRepository
 {
+    Q_OBJECT
 public:
-    UserRepositoryImpl();
-    User* signIn(
+   explicit UserRepositoryImpl(QObject *parent = nullptr);
+    void signIn(
         const QString& email,
         const QString& password) override;
         
-    User* signUp(
+    void signUp(
         const QString& name,
         const QString& email,
         const QString& password,
         const QString& confirmPassword,
         const QString& residentialAddress) override;
         
-    User* logOut() override;
-private:
+    void logOut() override;
 
+signals:
+        void signInSucceded(User* user);
+        void signInFailed(const QString& error);
+
+        void signUpSucceded(User* user);
+        void signUpFailed(const QString& error);
+
+        void logOutSuccess();
 };
 
 #endif // USERREPOSITORYIMPL_H
