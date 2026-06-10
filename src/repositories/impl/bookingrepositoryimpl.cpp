@@ -12,6 +12,8 @@ BookingRepositoryImpl::BookingRepositoryImpl(QObject *parent)
 {
 
 }
+//===HELPER FUNCTION FOR STATUS===//
+
 
 void BookingRepositoryImpl::createBooking(
     const QString& houseId,
@@ -48,6 +50,32 @@ void BookingRepositoryImpl::createBooking(
     });
 
 }
+// void BookingRepositoryImpl::cancelBooking(const QString& id)
+// {   
+//     QJsonObject payload;
+//     payload["id"] = id;
+//     APIClient::instance().patch(
+//         "api/house-booking/cancel/:" + id + "/cancel",
+//         payload,
+//         [this] (bool success, const QJsonObject& response)
+//         {
+//             if(success){
+//                 Booking* booking = new Booking(
+//                     response["id"].toString(),
+//                     response["clientId"].toString(),
+//                     response["roomId"].toString(),
+//                     QDateTime::fromString(response["bookingDate"].toString(), Qt::ISODate),
+//                     response["amount"].toDouble(),
+//                     response["commissionAmount"].toDouble(),
+//                     this
+//                 );
+//                 emit bookingCancelled(booking);
+//             }else{
+//                 emit bookingError(response["error"].toString());
+//             }
+//         }
+//     )
+// }
 
 void BookingRepositoryImpl::getBooking()
 {
@@ -102,7 +130,7 @@ void BookingRepositoryImpl::cancelBooking(const QString& id)
                 emit bookingError(response["error"].toString());
             }   
            
-        });
+    });
 }
 
 void BookingRepositoryImpl::deleteBooking(const QString& id)
