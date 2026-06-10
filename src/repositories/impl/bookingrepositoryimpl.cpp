@@ -50,32 +50,7 @@ void BookingRepositoryImpl::createBooking(
     });
 
 }
-// void BookingRepositoryImpl::cancelBooking(const QString& id)
-// {   
-//     QJsonObject payload;
-//     payload["id"] = id;
-//     APIClient::instance().patch(
-//         "api/house-booking/cancel/:" + id + "/cancel",
-//         payload,
-//         [this] (bool success, const QJsonObject& response)
-//         {
-//             if(success){
-//                 Booking* booking = new Booking(
-//                     response["id"].toString(),
-//                     response["clientId"].toString(),
-//                     response["roomId"].toString(),
-//                     QDateTime::fromString(response["bookingDate"].toString(), Qt::ISODate),
-//                     response["amount"].toDouble(),
-//                     response["commissionAmount"].toDouble(),
-//                     this
-//                 );
-//                 emit bookingCancelled(booking);
-//             }else{
-//                 emit bookingError(response["error"].toString());
-//             }
-//         }
-//     )
-// }
+
 
 void BookingRepositoryImpl::getBooking()
 {
@@ -103,6 +78,30 @@ void BookingRepositoryImpl::getBooking()
             }
             emit bookingsLoaded(bookings);
         });
+}
+
+void BookingRepositoryImpl::getBookingById(const QString& id)
+{
+    APIClient::instance().get(
+        "api/house-booking/:" + id,
+        [this] (bool success, const QJsonObject& response)
+        {
+        if(success){
+            Booking* booking = new Booking(
+            response["id"].toString(),
+            response["clientId"].toString(),
+            response["roomId"].toString(),
+            QDateTime::fromString(response["bookingDate"].toString(), Qt::ISODate),
+            response["amount"].toDouble(),
+            response["commissionAmount"].toDouble(),
+            this
+            );
+             emit bookingLoaded(booking);
+            }else
+            {
+                emit bookingError(response["error"].toString());
+            }
+     });
 }
 
 void BookingRepositoryImpl::cancelBooking(const QString& id)
@@ -179,26 +178,4 @@ void BookingRepositoryImpl::confirmBooking(const QString& id)
         });
 }
 
-void BookingRepositoryImpl::getBookingById(const QString& id)
-{
-    APIClient::instance().get(
-        "api/house-booking/:" + id,
-        [this] (bool success, const QJsonObject& response)
-        {
-        if(success){
-            Booking* booking = new Booking(
-            response["id"].toString(),
-            response["clientId"].toString(),
-            response["roomId"].toString(),
-            QDateTime::fromString(response["bookingDate"].toString(), Qt::ISODate),
-            response["amount"].toDouble(),
-            response["commissionAmount"].toDouble(),
-            this
-            );
-             emit bookingLoaded(booking);
-            }else
-            {
-                emit bookingError(response["error"].toString());
-            }
-     });
-}
+
