@@ -10,6 +10,7 @@ class Property : public QObject
 {
     Q_OBJECT
 public:
+    explicit Property(QObject* parent = nullptr);
     explicit Property(const QString& id,
              const QString& title,
              const QString& location,
@@ -18,11 +19,11 @@ public:
              const QDateTime& createdAt = QDateTime(),
              QObject* parent = nullptr);
     QString getId() const;
-
+    void setId(const QString &idd);
     QString getTitle() const;
     void setTitle(const QString &title);
-    QString getlocation() const;
-    void setlocation(const QString &location);
+    QString getLocation() const;
+    void setLocation(const QString &location);
     double getPrice() const;
     void setPrice(double price);
     QString getDescription() const;
@@ -33,6 +34,12 @@ public:
     void setAgentId(const QString &agentId);
     QString getLandlordId() const;
     QDateTime getCreatedAt() const;
+    void setCreatedAt(const QDateTime &createdAt);
+
+
+
+
+    void setLandlordId(const QString &newLandlordId);
 
 private:
     QString m_id;

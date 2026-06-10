@@ -1,5 +1,11 @@
 #include "booking.h"
 
+Booking::Booking(QObject *parent)
+    :QObject(parent)
+{
+
+}
+
 Booking::Booking(const QString &id,
                  const QString &clientId,
                  const QString &roomId,
@@ -60,5 +66,35 @@ double Booking::getAmount() const
 double Booking::getCommissionAmount() const
 {
     return m_commissionAmount;
+}
+
+void Booking::setId(const QString &newId)
+{
+    m_id = newId;
+}
+
+void Booking::setClientId(const QString &newClientId)
+{
+    m_clientId = newClientId;
+}
+
+void Booking::setRoomId(const QString &newRoomId)
+{
+    m_roomId = newRoomId;
+}
+
+void Booking::setBookingDate(const QDateTime &newBookingDate)
+{
+    m_bookingDate = newBookingDate;
+}
+
+void Booking::setAmount(double newAmount)
+{
+    m_amount = newAmount;
+}
+
+void Booking::setCommissionAmount(double newCommissionAmount)
+{
+    m_commissionAmount = newCommissionAmount;
 }
 

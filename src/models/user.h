@@ -9,6 +9,7 @@ class User : public QObject
 {
     Q_OBJECT
 public:
+    explicit User(QObject *parent = nullptr);
     explicit User(const QString& id,
          const QString& name,
          const QString& email,
@@ -28,6 +29,8 @@ public:
 
     QDateTime getCreatedAt() const;
     void setCreatedAt(const QDateTime &createdAt);
+
+    void setId(const QString &newId);
 
 private:
     QString m_id;
