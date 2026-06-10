@@ -1,12 +1,14 @@
 #ifndef AUTHCONTROLLER_H
 #define AUTHCONTROLLER_H
 
+#include <QObject>
 #include "repositories/impl/userrepositoryimpl.h"
 
-class AuthController
+class AuthController : public QObject
 {
+    Q_OBJECT
 public:
-    AuthController();
+    explicit AuthController(QObject *parent = nullptr);
 
     void signIn(QString& email, QString& password);
     void signUp(const QString& name,
@@ -17,6 +19,10 @@ public:
     void logOut();
 private:
     UserRepositoryImpl* m_userRepository = new UserRepositoryImpl();
+signals:
+    void signInFailed(QString& message);
+    void signUpFailed(QString& message);
+    void userLoggedOut();
 };
 
 #endif // AUTHCONTROLLER_H

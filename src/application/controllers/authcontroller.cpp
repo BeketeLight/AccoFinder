@@ -1,6 +1,9 @@
 #include "authcontroller.h"
 
-AuthController::AuthController() {}
+AuthController::AuthController(QObject *parent)
+    :QObject(parent)
+{
+}
 
 void AuthController::signIn(QString &email, QString &password)
 {
