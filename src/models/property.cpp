@@ -1,5 +1,11 @@
 #include "property.h"
 
+Property::Property(QObject *parent)
+    :QObject(parent)
+{
+
+}
+
 Property::Property(const QString& id,
                    const QString& title,
                    const QString& location,
@@ -22,7 +28,10 @@ QString Property::getId() const
 {
     return m_id;
 }
-
+void Property::setId(const QString &id)
+{
+    m_id = id;
+}
 
 QString Property::getTitle() const
 {
@@ -35,12 +44,12 @@ void Property::setTitle(const QString &title)
     emit propertyUpdated();
 }
 
-QString Property::getlocation() const
+QString Property::getLocation() const
 {
     return m_location;
 }
 
-void Property::setlocation(const QString &location)
+void Property::setLocation(const QString &location)
 {
     m_location = location;
     emit propertyUpdated();
@@ -84,6 +93,11 @@ QString Property::getAgentId() const
     return m_agentId;
 }
 
+void Property::setAgentId(const QString &agentId)
+{
+    m_agentId = agentId;
+}
+
 
 
 QString Property::getLandlordId() const
@@ -96,3 +110,15 @@ QDateTime Property::getCreatedAt() const
 {
     return m_createdAt;
 }
+
+void Property::setCreatedAt(const QDateTime &createdAt)
+{
+    m_createdAt = createdAt;
+}
+
+void Property::setLandlordId(const QString &newLandlordId)
+{
+    m_landlordId = newLandlordId;
+}
+
+

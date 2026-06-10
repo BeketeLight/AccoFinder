@@ -40,6 +40,12 @@ public:
         const QJsonObject& data,
         SuccessCallback callback
         );
+    void patch(
+        const QString& endpoint,
+        const QJsonObject& data,
+        SuccessCallback callback
+        );
+
 
     void del(
         const QString& endpoint,

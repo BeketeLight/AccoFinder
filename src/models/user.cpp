@@ -1,5 +1,11 @@
 #include "user.h"
 
+User::User(QObject *parent)
+    :QObject(parent)
+{
+
+}
+
 User::User(const QString &id,
            const QString &name,
            const QString &email,
@@ -19,8 +25,10 @@ QString User::getId() const
 {
     return m_id;
 }
-
-
+void User::setId(const QString &newId)
+{
+    m_id = newId;
+}
 
 QString User::getName() const
 {
@@ -68,3 +76,10 @@ QDateTime User::getCreatedAt() const
 {
     return m_createdAt;
 }
+
+void User::setCreatedAt(const QDateTime &createdAt)
+{
+
+}
+
+

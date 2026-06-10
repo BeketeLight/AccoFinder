@@ -9,6 +9,7 @@ APIClient::APIClient(QObject *parent)
     : QObject(parent),
     m_networkManager(new QNetworkAccessManager(this))
     ,m_authToken(AppSettings::instance().token())
+    ,m_baseUrl("localhost")
 {
     connect(
         m_networkManager,
@@ -72,6 +73,21 @@ void APIClient::put(
         );
 }
 
+void APIClient::patch(
+    const QString &endpoint,
+    const QJsonObject &data,
+    SuccessCallback callback)
+{
+    sendRequest
+        (
+        "PATCH",
+        endpoint,
+        data,
+        callback
+        );
+
+}
+
 void APIClient::del(
     const QString &endpoint,
     SuccessCallback callback)
@@ -108,6 +124,16 @@ void APIClient::sendRequest(
 
         reply = m_networkManager->post(
             request,
+            doc.toJson()
+            );
+    }
+    else if(method == "PATCH")
+    {
+        QJsonDocument doc(data);
+
+        reply = m_networkManager->sendCustomRequest(
+            request,
+            "PATCH",
             doc.toJson()
             );
     }
