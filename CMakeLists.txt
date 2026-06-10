@@ -96,8 +96,10 @@ qt_add_qml_module(appAccoFinder
         src/core/utils/appsettings.h
         src/core/utils/appsettings.cpp
         src/repositories/interfaces/IVerificationRepository.h
-        src/application/controllers/verificationcontroller.h src/application/controllers/verificationcontroller.cpp
-        src/repositories/impl/verificationrepositoryimpl.h src/repositories/impl/verificationrepositoryimpl.cpp
+        src/application/controllers/verificationcontroller.h
+        src/application/controllers/verificationcontroller.cpp
+        src/repositories/impl/verificationrepositoryimpl.h
+        src/repositories/impl/verificationrepositoryimpl.cpp
     RESOURCES
         android/src/com/accofinder/SplashActivity.java
 
@@ -199,6 +201,110 @@ endif()
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an
 # explicit, fixed bundle identifier manually though.
+# ─────────────────────────────────────────────────────────────
+# Android packaging
+# ─────────────────────────────────────────────────────────────
+if(ANDROID)
+    # ─────────────────────────────────────────────
+    # OpenSSL discovery (Qt 6 Android - team safe)
+    # ─────────────────────────────────────────────
+
+    # Allow manual override (highest priority)
+    set(OPENSSL_ROOT "" CACHE PATH "Path to android_openssl root")
+
+    # Known locations (team + local + fallback)
+    set(POSSIBLE_OPENSSL_DIRS
+        "$ENV{HOME}/Android/Sdk/android_openssl"
+        "${OPENSSL_ROOT}"
+        "$ENV{OPENSSL_ANDROID_ROOT}"
+        "/media/csociety/Backup/CISociety/Android/Sdk/android_openssl"
+        "${CMAKE_CURRENT_SOURCE_DIR}/android/openssl"  # Added project-local fallback
+    )
+
+    set(FOUND_OPENSSL_ROOT "")
+    set(FOUND_OPENSSL_LAYOUT "")  # Track which layout we found
+
+    foreach(dir IN LISTS POSSIBLE_OPENSSL_DIRS)
+        # Case 1: flat ABI layout (Qt standard)
+        if(EXISTS "${dir}/arm64-v8a/libssl_3.so")
+            set(FOUND_OPENSSL_ROOT "${dir}")
+            set(FOUND_OPENSSL_LAYOUT "flat")
+            message(STATUS "Found OpenSSL (flat ABI) at: ${FOUND_OPENSSL_ROOT}")
+            break()
+        endif()
+
+        # Case 2: ssl_3 wrapper layout (your current setup)
+        if(EXISTS "${dir}/ssl_3/arm64-v8a/libssl_3.so")
+            set(FOUND_OPENSSL_ROOT "${dir}/ssl_3")
+            set(FOUND_OPENSSL_LAYOUT "ssl_3")
+            message(STATUS "Found OpenSSL (ssl_3 layout) at: ${FOUND_OPENSSL_ROOT}")
+            break()
+        endif()
+    endforeach()
+
+    if(NOT FOUND_OPENSSL_ROOT)
+        message(FATAL_ERROR
+            "OpenSSL not found for Android build.\n\n"
+            "Expected one of:\n"
+            "  - <path>/arm64-v8a/libssl_3.so\n"
+            "  - <path>/ssl_3/arm64-v8a/libssl_3.so\n\n"
+            "Fix options:\n"
+            "  1) Set -DOPENSSL_ROOT=/path/to/android_openssl\n"
+            "  2) export OPENSSL_ANDROID_ROOT=/path/to/android_openssl\n"
+            "  3) Put in project: android/openssl\n"
+        )
+    endif()
+
+    # ─────────────────────────────────────────────
+    # Required OpenSSL libraries - define for each ABI
+    # ─────────────────────────────────────────────
+
+    # List of supported Android ABIs
+    set(ANDROID_ABIS arm64-v8a armeabi-v7a x86 x86_64)
+
+    # Build the list of OpenSSL libraries
+    set(OPENSSL_LIBS "")
+    foreach(abi IN LISTS ANDROID_ABIS)
+        if(FOUND_OPENSSL_LAYOUT STREQUAL "flat")
+            set(ssl_lib "${FOUND_OPENSSL_ROOT}/${abi}/libssl_3.so")
+            set(crypto_lib "${FOUND_OPENSSL_ROOT}/${abi}/libcrypto_3.so")
+        else()  # ssl_3 layout
+            set(ssl_lib "${FOUND_OPENSSL_ROOT}/${abi}/libssl_3.so")
+            set(crypto_lib "${FOUND_OPENSSL_ROOT}/${abi}/libcrypto_3.so")
+        endif()
+
+        if(EXISTS "${ssl_lib}" AND EXISTS "${crypto_lib}")
+            list(APPEND OPENSSL_LIBS "${ssl_lib}" "${crypto_lib}")
+        else()
+            message(WARNING "OpenSSL libraries not found for ABI: ${abi}")
+        endif()
+    endforeach()
+
+    # Validate we found at least some libraries
+    list(LENGTH OPENSSL_LIBS OPENSSL_LIBS_COUNT)
+    if(OPENSSL_LIBS_COUNT EQUAL 0)
+        message(FATAL_ERROR "No OpenSSL libraries found for any ABI")
+    endif()
+
+    message(STATUS "Found ${OPENSSL_LIBS_COUNT} OpenSSL libraries for Android")
+
+    # ─────────────────────────────────────────────
+    # Attach OpenSSL to Android APK packaging
+    # ─────────────────────────────────────────────
+
+    # CORRECTED: Use the actual target name 'appAccoFinder' instead of 'appPlantDoctor'
+    set_target_properties(appAccoFinder PROPERTIES
+        QT_ANDROID_EXTRA_LIBS "${OPENSSL_LIBS}"
+    )
+
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/android")
+        set_property(TARGET appAccoFinder APPEND PROPERTY
+            QT_ANDROID_PACKAGE_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/android
+        )
+    else()
+        message(WARNING "Android package source directory not found")
+    endif()
+endif()
 set_target_properties(appAccoFinder PROPERTIES
     #    MACOSX_BUNDLE_GUI_IDENTIFIER com.example.appAccoFinder
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
