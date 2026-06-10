@@ -2,6 +2,7 @@
 #include <QJsonObject>
 #include <QJsonValue>
 #include "services/apiclient.h"
+#include "core/utils/appsettings.h"  //for persistence
 
 UserRepositoryImpl::UserRepositoryImpl(QObject *parent)
 :IUserRepository(parent) 
@@ -19,7 +20,7 @@ void UserRepositoryImpl::signIn(
     payload["password"] = password;
 
     APIClient::instance().post(
-        "api/auth/login",
+        "/auth/login",
         payload,
         [this](bool success, 
             const QJsonObject& response)
@@ -34,6 +35,15 @@ void UserRepositoryImpl::signIn(
                 QDateTime::fromString(response["createdAt"].toString(), Qt::ISODate),
                 this
             );
+
+            //====PERSIST LOGGED IN USER DATA==
+            AppSettings& settings = AppSettings::instance();
+            settings.setToken(response.value("token").toString());
+            settings.setRefreshToken(response.value("refreshToken").toString());
+            settings.setUserId(response.value("id").toString());
+            settings.setUserType(response.value("userType").toString());
+            settings.setIsLoggedIn(true);
+
             emit signInSucceded(user);
         }
         else{
@@ -60,7 +70,7 @@ void UserRepositoryImpl::signUp(
     payload["residentialAddress"] = residentialAddress;
 
     APIClient::instance().post(
-        "api/auth/register",
+        "/auth/register",
         payload,
         [this](bool success, 
             const QJsonObject& response)
@@ -75,6 +85,13 @@ void UserRepositoryImpl::signUp(
                 QDateTime::fromString(response["createdAt"].toString(), Qt::ISODate),
                 this
             );
+            
+            //====PERSIST SIGNEDUP USER DATA==
+            AppSettings& settings = AppSettings::instance();
+            settings.setUserName(response.value("name").toString());
+            settings.setEmail(response.value("email").toString());
+            settings.setPhone(response.value("phone")   .toString());
+
             emit signUpSucceded(user);
         }
         else{
@@ -88,18 +105,23 @@ void UserRepositoryImpl::signUp(
 void UserRepositoryImpl::logOut()
 {
     APIClient::instance().post(
-        "api/auth/logout",
+        "/auth/logout",
         QJsonObject(),
         [this](bool success, 
             const QJsonObject& response)
         {
          
         if(success){
-            APIClient::instance().setAuthToken("");
-            emit logOutSuccess();
-        }
-        else{
+            // === CLEARING USER DATA AFTER LOGOUT ===
+            AppSettings& settings = AppSettings::instance();
+            settings.setToken("");
+            settings.setRefreshToken("");
+            settings.setUserId("");
+            settings.setUserType("");
+            settings.setIsLoggedIn(false);
         
+            emit logOutSucceded();
         }
+        
     });
 }

@@ -29,7 +29,7 @@ signals:
         void signUpSucceded(User* user);
         void signUpFailed(const QString& error);
 
-        void logOutSuccess();
+        void logOutSucceded();
 };
 
 #endif // USERREPOSITORYIMPL_H
