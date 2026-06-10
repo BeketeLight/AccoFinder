@@ -37,12 +37,11 @@ void UserRepositoryImpl::signIn(
             );
 
             //====PERSIST LOGGED IN USER DATA==
-            AppSettings& settings = AppSettings::instance();
-            settings.setToken(response.value("token").toString());
-            settings.setRefreshToken(response.value("refreshToken").toString());
-            settings.setUserId(response.value("id").toString());
-            settings.setUserType(response.value("userType").toString());
-            settings.setIsLoggedIn(true);
+            AppSettings::instance().setToken(response.value("token").toString());
+            AppSettings::instance().setRefreshToken(response.value("refreshToken").toString());
+            AppSettings::instance().setUserId(response.value("id").toString());
+            AppSettings::instance().setUserType(response.value("userType").toString());
+            AppSettings::instance().setIsLoggedIn(true);
 
             emit signInSucceded(user);
         }
@@ -87,10 +86,9 @@ void UserRepositoryImpl::signUp(
             );
             
             //====PERSIST SIGNEDUP USER DATA==
-            AppSettings& settings = AppSettings::instance();
-            settings.setUserName(response.value("name").toString());
-            settings.setEmail(response.value("email").toString());
-            settings.setPhone(response.value("phone")   .toString());
+            AppSettings::instance().setUserName(response.value("name").toString());
+            AppSettings::instance().setEmail(response.value("email").toString());
+            AppSettings::instance().setPhone(response.value("phone").toString());
 
             emit signUpSucceded(user);
         }
@@ -113,12 +111,11 @@ void UserRepositoryImpl::logOut()
          
         if(success){
             // === CLEARING USER DATA AFTER LOGOUT ===
-            AppSettings& settings = AppSettings::instance();
-            settings.setToken("");
-            settings.setRefreshToken("");
-            settings.setUserId("");
-            settings.setUserType("");
-            settings.setIsLoggedIn(false);
+            AppSettings::instance().setToken("");
+            AppSettings::instance().setRefreshToken("");
+            AppSettings::instance().setUserId("");
+            AppSettings::instance().setUserType("");
+            AppSettings::instance().setIsLoggedIn(false);
         
             emit logOutSucceded();
         }
