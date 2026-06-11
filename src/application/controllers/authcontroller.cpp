@@ -1,11 +1,16 @@
 #include "authcontroller.h"
 
 AuthController::AuthController(QObject *parent)
-    :QObject(parent)
+    : QObject(parent)
 {
+    connect(m_userRepository, &UserRepositoryImpl::signInSucceded, this, &AuthController::signInSucceded);
+    connect(m_userRepository, &UserRepositoryImpl::signInFailed, this, &AuthController::signInFailed);
+    connect(m_userRepository, &UserRepositoryImpl::signUpSucceded, this, &AuthController::signUpSucceded);
+    connect(m_userRepository, &UserRepositoryImpl::signUpFailed, this, &AuthController::signUpFailed);
+    connect(m_userRepository, &UserRepositoryImpl::logOutSucceded, this, &AuthController::userLoggedOut);
 }
 
-void AuthController::signIn(QString &email, QString &password)
+void AuthController::signIn(const QString &email, const QString &password)
 {
     /* what needs to be done
      * 1. check if email and password are not empty
@@ -13,8 +18,16 @@ void AuthController::signIn(QString &email, QString &password)
      * 3. if both are available
      * 4. call the signIn function from m_userRepository and pass both email and password
     */
+    if (email.isEmpty()) {
+        emit signInFailed("email not availabe");
+        return;
+    }
+    if (password.isEmpty()) {
+        emit signInFailed("passsword not availabe");
+        return;
+    }
 
-    
+    m_userRepository->signIn(email, password);
 }
 
 void AuthController::signUp(const QString &name, const QString &email, const QString &password, const QString &confirmPassword, const QString &residentialAddress)
@@ -24,7 +37,17 @@ void AuthController::signUp(const QString &name, const QString &email, const QSt
      * 2. compare pass and confirm passwrod ,,if thet dont mactch emit signupfaild(not mtching password)
      * create and regisyer a user by calling the signUp function from m_userRepository
     */
-    
+    if (name.isEmpty() || email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty() || residentialAddress.isEmpty()) {
+        emit signUpFailed("missing fields");
+        return;
+    }
+
+    if (password != confirmPassword) {
+        emit signUpFailed("password and confirmpassword not match");
+        return;
+    }
+
+    m_userRepository->signUp(name, email, password, confirmPassword, residentialAddress);
 }
 
 void AuthController::logOut()
@@ -32,5 +55,5 @@ void AuthController::logOut()
     /* what needs to be done
      * call logout function from m_userRepository and emita signal userLoggedout()
     */
-    
+    m_userRepository->logOut();
 }

@@ -4,13 +4,15 @@
 #include <QObject>
 #include "repositories/impl/userrepositoryimpl.h"
 
+class User;
+
 class AuthController : public QObject
 {
     Q_OBJECT
 public:
     explicit AuthController(QObject *parent = nullptr);
 
-    void signIn(QString& email, QString& password);
+    void signIn(const QString& email, const QString& password);
     void signUp(const QString& name,
                 const QString& email,
                 const QString& password,
@@ -20,8 +22,10 @@ public:
 private:
     UserRepositoryImpl* m_userRepository = new UserRepositoryImpl();
 signals:
-    void signInFailed(QString& message);
-    void signUpFailed(QString& message);
+    void signInSucceded(User* user);
+    void signInFailed(const QString& message);
+    void signUpSucceded(User* user);
+    void signUpFailed(const QString& message);
     void userLoggedOut();
 };
 
