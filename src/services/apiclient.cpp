@@ -9,7 +9,7 @@ APIClient::APIClient(QObject *parent)
     : QObject(parent),
     m_networkManager(new QNetworkAccessManager(this))
     ,m_authToken(AppSettings::instance().token())
-    ,m_baseUrl("localhost")
+    ,m_baseUrl("https://accofinder-trsm.onrender.com/")
 {
     connect(
         m_networkManager,
