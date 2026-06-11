@@ -1,5 +1,10 @@
 #include "propertydto.h"
 
+PropertyDto::PropertyDto()
+{
+
+}
+
 PropertyDto::PropertyDto(
     const QString& id,
     const QString& title,
@@ -9,6 +14,7 @@ PropertyDto::PropertyDto(
     const QString& status,
     const QString& agentId,
     const QString& landlordId,
+    const QString& costCategory,
     const QDateTime& createdAt)
     : id(id),
     title(title),
@@ -18,9 +24,23 @@ PropertyDto::PropertyDto(
     status(status),
     agentId(agentId),
     landlordId(landlordId),
+    costCategory(costCategory),
     createdAt(createdAt)
 {
 }
+
+
+PropertyDto::PropertyDto(
+    const QString& title,
+    const QString& description,
+    double price,
+    const QString& costCategory
+    )
+    :title(title),
+    description(description),
+    price(price),
+    costCategory(costCategory)
+{}
 
 PropertyDto PropertyDto::fromJson(
     const QJsonObject& json)
@@ -95,4 +115,28 @@ Property* PropertyDto::toDomainModel() const
     property->setCreatedAt(createdAt);
 
     return property;
+}
+
+PropertyDto::~PropertyDto()
+{
+
+}
+
+QJsonObject PropertyDto::toUpdateJson() const
+{
+    QJsonObject json;
+
+    if(!title.isEmpty())
+        json["title"] = title;
+
+    if(!description.isEmpty())
+        json["description"] = description;
+
+    if(!costCategory.isEmpty())
+        json["costCategory"] = costCategory;
+
+    if(price)
+        json["price"] = price;
+
+    return json;
 }

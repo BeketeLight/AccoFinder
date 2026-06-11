@@ -12,7 +12,7 @@ public:
         : QObject(parent) {}
     virtual void getProperties() = 0;
     virtual void getPropertyById(const QString& houseId) = 0;
-    virtual void updateProperty(const QString& houseId, const PropertyDto& dto) = 0;
+    virtual void updateProperty(const QString& houseId,const QString& title,const QString& description,double price,const QString& costCategory) = 0;
 
     virtual ~IPropertyRepository() {}
 

@@ -10,7 +10,7 @@
 class PropertyDto
 {
 public:
-    PropertyDto() = default;
+   PropertyDto();
 
     PropertyDto(
         const QString& id,
@@ -21,8 +21,19 @@ public:
         const QString& status,
         const QString& agentId,
         const QString& landlordId,
+        const QString& costCategory,
         const QDateTime& createdAt
         );
+
+    PropertyDto(
+        const QString& title,
+        const QString& description,
+        double price,
+        const QString& costCategory
+        );
+
+    QJsonObject toCreateJson() const;
+    QJsonObject toUpdateJson() const;
 
     // DTO Data
     QString id;
@@ -33,6 +44,7 @@ public:
     QString status;
     QString agentId;
     QString landlordId;
+    const QString costCategory;
     QDateTime createdAt;
 
     // JSON Conversion
@@ -43,6 +55,7 @@ public:
 
     // Domain Conversion
     Property* toDomainModel() const;
+    ~PropertyDto();
 };
 
 #endif // PROPERTYDTO_H
