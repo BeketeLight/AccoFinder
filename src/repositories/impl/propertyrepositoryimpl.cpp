@@ -19,7 +19,7 @@ void PropertyRepositoryImpl::getProperties()
             QList<Property*> properties;
             if(success && response.contains("data")){
                 QJsonArray dataArray = response["data"].toArray();
-                for(const QJsonValue& value: dataArray){
+                for(const QJsonValue& value: std::as_const(dataArray)){
                     PropertyDto dto = PropertyDto::fromJson(value.toObject());
                     properties.append(dto.toDomainModel());
                 }
