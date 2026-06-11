@@ -10,13 +10,17 @@ class IDisputeRepository : public QObject
 public:
     explicit IDisputeRepository(QObject *parent = nullptr)
         : QObject(parent) {}
-    virtual Dispute* raiseDispute() = 0;
-    virtual Dispute* resolveDispute() = 0;
+    virtual void raiseDispute(const QString& raisedBy,
+                              const QString& title,
+                              const QString& status,
+                              const QString& description) = 0;
+                              
+    virtual void getDisputes() = 0;
+
+    virtual void resolveDispute(const QString& disputeId) = 0;
 
     virtual ~IDisputeRepository() {}
 
-private:
-signals:
 };
 
 #endif // IDISPUTEREPOSITORY_H
