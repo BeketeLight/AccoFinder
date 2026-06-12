@@ -3,7 +3,8 @@
 
 enum class VerificationStatus {
     Approved,
-    Rejected
+    Rejected,
+    NotVerified
 };
 
 #endif // EVERIFICATIONSTATUS_H
