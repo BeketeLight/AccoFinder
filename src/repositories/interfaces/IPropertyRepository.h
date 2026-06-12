@@ -10,13 +10,12 @@ class IPropertyRepository : public QObject
 public:
     explicit IPropertyRepository(QObject *parent = nullptr)
         : QObject(parent) {}
-    virtual Property* getProperties() = 0;
-    virtual Property* getPropertyById() = 0;
-    virtual Property* updateProperty() = 0;
+    virtual void getProperties() = 0;
+    virtual void getPropertyById(const QString& houseId) = 0;
+    virtual void updateProperty(const QString& houseId,const QString& title,const QString& description,double price,const QString& costCategory) = 0;
 
     virtual ~IPropertyRepository() {}
-private:
-signals:
+
 };
 
 #endif // IPROPERTYREPOSITORY_H

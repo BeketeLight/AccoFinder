@@ -14,8 +14,8 @@ public:
                               const QString& title,
                               const QString& status,
                               const QString& description) = 0;
-                              
-    virtual void getDisputes() = 0;
+
+    //virtual void getDisputes() = 0;
 
     virtual void resolveDispute(const QString& disputeId) = 0;
 
