@@ -2,12 +2,26 @@
 
 PaymentGatewayImpl::PaymentGatewayImpl() {}
 
-Payment *PaymentGatewayImpl::processPayment()
+void PaymentGatewayImpl::processPayment(const QString& id, 
+                                        const QString& bookingId, 
+                                        double amount, 
+                                        const QString& method, 
+                                        const PaymentStatus& status,
+                                        const QString& transactionRef, 
+                                        const QString& payoutStatus, 
+                                        const QDateTime& payoutDate)
 {
-    return payment;
+    
 }
 
-Payment *PaymentGatewayImpl::refundPayment()
+void PaymentGatewayImpl::refundPayment(const QString& id, 
+                                    const QString& bookingId, 
+                                    double amount, 
+                                    const QString& method, 
+                                    const PaymentStatus& status,
+                                    const QString& transactionRef, 
+                                    const QString& payoutStatus, 
+                                    const QDateTime& payoutDate)
 {
-    return payment;
+    
 }

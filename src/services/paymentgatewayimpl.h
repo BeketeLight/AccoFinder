@@ -8,8 +8,22 @@ class PaymentGatewayImpl : public IPaymentGateway
 {
 public:
     PaymentGatewayImpl();
-    Payment* processPayment() override;
-    Payment* refundPayment() override;
+    void processPayment(const QString& id, 
+                        const QString& bookingId, 
+                        double amount, 
+                        const QString& method, 
+                        const PaymentStatus& status,
+                        const QString& transactionRef, 
+                        const QString& payoutStatus, 
+                        const QDateTime& payoutDate) override;
+    void refundPayment(const QString& id, 
+                     const QString& bookingId, 
+                     double amount, 
+                     const QString& method, 
+                     const PaymentStatus& status,
+                     const QString& transactionRef, 
+                     const QString& payoutStatus, 
+                     const QDateTime& payoutDate) override;
 private:
     Payment* payment = new Payment;
 
