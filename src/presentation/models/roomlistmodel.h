@@ -2,12 +2,27 @@
 #define ROOMLISTMODEL_H
 
 #include <QAbstractListModel>
+#include <QByteArray>
+#include <QHash>
+#include <QVector>
+#include "models/room.h"
 
 class RoomListModel : public QAbstractListModel
 {
     Q_OBJECT
 
 public:
+    enum {
+        IdRole = Qt::UserRole + 1,
+        PropertyIdRole,
+        AgentIdRole,
+        LandlordIdRole,
+        TypeRole,
+        AvailableRole ,
+        TitleRole,
+        LocationRole,
+        CreatedAtRole,
+    };
     explicit RoomListModel(QObject *parent = nullptr);
 
     // Header:
@@ -20,7 +35,12 @@ public:
 
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
 
+    QHash<int,QByteArray> roleNames() const override;
+
+    void setRooms(Room* newRooms);
+
 private:
+    QVector<Room*> m_rooms;
 };
 
 #endif // ROOMLISTMODEL_H
