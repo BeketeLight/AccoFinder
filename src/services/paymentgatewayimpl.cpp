@@ -2,12 +2,27 @@
 
 PaymentGatewayImpl::PaymentGatewayImpl() {}
 
-Payment *PaymentGatewayImpl::processPayment()
+Payment *PaymentGatewayImpl::refundPayment()
 {
     return payment;
 }
 
-Payment *PaymentGatewayImpl::refundPayment()
+Payment *PaymentGatewayImpl::createPayment()
 {
-    return payment;
+
+}
+
+Payment *PaymentGatewayImpl::getPaymentById(const QString &id)
+{
+
+}
+
+QList<Payment *> PaymentGatewayImpl::getAllPayments()
+{
+
+}
+
+PaymentStatus *PaymentGatewayImpl::getPaymentStatus(const QString &id)
+{
+
 }

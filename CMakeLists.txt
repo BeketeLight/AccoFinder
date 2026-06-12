@@ -100,13 +100,18 @@ qt_add_qml_module(appAccoFinder
         src/application/controllers/verificationcontroller.cpp
         src/repositories/impl/verificationrepositoryimpl.h
         src/repositories/impl/verificationrepositoryimpl.cpp
+        src/application/dto/verificationdto.h
+        src/application/dto/verificationdto.cpp
+        src/application/controllers/disputecontroller.h
+        src/application/controllers/disputecontroller.cpp
     RESOURCES
         android/src/com/accofinder/SplashActivity.java
-        SOURCES src/application/controllers/disputecontroller.h src/application/controllers/disputecontroller.cpp
-
 
         android/src/com/accofinder/SplashActivity.java
-        SOURCES src/application/dto/verificationdto.h src/application/dto/verificationdto.cpp
+        SOURCES src/application/dto/notificationdto.h src/application/dto/notificationdto.cpp
+        SOURCES src/application/dto/disputedto.h src/application/dto/disputedto.cpp
+
+
 
 )
 

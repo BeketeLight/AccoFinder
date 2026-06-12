@@ -8,8 +8,11 @@ class PaymentGatewayImpl : public IPaymentGateway
 {
 public:
     PaymentGatewayImpl();
-    Payment* processPayment() override;
     Payment* refundPayment() override;
+Payment* createPayment() override;
+    Payment* getPaymentById(const QString& id) override;
+    QList<Payment*> getAllPayments() override;
+    PaymentStatus* getPaymentStatus(const QString& id) override;
 private:
     Payment* payment = new Payment;
 
