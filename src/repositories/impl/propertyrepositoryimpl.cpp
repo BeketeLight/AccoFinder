@@ -10,33 +10,6 @@ PropertyRepositoryImpl::PropertyRepositoryImpl(QObject *parent)
 
 }
 
-QJsonObject PropertyRepositoryImpl::propertyDtoToJson(const PropertyDto& dto ) const
-{
-    QJsonObject json;
-    json["id"] = dto.id;
-    json["title"] = dto.title;
-    json["location"] = dto.location;
-    json["price"] = dto.price;
-    json["description"] = dto.description;
-    json["status"] = dto.status;
-    json["agentId"] = dto.agentId;
-    json["landlordId"] = dto.landlordId;
-    json["createdAt"]  = dto.createdAt.toString(Qt::ISODate);
-    
-    return json;
-
-}
-
-PropertyDto PropertyRepositoryImpl::jsonToPropertyDto(const QJsonObject& json) const
-{
-    return PropertyDto::fromJson(json);
-}
-
-Property* PropertyRepositoryImpl::dtoToDomainModel(const PropertyDto& dto) const
-{
-    return dto.toDomainModel();
-}
-
 void PropertyRepositoryImpl::getProperties()
 {
     APIClient::instance().get(
@@ -46,9 +19,9 @@ void PropertyRepositoryImpl::getProperties()
             QList<Property*> properties;
             if(success && response.contains("data")){
                 QJsonArray dataArray = response["data"].toArray();
-                for(const QJsonValue& value: dataArray){
-                    PropertyDto dto = jsonToPropertyDto(value.toObject());
-                    properties.append(dtoToDomainModel(dto));
+                for(const QJsonValue& value: std::as_const(dataArray)){
+                    PropertyDto dto = PropertyDto::fromJson(value.toObject());
+                    properties.append(dto.toDomainModel());
                 }
                 emit propertiesLoaded(properties);
             }
@@ -65,8 +38,8 @@ void PropertyRepositoryImpl::getPropertyById(const QString& houseId)
         [this] (bool success, const QJsonObject& response)
         {
             if(success){
-                PropertyDto dto = jsonToPropertyDto(response);
-                Property* property = dtoToDomainModel(dto);
+                PropertyDto dto = PropertyDto::fromJson(response["data"].toObject());
+                Property* property = dto.toDomainModel();
 
                 emit propertyLoaded(property);
             }
@@ -76,17 +49,18 @@ void PropertyRepositoryImpl::getPropertyById(const QString& houseId)
     
 }
 
-void PropertyRepositoryImpl::updateProperty(const QString& houseId, const PropertyDto& dto)
+void PropertyRepositoryImpl::updateProperty(const QString& houseId,const QString& title,const QString& description,double price,const QString& costCategory)
 {
-    QJsonObject payload = propertyDtoToJson(dto);
+    PropertyDto dto(title,description,price,costCategory);
+
     APIClient::instance().put(
         "api/house-listing/:" + houseId, 
-        payload,
+         dto.toUpdateJson(),
         [this] (bool success, const QJsonObject& response)
         {
             if(success){
-                PropertyDto updatedDto = jsonToPropertyDto(response);
-                Property* property = dtoToDomainModel(updatedDto);
+                PropertyDto updatedDto = PropertyDto::fromJson(response["data"].toObject());
+                Property* property = updatedDto.toDomainModel();
                 emit propertyUpdated(property);
             }
           

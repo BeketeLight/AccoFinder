@@ -12,13 +12,9 @@ public:
     explicit PropertyRepositoryImpl(QObject *parent = nullptr);
     void getProperties() override;
     void getPropertyById(const QString& houseId) override;
-    void updateProperty(const QString& houseId, const PropertyDto& dto) override;
+    void updateProperty(const QString& houseId,const QString& title,const QString& description,double price,const QString& costCategory) override;
 
 private:
-//    ===== HELPER METHODS FOR DTO, JSON CONVERSION ====
-QJsonObject propertyDtoToJson(const PropertyDto& dto ) const;
-PropertyDto jsonToPropertyDto(const QJsonObject& json) const;
-Property* dtoToDomainModel(const PropertyDto& dto) const;
 
 signals:
     void propertyLoaded(Property* property);
