@@ -11,10 +11,10 @@ class INotificationRepository : public QObject
 public:
     explicit INotificationRepository(QObject *parent = nullptr)
         : QObject(parent) {}
-    virtual Notification* sendNotification() = 0;
-    virtual Notification* getNotification() =0;
-    virtual Notification* markReadNotification( const QString& id) =0;
-    virtual Notification* markAllReadNotification() =0;
+    virtual void createNotification(QString id,QString message,QString type, QString status) = 0;
+    virtual void getNotification(const QString& id) =0;
+    virtual void markReadNotification( const QString& id,QString& status) =0;
+    virtual void markAllReadNotification(QString& status) =0;
 
     virtual ~INotificationRepository() {}
 };

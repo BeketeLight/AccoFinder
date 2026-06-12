@@ -5,22 +5,77 @@ NotificationServiceImpl::NotificationServiceImpl()
 
 }
 
-Notification *NotificationServiceImpl::sendNotification()
+void NotificationServiceImpl::createNotification(QString id,QString message,QString type, QString status)
 {
+    NotificationDto dto (id,message,type,status);
+    APIClient::instance().post(
+        "/notifications",
+        dto.toJson(),
+        [this](bool success,
+               const QJsonObject& response)
+        {
+            if(success){
+                NotificationDto notificationDto = NotificationDto::fromJson(response["data"].toObject());
+                Notification* notification = notificationDto.toDomainModel();
+                emit notificationCreated(notification);
+
+            }
+        }
+        );
 
 }
 
-Notification *NotificationServiceImpl::getNotification()
+void NotificationServiceImpl::getNotification(const QString& id)
 {
+    APIClient::instance().get(
+        "/notifications/:"+ id,
+        [this](bool success,
+               const QJsonObject& response)
+        {
+            if(success){
+                NotificationDto dto = NotificationDto::fromJson(response["data"].toObject());
+                Notification* notification = dto.toDomainModel();
+                emit notificationRetrieved(notification);
+            }
+        }
+        );
 
 }
 
-Notification *NotificationServiceImpl::markReadNotification(const QString &id)
+void NotificationServiceImpl::markReadNotification(const QString &id, QString& status)
 {
+    NotificationDto dto(status);
+    APIClient::instance().patch(
+        "/notification/: "+ id+"/read",
+        dto.toUpdateJson(),
+        [this](bool success,
+                    const QJsonObject& response)
+        {
+            if(success)
+            {
+                emit notificationMarkedRead();
+            }
+
+        }
+        );
 
 }
 
-Notification *NotificationServiceImpl::markAllReadNotification()
+void NotificationServiceImpl::markAllReadNotification(QString& status)
 {
+    NotificationDto dto(status);
+    APIClient::instance().patch(
+        "/notification/read/all",
+        dto.toUpdateJson(),
+        [this](bool success,
+               const QJsonObject& response)
+        {
+            if(success)
+            {
+                emit allNotificationsMarkedRead();
+            }
+
+        }
+        );
 
 }
