@@ -106,6 +106,7 @@ qt_add_qml_module(appAccoFinder
 
 
         android/src/com/accofinder/SplashActivity.java
+        SOURCES src/application/dto/verificationdto.h src/application/dto/verificationdto.cpp
 
 )
 
