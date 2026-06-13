@@ -2,10 +2,13 @@
 #define PAYMENTGATEWAYIMPL_H
 
 #include "repositories/interfaces/IPaymentGateway.h"
+#include "application/dto/paymentdto.h"
+#include "services/apiclient.h"
 #include "models/payment.h"
 
 class PaymentGatewayImpl : public IPaymentGateway
 {
+    Q_OBJECT
 public:
     PaymentGatewayImpl();
     void verifyPayment(const QString& id, double amount) override;
@@ -32,8 +35,13 @@ public:
     //void getAllPayments() override;
     //virtual void callWebHook() = 0;
     
-private:
-    Payment* payment = new Payment;
+signals:
+    void paymentCreated(Payment* payment);
+    void paymentVerified(Payment* payment);
+    void paymentLoaded(Payment* payment);
+    void paymentCancelled(Payment* payment);
+    void paymentError(const QString& error);
+    
 
 };
 
