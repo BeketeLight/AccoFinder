@@ -2,27 +2,40 @@
 
 PaymentGatewayImpl::PaymentGatewayImpl() {}
 
-Payment *PaymentGatewayImpl::refundPayment()
+void PaymentGatewayImpl::verifyPayment(const QString& id, double amount)
 {
-    return payment;
+    
 }
-
-Payment *PaymentGatewayImpl::createPayment()
-{
-
-}
-
-Payment *PaymentGatewayImpl::getPaymentById(const QString &id)
-{
-
-}
-
-QList<Payment *> PaymentGatewayImpl::getAllPayments()
+void PaymentGatewayImpl::createPayment(const QString& id, 
+                       const QString& bookingId, 
+                       double amount, 
+                       const QString& method, 
+                       const PaymentStatus& status,
+                       const QString& transactionRef, 
+                       const QString& payoutStatus, 
+                       const QDateTime& payoutDate)
 {
 
 }
 
-PaymentStatus *PaymentGatewayImpl::getPaymentStatus(const QString &id)
+void PaymentGatewayImpl::getPaymentById(const QString &id)
 {
 
 }
+void PaymentGatewayImpl::cancelPayment(const QString& id, 
+                       const QString& bookingId, 
+                       double amount, 
+                       const QString& method, 
+                       const PaymentStatus& status,
+                       const QString& transactionRef, 
+                       const QString& payoutStatus, 
+                       const QDateTime& payoutDate)
+{
+
+}
+
+// QList<Payment *> PaymentGatewayImpl::getAllPayments()
+// {
+
+// }
+

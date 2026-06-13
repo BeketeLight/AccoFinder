@@ -11,7 +11,7 @@ class PaymentRepositoryImpl : public IPaymentGateway
 public:
     explicit PaymentRepositoryImpl(QObject *parent = nullptr);
     
-    void processPayment(const QString& id, 
+    void createPayment(const QString& id, 
                        const QString& bookingId, 
                        double amount, 
                        const QString& method, 
@@ -20,7 +20,13 @@ public:
                        const QString& payoutStatus, 
                        const QDateTime& payoutDate) override;
 
-    void refundPayment(const QString& id, 
+    void verifyPayment(const QString& id, double amount) override;
+
+    void getPaymentById(const QString& id) override;
+
+   //void getAllPayments() override;
+
+    void cancelPayment(const QString& id,  
                        const QString& bookingId, 
                        double amount, 
                        const QString& method, 
@@ -30,8 +36,10 @@ public:
                        const QDateTime& payoutDate) override;
 
 signals:
-    void paymentProcessed(Payment* payment);
-    void paymentRefunded(Payment* payment);
+    void paymentCreated(Payment* payment);
+    void paymentVerified(Payment* payment);
+    void paymentLoaded(Payment* payment);
+    void paymentCalled(Payment* payment);
     void paymentError(const QString& error);
 };
 
