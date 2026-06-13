@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include "models/payment.h"
+#include "core/utils/EPaymentStatus.h"
 
 class IPaymentGateway : public QObject
 {

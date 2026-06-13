@@ -25,3 +25,23 @@ void PaymentGatewayImpl::refundPayment(const QString& id,
 {
     
 }
+
+Payment *PaymentGatewayImpl::createPayment()
+{
+
+}
+
+Payment *PaymentGatewayImpl::getPaymentById(const QString &id)
+{
+
+}
+
+QList<Payment *> PaymentGatewayImpl::getAllPayments()
+{
+
+}
+
+PaymentStatus *PaymentGatewayImpl::getPaymentStatus(const QString &id)
+{
+
+}
