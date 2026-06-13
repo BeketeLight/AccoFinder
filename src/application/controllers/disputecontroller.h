@@ -12,6 +12,7 @@ public:
     explicit DisputeController(QObject *parent = nullptr);
     Dispute* raiseDispute();
     Dispute* resolveDispute();
+    void getDisputes();
 signals:
 };
 

@@ -1,5 +1,10 @@
 #include "dispute.h"
 
+Dispute::Dispute()
+{
+
+}
+
 Dispute::Dispute(const QString &id,
                  const QString &bookingId,
                  const QString &issue,
@@ -20,9 +25,21 @@ QString Dispute::getId() const
     return m_id;
 }
 
+void Dispute::setId(const QString &id)
+{
+    m_id = id;
+
+}
+
 QString Dispute::getBookingId() const
 {
     return m_bookingId;
+}
+
+void Dispute::setBookingId(const QString &bookingId)
+{
+    m_bookingId = bookingId;
+
 }
 
 

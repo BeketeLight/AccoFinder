@@ -8,13 +8,14 @@ class Dispute : public QObject
 {
     Q_OBJECT
 public:
+    Dispute();
     explicit Dispute(const QString &id,
                      const QString &bookingId,
                      const QString &issue,
                      const DisputeStatus& status,
                      QObject *parent = nullptr);
     QString getId() const;
-    void setId(const QString &nid);
+    void setId(const QString &id);
 
     QString getBookingId() const;
     void setBookingId(const QString &bookingId);

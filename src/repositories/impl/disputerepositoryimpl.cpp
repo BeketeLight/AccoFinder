@@ -95,4 +95,28 @@ void DisputeRepositoryImpl::resolveDispute(const QString& disputeId)
         });
 }
 
+void DisputeRepositoryImpl::getDisputes()
+{
+    APIClient::instance().get(
+        "/disputes",
+        [this](bool success,
+              const QJsonObject& response)
+        {
+            if(success && response.contains("data"))
+            {
+                QJsonArray dataArray = response["data"].toArray();
+                for(const QJsonValue& value: std::as_const(dataArray)){
+                    DisputeDto dto = DisputeDto::fromJson(value.toObject());
+                    m_disputes.append(dto.toDomainModel());
+                }
+
+                emit disputesLoaded(m_disputes);
+
+
+            }
+        }
+        );
+
+}
+
 

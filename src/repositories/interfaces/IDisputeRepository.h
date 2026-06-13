@@ -18,6 +18,7 @@ public:
     //virtual void getDisputes() = 0;
 
     virtual void resolveDispute(const QString& disputeId) = 0;
+    virtual void getDisputes() = 0;
 
     virtual ~IDisputeRepository() {}
 
