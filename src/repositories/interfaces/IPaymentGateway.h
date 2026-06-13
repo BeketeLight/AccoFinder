@@ -11,24 +11,12 @@ class IPaymentGateway : public QObject
 public:
     explicit IPaymentGateway(QObject *parent = nullptr)
         : QObject(parent) {}
-    
-    virtual void processPayment(const QString& id, 
-                                const QString& bookingId, 
-                                double amount, 
-                                const QString& method, 
-                                const PaymentStatus& status,
-                                const QString& transactionRef, 
-                                const QString& payoutStatus, 
-                                const QDateTime& payoutDate) = 0;
-
-    virtual void refundPayment(const QString& id, 
-                              const QString& bookingId, 
-                              double amount, 
-                              const QString& method, 
-                              const PaymentStatus& status,
-                              const QString& transactionRef, 
-                              const QString& payoutStatus, 
-                              const QDateTime& payoutDate) = 0;
+   // virtual Payment* processPayment() = 0;
+    virtual Payment* refundPayment() = 0;
+    virtual Payment* createPayment() =0;
+    virtual Payment* getPaymentById(const QString& id) =0;
+    virtual QList<Payment*> getAllPayments() =0;
+    virtual PaymentStatus* getPaymentStatus(const QString& id) =0;
 
     virtual ~IPaymentGateway() {}
 };
