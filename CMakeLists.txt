@@ -106,10 +106,15 @@ qt_add_qml_module(appAccoFinder
         src/application/dto/notificationdto.cpp
         src/application/dto/disputedto.h
         src/application/dto/disputedto.cpp
+        src/presentation/models/disputeslistmodel.h
+        src/presentation/models/disputeslistmodel.cpp
+        src/presentation/viewmodels/disputeslistviewmodel.h
+        src/presentation/viewmodels/disputeslistviewmodel.cpp
     RESOURCES
         android/src/com/accofinder/SplashActivity.java
 
         android/src/com/accofinder/SplashActivity.java
+
 
 
 
