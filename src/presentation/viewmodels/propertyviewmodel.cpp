@@ -37,7 +37,7 @@ void PropertyViewModel::onPropertiesLoaded(
 
 void PropertyViewModel::onGetPropertyById(Property* property)
 {
-
+    m_propertyListModel->getPropertyById(property);
 }
 
 void PropertyViewModel::onUpdateProperty(Property* property)

@@ -39,7 +39,7 @@ public:
 
     void setProperties( QList<Property*>& newProperty);
     void updateProperty(int index,Property* property);
-    void getPropertyById(int index);
+    void getPropertyById(Property* property);
     void clear();
 
 private:

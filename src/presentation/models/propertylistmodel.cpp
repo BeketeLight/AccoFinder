@@ -103,12 +103,10 @@ void PropertyListModel::updateProperty(int index, Property* property)
     endResetModel();
 }
 
-void PropertyListModel::getPropertyById(int index)
+void PropertyListModel::getPropertyById(Property* property)
 {
-
-    Property* temp = m_properties[index];
     clear();
-    updateProperty(0,temp);
+    updateProperty(0,property);
 
 }
 void PropertyListModel::clear()
