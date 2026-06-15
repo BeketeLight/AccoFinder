@@ -29,6 +29,10 @@ QString Booking::getId() const
     return m_id;
 }
 
+QString Booking::getClientId() const
+{
+    return m_clientId;
+}
 
 QString Booking::getRoomId() const
 {
