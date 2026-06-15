@@ -20,6 +20,7 @@ public:
         IssueRole,
         StatusRole
     };
+    DisputesListModel();
     explicit DisputesListModel(QObject *parent = nullptr);
 
     // Basic functionality:
@@ -28,6 +29,8 @@ public:
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
     QHash<int,QByteArray> roleNames() const override;
     void addDisputes(QList<Dispute*>& disputes);
+
+    void updateDispute(int index,Dispute* newDispute);
 
 private:
     QVector<Dispute*> m_disputes;

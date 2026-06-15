@@ -1,5 +1,10 @@
 #include "disputeslistmodel.h"
 
+DisputesListModel::DisputesListModel()
+{
+
+}
+
 DisputesListModel::DisputesListModel(QObject *parent)
     : QAbstractListModel(parent)
 {}
@@ -72,4 +77,11 @@ void DisputesListModel::addDisputes(QList<Dispute *> &disputes)
     m_disputes = disputes;
 
     endInsertRows();
+}
+
+void DisputesListModel::updateDispute(int index, Dispute* newDispute)
+{
+    beginResetModel();
+    m_disputes[index] = newDispute;
+    endResetModel();
 }
