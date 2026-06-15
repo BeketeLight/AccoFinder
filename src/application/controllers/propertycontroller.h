@@ -21,7 +21,7 @@ public:
                                    const QString& costCategory);
 
 signals:
-    void propertiesLoaded(const QList<Property*>& properties);
+    void propertiesLoaded(QList<Property*>& properties);
     void propertyLoaded(Property* property);
     void propertyUpdated(Property* property);
     void propertyError(const QString& error);

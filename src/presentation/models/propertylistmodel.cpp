@@ -81,18 +81,36 @@ QHash<int, QByteArray> PropertyListModel::roleNames() const
     return mapping;
 }
 
-void PropertyListModel::setProperty(Property* &newProperties)
+void PropertyListModel::setProperties(QList<Property*>&  newProperties)
 {
     beginInsertRows(
         QModelIndex(),
         rowCount(),
         rowCount());
 
-    m_properties.append(newProperties);
+    m_properties = newProperties;
 
     endInsertRows();
 }
+void PropertyListModel::updateProperty(int index, Property* property)
+{
+    if (index < 0 || index >= m_properties.size())
+        return;
 
+    beginResetModel();
+
+    m_properties[index] = property;
+    endResetModel();
+}
+
+void PropertyListModel::getPropertyById(int index)
+{
+
+    Property* temp = m_properties[index];
+    clear();
+    updateProperty(0,temp);
+
+}
 void PropertyListModel::clear()
 {
     beginResetModel();

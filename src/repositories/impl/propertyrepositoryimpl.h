@@ -18,7 +18,7 @@ private:
 
 signals:
     void propertyLoaded(Property* property);
-    void propertiesLoaded(const QList<Property*>& properties);
+    void propertiesLoaded(QList<Property*>& properties);
     void propertyUpdated(Property* properties);
     void propertyError(const QString& error);
 

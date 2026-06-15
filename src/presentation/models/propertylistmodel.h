@@ -37,7 +37,9 @@ public:
 
     QHash<int,QByteArray> roleNames() const override;
 
-    void setProperty(Property* &newProperty);
+    void setProperties( QList<Property*>& newProperty);
+    void updateProperty(int index,Property* property);
+    void getPropertyById(int index);
     void clear();
 
 private:
