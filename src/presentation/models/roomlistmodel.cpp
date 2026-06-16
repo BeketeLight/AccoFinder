@@ -34,20 +34,11 @@ QVariant RoomListModel::data(const QModelIndex &index, int role) const
         return room->getId();
     case PropertyIdRole:
         return room->getPropertyId();
-    case AgentIdRole:
-        return room->getAgentId();
-    case LandlordIdRole:
-        return room->getLandlordId();
     case TypeRole:
         return room->getType();
-    case CreatedAtRole:
-        return room->getCreatedAt();
     case AvailableRole:
         return room->getAvailable();
-    case TitleRole:
-        return room->getTitle();
-    case LocationRole:
-        return room->getLocation();
+
     }
 
     // FIXME: Implement me!

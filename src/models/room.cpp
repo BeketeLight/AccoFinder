@@ -1,17 +1,17 @@
 #include "room.h"
 
+Room::Room()
+{
+
+}
+
 Room::Room(const QString &id,
            const QString &propertyId,
-           const QString &agentId,
-           const QString &landlordId,
            const QString &type,
            bool available,
-           const QString& title,
-           const QString &location,
-           const QDateTime &createdAt,
            QObject *parent)
-    :Property(id,title,location,agentId,landlordId,createdAt,parent)
-    ,m_id(id)
+    :m_id(id)
+    ,QObject(parent)
     ,m_propertyId(propertyId)
     ,m_type(type)
     ,m_available(available)
