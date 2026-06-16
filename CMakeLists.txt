@@ -112,12 +112,14 @@ qt_add_qml_module(appAccoFinder
         src/presentation/models/disputeslistmodel.cpp
         src/presentation/viewmodels/disputeslistviewmodel.h
         src/presentation/viewmodels/disputeslistviewmodel.cpp
+        src/repositories/interfaces/IRoomRepository.h
+        src/repositories/impl/roomrepositoryimpl.h
+        src/repositories/impl/roomrepositoryimpl.cpp
     RESOURCES
         android/src/com/accofinder/SplashActivity.java
 
         android/src/com/accofinder/SplashActivity.java
-        SOURCES src/repositories/interfaces/IRoomRepository.h
-        SOURCES src/repositories/impl/roomrepositoryimpl.h src/repositories/impl/roomrepositoryimpl.cpp
+
 
 
 
