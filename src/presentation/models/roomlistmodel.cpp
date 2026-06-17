@@ -26,7 +26,7 @@ QVariant RoomListModel::data(const QModelIndex &index, int role) const
     if (!index.isValid())
         return QVariant();
     return QVariant();
-    Room* room = m_rooms.at(index.row());
+    QSharedPointer<Room> room = m_rooms.at(index.row());
 
     switch(role)
     {
@@ -62,14 +62,26 @@ QHash<int, QByteArray> RoomListModel::roleNames() const
     return mapping;
 }
 
-void RoomListModel::setRooms(Room* newRooms)
+void RoomListModel::setRooms(QList<QSharedPointer<Room>> newRooms)
 {
     beginInsertRows(
         QModelIndex(),
         rowCount(),
         rowCount());
 
-    m_rooms.append(newRooms);
+    m_rooms = newRooms;
+
+    endInsertRows();
+}
+
+void RoomListModel::apppendRoom(QSharedPointer<Room> room)
+{
+    beginInsertRows(
+        QModelIndex(),
+        rowCount(),
+        rowCount());
+
+    m_rooms.append(room);
 
     endInsertRows();
 }

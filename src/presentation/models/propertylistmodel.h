@@ -14,6 +14,8 @@ class PropertyListModel : public QAbstractListModel
 public:
     enum Roles {
         IdRole = Qt::UserRole,
+        FirstNameRole,
+        SecondNameRole,
         TitleRole,
         LocationRole,
         AgentIdRole,

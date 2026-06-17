@@ -3,6 +3,7 @@
 
 #include <QAbstractListModel>
 #include <QByteArray>
+#include <QSharedPointer>
 #include <QHash>
 #include <QVector>
 #include "models/room.h"
@@ -37,10 +38,11 @@ public:
 
     QHash<int,QByteArray> roleNames() const override;
 
-    void setRooms(Room* newRooms);
+    void setRooms(QList<QSharedPointer<Room>> newRooms);
+    void apppendRoom(QSharedPointer<Room> room);
 
 private:
-    QVector<Room*> m_rooms;
+    QVector<QSharedPointer<Room>> m_rooms;
 };
 
 #endif // ROOMLISTMODEL_H

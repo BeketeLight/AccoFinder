@@ -14,6 +14,8 @@ public:
 
     PropertyDto(
         const QString& id,
+        const QString firstname,
+        const QString secondName,
         const QString& title,
         const QString& location,
         double price,
@@ -37,6 +39,8 @@ public:
 
     // DTO Data
     QString id;
+    QString firstname;
+    QString secondName;
     QString title;
     QString location;
     double price;

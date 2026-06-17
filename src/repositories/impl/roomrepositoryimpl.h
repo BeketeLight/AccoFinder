@@ -27,8 +27,8 @@ private:
     QList<QSharedPointer<Room>> m_rooms;
 signals:
     void roomsLoaded(const QList<QSharedPointer<Room>>& rooms);
-    void roomLoaded(QSharedPointer<Room>);
-    void roomCreated(QSharedPointer<Room>);
+    void roomLoaded(const QSharedPointer<Room> &room);
+    void roomCreated(const QSharedPointer<Room> &room);
     void error(const QString& message);
 };
 
