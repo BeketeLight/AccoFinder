@@ -19,6 +19,7 @@ PropertyController::PropertyController(QObject *parent)
 
 void PropertyController::getProperties()
 {
+    Q_ASSERT(m_propertyRepositoryImpl);
     m_propertyRepositoryImpl->getProperties();
 }
 
@@ -28,6 +29,9 @@ void PropertyController::getPropertyById(const QString& houseId)
         emit propertyError("houseId cannot be empty");
         return;
     }
+
+    Q_ASSERT(m_propertyRepositoryImpl);
+
     m_propertyRepositoryImpl->getPropertyById(houseId);
 }
 
@@ -53,6 +57,13 @@ void PropertyController::updateProperty(const QString& houseId,
         emit propertyError("invalid costCategory");
         return;
     }
+
+    if (description.isEmpty()) {
+        emit propertyError("description cannot be empty");
+        return;
+    }
+
+    Q_ASSERT(m_propertyRepositoryImpl);
 
     m_propertyRepositoryImpl->updateProperty(houseId, title, description, price, costCategory);
 }

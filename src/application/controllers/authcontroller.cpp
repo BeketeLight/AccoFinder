@@ -1,7 +1,8 @@
 #include "authcontroller.h"
 
 AuthController::AuthController(QObject *parent)
-    : QObject(parent)
+    : QObject(parent),
+      m_userRepository(new UserRepositoryImpl(this))
 {
     connect(m_userRepository, &UserRepositoryImpl::signInSucceded, this, &AuthController::signInSucceded);
     connect(m_userRepository, &UserRepositoryImpl::signInFailed, this, &AuthController::signInFailed);
@@ -26,7 +27,7 @@ void AuthController::signIn(const QString &email, const QString &password)
         emit signInFailed("passsword not availabe");
         return;
     }
-
+    Q_ASSERT(m_userRepository);
     m_userRepository->signIn(email, password);
 }
 
@@ -47,6 +48,7 @@ void AuthController::signUp(const QString &name, const QString &email, const QSt
         return;
     }
 
+    Q_ASSERT(m_userRepository);
     m_userRepository->signUp(name, email, password, confirmPassword, residentialAddress);
 }
 
@@ -55,5 +57,6 @@ void AuthController::logOut()
     /* what needs to be done
      * call logout function from m_userRepository and emita signal userLoggedout()
     */
+    Q_ASSERT(m_userRepository);
     m_userRepository->logOut();
 }

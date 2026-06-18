@@ -20,7 +20,7 @@ public:
                 const QString& residentialAddress);
     void logOut();
 private:
-    UserRepositoryImpl* m_userRepository = new UserRepositoryImpl();
+    UserRepositoryImpl* m_userRepository = nullptr;
 signals:
     void signInSucceded(User* user);
     void signInFailed(const QString& message);
