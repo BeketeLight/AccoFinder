@@ -41,8 +41,15 @@ public:
 
     void setLandlordId(const QString &newLandlordId);
 
+    QString firstName() const;
+    void setFirstName(const QString &newFirstName);
+    QString secondName() const;
+    void setSecondName(const QString &newSecondName);
+
 private:
     QString m_id;
+    QString m_firstName;
+    QString m_secondName;
     QString m_title;
     QString m_location;
     double m_price;

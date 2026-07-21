@@ -121,4 +121,24 @@ void Property::setLandlordId(const QString &newLandlordId)
     m_landlordId = newLandlordId;
 }
 
+QString Property::firstName() const
+{
+    return m_firstName;
+}
+
+void Property::setFirstName(const QString &newFirstName)
+{
+    m_firstName = newFirstName;
+}
+
+QString Property::secondName() const
+{
+    return m_secondName;
+}
+
+void Property::setSecondName(const QString &newSecondName)
+{
+    m_secondName = newSecondName;
+}
+
 

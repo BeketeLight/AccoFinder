@@ -26,7 +26,7 @@ QVariant RoomListModel::data(const QModelIndex &index, int role) const
     if (!index.isValid())
         return QVariant();
     return QVariant();
-    Room* room = m_rooms.at(index.row());
+    QSharedPointer<Room> room = m_rooms.at(index.row());
 
     switch(role)
     {
@@ -34,20 +34,11 @@ QVariant RoomListModel::data(const QModelIndex &index, int role) const
         return room->getId();
     case PropertyIdRole:
         return room->getPropertyId();
-    case AgentIdRole:
-        return room->getAgentId();
-    case LandlordIdRole:
-        return room->getLandlordId();
     case TypeRole:
         return room->getType();
-    case CreatedAtRole:
-        return room->getCreatedAt();
     case AvailableRole:
         return room->getAvailable();
-    case TitleRole:
-        return room->getTitle();
-    case LocationRole:
-        return room->getLocation();
+
     }
 
     // FIXME: Implement me!
@@ -71,14 +62,26 @@ QHash<int, QByteArray> RoomListModel::roleNames() const
     return mapping;
 }
 
-void RoomListModel::setRooms(Room* newRooms)
+void RoomListModel::setRooms(QList<QSharedPointer<Room>> newRooms)
 {
     beginInsertRows(
         QModelIndex(),
         rowCount(),
         rowCount());
 
-    m_rooms.append(newRooms);
+    m_rooms = newRooms;
+
+    endInsertRows();
+}
+
+void RoomListModel::apppendRoom(QSharedPointer<Room> room)
+{
+    beginInsertRows(
+        QModelIndex(),
+        rowCount(),
+        rowCount());
+
+    m_rooms.append(room);
 
     endInsertRows();
 }

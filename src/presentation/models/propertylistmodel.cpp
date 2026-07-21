@@ -31,6 +31,10 @@ QVariant PropertyListModel::data(const QModelIndex &index, int role) const
     {
         case IdRole:
             return property->getId();
+        case FirstNameRole:
+            return property->firstName();
+        case SecondNameRole:
+            return property->secondName();
         case TitleRole:
             return property->getTitle();
         case LocationRole:

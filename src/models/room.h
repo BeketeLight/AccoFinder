@@ -5,20 +5,17 @@
 #include <QString>
 #include "models/property.h"
 
-class Room : public Property
+class Room : public QObject
 {
     Q_OBJECT
 public:
+    Room();
     explicit Room(const QString& id,
          const QString& propertyId,
-         const QString& agentId,
-         const QString& landlordId,
          const QString& type,
          bool available ,
-         const QString& title,
-         const QString& location,
-         const QDateTime& createdAt = QDateTime(),
          QObject* parent = nullptr);
+
     QString getId() const;
     QString getPropertyId() const;
     QString getType() const;

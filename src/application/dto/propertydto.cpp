@@ -7,6 +7,8 @@ PropertyDto::PropertyDto()
 
 PropertyDto::PropertyDto(
     const QString& id,
+    const QString firstname,
+    const QString secondName,
     const QString& title,
     const QString& location,
     double price,
@@ -17,6 +19,8 @@ PropertyDto::PropertyDto(
     const QString& costCategory,
     const QDateTime& createdAt)
     : id(id),
+    firstname(firstname),
+    secondName(secondName),
     title(title),
     location(location),
     price(price),
@@ -49,7 +53,10 @@ PropertyDto PropertyDto::fromJson(
 
     dto.id =
         json["id"].toString();
-
+    dto.firstname =
+        json["firstName"].toString();
+    dto.secondName =
+        json["secondName"].toString();
     dto.title =
         json["title"].toString();
 
@@ -84,6 +91,8 @@ QJsonObject PropertyDto::toJson() const
     QJsonObject json;
 
     json["id"] = id;
+    json["firstName"] = firstname;
+    json["secondName"] = secondName;
     json["title"] = title;
     json["location"] = location;
     json["price"] = price;
@@ -102,6 +111,8 @@ Property* PropertyDto::toDomainModel() const
     Property* property = new Property();
 
     property->setId(id);
+    property->setFirstName(firstname);
+    property->setSecondName(secondName);
     property->setTitle(title);
     property->setLocation(location);
     property->setPrice(price);

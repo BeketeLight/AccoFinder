@@ -106,6 +106,8 @@ qt_add_qml_module(appAccoFinder
         src/application/dto/notificationdto.cpp
         src/application/dto/disputedto.h
         src/application/dto/disputedto.cpp
+        src/application/dto/roomdto.h
+        src/application/dto/roomdto.cpp
         src/presentation/models/disputeslistmodel.h
         src/presentation/models/disputeslistmodel.cpp
         src/presentation/viewmodels/disputeslistviewmodel.h
