@@ -19,7 +19,97 @@ qt_add_qml_module(appAccoFinder
     URI AccoFinder
     VERSION 1.0
     QML_FILES
-    Main.qml
+        Main.qml
+        ui/app/MainStackview.qml
+        #=======GLOBAL COMPONETS========
+        ui/components/dialogs/AlertDialog.qml
+        ui/components/dialogs/LoadingDialog.qml
+        ui/components/dialogs/ConfirmationDialog.qml
+        ui/components/buttons/IconButton.qml
+        ui/components/buttons/PrimaryButton.qml
+        ui/components/buttons/SecondaryButton.qml
+        ui/components/inputs/Dropdown.qml
+        ui/components/inputs/SearchBar.qml
+        ui/components/inputs/TextInput.qml
+        ui/components/indicators/StatusIndicator.qml
+        ui/components/indicators/Spinner.qml
+        #========UTILS============
+        ui/utils/Utils.js
+        ui/utils/DateUtils.js
+        ui/utils/StringUtils.js
+        ui/utils/NavigationUtils.js
+        ui/utils/CalculationUtils.js
+        #======FEATURE-BOOKINGS======
+        ui/features/bookings/screens/BookingDetailsScreen.qml
+        ui/features/bookings/screens/BookingListScreen.qml
+        ui/features/bookings/screens/CreateBookingScreen.qml
+        ui/features/bookings/delegates/BookingsDelegate.qml
+        ui/features/bookings/pages/BookingPage.qml
+        #======FEATURE-DISPUTES======
+        ui/features/disputes/screens/CreateDisputeScreen.qml
+        ui/features/disputes/screens/DisputeListScreen.qml
+        ui/features/disputes/pages/DisputesPage.qml
+        ui/features/disputes/delegates/DisputeDelegate.qml
+        ui/features/disputes/components/DisputeCard.qml
+        #======FEATURE-HOME======
+        ui/features/home/screens/HomeScreen.qml
+        ui/features/home/components/PropertyCategoryRow.qml
+        ui/features/home/components/RecentBooking.qml
+        ui/features/home/components/WelcomeHeader.qml
+        ui/features/home/models/HomeModel.qml
+        ui/features/home/pages/HomePage.qml
+        ui/features/home/delegates/HomeDelegate.qml
+        #======FEATURE-NOTIFICATIONS======
+        ui/features/notifications/screens/NotificationListScreen.qml
+        ui/features/notifications/components/NotificationItem.qml
+        ui/features/notifications/delegates/NotificationDelegate.qml
+        ui/features/notifications/models/NotificationListModel.qml
+        ui/features/notifications/pages/NotificationsPage.qml
+        #======FEATURE-AUTH-AGENTS======
+        ui/features/auth/agents/screens/EarningsScreen.qml
+        ui/features/auth/agents/screens/AgentDashboardScreen.qml
+        ui/features/auth/agents/pages/AgentsPage.qml
+        ui/features/auth/agents/models/AgentsModel.qml
+        ui/features/auth/agents/delegates/AgentsDelegate.qml
+        #======FEATURE-AUTH-AGENTS======
+        ui/features/auth/admins/screens/AdminDashboardScreen.qml
+        ui/features/auth/admins/screens/PropertyApprovalScreen.qml
+        ui/features/auth/admins/screens/RegisterAgentScreen.qml
+        ui/features/auth/admins/screens/UserManagementScreen.qml
+        ui/features/auth/admins/pages/AdminsPage.qml
+        ui/features/auth/admins/models/AdminsModel.qml
+        ui/features/auth/admins/delegates/AdminsDelegate.qml
+        #======FEATURE-AUTH-GLOBAL======
+        ui/features/auth/screens/AddPropertyScreen.qml
+        ui/features/auth/screens/ForgotPasswordScreen.qml
+        ui/features/auth/screens/MyPropertiesScreen.qml
+        ui/features/auth/screens/OtpScree.qml
+        ui/features/auth/screens/SignInScreen.qml
+        #======FEATURE-REVIEWS======
+        ui/features/reviews/screens/WriteReviewScreen.qml
+        ui/features/reviews/screens/ReviewListScreen.qml
+        ui/features/reviews/delegates/ReviewDelegate.qml
+        ui/features/reviews/components/ReviewForm.qml
+        ui/features/reviews/pages/ReviewsPage.qml
+        #======FEATURE-SETTINGS======
+        ui/features/settings/screens/SettingsScreen.qml
+        ui/features/settings/pages/SettingsPage.qml
+        ui/features/settings/delegates/SettingsDelegate.qml
+        ui/features/settings/models/SettingsModel.qml
+        #======FEATURE-PAYMENT======
+        ui/features/payments/screens/PaymentScreen.qml
+        ui/features/payments/screens/PaymentStatusScreen.qml
+        ui/features/payments/screens/PaymetHistoryScreen.qml
+        ui/features/payments/delegates/PaymentDelegate.qml
+        ui/features/payments/models/PaymentModel.qml
+        ui/features/payments/pages/PaymentsPage.qml
+        #======FEATURE-PROPERTIES======
+        ui/features/properties/delegates/PropertyDelegate.qml
+        ui/features/properties/screens/AddPropertyScreen.qml
+        ui/features/properties/screens/PropertyDetailScreen.qml
+        ui/features/properties/screens/PropertyListScreen.qml
+        ui/features/properties/pages/PropertiesPage.qml
+
     SOURCES
         src/models/user.h src/models/user.cpp
         src/models/agent.h src/models/agent.cpp
@@ -117,67 +207,6 @@ qt_add_qml_module(appAccoFinder
     RESOURCES
         android/src/com/accofinder/SplashActivity.java
         android/src/com/accofinder/SplashActivity.java
-
-        QML_FILES ui/app/MainStackview.qml
-        QML_FILES ui/components/dialogs/AlertDialog.qml
-        QML_FILES ui/components/dialogs/LoadingDialog.qml
-        QML_FILES ui/components/dialogs/ConfirmationDialog.qml
-        QML_FILES ui/components/buttons/IconButton.qml
-        QML_FILES ui/components/buttons/PrimaryButton.qml
-        QML_FILES ui/components/buttons/SecondaryButton.qml
-        QML_FILES ui/components/inputs/Dropdown.qml
-        QML_FILES ui/components/inputs/SearchBar.qml
-        QML_FILES ui/components/inputs/TextInput.qml
-        QML_FILES ui/components/indicators/StatusIndicator.qml
-        QML_FILES ui/components/indicators/Spinner.qml
-        QML_FILES ui/utils/Utils.js
-        QML_FILES ui/utils/DateUtils.js
-        QML_FILES ui/utils/StringUtils.js
-        QML_FILES ui/utils/NavigationUtils.js
-        QML_FILES ui/utils/CalculationUtils.js
-        QML_FILES ui/features/bookings/screens/BookingDetailsScreen.qml
-        QML_FILES ui/features/bookings/screens/BookingListScreen.qml
-        QML_FILES ui/features/bookings/screens/CreateBookingScreen.qml
-        QML_FILES ui/features/bookings/delegates/BookingsDelegate.qml
-        QML_FILES ui/features/disputes/screens/CreateDisputeScreen.qml
-        QML_FILES ui/features/disputes/screens/DisputeListScreen.qml
-        QML_FILES ui/features/disputes/delegates/DisputeDelegate.qml
-        QML_FILES ui/features/disputes/components/DisputeCard.qml
-        QML_FILES ui/features/home/screens/HomeScreen.qml
-        QML_FILES ui/features/home/components/PropertyCategoryRow.qml
-        QML_FILES ui/features/home/components/RecentBooking.qml
-        QML_FILES ui/features/home/components/WelcomeHeader.qml
-        QML_FILES ui/features/home/models/HomeModel.qml
-        QML_FILES ui/features/notifications/screens/NotificationListScreen.qml
-        QML_FILES ui/features/notifications/components/NotificationItem.qml
-        QML_FILES ui/features/notifications/delegates/NotificationDelegate.qml
-        QML_FILES ui/features/notifications/models/NotificationListModel.qml
-        QML_FILES ui/features/auth/agents/screens/EarningsScreen.qml
-        QML_FILES ui/features/auth/agents/screens/AgentDashboardScreen.qml
-        QML_FILES ui/features/auth/admins/screens/AdminDashboardScreen.qml
-        QML_FILES ui/features/auth/admins/screens/PropertyApprovalScreen.qml
-        QML_FILES ui/features/auth/admins/screens/RegisterAgentScreen.qml
-        QML_FILES ui/features/auth/admins/screens/UserManagementScreen.qml
-        QML_FILES ui/features/auth/screens/AddPropertyScreen.qml
-        QML_FILES ui/features/auth/screens/ForgotPasswordScreen.qml
-        QML_FILES ui/features/auth/screens/MyPropertiesScreen.qml
-        QML_FILES ui/features/auth/screens/OtpScree.qml
-        QML_FILES ui/features/auth/screens/SignInScreen.qml
-        QML_FILES ui/features/reviews/screens/WriteReviewScreen.qml
-        QML_FILES ui/features/reviews/screens/ReviewListScreen.qml
-        QML_FILES ui/features/reviews/delegates/ReviewDelegate.qml
-        QML_FILES ui/features/reviews/components/ReviewForm.qml
-        QML_FILES ui/features/settings/screens/SettingsScreen.qml
-        QML_FILES ui/features/payments/screens/PaymentScreen.qml
-        QML_FILES ui/features/payments/screens/PaymentStatusScreen.qml
-        QML_FILES ui/features/payments/screens/PaymetHistoryScreen.qml
-        QML_FILES ui/features/payments/delegates/PaymentDelegate.qml
-        QML_FILES ui/features/payments/models/PaymentModel.qml
-        QML_FILES ui/features/properties/delegates/PropertyDelegate.qml
-        QML_FILES ui/features/properties/screens/AddPropertyScreen.qml
-        QML_FILES ui/features/properties/screens/PropertyDetailScreen.qml
-        QML_FILES ui/features/properties/screens/PropertyListScreen.qml
-        QML_FILES ui/features/properties/models/PropertyListModel.qml
 
 )
 
