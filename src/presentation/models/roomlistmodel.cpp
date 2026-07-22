@@ -4,10 +4,6 @@ RoomListModel::RoomListModel(QObject *parent)
     : QAbstractListModel(parent)
 {}
 
-QVariant RoomListModel::headerData(int section, Qt::Orientation orientation, int role) const
-{
-    // FIXME: Implement me!
-}
 
 int RoomListModel::rowCount(const QModelIndex &parent) const
 {

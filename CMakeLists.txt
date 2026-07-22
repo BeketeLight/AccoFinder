@@ -207,6 +207,7 @@ qt_add_qml_module(appAccoFinder
     RESOURCES
         android/src/com/accofinder/SplashActivity.java
         android/src/com/accofinder/SplashActivity.java
+        SOURCES src/application/controllers/roomcontroller.h src/application/controllers/roomcontroller.cpp
 
 )
 

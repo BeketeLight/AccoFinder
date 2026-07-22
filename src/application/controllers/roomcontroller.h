@@ -2,8 +2,7 @@
 #define ROOMCONTROLLER_H
 
 #include <QObject>
-#include <QSharedPointer>
-#include "repositories/impl/roomrepositoryimpl.h"
+#include <QList>
 #include "models/room.h"
 
 class RoomController : public QObject
@@ -11,21 +10,15 @@ class RoomController : public QObject
     Q_OBJECT
 public:
     explicit RoomController(QObject *parent = nullptr);
-    void createRoom(const QString& id,
-                    const QString& propertyId,
-                    const QString& type,
-                    bool available);
-    void getRooms();
-    void getRoomById(const QString& id);
-    void updateRoom(Room* room);
-    void deleteRoom(const QString& id);
-private:
-    QSharedPointer<RoomRepositoryImpl> m_roomRepositoryImpl;
+    void reateRoom(Room* room);
+    void loadRoom(Room* room);
+    void loadRooms(QList<QSharedPointer<Room> > &rooms);
+
 signals:
-    void roomsLoaded(const QList<QSharedPointer<Room>>& rooms);
-    void roomLoaded(const QSharedPointer<Room> &room);
     void roomCreated(const QSharedPointer<Room> &room);
-    void error(const QString& message);
+    void roomLoaded(const QSharedPointer<Room>& room);
+    void roomsLoaded(const QList<QSharedPointer<Room>>& rooms);
+    void onError(const QString& message);
 };
 
 #endif // ROOMCONTROLLER_H
