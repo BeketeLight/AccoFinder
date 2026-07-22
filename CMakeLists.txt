@@ -33,6 +33,7 @@ qt_add_qml_module(appAccoFinder
         ui/components/inputs/TextInput.qml
         ui/components/indicators/StatusIndicator.qml
         ui/components/indicators/Spinner.qml
+
         #========UTILS============
         ui/utils/Utils.js
         ui/utils/DateUtils.js
@@ -208,6 +209,7 @@ qt_add_qml_module(appAccoFinder
         android/src/com/accofinder/SplashActivity.java
         android/src/com/accofinder/SplashActivity.java
         SOURCES src/application/controllers/roomcontroller.h src/application/controllers/roomcontroller.cpp
+        QML_FILES ui/components/navigations/BottomNavBar.qml
 
 )
 
