@@ -1,6 +1,6 @@
 import QtQuick
 import QtQuick.Controls
-
+import "./ui/app"
 ApplicationWindow {
     width: 640
     height: 480
@@ -21,4 +21,11 @@ ApplicationWindow {
     BusyIndicator {
         anchors.centerIn: parent
     }
+    // MainStackview{
+    //     id: mainStackvieId
+    //     anchors.fill: parent
+    // }
+    // MainStackview{
+    //     anchors.fill: parent
+    // }
 }
