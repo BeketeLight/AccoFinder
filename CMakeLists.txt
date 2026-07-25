@@ -33,6 +33,8 @@ qt_add_qml_module(appAccoFinder
         ui/components/inputs/TextInput.qml
         ui/components/indicators/StatusIndicator.qml
         ui/components/indicators/Spinner.qml
+        ui/components/navigations/BottomNavBar.qml
+
         #========UTILS============
         ui/utils/Utils.js
         ui/utils/DateUtils.js
@@ -40,12 +42,19 @@ qt_add_qml_module(appAccoFinder
         ui/utils/NavigationUtils.js
         ui/utils/CalculationUtils.js
         #======FEATURE-BOOKINGS======
-        ui/features/bookings/screens/BookingDetailsScreen.qml
-        ui/features/bookings/screens/BookingListScreen.qml
-        ui/features/bookings/screens/CreateBookingScreen.qml
         ui/features/bookings/delegates/BookingsDelegate.qml
         ui/features/bookings/pages/BookingPage.qml
+        ui/features/bookings/screens/CreateBookingScreen.qml
+        ui/features/bookings/screens/BookingDetailsScreen.qml
+        ui/features/bookings/screens/BookingListScreen.qml
+        ui/features/bookings/pages/BookingDetailsPage.qml
+        ui/features/bookings/pages/BookingsListPage.qml
+        ui/features/bookings/pages/CreateBookingPage.qml
+        ui/features/bookings/screens/BookingsScreen.qml
         #======FEATURE-DISPUTES======
+        ui/features/disputes/screens/DisputesScreen.qml
+        ui/features/disputes/pages/CreateDisputePage.qml
+        ui/features/disputes/pages/DisputesListPage.qml
         ui/features/disputes/screens/CreateDisputeScreen.qml
         ui/features/disputes/screens/DisputeListScreen.qml
         ui/features/disputes/pages/DisputesPage.qml
@@ -59,56 +68,73 @@ qt_add_qml_module(appAccoFinder
         ui/features/home/models/HomeModel.qml
         ui/features/home/pages/HomePage.qml
         ui/features/home/delegates/HomeDelegate.qml
-        #======FEATURE-NOTIFICATIONS======
-        ui/features/notifications/screens/NotificationListScreen.qml
+        #======FEATURE-NOTIFICATIONS=====
         ui/features/notifications/components/NotificationItem.qml
         ui/features/notifications/delegates/NotificationDelegate.qml
         ui/features/notifications/models/NotificationListModel.qml
         ui/features/notifications/pages/NotificationsPage.qml
+        ui/features/notifications/screens/NotificationListScreen.qml
         #======FEATURE-AUTH-AGENTS======
         ui/features/auth/agents/screens/EarningsScreen.qml
         ui/features/auth/agents/screens/AgentDashboardScreen.qml
         ui/features/auth/agents/pages/AgentsPage.qml
         ui/features/auth/agents/models/AgentsModel.qml
         ui/features/auth/agents/delegates/AgentsDelegate.qml
-        #======FEATURE-AUTH-AGENTS======
+        #======FEATURE-AUTH-ADMINS======
         ui/features/auth/admins/screens/AdminDashboardScreen.qml
         ui/features/auth/admins/screens/PropertyApprovalScreen.qml
         ui/features/auth/admins/screens/RegisterAgentScreen.qml
         ui/features/auth/admins/screens/UserManagementScreen.qml
-        ui/features/auth/admins/pages/AdminsPage.qml
         ui/features/auth/admins/models/AdminsModel.qml
         ui/features/auth/admins/delegates/AdminsDelegate.qml
+        ui/features/auth/admins/pages/RegisterAgentPage.qml
+        ui/features/auth/admins/pages/UserManagementPage.qml
         #======FEATURE-AUTH-GLOBAL======
         ui/features/auth/screens/AddPropertyScreen.qml
         ui/features/auth/screens/ForgotPasswordScreen.qml
         ui/features/auth/screens/MyPropertiesScreen.qml
         ui/features/auth/screens/OtpScree.qml
         ui/features/auth/screens/SignInScreen.qml
+        ui/features/auth/pages/SignInPage.qml
+        ui/features/auth/pages/MyPropertiesPage.qml
+        ui/features/auth/pages/AddPropertyPage.qml
+        ui/features/auth/pages/OtpPage.qml
+        ui/features/auth/pages/ForgotPasswordPage.qml
         #======FEATURE-REVIEWS======
         ui/features/reviews/screens/WriteReviewScreen.qml
         ui/features/reviews/screens/ReviewListScreen.qml
         ui/features/reviews/delegates/ReviewDelegate.qml
         ui/features/reviews/components/ReviewForm.qml
         ui/features/reviews/pages/ReviewsPage.qml
+        ui/features/reviews/pages/WriteReviewsPage.qml
+        ui/features/reviews/pages/ReviewsListPage.qml
+        ui/features/reviews/screens/ReviewsScreen.qml
         #======FEATURE-SETTINGS======
         ui/features/settings/screens/SettingsScreen.qml
         ui/features/settings/pages/SettingsPage.qml
         ui/features/settings/delegates/SettingsDelegate.qml
         ui/features/settings/models/SettingsModel.qml
         #======FEATURE-PAYMENT======
-        ui/features/payments/screens/PaymentScreen.qml
         ui/features/payments/screens/PaymentStatusScreen.qml
         ui/features/payments/screens/PaymetHistoryScreen.qml
+        ui/features/payments/screens/PaymentScreen.qml
         ui/features/payments/delegates/PaymentDelegate.qml
         ui/features/payments/models/PaymentModel.qml
         ui/features/payments/pages/PaymentsPage.qml
+        ui/features/notifications/screens/NotificationsScreen.qml
+        ui/features/payments/pages/PaymentsHistoryPage.qml
+        ui/features/payments/screens/PaymentsScreen.qml
         #======FEATURE-PROPERTIES======
         ui/features/properties/delegates/PropertyDelegate.qml
-        ui/features/properties/screens/AddPropertyScreen.qml
         ui/features/properties/screens/PropertyDetailScreen.qml
         ui/features/properties/screens/PropertyListScreen.qml
         ui/features/properties/pages/PropertiesPage.qml
+        ui/features/properties/pages/AddPropertiesPage.qml
+        ui/features/properties/pages/PropertyDetailsPage.qml
+        ui/features/properties/pages/PropertiesListPage.qml
+        ui/features/properties/screens/PropertiesScreen.qml
+        ui/features/properties/screens/AddPropertyScreen.qml
+
 
     SOURCES
         src/models/user.h src/models/user.cpp
@@ -208,7 +234,7 @@ qt_add_qml_module(appAccoFinder
         android/src/com/accofinder/SplashActivity.java
         android/src/com/accofinder/SplashActivity.java
         SOURCES src/application/controllers/roomcontroller.h src/application/controllers/roomcontroller.cpp
-
+        QML_FILES ui/features/auth/admins/pages/PropertyApprovalPage.qml
 )
 
 # ─────────────────────────────────────────────────────────────
