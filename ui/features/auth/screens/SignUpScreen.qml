@@ -1,8 +1,9 @@
 import QtQuick 2.15
 import "../pages"
 Item {
-    id: signItemId
-    SignInPage{
+    id:signUpItemId
+
+    SignUpPage{
         anchors.fill: parent
     }
 }

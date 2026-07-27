@@ -14,7 +14,7 @@ Page{
         // Layout.preferredWidth: 680
 
         Label{
-            text: "Sign In"
+            text: "Sign Up"
             font{
                 pointSize: 24
                 bold: true
@@ -27,20 +27,25 @@ Page{
 
 
         TextField{
-            id: email
+            id: name
             placeholderText: "Email"
             Layout.fillWidth: true
 
         }
 
         TextField{
-            id: password
-            placeholderText: "Password"
+            id: email
+            placeholderText: "Email"
+            Layout.fillWidth: true
+        }
+        TextField{
+            id: residenttialAddress
+            placeholderText: "Residential address"
             Layout.fillWidth: true
         }
         Button{
             id: signinButtonId
-            text: "SIGN IN"
+            text: "SIGN UP"
             Layout.fillWidth: true
             Layout.preferredHeight: 50
             background: Rectangle{
@@ -48,22 +53,7 @@ Page{
                 radius: 10
             }
         }
-        Item{
-            Layout.preferredHeight: 40
-        }
-        Label{
-            text: "Sign Up"
-            color: "#2563EB"
-            font{
-                pointSize: 12
-                bold: true
-            }
-            Layout.alignment: Qt.AlignHCenter
-            MouseArea{
-                anchors.fill: parent
-                onClicked: UtilsModule.NavigationUtils.navigateToSignUp()
-            }
-        }
+
 
 
     }

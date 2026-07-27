@@ -90,14 +90,10 @@ qt_add_qml_module(appAccoFinder
         ui/features/auth/admins/pages/RegisterAgentPage.qml
         ui/features/auth/admins/pages/UserManagementPage.qml
         #======FEATURE-AUTH-GLOBAL======
-        ui/features/auth/screens/AddPropertyScreen.qml
         ui/features/auth/screens/ForgotPasswordScreen.qml
-        ui/features/auth/screens/MyPropertiesScreen.qml
         ui/features/auth/screens/OtpScree.qml
         ui/features/auth/screens/SignInScreen.qml
         ui/features/auth/pages/SignInPage.qml
-        ui/features/auth/pages/MyPropertiesPage.qml
-        ui/features/auth/pages/AddPropertyPage.qml
         ui/features/auth/pages/OtpPage.qml
         ui/features/auth/pages/ForgotPasswordPage.qml
         #======FEATURE-REVIEWS======
@@ -235,6 +231,14 @@ qt_add_qml_module(appAccoFinder
         android/src/com/accofinder/SplashActivity.java
         SOURCES src/application/controllers/roomcontroller.h src/application/controllers/roomcontroller.cpp
         QML_FILES ui/features/auth/admins/pages/PropertyApprovalPage.qml
+        QML_FILES ui/features/auth/pages/SignUpPage.qml
+        QML_FILES ui/features/auth/screens/SignUpScreen.qml
+        QML_FILES ui/features/properties/pages/MyPropertiesPage.qml
+        QML_FILES ui/features/properties/screens/MyPropertiesScreen.qml
+        RESOURCES Rescources.qrc
+
+
+
 )
 
 # ─────────────────────────────────────────────────────────────
