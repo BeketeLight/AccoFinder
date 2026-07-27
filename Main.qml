@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import "./ui/app"
+import "./ui/features/properties/screens"
 
 ApplicationWindow {
     width: 640
@@ -16,9 +17,9 @@ ApplicationWindow {
         }
     }
 
-    // Component.onCompleted: {
-    //     AppSettings.setStatusBarAppearance(Qt.rgba(0,0,0,0),true)
-    // }
+    Component.onCompleted: {
+        AppSettings.setStatusBarAppearance(Qt.rgba(0,0,0,0),true)
+    }
 
     // BusyIndicator {
     //     anchors.centerIn: parent

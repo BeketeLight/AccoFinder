@@ -4,14 +4,7 @@ import QtQuick.Layouts
 import "../../../utils" as UtilsModule
 Page{
     id:homePageId
-
-    // :ToolBar{
-    //     background: Rectangle{
-    //         color: "white"
-    //     }
-        // RowLayout{
-        //     anchors.fill: parent
-        //     width: parent.width * 0.85
+    anchors.fill: parent
         header:TextField{
                 id:searchbarId
                 implicitHeight: 40
@@ -34,25 +27,89 @@ Page{
                     height: 20
                     fillMode: Image.PreserveAspectFit
                 }
-
-
+            // contentHeight: 20
         }
 
-        contentItem: RowLayout{
+        RowLayout{
+            id: rowlayoutId
+            anchors {
+                top: parent.top
+                left: parent.left
+                right: parent.right
+                topMargin: 40
+                leftMargin: 10
+                rightMargin: 0
+            }
             spacing: 20
+
 
             Label{
                 text: "All"
-                font.pointSize: 12
+                font.pointSize: 14
             }
             Label{
-                text: "House"
-                font.pointSize: 12
+                text: "Houses"
+                font.pointSize: 14
             }
             Label{
-                text: "Hostel"
-                font.pointSize: 12
+                text: "Hostels"
+                font.pointSize: 14
             }
+        }
+        Item{
+            Layout.preferredHeight: 50
+        }
+        ColumnLayout {
+            anchors {
+                top: rowlayoutId.top
+                left: rowlayoutId.left
+                right: rowlayoutId.right
+                topMargin: 40
+                leftMargin: 24
+                rightMargin: 24
+            }
+
+            spacing: 2
+            Layout.fillWidth: true
+
+            Rectangle{
+                width:200
+                height: 120
+                color: "yellowgreen"
+                border.color: "black"
+                radius: 5
+
+                MouseArea{
+                    anchors.fill: parent
+                    onClicked: UtilsModule.NavigationUtils.navigateToPropertyDetails()
+                }
+            }
+            ColumnLayout {
+                // Layout.rightMargin: 5
+
+                spacing: 4
+
+                Label {
+                    font.pixelSize: 14
+                    font.bold: true
+                    elide: Text.ElideRight
+                    width: parent.width
+                  }
+
+                  Label {
+                    text: "Chikanda, Zomba"
+                    font.pixelSize: 12
+                    color: "#777"
+                }
+
+                Label {
+                    text: "MK 85,000 / month"
+                    font.pixelSize: 13
+                    font.bold: true
+                    color: "#0066FF"
+
+                }
+           }
         }
 
 

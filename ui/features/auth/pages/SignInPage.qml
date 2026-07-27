@@ -1,30 +1,68 @@
 import QtQuick 2.15
-import QtQuick.Controls
-import QtQuick.Layouts
+import QtQuick.Controls 2.15
+import QtQuick.Layouts 1.15
+
 import "../../../utils" as UtilsModule
 
-Page{
-    id:signInPageId
+Page {
+    id: signInPage
     anchors.fill: parent
 
-    ColumnLayout{
-        anchors.centerIn: parent
-        width: parent.width * 0.85
-        spacing: 20
-        // Layout.preferredWidth: 680
+    // ===== HEADER WITH BACK BUTTON =====
+    header: ToolBar {
+        background: Rectangle {
+            color: "white"
+        }
 
-        Label{
-            text: "Sign In"
-            font{
-                pointSize: 24
-                bold: true
+        contentHeight: 56
+
+        RowLayout {
+            anchors.fill: parent
+            anchors.leftMargin: 8
+            anchors.rightMargin: 16
+
+            // Back Button
+            ToolButton {
+
+                Image {
+                    id: home
+                    width: 24
+                    height: 24
+                    source: "qrc:/ui/assets/back.png"
+                    fillMode: Image.PreserveAspectFit
+                    Layout.alignment: Qt.AlignHCenter
+
+                    MouseArea{
+                        anchors.fill: parent
+                        onClicked: UtilsModule.NavigationUtils.pop()
+                    }
+                }
+                onClicked: UtilsModule.NavigationUtils.pop()
             }
-            Layout.alignment: Qt.AlignHCenter
-        }
-        Item{
-            Layout.preferredHeight: 50
-        }
 
+            Item { Layout.fillWidth: true }
+        }
+    }
+
+    // ===== MAIN CONTENT =====
+    ColumnLayout {
+        anchors {
+            top: parent.top
+            left: parent.left
+            right: parent.right
+            topMargin: 40
+            leftMargin: 24
+            rightMargin: 24
+        }
+        spacing: 28
+
+        Label {
+            text: "SignIn for AccoFinder"
+            font.pixelSize: 26
+            font.bold: true
+            color: "#1a1a1a"
+            Layout.fillWidth: true
+        }
 
         TextField{
             id: email
@@ -64,9 +102,6 @@ Page{
                 onClicked: UtilsModule.NavigationUtils.navigateToSignUp()
             }
         }
-
-
     }
-
 
 }

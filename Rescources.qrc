@@ -9,5 +9,7 @@
         <file>ui/assets/property.png</file>
         <file>ui/assets/search.png</file>
         <file>ui/assets/setttings.png</file>
+        <file>ui/assets/back.png</file>
+        <file>ui/features/payments/pages/PaymentStatusPage.qml</file>
     </qresource>
 </RCC>
