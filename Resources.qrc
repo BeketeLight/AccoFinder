@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/">
+        <file>ui/assets/icons8-notification-24.png</file>
+        <file>ui/assets/icons8-notification-50.png</file>
+        <file>ui/assets/account.png</file>
+        <file>ui/assets/home.png</file>
+        <file>ui/assets/property.png</file>
+        <file>ui/assets/setttings.png</file>
+        <file>ui/assets/booking.png</file>
+    </qresource>
+</RCC>
