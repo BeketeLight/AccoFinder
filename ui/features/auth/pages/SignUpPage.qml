@@ -5,7 +5,42 @@ import "../../../utils" as UtilsModule
 
 Page{
     id:signInPageId
-    anchors.fill: parent
+    anchors.fill: parent 
+        // ===== HEADER WITH BACK BUTTON =====
+        header: ToolBar {
+            background: Rectangle {
+                color: "white"
+            }
+
+            contentHeight: 56
+
+            RowLayout {
+                anchors.fill: parent
+                anchors.leftMargin: 8
+                anchors.rightMargin: 16
+
+                // Back Button
+                ToolButton {
+
+                    Image {
+                        id: home
+                        width: 24
+                        height: 24
+                        source: "qrc:/ui/assets/back.png"
+                        fillMode: Image.PreserveAspectFit
+                        Layout.alignment: Qt.AlignHCenter
+
+                        MouseArea{
+                            anchors.fill: parent
+                            onClicked: UtilsModule.NavigationUtils.pop()
+                        }
+                    }
+                    onClicked: UtilsModule.NavigationUtils.pop()
+                }
+
+                Item { Layout.fillWidth: true }  // Spacer
+            }
+        }
 
     ColumnLayout{
         anchors.centerIn: parent
@@ -53,10 +88,6 @@ Page{
                 radius: 10
             }
         }
-
-
-
     }
-
 
 }

@@ -39,7 +39,7 @@ function navigateToProperties(){
     push("../features/properties/screens/PropertiesScreen.qml")
 }
 function navigateToPayments(){
-    push("../features/properties/screens/PaymentsScreen.qml")
+    push("../features/payments/screens/PaymentsScreen.qml")
 }
 function navigateToSettings(){
     push("../features/settings/screens/SettingsScreen.qml")
@@ -63,13 +63,22 @@ function navigateToSignIn(){
 function navigateToSignUp(){
     push("../features/auth/screens/SignUpScreen.qml")
 }
-
+function navigateToPropertyDetails(){
+    push("../features/properties/screens/PropertyDetailScreen.qml")
+}
+function navigateToPaymentStatus(){
+    push("../features/payments/screens/PaymentStatusScreen.qml")
+}
 
 var Navigation = {
     init: init,
+    pop: pop,
     navigateToNotifications: navigateToNotifications,
     navigateToSignIn: navigateToSignIn,
     navigateToSignUp: navigateToSignUp,
     navigateToProperties: navigateToProperties,
-    navigateToBookings: navigateToBookings
+    navigateToBookings: navigateToBookings,
+    navigateToPropertyDetails: navigateToPropertyDetails,
+    navigateToPayments: navigateToPayments,
+    navigateToPaymentStatus:  navigateToPaymentStatus
 }
