@@ -235,7 +235,9 @@ qt_add_qml_module(appAccoFinder
         QML_FILES ui/features/auth/screens/SignUpScreen.qml
         QML_FILES ui/features/properties/pages/MyPropertiesPage.qml
         QML_FILES ui/features/properties/screens/MyPropertiesScreen.qml
-        RESOURCES ui/assets/home.svg ui/assets/notification.svg
+        QML_FILES ui/features/home/components/HeaderComponent.qml
+        RESOURCES Resources.qrc
+        QML_FILES ui/features/home/pages/WelcomePage.qml
 
 )
 

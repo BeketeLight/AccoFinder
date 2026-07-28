@@ -10,22 +10,22 @@ Item {
     property string text: ""
     property string placeholder: "Search..."
     property bool enabled: true
-    property int searchBarHeight: 48
-    property int borderRadius: 24          // Fully rounded (Material style)
+    property int searchBarHeight: 35
+    property int borderRadius: 8          // Fully rounded (Material style)
 
     // Colors
-    property color backgroundColor: "#F1F3F4"
+    property color backgroundColor: "red"
     property color textColor: "#202124"
     property color placeholderColor: "#5F6368"
     property color iconColor: "#5F6368"
-    property color focusColor: "#E8F0FE"
+    property color focusColor: "yellow"
 
     // Signals
     signal accepted
     signal cleared
     signal textEdited
 
-    implicitWidth: 200
+    implicitWidth: 330
     implicitHeight: searchBarHeight
 
     // Background
@@ -35,6 +35,7 @@ Item {
         anchors.fill: parent
         radius: root.borderRadius
         color: searchField.activeFocus ? root.focusColor : root.backgroundColor
+        border.color: "black"
 
         // Soft elevation (Android style)
         layer.enabled: true
@@ -53,18 +54,47 @@ Item {
 
     RowLayout {
         anchors.fill: parent
-        anchors.leftMargin: 14
-        anchors.rightMargin: 10
+        anchors.leftMargin: 5
+        anchors.rightMargin: 5
+        anchors.bottomMargin: 3
         spacing: 10
 
         // Search Icon
-        Text {
-            text: "🔍"
-            font.pixelSize: 18
-            color: root.iconColor
-            Layout.alignment: Qt.AlignVCenter
-            opacity: 0.7
+        Image {
+            id: notifications
+            //fillMode: Image.PreserveAspectFit
+            source: "qrc:/ui/ui/assets/search-icon.svg"
+            // 1. Force the size the layout will see
+            // width: 24
+            // height: 24
+            // or if inside a Layout:
+            Layout.preferredWidth: 32
+            Layout.preferredHeight: 32
+            Layout.maximumWidth: 32
+            Layout.maximumHeight: 32
+
+            // 2. Control how the SVG is rasterized (very important for quality + size)
+            sourceSize.width: 48          // 2× for retina / high-DPI
+            sourceSize.height: 48
+
+            fillMode: Image.PreserveAspectFit
+            antialiasing: true
+            smooth: true
+            MouseArea {
+                anchors.fill: parent
+                onClicked: UtilsModule.NavigationUtils.navigateToNotifications()
+            }
+            // Layout.topMargin: 15
+
+            //Layout.leftMargin: 3
         }
+        // Text {
+        //     text: "🔍"
+        //     font.pixelSize: 18
+        //     color: root.iconColor
+        //     Layout.alignment: Qt.AlignVCenter
+        //     opacity: 0.7
+        // }
 
         // Text Field
         TextField {
@@ -137,7 +167,7 @@ Item {
         anchors.fill: parent
         radius: root.borderRadius
         color: "transparent"
-        border.color: searchField.activeFocus ? "#1A73E8" : "transparent"
+        border.color: searchField.activeFocus ? "#1A73E8" : "black"
         border.width: 1.5
         opacity: 0.6
 
