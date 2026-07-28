@@ -14,18 +14,24 @@ Page{
             Layout.preferredWidth: 280
             Layout.leftMargin: 20
         }
-        Image{
-                id:notifications
-                fillMode: Image.PreserveAspectFit
-                source: "ui/assets/notification.svg"
-                width: 48
-                height: 48
-                MouseArea{
-                    anchors.fill: parent
-                    onClicked: UtilsModule.NavigationUtils.navigateToNotifications()
-            }
-                Layout.rightMargin: 20
-         }
+        Rectangle{
+            width: 300
+            height: 50
+            color: "blue"
+            VectorImage{
+                    id:notifications
+                    fillMode: Image.PreserveAspectFit
+                    source: "ui/assets/home.svg"
+                    width: 48
+                    height: 48
+                    MouseArea{
+                        anchors.fill: parent
+                        onClicked: UtilsModule.NavigationUtils.navigateToNotifications()
+                }
+                    Layout.rightMargin: 20
+             }
+        }
+
     }
     //     background: Rectangle{
     //         color: "white"
