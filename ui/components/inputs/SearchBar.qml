@@ -56,8 +56,38 @@ Item {
         anchors.fill: parent
         anchors.leftMargin: 5
         anchors.rightMargin: 5
-        anchors.bottomMargin: 3
+        anchors.bottomMargin: 2.5
         spacing: 10
+
+        // Text Field
+        TextField {
+            id: searchField
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            text: root.text
+            placeholderText: root.placeholder
+            enabled: root.enabled
+            color: root.textColor
+            placeholderTextColor: root.placeholderColor
+            font.pixelSize: 15
+            selectByMouse: true
+            background: Item {}          // Remove default background
+            leftPadding: 0
+            rightPadding: 0
+            verticalAlignment: Text.AlignVCenter
+
+            onTextChanged: {
+                root.text = text;
+                root.textEdited();
+            }
+
+            onAccepted: root.accepted()
+        }
+
+        // Flexible spacer – takes all remaining space
+        Item {
+            Layout.fillWidth: true
+        }
 
         // Search Icon
         Image {
@@ -84,41 +114,6 @@ Item {
                 anchors.fill: parent
                 onClicked: UtilsModule.NavigationUtils.navigateToNotifications()
             }
-            // Layout.topMargin: 15
-
-            //Layout.leftMargin: 3
-        }
-        // Text {
-        //     text: "🔍"
-        //     font.pixelSize: 18
-        //     color: root.iconColor
-        //     Layout.alignment: Qt.AlignVCenter
-        //     opacity: 0.7
-        // }
-
-        // Text Field
-        TextField {
-            id: searchField
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            text: root.text
-            placeholderText: root.placeholder
-            enabled: root.enabled
-            color: root.textColor
-            placeholderTextColor: root.placeholderColor
-            font.pixelSize: 15
-            selectByMouse: true
-            background: Item {}          // Remove default background
-            leftPadding: 0
-            rightPadding: 0
-            verticalAlignment: Text.AlignVCenter
-
-            onTextChanged: {
-                root.text = text;
-                root.textEdited();
-            }
-
-            onAccepted: root.accepted()
         }
 
         // Clear Button (X)

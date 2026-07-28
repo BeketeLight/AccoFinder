@@ -14,7 +14,7 @@ ColumnLayout {
             font.pixelSize: 25
             font.bold: true
         }
-        // Flexible spacer – takes all remaining space
+
 
         Item {
             Layout.fillWidth: true
