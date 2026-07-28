@@ -10,22 +10,22 @@ Item {
     property string text: ""
     property string placeholder: "Search..."
     property bool enabled: true
-    property int searchBarHeight: 48
-    property int borderRadius: 24          // Fully rounded (Material style)
+    property int searchBarHeight: 30
+    property int borderRadius: 10          // Fully rounded (Material style)
 
     // Colors
-    property color backgroundColor: "#F1F3F4"
+    property color backgroundColor: "red"
     property color textColor: "#202124"
     property color placeholderColor: "#5F6368"
     property color iconColor: "#5F6368"
-    property color focusColor: "#E8F0FE"
+    property color focusColor: "yellow"
 
     // Signals
     signal accepted
     signal cleared
     signal textEdited
 
-    implicitWidth: 200
+    implicitWidth: 330
     implicitHeight: searchBarHeight
 
     // Background
@@ -35,6 +35,7 @@ Item {
         anchors.fill: parent
         radius: root.borderRadius
         color: searchField.activeFocus ? root.focusColor : root.backgroundColor
+        border.color: "black"
 
         // Soft elevation (Android style)
         layer.enabled: true
@@ -137,7 +138,7 @@ Item {
         anchors.fill: parent
         radius: root.borderRadius
         color: "transparent"
-        border.color: searchField.activeFocus ? "#1A73E8" : "transparent"
+        border.color: searchField.activeFocus ? "#1A73E8" : "black"
         border.width: 1.5
         opacity: 0.6
 

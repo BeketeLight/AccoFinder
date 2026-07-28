@@ -236,6 +236,7 @@ qt_add_qml_module(appAccoFinder
         QML_FILES ui/features/properties/pages/MyPropertiesPage.qml
         QML_FILES ui/features/properties/screens/MyPropertiesScreen.qml
         RESOURCES ui/assets/account.png ui/assets/back.png ui/assets/booking.png ui/assets/home.png ui/assets/home.svg ui/assets/icons8-notification-24.png ui/assets/icons8-notification-50.png ui/assets/notification.png ui/assets/notification.svg ui/assets/property.png ui/assets/search.png ui/assets/search.svg ui/assets/setttings.png
+        QML_FILES ui/features/home/components/HeaderComponent.qml
 
 
 
