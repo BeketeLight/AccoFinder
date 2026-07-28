@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="24"
+   height="24"
+   viewBox="0 0 24 24"
+   version="1.1"
+   id="svg62"
+   sodipodi:docname="search-icon.svg"
+   inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs66" />
+  <sodipodi:namedview
+     id="namedview64"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     showgrid="false"
+     inkscape:zoom="18.208333"
+     inkscape:cx="-7.0846682"
+     inkscape:cy="15.267735"
+     inkscape:window-width="1920"
+     inkscape:window-height="1050"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg62" />
+  <!-- Black circle background -->
+  <!-- White search icon -->
+  <rect
+     style="display:inline;fill:#000000;stroke-width:1.34865"
+     id="rect334"
+     width="20.497934"
+     height="18.290821"
+     x="1.9296883"
+     y="3.1901135"
+     ry="2.5376055" />
+  <circle
+     cx="11.893622"
+     cy="11.493299"
+     r="4.5"
+     fill="none"
+     stroke="#ffffff"
+     stroke-width="2"
+     id="circle58"
+     style="display:inline" />
+  <line
+     x1="14.920233"
+     y1="15.437289"
+     x2="18.420231"
+     y2="18.93729"
+     stroke="#ffffff"
+     stroke-width="2"
+     stroke-linecap="round"
+     id="line60" />
+</svg>

@@ -10,8 +10,8 @@ Item {
     property string text: ""
     property string placeholder: "Search..."
     property bool enabled: true
-    property int searchBarHeight: 30
-    property int borderRadius: 10          // Fully rounded (Material style)
+    property int searchBarHeight: 35
+    property int borderRadius: 8          // Fully rounded (Material style)
 
     // Colors
     property color backgroundColor: "red"
@@ -54,18 +54,47 @@ Item {
 
     RowLayout {
         anchors.fill: parent
-        anchors.leftMargin: 14
-        anchors.rightMargin: 10
+        anchors.leftMargin: 5
+        anchors.rightMargin: 5
+        anchors.bottomMargin: 3
         spacing: 10
 
         // Search Icon
-        Text {
-            text: "🔍"
-            font.pixelSize: 18
-            color: root.iconColor
-            Layout.alignment: Qt.AlignVCenter
-            opacity: 0.7
+        Image {
+            id: notifications
+            //fillMode: Image.PreserveAspectFit
+            source: "qrc:/ui/ui/assets/search-icon.svg"
+            // 1. Force the size the layout will see
+            // width: 24
+            // height: 24
+            // or if inside a Layout:
+            Layout.preferredWidth: 32
+            Layout.preferredHeight: 32
+            Layout.maximumWidth: 32
+            Layout.maximumHeight: 32
+
+            // 2. Control how the SVG is rasterized (very important for quality + size)
+            sourceSize.width: 48          // 2× for retina / high-DPI
+            sourceSize.height: 48
+
+            fillMode: Image.PreserveAspectFit
+            antialiasing: true
+            smooth: true
+            MouseArea {
+                anchors.fill: parent
+                onClicked: UtilsModule.NavigationUtils.navigateToNotifications()
+            }
+            // Layout.topMargin: 15
+
+            //Layout.leftMargin: 3
         }
+        // Text {
+        //     text: "🔍"
+        //     font.pixelSize: 18
+        //     color: root.iconColor
+        //     Layout.alignment: Qt.AlignVCenter
+        //     opacity: 0.7
+        // }
 
         // Text Field
         TextField {

@@ -11,7 +11,7 @@ ColumnLayout {
             text: "AccoFinder"
             Layout.topMargin: 15
             Layout.leftMargin: 10
-            font.pixelSize: 15
+            font.pixelSize: 25
             font.bold: true
         }
         // Flexible spacer – takes all remaining space
@@ -21,8 +21,30 @@ ColumnLayout {
         }
 
         //here this label will be replaced with notification icon or image
-        Label {
-            text: "Noti"
+        Image {
+            id: notifications
+            //fillMode: Image.PreserveAspectFit
+            source: "qrc:/ui/ui/assets/notification.svg"
+            // 1. Force the size the layout will see
+            // width: 24
+            // height: 24
+            // or if inside a Layout:
+            Layout.preferredWidth: 24
+            Layout.preferredHeight: 24
+            Layout.maximumWidth: 24
+            Layout.maximumHeight: 24
+
+            // 2. Control how the SVG is rasterized (very important for quality + size)
+            sourceSize.width: 48          // 2× for retina / high-DPI
+            sourceSize.height: 48
+
+            fillMode: Image.PreserveAspectFit
+            antialiasing: true
+            smooth: true
+            MouseArea {
+                anchors.fill: parent
+                onClicked: UtilsModule.NavigationUtils.navigateToNotifications()
+            }
             Layout.topMargin: 15
             Layout.rightMargin: 10
         }
@@ -44,17 +66,5 @@ ColumnLayout {
     //     Label {
     //         text: "Recent"
     //     }
-    // }
-    // Image {
-    //     id: notifications
-    //     fillMode: Image.PreserveAspectFit
-    //     source: "ui/assets/notification.svg"
-    //     width: 48
-    //     height: 48
-    //     MouseArea {
-    //         anchors.fill: parent
-    //         onClicked: UtilsModule.NavigationUtils.navigateToNotifications()
-    //     }
-    //     Layout.rightMargin: 20
     // }
 }
