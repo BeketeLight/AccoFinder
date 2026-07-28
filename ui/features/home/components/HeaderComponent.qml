@@ -24,7 +24,7 @@ ColumnLayout {
         Image {
             id: notifications
             //fillMode: Image.PreserveAspectFit
-            source: "qrc:/ui/ui/assets/notification.svg"
+            source: "qrc:/ui/assets/notification.svg"
             // 1. Force the size the layout will see
             // width: 24
             // height: 24

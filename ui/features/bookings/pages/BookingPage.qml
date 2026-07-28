@@ -1,7 +1,8 @@
-import QtQuick 2.15
+import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import "../../../utils" as UtilsModule
+import "../../home/components"
 Page{
     id:homePageId
     anchors.fill: parent
@@ -159,131 +160,9 @@ Page{
 
         // ... rest of your phone input + buttons
     }
-    footer: ToolBar{
-        background: Rectangle{
-            color: "white"
-        }
-        RowLayout{
-            anchors.fill: parent
-            ToolButton{
-                id:homeId
-                contentItem: ColumnLayout{
-                    Image {
-                        id: home
-                        width: 16
-                        height: 16
-                        source: "qrc:/ui/assets/home.png"
-                        fillMode: Image.PreserveAspectFit
-                        Layout.alignment: Qt.AlignHCenter
-                    }
-                    Label{
-                        Text{
-                            anchors.centerIn: parent
-                            text:qsTr("Home")
-                            color: "black"
-                        }
-                        Layout.alignment: Qt.AlignHCenter
-                        font{
-                            pointSize: 12
-                            bold:true
-                        }
-
-                    }
-                }
-                onClicked: {
-                    UtilsModule.NavigationUtils.navigateToNotifications()
-                }
-            }
-            ToolButton{
-                id:propertyId
-                contentItem: ColumnLayout{
-                    Image {
-                        id: property
-                        width: 24
-                        height: 24
-                        source: "qrc:/ui/assets/property.png"
-                        fillMode: Image.PreserveAspectFit
-                        Layout.alignment: Qt.AlignHCenter
-                    }
-                    Label{
-                        Text{
-                            anchors.centerIn: parent
-                            text:qsTr("Properties")
-                            color: "black"
-                        }
-                        Layout.alignment: Qt.AlignHCenter
-                        font{
-                            pointSize: 12
-                            bold:true
-                        }
-
-                    }
-
-                }
-                onClicked: {
-                    UtilsModule.NavigationUtils.navigateToProperties()
-                }
-
-            }
-            ToolButton{
-                id:bookingId
-                contentItem: ColumnLayout{
-                    Image {
-                        id: bookings
-                        width: 24
-                        height: 24
-                        source: "qrc:/ui/assets/booking.png"
-                        fillMode: Image.PreserveAspectFit
-                        Layout.alignment: Qt.AlignHCenter
-                    }
-                    Label{
-                        Text{
-                            anchors.centerIn: parent
-                            text:qsTr("Bookings")
-                            color: "black"
-                        }
-                        Layout.alignment: Qt.AlignHCenter
-                        font{
-                            pointSize: 12
-                            bold: true
-                        }
-
-                    }
-                }
-            }
-            ToolButton{
-                id:acountId
-                contentItem: ColumnLayout{
-                    Image {
-                        id: account
-                        width: 24
-                        height: 24
-                        source: "qrc:/ui/assets/account.png"
-                        fillMode: Image.PreserveAspectFit
-                        Layout.alignment: Qt.AlignHCenter
-                    }
-                    Label{
-                        Text{
-                            anchors.centerIn: parent
-                            text:qsTr("Account")
-                            color: "black"
-
-                        }
-                        Layout.alignment: Qt.AlignHCenter
-                        font{
-                            pointSize: 12
-                            bold:true
-                        }
-
-                    }
-                }
-                onClicked: {
-                    UtilsModule.NavigationUtils.navigateToSignIn()
-                }
-            }
-
-        }
+    footer: FooterComponent{
 
     }
+
 
 }

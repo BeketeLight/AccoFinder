@@ -55,11 +55,11 @@ Page {
     //     }
     // }
 
-    footer: ToolBar {
-        background: Rectangle {
-            color: "white"
-        }
-        RowLayout {
+    // footer: ToolBar {
+    //     background: Rectangle {
+    //         color: "white"
+    //     }
+        /*Layout {
             anchors.fill: parent
             ToolButton {
                 id: homeId
@@ -172,7 +172,9 @@ Page {
                 onClicked: {
                     UtilsModule.NavigationUtils.navigateToSignIn();
                 }
-            }
-        }
+            }*/
+
+    footer: FooterComponent{
+
     }
 }
