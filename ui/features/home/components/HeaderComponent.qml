@@ -9,12 +9,12 @@ ColumnLayout {
     RowLayout {
         Label {
             text: "AccoFinder"
+            color: "#1F2937"
             Layout.topMargin: 15
             Layout.leftMargin: 10
             font.pixelSize: 25
             font.bold: true
         }
-
 
         Item {
             Layout.fillWidth: true

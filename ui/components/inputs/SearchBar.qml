@@ -10,13 +10,13 @@ Item {
     property string text: ""
     property string placeholder: "Search..."
     property bool enabled: true
-    property int searchBarHeight: 35
+    property int searchBarHeight: 37
     property int borderRadius: 8          // Fully rounded (Material style)
 
     // Colors
     property color backgroundColor: "red"
     property color textColor: "#202124"
-    property color placeholderColor: "#5F6368"
+    property color placeholderColor: "#6B7280"
     property color iconColor: "#5F6368"
     property color focusColor: "yellow"
 
@@ -25,7 +25,7 @@ Item {
     signal cleared
     signal textEdited
 
-    implicitWidth: 330
+    implicitWidth: 350
     implicitHeight: searchBarHeight
 
     // Background
@@ -50,6 +50,22 @@ Item {
         }
     }
 
+    // Focus border (subtle)
+    Rectangle {
+        anchors.fill: parent
+        radius: root.borderRadius
+        color: "transparent"
+        border.color: searchField.activeFocus ? "#1A73E8" : "black"
+        border.width: 1.5
+        opacity: 0.6
+
+        Behavior on border.color {
+            ColorAnimation {
+                duration: 150
+            }
+        }
+    }
+
     // Content
 
     RowLayout {
@@ -68,7 +84,7 @@ Item {
             placeholderText: root.placeholder
             enabled: root.enabled
             color: root.textColor
-            placeholderTextColor: root.placeholderColor
+            placeholderTextColor: searchField.activeFocus ? "transparent" : root.placeholderColor
             font.pixelSize: 15
             selectByMouse: true
             background: Item {}          // Remove default background
@@ -118,6 +134,7 @@ Item {
 
         // Clear Button (X)
         Item {
+            id: clearButton
             Layout.preferredWidth: 28
             Layout.preferredHeight: 28
             Layout.alignment: Qt.AlignVCenter
@@ -153,22 +170,6 @@ Item {
                         searchField.forceActiveFocus();
                     }
                 }
-            }
-        }
-    }
-
-    // Focus border (subtle)
-    Rectangle {
-        anchors.fill: parent
-        radius: root.borderRadius
-        color: "transparent"
-        border.color: searchField.activeFocus ? "#1A73E8" : "black"
-        border.width: 1.5
-        opacity: 0.6
-
-        Behavior on border.color {
-            ColorAnimation {
-                duration: 150
             }
         }
     }
