@@ -10,7 +10,7 @@ Item {
     property string text: ""
     property string placeholder: "Search..."
     property bool enabled: true
-    property int height: 48
+    property int searchBarHeight: 48
     property int borderRadius: 24          // Fully rounded (Material style)
 
     // Colors
@@ -25,8 +25,8 @@ Item {
     signal cleared
     signal textEdited
 
-    implicitWidth: 300
-    implicitHeight: height
+    implicitWidth: 200
+    implicitHeight: searchBarHeight
 
     // Background
 

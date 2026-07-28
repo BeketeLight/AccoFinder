@@ -11,5 +11,9 @@
         <file>ui/assets/setttings.png</file>
         <file>ui/assets/back.png</file>
         <file>ui/features/payments/pages/PaymentStatusPage.qml</file>
+        <file>Rescources.qrc</file>
+        <file>ui/assets/home.svg</file>
+        <file>ui/assets/notification.svg</file>
+        <file>ui/assets/search.svg</file>
     </qresource>
 </RCC>
