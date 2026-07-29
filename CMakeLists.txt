@@ -238,6 +238,22 @@ qt_add_qml_module(appAccoFinder
         QML_FILES ui/features/home/components/HeaderComponent.qml
         QML_FILES ui/features/home/components/FooterComponent.qml
         RESOURCES Rescources.qrc
+        QML_FILES ui/features/dashboards/admins/screens/AdminsDashboardScreen.qml
+        QML_FILES ui/features/dashboards/admins/pages/AdminsDashboardPage.qml
+        QML_FILES ui/features/dashboards/agents/pages/AgentsDashboardPage.qml
+        QML_FILES ui/features/dashboards/agents/screens/AgentsDashboardScreen.qml
+        QML_FILES ui/features/dashboards/clients/pages/ClientsDashboardPage.qml
+        QML_FILES ui/features/dashboards/clients/screens/ClientDashboardScreen.qml
+        QML_FILES ui/components/buttons/AppIconButton.qml
+        QML_FILES ui/components/buttons/AppPrimaryButton.qml
+        QML_FILES ui/components/buttons/AppSecondaryButton.qml
+        QML_FILES ui/components/dialogs/AppAlertDialog.qml
+        QML_FILES ui/components/dialogs/AppConfirmationDialog.qml
+        QML_FILES ui/components/dialogs/AppLoadingDialog.qml
+        QML_FILES ui/components/indicators/AppSpinner.qml
+        QML_FILES ui/components/indicators/AppStatusIndicator.qml
+        QML_FILES ui/components/navigations/AppBottomNavBar.qml
+        QML_FILES ui/features/auth/components/AuthHeaderComponent.qml
 
 
 )

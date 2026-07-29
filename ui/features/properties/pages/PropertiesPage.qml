@@ -5,27 +5,29 @@ import "../../../utils" as UtilsModule
 Page{
     id:homePageId
     anchors.fill: parent
-        header:TextField{
-                id:searchbarId
-                implicitHeight: 40
-                Layout.preferredWidth: 300
-                placeholderText: qsTr("Search proprties..")
-                color: "#1e1e1e"
-                background: Rectangle{
-                    color: "#e1e1e1"
-                    radius: 10
+    focus: true
+
+    header:TextField{
+        id:searchbarId
+        implicitHeight: 40
+            Layout.preferredWidth: 300
+            placeholderText: qsTr("Search proprties..")
+            color: "#1e1e1e"
+            background: Rectangle{
+                color: "#e1e1e1"
+                radius: 10
+            }
+            Image {
+                id:searchIcon
+                anchors{
+                    right: parent.right
+                    rightMargin: 15
+                    verticalCenter: parent.verticalCenter
                 }
-                Image {
-                    id:searchIcon
-                    anchors{
-                        right: parent.right
-                        rightMargin: 15
-                        verticalCenter: parent.verticalCenter
-                    }
-                    source: "qrc:/ui/assets/search.png"
-                    width: 20
-                    height: 20
-                    fillMode: Image.PreserveAspectFit
+                source: "qrc:/ui/assets/search.png"
+                width: 20
+                height: 20
+                fillMode: Image.PreserveAspectFit
                 }
             // contentHeight: 20
         }
@@ -107,10 +109,7 @@ Page{
                     font.pixelSize: 13
                     font.bold: true
                     color: "#0066FF"
-
                 }
            }
         }
-
-
 }

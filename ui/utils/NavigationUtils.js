@@ -14,6 +14,10 @@ function push(screenUrl, properties = {}){
     }
     stackView.push(screenUrl, properties)
 }
+function replace(screenUrl, properties = {}){
+    if(!stackView) return
+    stackView.replace(screenUrl, properties)
+}
 function pop(){
     if(stackView && stackView.depth > 1) stackView.pop()
 }
@@ -68,6 +72,22 @@ function navigateToPropertyDetails(){
 }
 function navigateToPaymentStatus(){
     push("../features/payments/screens/PaymentStatusScreen.qml")
+}
+function navigateToDashboard(role){
+    switch(role){
+        case "admin":
+            replace("../features/dashboard/screens/AdminsDashboardScreen.qml")
+            break;
+        case "agent":
+            replace("../features/dashboard/screens/AgentsDashboardScreen.qml")
+            break;
+        case "client":
+            replace("../features/dashboard/screens/ClientsDashboardScreen.qml")
+            break;
+        default:
+            replace("../features/auth/screens/SignInScreen.qml")  
+    }
+
 }
 
 var Navigation = {

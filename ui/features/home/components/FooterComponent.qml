@@ -17,147 +17,114 @@ Page{
            Item {
               Layout.preferredWidth: 10
            }
-         BottomNavBar{
-               active: footerPageId.currentIndex === 0
-            contentItem: ColumnLayout {
-                 Image {
-                    id: home
-                    source: "qrc:/ui/assets/home.svg"
-                    fillMode: Image.PreserveAspectFit
-                    Layout.preferredHeight: 24
-                    Layout.preferredWidth: 24
-                    sourceSize.width: 48
-                    sourceSize.height: 48
-                    Layout.alignment: Qt.AlignHCenter
-                    antialiasing: true
-                    smooth: true
+         ColumnLayout{
+               spacing: 0
+             ToolButton{
+                  icon.name: "Home-icon"
+                  icon.source:"qrc:/ui/assets/home.svg"
+                  icon.height: 24
+                  icon.width: 24
+                  icon.color: currentIndex === 0 ? "blue" : "black"
+                  Layout.alignment: Qt.AlignHCenter
+                  background: null
+                  onClicked: {
+                       currentIndex = 0
+                       UtilsModule.NavigationUtils.replace("../features/home/screens/HomeScreen.qml")
+                  }
+
+             }
+             Text{
+                 text: qsTr("Home")
+                 Layout.alignment: Qt.AlignHCenter
+                 color: currentIndex === 0 ? "Blue" : "black"
+
+                 font{
+                     pointSize: 12
                  }
-                Label {
-                    Text {
-                        anchors.centerIn: parent
-                        text: qsTr("Home")
-                        color: "black"
-                    }
-                    Layout.alignment: Qt.AlignHCenter
-                    font {
-                        pointSize: 12
-                        bold: true
-                    }
-                }
-            }
-            onClicked: {
-               footerPageId.currentIndex = 0
-            }
-         }
-         BottomNavBar{
-               active: footerPageId.currentIndex === 1
-
-               contentItem: ColumnLayout {
-                   Image {
-                       id: property
-                       width: 24
-                       height: 24
-                       source: "qrc:/ui/assets/properties.svg"
-                       fillMode: Image.PreserveAspectFit
-                       //Layout.leftMargin: 24
-                       Layout.preferredHeight: 24
-                       Layout.preferredWidth: 24
-                       sourceSize.width: 48
-                       sourceSize.height: 48
-                       Layout.alignment: Qt.AlignHCenter
-                       antialiasing: true
-                       smooth: true
-                   }
-                   Label {
-                       Text {
-                           anchors.centerIn: parent
-                           text: qsTr("Properties")
-                           color: "black"
-                       }
-                       Layout.alignment: Qt.AlignHCenter
-                       font {
-                           pointSize: 12
-                           bold: true
-                       }
-                   }
-               }
-               onClicked: {
-                  footerPageId.currentIndex = 1
-                  UtilsModule.NavigationUtils.navigateToProperties();
-               }
+             }
          }
 
-         BottomNavBar{
-               active: footerPageId.currentIndex === 2
-               contentItem: ColumnLayout {
-                   Image {
-                       id: bookings
-                       width: 24
-                       height: 24
-                       source: "qrc:/ui/assets/bookings.svg"
-                       fillMode: Image.PreserveAspectFit
-                       Layout.preferredHeight: 24
-                       Layout.preferredWidth: 24
-                       sourceSize.width: 48
-                       sourceSize.height: 48
-                       Layout.alignment: Qt.AlignHCenter
-                       antialiasing: true
-                       smooth: true
-                   }
-                   Label {
-                       Text {
-                           anchors.centerIn: parent
-                           text: qsTr("Bookings")
-                           color: "black"
-                       }
-                       Layout.alignment: Qt.AlignHCenter
-                       font {
-                           pointSize: 12
-                           bold: true
-                       }
-                   }
-               }
-               onClicked: {
-                  footerPageId.currentIndex = 2
-                  UtilsModule.NavigationUtils.navigateToBookings();
-               }
-         }
-         BottomNavBar{
-            active: footerPageId.currentIndex === 3
+         ColumnLayout{
+               spacing: 0
+             ToolButton{
+                  icon.name: "Properties-icon"
+                  icon.source:"qrc:/ui/assets/properties.svg"
+                  icon.height: 24
+                  icon.width: 24
+                  icon.color: currentIndex === 1 ? "blue" : "black"
+                  Layout.alignment: Qt.AlignHCenter
+                  background: null
+                  onClicked: {
+                       footerPageId.currentIndex = 1
+                       UtilsModule.NavigationUtils.navigateToProperties();
+                  }
 
-               contentItem: ColumnLayout {
-                   Image {
-                       id: account
-                       width: 24
-                       height: 24
-                       source: "qrc:/ui/assets/account.svg"
-                       fillMode: Image.PreserveAspectFit
-                       Layout.preferredHeight: 24
-                       Layout.preferredWidth: 24
-                       sourceSize.width: 48
-                       sourceSize.height: 48
-                       Layout.alignment: Qt.AlignHCenter
-                       antialiasing: true
-                       smooth: true
-                   }
-                   Label {
-                       Text {
-                           anchors.centerIn: parent
-                           text: qsTr("Account")
-                           color: "black"
-                       }
-                       Layout.alignment: Qt.AlignHCenter
-                       font {
-                           pointSize: 12
-                           bold: true
-                       }
-                   }
-               }
-               onClicked: {
-                  footerPageId.currentIndex = 3
-                  UtilsModule.NavigationUtils.navigateToSignIn();
-              }
+             }
+             Text{
+                 text: qsTr("Properties")
+                 Layout.alignment: Qt.AlignHCenter
+                 color: currentIndex === 1 ? "Blue" : "black"
+
+                 font{
+                     pointSize: 12
+                 }
+             }
          }
-      }
-   }
+         ColumnLayout{
+               spacing: 0
+             ToolButton{
+                  icon.name: "Bookings-icon"
+                  icon.source:"qrc:/ui/assets/bookings.svg"
+                  icon.height: 24
+                  icon.width: 24
+                  icon.color: currentIndex === 2 ? "blue" : "black"
+                  Layout.alignment: Qt.AlignHCenter
+                  background: null
+                  onClicked: {
+                       footerPageId.currentIndex = 2
+                       UtilsModule.NavigationUtils.navigateToBookings();
+                  }
+
+             }
+             Text{
+                 text: qsTr("Bookings")
+                 Layout.alignment: Qt.AlignHCenter
+                 color: currentIndex === 2 ? "Blue" : "black"
+
+                 font{
+                     pointSize: 12
+                 }
+             }
+         }
+
+         ColumnLayout{
+               spacing: 0
+             ToolButton{
+                  icon.name: "Account-icon"
+                  icon.source:"qrc:/ui/assets/account.svg"
+                  icon.height: 24
+                  icon.width: 24
+                  icon.color: currentIndex === 3 ? "blue" : "black"
+                  Layout.alignment: Qt.AlignHCenter
+                  background: null
+                  onClicked: {
+                       footerPageId.currentIndex = 3
+                       UtilsModule.NavigationUtils.replace("../features/auth/screens/SignInScreen.qml")
+                  }
+             }
+             Text{
+                 text: qsTr("Account")
+                 Layout.alignment: Qt.AlignHCenter
+                 color: currentIndex === 3 ? "Blue" : "black"
+
+                 font{
+                     pointSize: 12
+                 }
+             }
+         }
+
+       }
+
+    }
+
 }
