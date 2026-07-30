@@ -239,11 +239,6 @@ qt_add_qml_module(appAccoFinder
         QML_FILES ui/features/home/components/HeaderComponent.qml
         QML_FILES ui/features/home/components/FooterComponent.qml
         RESOURCES Rescources.qrc
-<<<<<<< HEAD
-        QML_FILES ui/features/auth/pages/NamePage.qml
-        QML_FILES ui/features/auth/pages/EmailPage.qml
-        QML_FILES ui/features/auth/pages/PasswordPage.qml
-=======
         QML_FILES ui/features/dashboards/admins/screens/AdminsDashboardScreen.qml
         QML_FILES ui/features/dashboards/admins/pages/AdminsDashboardPage.qml
         QML_FILES ui/features/dashboards/agents/pages/AgentsDashboardPage.qml
@@ -255,7 +250,6 @@ qt_add_qml_module(appAccoFinder
         QML_FILES ui/features/auth/components/AuthHeaderComponent.qml
         QML_FILES ui/features/auth/pages/AccountPage.qml
         QML_FILES ui/features/auth/screens/AccountScreen.qml
->>>>>>> a2e31a62cceaed691db216f26e8a3420f2a2fc96
 
 )
 
