@@ -7,7 +7,6 @@ import "../../../utils" as UtilsModule
 
 Page {
     id: homePageId
-
     header: HeaderComponent {
         id: header
     }
@@ -175,6 +174,6 @@ Page {
             }*/
 
     footer: FooterComponent{
-
+        currentIndex: 0
     }
 }

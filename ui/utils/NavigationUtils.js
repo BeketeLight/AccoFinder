@@ -14,6 +14,10 @@ function push(screenUrl, properties = {}){
     }
     stackView.push(screenUrl, properties)
 }
+function replace(screenUrl, properties = {}){
+    if(!stackView) return
+    stackView.replace(screenUrl, properties)
+}
 function pop(){
     if(stackView && stackView.depth > 1) stackView.pop()
 }
@@ -36,7 +40,7 @@ function navigateToNotifications(){
     push("../features/notifications/screens/NotificationsScreen.qml")
 }
 function navigateToProperties(){
-    push("../features/properties/screens/PropertiesScreen.qml")
+    replace("../features/properties/screens/PropertiesScreen.qml")
 }
 function navigateToPayments(){
     push("../features/payments/screens/PaymentsScreen.qml")
@@ -49,7 +53,7 @@ function navigateToReviews(){
 }
 //========GLOBAL-AUTH=========
 function navigateToAccount(){
-    push("../features/auth/admins/screens/SignInScreen.qml")
+    replace("../features/auth/screens/SignInScreen.qml")
 }
 function navigateToAdmins(){
     push("../features/auth/admins/screens/OtpScree.qml")
@@ -69,6 +73,22 @@ function navigateToPropertyDetails(){
 function navigateToPaymentStatus(){
     push("../features/payments/screens/PaymentStatusScreen.qml")
 }
+function navigateToDashboard(role){
+    switch(role){
+        case "admin":
+            replace("../features/dashboard/screens/AdminsDashboardScreen.qml")
+            break;
+        case "agent":
+            replace("../features/dashboard/screens/AgentsDashboardScreen.qml")
+            break;
+        case "client":
+            replace("../features/dashboard/screens/ClientsDashboardScreen.qml")
+            break;
+        default:
+            replace("../features/auth/screens/SignInScreen.qml")  
+    }
+
+}
 
 var Navigation = {
     init: init,
@@ -76,6 +96,7 @@ var Navigation = {
     navigateToNotifications: navigateToNotifications,
     navigateToSignIn: navigateToSignIn,
     navigateToSignUp: navigateToSignUp,
+    navigateToAccount: navigateToAccount,
     navigateToProperties: navigateToProperties,
     navigateToBookings: navigateToBookings,
     navigateToPropertyDetails: navigateToPropertyDetails,

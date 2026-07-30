@@ -6,7 +6,7 @@ import "../../../app"
 import "../pages"
 Item {
     id: rootId
-
+    objectName: "HomeScreen"
     HomePage{
         anchors.fill: parent
     }

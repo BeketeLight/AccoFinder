@@ -22,18 +22,18 @@ qt_add_qml_module(appAccoFinder
         Main.qml
         ui/app/MainStackview.qml
         #=======GLOBAL COMPONETS========
-        ui/components/dialogs/AlertDialog.qml
-        ui/components/dialogs/LoadingDialog.qml
-        ui/components/dialogs/ConfirmationDialog.qml
-        ui/components/buttons/IconButton.qml
-        ui/components/buttons/PrimaryButton.qml
-        ui/components/buttons/SecondaryButton.qml
-        ui/components/inputs/Dropdown.qml
-        ui/components/inputs/SearchBar.qml
-        ui/components/inputs/TextInput.qml
-        ui/components/indicators/StatusIndicator.qml
-        ui/components/indicators/Spinner.qml
-        ui/components/navigations/BottomNavBar.qml
+        ui/components/dialogs/AppAlertDialog.qml
+        ui/components/dialogs/AppLoadingDialog.qml
+        ui/components/dialogs/AppConfirmationDialog.qml
+        ui/components/buttons/AppIconButton.qml
+        ui/components/buttons/AppPrimaryButton.qml
+        ui/components/buttons/AppSecondaryButton.qml
+        ui/components/inputs/AppDropdown.qml
+        ui/components/inputs/AppSearchBar.qml
+        ui/components/inputs/AppTextInput.qml
+        ui/components/indicators/AppStatusIndicator.qml
+        ui/components/indicators/AppSpinner.qml
+        ui/components/navigations/AppBottomNavBar.qml
 
         #========UTILS============
         ui/utils/Utils.js
@@ -237,12 +237,25 @@ qt_add_qml_module(appAccoFinder
         QML_FILES ui/features/properties/pages/MyPropertiesPage.qml
         QML_FILES ui/features/properties/screens/MyPropertiesScreen.qml
         QML_FILES ui/features/home/components/HeaderComponent.qml
-        QML_FILES ui/features/home/pages/WelcomePage.qml
         QML_FILES ui/features/home/components/FooterComponent.qml
         RESOURCES Rescources.qrc
+<<<<<<< HEAD
         QML_FILES ui/features/auth/pages/NamePage.qml
         QML_FILES ui/features/auth/pages/EmailPage.qml
         QML_FILES ui/features/auth/pages/PasswordPage.qml
+=======
+        QML_FILES ui/features/dashboards/admins/screens/AdminsDashboardScreen.qml
+        QML_FILES ui/features/dashboards/admins/pages/AdminsDashboardPage.qml
+        QML_FILES ui/features/dashboards/agents/pages/AgentsDashboardPage.qml
+        QML_FILES ui/features/dashboards/agents/screens/AgentsDashboardScreen.qml
+        QML_FILES ui/features/dashboards/clients/pages/ClientsDashboardPage.qml
+        QML_FILES ui/features/dashboards/clients/screens/ClientDashboardScreen.qml
+        QML_FILES ui/components/indicators/AppSpinner.qml
+        QML_FILES ui/components/indicators/AppStatusIndicator.qml
+        QML_FILES ui/features/auth/components/AuthHeaderComponent.qml
+        QML_FILES ui/features/auth/pages/AccountPage.qml
+        QML_FILES ui/features/auth/screens/AccountScreen.qml
+>>>>>>> a2e31a62cceaed691db216f26e8a3420f2a2fc96
 
 )
 
