@@ -240,6 +240,9 @@ qt_add_qml_module(appAccoFinder
         QML_FILES ui/features/home/pages/WelcomePage.qml
         QML_FILES ui/features/home/components/FooterComponent.qml
         RESOURCES Rescources.qrc
+        QML_FILES ui/features/auth/pages/NamePage.qml
+        QML_FILES ui/features/auth/pages/EmailPage.qml
+        QML_FILES ui/features/auth/pages/PasswordPage.qml
 
 )
 
