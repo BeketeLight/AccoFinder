@@ -10,23 +10,23 @@ Item {
     property string text: ""
     property string placeholder: "Search..."
     property bool enabled: true
-    property int height: 48
-    property int borderRadius: 24          // Fully rounded (Material style)
+    property int searchBarHeight: 37
+    property int borderRadius: 8          // Fully rounded (Material style)
 
     // Colors
-    property color backgroundColor: "#F1F3F4"
+    property color backgroundColor: "red"
     property color textColor: "#202124"
-    property color placeholderColor: "#5F6368"
+    property color placeholderColor: "#6B7280"
     property color iconColor: "#5F6368"
-    property color focusColor: "#E8F0FE"
+    property color focusColor: "yellow"
 
     // Signals
     signal accepted
     signal cleared
     signal textEdited
 
-    implicitWidth: 300
-    implicitHeight: height
+    implicitWidth: 350
+    implicitHeight: searchBarHeight
 
     // Background
 
@@ -35,6 +35,7 @@ Item {
         anchors.fill: parent
         radius: root.borderRadius
         color: searchField.activeFocus ? root.focusColor : root.backgroundColor
+        border.color: "black"
 
         // Soft elevation (Android style)
         layer.enabled: true
@@ -49,22 +50,30 @@ Item {
         }
     }
 
+    // Focus border (subtle)
+    Rectangle {
+        anchors.fill: parent
+        radius: root.borderRadius
+        color: "transparent"
+        border.color: searchField.activeFocus ? "#1A73E8" : "black"
+        border.width: 1.5
+        opacity: 0.6
+
+        Behavior on border.color {
+            ColorAnimation {
+                duration: 150
+            }
+        }
+    }
+
     // Content
 
     RowLayout {
         anchors.fill: parent
-        anchors.leftMargin: 14
-        anchors.rightMargin: 10
+        anchors.leftMargin: 5
+        anchors.rightMargin: 5
+        anchors.bottomMargin: 2.5
         spacing: 10
-
-        // Search Icon
-        Text {
-            text: "🔍"
-            font.pixelSize: 18
-            color: root.iconColor
-            Layout.alignment: Qt.AlignVCenter
-            opacity: 0.7
-        }
 
         // Text Field
         TextField {
@@ -75,7 +84,7 @@ Item {
             placeholderText: root.placeholder
             enabled: root.enabled
             color: root.textColor
-            placeholderTextColor: root.placeholderColor
+            placeholderTextColor: searchField.activeFocus ? "transparent" : root.placeholderColor
             font.pixelSize: 15
             selectByMouse: true
             background: Item {}          // Remove default background
@@ -91,8 +100,41 @@ Item {
             onAccepted: root.accepted()
         }
 
+        // Flexible spacer – takes all remaining space
+        Item {
+            Layout.fillWidth: true
+        }
+
+        // Search Icon
+        Image {
+            id: notifications
+            //fillMode: Image.PreserveAspectFit
+            source: "qrc:/ui/assets/search-icon.svg"
+            // 1. Force the size the layout will see
+            // width: 24
+            // height: 24
+            // or if inside a Layout:
+            Layout.preferredWidth: 32
+            Layout.preferredHeight: 32
+            Layout.maximumWidth: 32
+            Layout.maximumHeight: 32
+
+            // 2. Control how the SVG is rasterized (very important for quality + size)
+            sourceSize.width: 48          // 2× for retina / high-DPI
+            sourceSize.height: 48
+
+            fillMode: Image.PreserveAspectFit
+            antialiasing: true
+            smooth: true
+            MouseArea {
+                anchors.fill: parent
+                onClicked: UtilsModule.NavigationUtils.navigateToNotifications()
+            }
+        }
+
         // Clear Button (X)
         Item {
+            id: clearButton
             Layout.preferredWidth: 28
             Layout.preferredHeight: 28
             Layout.alignment: Qt.AlignVCenter
@@ -128,22 +170,6 @@ Item {
                         searchField.forceActiveFocus();
                     }
                 }
-            }
-        }
-    }
-
-    // Focus border (subtle)
-    Rectangle {
-        anchors.fill: parent
-        radius: root.borderRadius
-        color: "transparent"
-        border.color: searchField.activeFocus ? "#1A73E8" : "transparent"
-        border.width: 1.5
-        opacity: 0.6
-
-        Behavior on border.color {
-            ColorAnimation {
-                duration: 150
             }
         }
     }

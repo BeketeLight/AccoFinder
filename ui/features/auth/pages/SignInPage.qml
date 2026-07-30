@@ -41,10 +41,18 @@ Page {
             ToolButton {
                 Image {
                     id: home
+                    source: "qrc:/ui/assets/drawing.svg"
+                    fillMode: Image.PreserveAspectFit
                     width: 24
                     height: 24
-                    source: "qrc:/ui/assets/back.png"
-                    fillMode: Image.PreserveAspectFit
+                    Layout.leftMargin: 24
+                    Layout.preferredHeight: 24
+                    Layout.preferredWidth: 24
+                    sourceSize.width: 48
+                    sourceSize.height: 48
+                    //Layout.alignment: Qt.AlignHCenter
+                    antialiasing: true
+                    smooth: true
                     Layout.alignment: Qt.AlignHCenter
 
                     MouseArea {
