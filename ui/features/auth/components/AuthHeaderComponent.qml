@@ -2,51 +2,53 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 
-Item {
+ToolBar {
     id: headerId
+    height: 56
+    padding: 0
+    spacing: 0
 
-    RowLayout{
+    // Force background
+    background: Rectangle {
         anchors.fill: parent
-        spacing:20
+        color: "#ADD8E6"
+    }
 
-        Label{
-            id: registerId
-            Text{
-                Layout.leftMargin: 20
-                text: qsTr("Sign in/Register")
-                //Layout.alignment: Qt.AlignHCenter
-                color: "black"
-                font{
-                    bold: true
-                    pointSize: 12
-                }
-            }
-        }
-        Item{
-            Layout.preferredWidth: 50
+    contentItem: RowLayout {
+        anchors.fill: parent
+        anchors.leftMargin: 12
+        anchors.rightMargin: 12
+        spacing: 8
+
+        Label {
+            text: qsTr("Sign in/Register")
+            color: "black"
+            font.bold: true
+            font.pointSize: 18
+            Layout.fillWidth: true
+            verticalAlignment: Text.AlignVCenter
         }
 
-        ToolButton{
-            id: settings
+        ToolButton {
             icon.source: "qrc:/ui/assets/settings.svg"
-            icon.name: "Settings-icon"
-            icon.height: 24
             icon.width: 24
+            icon.height: 24
             icon.color: "black"
             background: null
             padding: 0
+            implicitWidth: 40
+            implicitHeight: 40
         }
 
-        ToolButton{
-            id: notifications
+        ToolButton {
             icon.source: "qrc:/ui/assets/notification.svg"
-            icon.name: "Notifications-icon"
-            icon.height: 24
             icon.width: 24
+            icon.height: 24
             icon.color: "black"
             background: null
             padding: 0
+            implicitWidth: 40
+            implicitHeight: 40
         }
-
     }
 }

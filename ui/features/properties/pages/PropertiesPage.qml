@@ -1,12 +1,12 @@
 import QtQuick 2.15
 import QtQuick.Controls
 import QtQuick.Layouts
+import "../../home/components"
 import "../../../utils" as UtilsModule
 Page{
     id:homePageId
     anchors.fill: parent
     focus: true
-
     header:TextField{
         id:searchbarId
         implicitHeight: 40
@@ -112,4 +112,8 @@ Page{
                 }
            }
         }
+    footer: FooterComponent{
+        currentIndex: 1
+    }
+
 }
