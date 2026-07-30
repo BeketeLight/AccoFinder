@@ -4,10 +4,10 @@ import QtQuick.Layouts
 import "../../../components/navigations"
 import "../../../utils" as UtilsModule
 
-Page{
+ToolBar{
    id: footerPageId
    property int currentIndex : 0
-   footer: ToolBar {
+    Component.onCompleted: console.log("FooterComponent loaded, currentIndex property exists")
       background: Rectangle {
            color: "white"
       }
@@ -28,6 +28,7 @@ Page{
                   Layout.alignment: Qt.AlignHCenter
                   background: null
                   onClicked: {
+                        if(currentIndex === 0) return
                        currentIndex = 0
                        UtilsModule.NavigationUtils.replace("../features/home/screens/HomeScreen.qml")
                   }
@@ -55,7 +56,8 @@ Page{
                   Layout.alignment: Qt.AlignHCenter
                   background: null
                   onClicked: {
-                       footerPageId.currentIndex = 1
+                     if(currentIndex === 1) return
+                       currentIndex = 1
                        UtilsModule.NavigationUtils.navigateToProperties();
                   }
 
@@ -81,7 +83,8 @@ Page{
                   Layout.alignment: Qt.AlignHCenter
                   background: null
                   onClicked: {
-                       footerPageId.currentIndex = 2
+                     if(currentIndex === 2) return
+                       currentIndex = 2
                        UtilsModule.NavigationUtils.navigateToBookings();
                   }
 
@@ -108,8 +111,9 @@ Page{
                   Layout.alignment: Qt.AlignHCenter
                   background: null
                   onClicked: {
-                       footerPageId.currentIndex = 3
-                       UtilsModule.NavigationUtils.replace("../features/auth/screens/SignInScreen.qml")
+                     if(currentIndex === 3) return
+                       currentIndex = 3
+                       UtilsModule.NavigationUtils.navigateToAccount()
                   }
              }
              Text{
@@ -125,6 +129,6 @@ Page{
 
        }
 
-    }
+   }
 
-}
+

@@ -40,7 +40,7 @@ function navigateToNotifications(){
     push("../features/notifications/screens/NotificationsScreen.qml")
 }
 function navigateToProperties(){
-    push("../features/properties/screens/PropertiesScreen.qml")
+    replace("../features/properties/screens/PropertiesScreen.qml")
 }
 function navigateToPayments(){
     push("../features/payments/screens/PaymentsScreen.qml")
@@ -53,7 +53,7 @@ function navigateToReviews(){
 }
 //========GLOBAL-AUTH=========
 function navigateToAccount(){
-    push("../features/auth/admins/screens/SignInScreen.qml")
+    replace("../features/auth/screens/SignInScreen.qml")
 }
 function navigateToAdmins(){
     push("../features/auth/admins/screens/OtpScree.qml")
@@ -96,6 +96,7 @@ var Navigation = {
     navigateToNotifications: navigateToNotifications,
     navigateToSignIn: navigateToSignIn,
     navigateToSignUp: navigateToSignUp,
+    navigateToAccount: navigateToAccount,
     navigateToProperties: navigateToProperties,
     navigateToBookings: navigateToBookings,
     navigateToPropertyDetails: navigateToPropertyDetails,

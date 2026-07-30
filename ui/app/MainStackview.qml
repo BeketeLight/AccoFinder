@@ -16,8 +16,14 @@ StackView{
         if(mainStackviewId.depth > 1){
             mainStackviewId.pop()
             event.accepted = true
-        } else{
-            event.accepted = false
+        }else{
+            var current = currentItem
+            if(current && current.objectName === "HomeScreen"){
+                event.accepted = false
+            }else{
+                UtilsModule.NavigationUtils.replace("../features/home/screens/HomeScreen.qml")
+                event.accepted = true
+            }
         }
     }
 }

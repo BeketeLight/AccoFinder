@@ -50,7 +50,7 @@ ColumnLayout {
         }
     }
 
-    SearchBar {
+    AppSearchBar {
         Layout.alignment: Qt.AlignHCenter
     }
 
