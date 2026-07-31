@@ -21,15 +21,15 @@ public:
         const QString& residentialAddress) override;
         
     void logOut() override;
+    void verifyEmail(const QString& otpCode) override;
 
 signals:
         void signInSucceded(User* user);
         void signInFailed(const QString& error);
-
         void signUpSucceded(User* user);
         void signUpFailed(const QString& error);
-
         void logOutSucceded();
+        void emailVerified(const QString& status);
 };
 
 #endif // USERREPOSITORYIMPL_H

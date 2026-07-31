@@ -122,3 +122,23 @@ void UserRepositoryImpl::logOut()
         
     });
 }
+
+void UserRepositoryImpl::verifyEmail(const QString &otpCode)
+{
+    QJsonObject payload;
+    payload["otpCode"] = otpCode;
+    APIClient::instance().post(
+        "/auth/verifyEmail",
+        payload,
+        [this](bool success,
+               const QJsonObject& response)
+        {
+
+            if(success){
+                emit emailVerified(response["status"].toString());
+            }
+
+        }
+    );
+}
+
