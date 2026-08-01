@@ -4,17 +4,25 @@ import QtQuick.Layouts
 import "../../../components/navigations"
 import "../../../utils" as UtilsModule
 
-ToolBar{
+Page{
    id: footerPageId
    property int currentIndex : 0
+   // At the top of FooterComponent.qml
+   signal tabSelected(int index)
+   signal homeTapped()
+   signal propertiesTapped()
+   signal bookingsTapped()
+   signal accountTapped()
+
     Component.onCompleted: console.log("FooterComponent loaded, currentIndex property exists")
       background: Rectangle {
-           color: "white"
+           color: "#F8F9FA"
       }
        RowLayout {
            anchors.fill: parent
 
            Item {
+
               Layout.preferredWidth: 10
            }
          ColumnLayout{
@@ -22,15 +30,17 @@ ToolBar{
              ToolButton{
                   icon.name: "Home-icon"
                   icon.source:"qrc:/ui/assets/home.svg"
-                  icon.height: 24
-                  icon.width: 24
+                  icon.height: 20
+                  icon.width: 20
                   icon.color: currentIndex === 0 ? "blue" : "black"
                   Layout.alignment: Qt.AlignHCenter
                   background: null
                   onClicked: {
                         if(currentIndex === 0) return
                        currentIndex = 0
-                       UtilsModule.NavigationUtils.replace("../features/home/screens/HomeScreen.qml")
+                        footerPageId.homeTapped()
+                        tabSelected(0)
+                      // UtilsModule.NavigationUtils.replace("../features/home/screens/HomeScreen.qml")
                   }
 
              }
@@ -50,15 +60,17 @@ ToolBar{
              ToolButton{
                   icon.name: "Properties-icon"
                   icon.source:"qrc:/ui/assets/properties.svg"
-                  icon.height: 24
-                  icon.width: 24
+                  icon.height: 20
+                  icon.width: 20
                   icon.color: currentIndex === 1 ? "blue" : "black"
                   Layout.alignment: Qt.AlignHCenter
                   background: null
                   onClicked: {
                      if(currentIndex === 1) return
+                        footerPageId.propertiesTapped()
                        currentIndex = 1
-                       UtilsModule.NavigationUtils.navigateToProperties();
+                        tabSelected(1)
+                       //UtilsModule.NavigationUtils.navigateToProperties();
                   }
 
              }
@@ -77,15 +89,17 @@ ToolBar{
              ToolButton{
                   icon.name: "Bookings-icon"
                   icon.source:"qrc:/ui/assets/bookings.svg"
-                  icon.height: 24
-                  icon.width: 24
+                  icon.height: 20
+                  icon.width: 20
                   icon.color: currentIndex === 2 ? "blue" : "black"
                   Layout.alignment: Qt.AlignHCenter
                   background: null
                   onClicked: {
                      if(currentIndex === 2) return
+                        footerPageId.bookingsTapped()
                        currentIndex = 2
-                       UtilsModule.NavigationUtils.navigateToBookings();
+                        tabSelected(2)
+                       //UtilsModule.NavigationUtils.navigateToBookings();
                   }
 
              }
@@ -105,15 +119,17 @@ ToolBar{
              ToolButton{
                   icon.name: "Account-icon"
                   icon.source:"qrc:/ui/assets/account.svg"
-                  icon.height: 24
-                  icon.width: 24
+                  icon.height: 20
+                  icon.width: 20
                   icon.color: currentIndex === 3 ? "blue" : "black"
                   Layout.alignment: Qt.AlignHCenter
                   background: null
                   onClicked: {
                      if(currentIndex === 3) return
                        currentIndex = 3
-                       UtilsModule.NavigationUtils.navigateToAccount()
+                       footerPageId.accountTapped()
+                       tabSelected(3)
+                       //UtilsModule.NavigationUtils.navigateToAccount()
                   }
              }
              Text{
@@ -126,9 +142,7 @@ ToolBar{
                  }
              }
          }
-
-       }
-
+       } 
    }
 
 

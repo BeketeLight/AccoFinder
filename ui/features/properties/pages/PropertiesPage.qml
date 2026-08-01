@@ -112,8 +112,8 @@ Page{
                 }
            }
         }
-    footer: FooterComponent{
-        currentIndex: 1
-    }
+    // footer: FooterComponent{
+    //     currentIndex: 1
+    // }
 
 }

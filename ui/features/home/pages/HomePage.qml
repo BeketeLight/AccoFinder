@@ -173,7 +173,7 @@ Page {
                 }
             }*/
 
-    footer: FooterComponent{
-        currentIndex: 0
-    }
+//     footer: FooterComponent{
+//         currentIndex: 0
+//     }
 }
