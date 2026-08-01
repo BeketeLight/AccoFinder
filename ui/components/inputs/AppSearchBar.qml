@@ -9,7 +9,7 @@ Item {
 
     property string text: ""
     property string placeholder: "Search..."
-    property bool enabled: true
+    property bool searchEnabled: true
     property int searchBarHeight: 37
     property int borderRadius: 8          // Fully rounded (Material style)
 
@@ -81,7 +81,7 @@ Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
             placeholderText: root.placeholder
-            enabled: root.enabled
+            enabled: root.searchEnabled
             color: root.textColor
             placeholderTextColor: root.placeholderColor
             font.pixelSize: 15

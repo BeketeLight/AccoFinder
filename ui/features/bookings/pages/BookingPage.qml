@@ -160,9 +160,9 @@ Page{
 
         // ... rest of your phone input + buttons
     }
-    footer: FooterComponent{
-        currentIndex: 3
-    }
+    // footer: FooterComponent{
+    //     currentIndex: 3
+    // }
 
 
 }

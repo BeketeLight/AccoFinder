@@ -1,93 +1,55 @@
-import QtQuick 2.15
+import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import "../../../utils" as UtilsModule
+//import "."
+import "../../../utils/NavigationUtils.js" as NavUtils
 
 Page{
     id:signInPageId
-    anchors.fill: parent 
+    //anchors.fill: parent
         // ===== HEADER WITH BACK BUTTON =====
-        header: ToolBar {
-            background: Rectangle {
-                color: "white"
-            }
+    header: ToolBar {
+        background: Rectangle {
+            color: "white"
+        }
+        contentHeight: 56
 
-            contentHeight: 56
+        RowLayout {
+            anchors.fill: parent
+            anchors.leftMargin: 8
+            anchors.rightMargin: 16
 
-            RowLayout {
-                anchors.fill: parent
-                anchors.leftMargin: 8
-                anchors.rightMargin: 16
+            spacing: 30
+            ToolButton{
+                display: AbstractButton.TextBesideIcon
+                    //icon.name: "back-icon"
+                icon.source:"qrc:/ui/assets/back-icon.svg"
+                icon.height: 24
+                icon.width: 24
+                icon.color: "black"
+                //icon.color: currentIndex === 2 ? "blue" : "black"
+                //                background: null
+                Layout.preferredHeight: 40
+                Layout.preferredWidth: 40
 
-                // Back Button
-                ToolButton {
-
-                    Image {
-                        id: home
-                        width: 24
-                        height: 24
-                        source: "qrc:/ui/assets/back.png"
-                        fillMode: Image.PreserveAspectFit
-                        Layout.alignment: Qt.AlignHCenter
-
-                        MouseArea{
-                            anchors.fill: parent
-                            onClicked: UtilsModule.NavigationUtils.pop()
-                        }
-                    }
-                    onClicked: UtilsModule.NavigationUtils.pop()
+                onClicked: {
+                    console.log("Back button tapped! Attempting pop...")
+                    NavUtils.pop()
                 }
-
-                Item { Layout.fillWidth: true }  // Spacer
             }
-        }
-
-    ColumnLayout{
-        anchors.centerIn: parent
-        width: parent.width * 0.85
-        spacing: 20
-        // Layout.preferredWidth: 680
-
-        Label{
-            text: "Sign Up"
-            font{
-                pointSize: 24
-                bold: true
+            Label {
+                text: qsTr("Sign Up/Register")
+                color: "black"
+                font.pointSize: 16
+                font.bold: true
+                Layout.fillWidth: true
+                verticalAlignment: Text.AlignVCenter
             }
-            Layout.alignment: Qt.AlignHCenter
-        }
-        Item{
-            Layout.preferredHeight: 50
-        }
 
-
-        TextField{
-            id: name
-            placeholderText: "Email"
-            Layout.fillWidth: true
-
-        }
-
-        TextField{
-            id: email
-            placeholderText: "Email"
-            Layout.fillWidth: true
-        }
-        TextField{
-            id: residenttialAddress
-            placeholderText: "Residential address"
-            Layout.fillWidth: true
-        }
-        Button{
-            id: signinButtonId
-            text: "SIGN UP"
-            Layout.fillWidth: true
-            Layout.preferredHeight: 50
-            background: Rectangle{
-                color: "#2563EB"
-                radius: 10
-            }
         }
     }
 
 }
+
+
+

@@ -68,27 +68,41 @@ qt_add_qml_module(appAccoFinder
         ui/features/home/models/HomeModel.qml
         ui/features/home/pages/HomePage.qml
         ui/features/home/delegates/HomeDelegate.qml
+        ui/features/home/components/HeaderComponent.qml
+        ui/features/home/components/FooterComponent.qml
         #======FEATURE-NOTIFICATIONS=====
         ui/features/notifications/components/NotificationItem.qml
         ui/features/notifications/delegates/NotificationDelegate.qml
         ui/features/notifications/models/NotificationListModel.qml
         ui/features/notifications/pages/NotificationsPage.qml
         ui/features/notifications/screens/NotificationListScreen.qml
-        #======FEATURE-AUTH-AGENTS======
-        ui/features/auth/agents/screens/EarningsScreen.qml
-        ui/features/auth/agents/screens/AgentDashboardScreen.qml
-        ui/features/auth/agents/pages/AgentsPage.qml
-        ui/features/auth/agents/models/AgentsModel.qml
-        ui/features/auth/agents/delegates/AgentsDelegate.qml
-        #======FEATURE-AUTH-ADMINS======
-        ui/features/auth/admins/screens/AdminDashboardScreen.qml
-        ui/features/auth/admins/screens/PropertyApprovalScreen.qml
-        ui/features/auth/admins/screens/RegisterAgentScreen.qml
-        ui/features/auth/admins/screens/UserManagementScreen.qml
-        ui/features/auth/admins/models/AdminsModel.qml
-        ui/features/auth/admins/delegates/AdminsDelegate.qml
-        ui/features/auth/admins/pages/RegisterAgentPage.qml
-        ui/features/auth/admins/pages/UserManagementPage.qml
+        # #======FEATURE-AUTH-AGENTS======
+        # ui/features/auth/agents/screens/EarningsScreen.qml
+        # ui/features/auth/agents/screens/AgentDashboardScreen.qml
+        # ui/features/auth/agents/pages/AgentsPage.qml
+        # ui/features/auth/agents/models/AgentsModel.qml
+        # ui/features/auth/agents/delegates/AgentsDelegate.qml
+        # #======FEATURE-AUTH-ADMINS======
+        # ui/features/auth/admins/screens/AdminDashboardScreen.qml
+        # ui/features/auth/admins/screens/PropertyApprovalScreen.qml
+        # ui/features/auth/admins/screens/RegisterAgentScreen.qml
+        # ui/features/auth/admins/screens/UserManagementScreen.qml
+        # ui/features/auth/admins/models/AdminsModel.qml
+        # ui/features/auth/admins/delegates/AdminsDelegate.qml
+        # ui/features/auth/admins/pages/RegisterAgentPage.qml
+        # ui/features/auth/admins/pages/UserManagementPage.qml
+
+        #========FEATURE-DASHBOARD-AGENT-ADMIN--CLIENT========
+        ui/features/dashboards/admins/pages/PropertyApprovalPage.qml
+        ui/features/dashboards/admins/pages/RegisterAgentPage.qml
+        ui/features/dashboards/admins/pages/UserManagementPage.qml
+        ui/features/dashboards/agents/pages/AgentEarningsPage.qml
+        ui/features/dashboards/admins/screens/AdminsDashboardScreen.qml
+        ui/features/dashboards/admins/pages/AdminsDashboardPage.qml
+        ui/features/dashboards/agents/pages/AgentsDashboardPage.qml
+        ui/features/dashboards/agents/screens/AgentsDashboardScreen.qml
+        ui/features/dashboards/clients/pages/ClientsDashboardPage.qml
+        ui/features/dashboards/clients/screens/ClientDashboardScreen.qml
         #======FEATURE-AUTH-GLOBAL======
         ui/features/auth/screens/ForgotPasswordScreen.qml
         ui/features/auth/screens/OtpScree.qml
@@ -96,6 +110,9 @@ qt_add_qml_module(appAccoFinder
         ui/features/auth/pages/SignInPage.qml
         ui/features/auth/pages/OtpPage.qml
         ui/features/auth/pages/ForgotPasswordPage.qml
+        ui/features/auth/pages/CreateAccountPage.qml
+        ui/features/auth/pages/SignUpPage.qml
+        ui/features/auth/screens/SignUpScreen.qml
         #======FEATURE-REVIEWS======
         ui/features/reviews/screens/WriteReviewScreen.qml
         ui/features/reviews/screens/ReviewListScreen.qml
@@ -130,7 +147,8 @@ qt_add_qml_module(appAccoFinder
         ui/features/properties/pages/PropertiesListPage.qml
         ui/features/properties/screens/PropertiesScreen.qml
         ui/features/properties/screens/AddPropertyScreen.qml
-
+        ui/features/properties/pages/MyPropertiesPage.qml
+        ui/features/properties/screens/MyPropertiesScreen.qml
 
     SOURCES
         src/models/user.h src/models/user.cpp
@@ -231,26 +249,7 @@ qt_add_qml_module(appAccoFinder
     RESOURCES
         android/src/com/accofinder/SplashActivity.java
         android/src/com/accofinder/SplashActivity.java
-        QML_FILES ui/features/auth/admins/pages/PropertyApprovalPage.qml
-        QML_FILES ui/features/auth/pages/SignUpPage.qml
-        QML_FILES ui/features/auth/screens/SignUpScreen.qml
-        QML_FILES ui/features/properties/pages/MyPropertiesPage.qml
-        QML_FILES ui/features/properties/screens/MyPropertiesScreen.qml
-        QML_FILES ui/features/home/components/HeaderComponent.qml
-        QML_FILES ui/features/home/components/FooterComponent.qml
         RESOURCES Rescources.qrc
-        QML_FILES ui/features/dashboards/admins/screens/AdminsDashboardScreen.qml
-        QML_FILES ui/features/dashboards/admins/pages/AdminsDashboardPage.qml
-        QML_FILES ui/features/dashboards/agents/pages/AgentsDashboardPage.qml
-        QML_FILES ui/features/dashboards/agents/screens/AgentsDashboardScreen.qml
-        QML_FILES ui/features/dashboards/clients/pages/ClientsDashboardPage.qml
-        QML_FILES ui/features/dashboards/clients/screens/ClientDashboardScreen.qml
-        QML_FILES ui/components/indicators/AppSpinner.qml
-        QML_FILES ui/components/indicators/AppStatusIndicator.qml
-        QML_FILES ui/features/auth/components/AuthHeaderComponent.qml
-        QML_FILES ui/features/auth/pages/AccountPage.qml
-        QML_FILES ui/features/auth/screens/AccountScreen.qml
-
 )
 
 # ─────────────────────────────────────────────────────────────
