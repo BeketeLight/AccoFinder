@@ -1,445 +1,356 @@
-import QtQuick 2.15
-import QtQuick.Controls 2.15
-import QtQuick.Layouts 1.15
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
 import "../../../utils" as UtilsModule
 
 Page {
-    id: signUpPageId
-    anchors.fill: parent
-    background: Rectangle {
-        color: "#F5F7FA"  // Soft background
-    }
+    id: root
 
-    // ===== HEADER WITH BACK BUTTON =====
-    header: ToolBar {
-        background: Rectangle {
-            color: "#FFFFFF"
-            // Simple shadow line
-            Rectangle {
-                anchors {
-                    left: parent.left
-                    right: parent.right
-                    bottom: parent.bottom
-                }
-                height: 1
-                color: "#E2E8F0"
-            }
+    property int currentStep: 0
+    property color primaryColor: "#2563EB"
+    property color secondaryColor: "#22C55E"
+    property color pageColor: "#FFFFFF"
+    property color surfaceColor: "#F5F5F5"
+    property color softBlueColor: "#EFF6FF"
+    property color softGreenColor: "#ECFDF5"
+    property color textColor: "#1F2937"
+    property color mutedColor: "#6B7280"
+    property color borderColor: "#E5E7EB"
+    property color warningColor: "#F59E0B"
+    property color errorColor: "#EF4444"
+
+    function goBack() {
+        if (currentStep > 0) {
+            currentStep -= 1;
+            return;
         }
 
+        UtilsModule.NavigationUtils.pop();
+    }
+
+    function fullName() {
+        return (nameStep.firstName + " " + nameStep.lastName).trim();
+    }
+
+    anchors.fill: parent
+
+    background: Rectangle {
+        color: root.pageColor
+    }
+
+    header: ToolBar {
         contentHeight: 56
+
+        background: Rectangle {
+            color: root.pageColor
+
+            Rectangle {
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                height: 1
+                color: root.borderColor
+            }
+        }
 
         RowLayout {
             anchors.fill: parent
-            anchors.leftMargin: 8
-            anchors.rightMargin: 16
+            anchors.leftMargin: 12
+            anchors.rightMargin: 20
+            spacing: 10
 
-            // Back Button
             ToolButton {
-                Image {
-                    id: home
-                    width: 24
-                    height: 24
-                    source: "qrc:/ui/assets/back.png"
-                    fillMode: Image.PreserveAspectFit
-                    Layout.alignment: Qt.AlignHCenter
-
-                    MouseArea {
-                        anchors.fill: parent
-                        onClicked: UtilsModule.NavigationUtils.pop()
-                    }
-                }
-                onClicked: UtilsModule.NavigationUtils.pop()
-            }
-
-            // App Title
-            Label {
-                text: "AccoFinder"
-                font {
-                    pixelSize: 18
-                    bold: true
-                }
-                color: "#1F2937"
-                Layout.alignment: Qt.AlignVCenter
-            }
-
-            Item { Layout.fillWidth: true }  // Spacer
-        }
-    }
-
-    // ===== MAIN CONTENT =====
-    ColumnLayout {
-        anchors {
-            top: parent.top
-            left: parent.left
-            right: parent.right
-            topMargin: 30
-            leftMargin: 24
-            rightMargin: 24
-        }
-        spacing: 24
-
-        // Welcome Label
-        Label {
-            text: "Create Account"
-            font.pixelSize: 28
-            font.bold: true
-            color: "#1F2937"
-            Layout.fillWidth: true
-        }
-
-        Label {
-            text: "Sign up to get started with AccoFinder"
-            font.pixelSize: 14
-            color: "#6B7280"
-            Layout.fillWidth: true
-            Layout.topMargin: -8
-        }
-
-        // Spacer
-        Item {
-            Layout.preferredHeight: 10
-        }
-
-        // Full Name Field
-        ColumnLayout {
-            Layout.fillWidth: true
-            spacing: 6
-
-            Label {
-                text: "Full Name"
-                font {
-                    pixelSize: 13
-                    bold: true
-                }
-                color: "#374151"
-                Layout.fillWidth: true
-            }
-
-            TextField {
-                id: name
-                placeholderText: "Enter your full name"
-                Layout.fillWidth: true
-                Layout.preferredHeight: 48
-                font.pixelSize: 14
-                color: "#1F2937"
-                placeholderTextColor: "#94A3B8"
-
-                background: Rectangle {
-                    color: "#F8FAFC"
-                    radius: 10
-                    border.color: name.activeFocus ? "#2563EB" : "#E2E8F0"
-                    border.width: name.activeFocus ? 2 : 1
-                }
-                padding: 12
-                selectByMouse: true
-            }
-        }
-
-        // Email Field
-        ColumnLayout {
-            Layout.fillWidth: true
-            spacing: 6
-
-            Label {
-                text: "Email"
-                font {
-                    pixelSize: 13
-                    bold: true
-                }
-                color: "#374151"
-                Layout.fillWidth: true
-            }
-
-            TextField {
-                id: email
-                placeholderText: "Enter your email"
-                Layout.fillWidth: true
-                Layout.preferredHeight: 48
-                font.pixelSize: 14
-                color: "#1F2937"
-                placeholderTextColor: "#94A3B8"
-
-                background: Rectangle {
-                    color: "#F8FAFC"
-                    radius: 10
-                    border.color: email.activeFocus ? "#2563EB" : "#E2E8F0"
-                    border.width: email.activeFocus ? 2 : 1
-                }
-                padding: 12
-                selectByMouse: true
-            }
-        }
-
-        // Password Field
-        ColumnLayout {
-            Layout.fillWidth: true
-            spacing: 6
-
-            Label {
-                text: "Password"
-                font {
-                    pixelSize: 13
-                    bold: true
-                }
-                color: "#374151"
-                Layout.fillWidth: true
-            }
-
-            TextField {
-                id: password
-                placeholderText: "Create a password"
-                echoMode: TextInput.Password
-                Layout.fillWidth: true
-                Layout.preferredHeight: 48
-                font.pixelSize: 14
-                color: "#1F2937"
-                placeholderTextColor: "#94A3B8"
-
-                background: Rectangle {
-                    color: "#F8FAFC"
-                    radius: 10
-                    border.color: password.activeFocus ? "#2563EB" : "#E2E8F0"
-                    border.width: password.activeFocus ? 2 : 1
-                }
-                padding: 12
-                selectByMouse: true
-            }
-        }
-
-        // Confirm Password Field
-        ColumnLayout {
-            Layout.fillWidth: true
-            spacing: 6
-
-            Label {
-                text: "Confirm Password"
-                font {
-                    pixelSize: 13
-                    bold: true
-                }
-                color: "#374151"
-                Layout.fillWidth: true
-            }
-
-            TextField {
-                id: confirmPassword
-                placeholderText: "Confirm your password"
-                echoMode: TextInput.Password
-                Layout.fillWidth: true
-                Layout.preferredHeight: 48
-                font.pixelSize: 14
-                color: "#1F2937"
-                placeholderTextColor: "#94A3B8"
-
-                background: Rectangle {
-                    color: "#F8FAFC"
-                    radius: 10
-                    border.color: confirmPassword.activeFocus ? "#2563EB" : "#E2E8F0"
-                    border.width: confirmPassword.activeFocus ? 2 : 1
-                }
-                padding: 12
-                selectByMouse: true
-            }
-        }
-
-        // Residential Address Field
-        ColumnLayout {
-            Layout.fillWidth: true
-            spacing: 6
-
-            Label {
-                text: "Residential Address"
-                font {
-                    pixelSize: 13
-                    bold: true
-                }
-                color: "#374151"
-                Layout.fillWidth: true
-            }
-
-            TextField {
-                id: residentialAddress
-                placeholderText: "Enter your residential address"
-                Layout.fillWidth: true
-                Layout.preferredHeight: 48
-                font.pixelSize: 14
-                color: "#1F2937"
-                placeholderTextColor: "#94A3B8"
-
-                background: Rectangle {
-                    color: "#F8FAFC"
-                    radius: 10
-                    border.color: residentialAddress.activeFocus ? "#2563EB" : "#E2E8F0"
-                    border.width: residentialAddress.activeFocus ? 2 : 1
-                }
-                padding: 12
-                selectByMouse: true
-            }
-        }
-
-        // Sign Up Button
-        Button {
-            id: signUpButtonId
-            text: "SIGN UP"
-            Layout.fillWidth: true
-            Layout.preferredHeight: 50
-            Layout.topMargin: 8
-
-            font {
-                bold: true
-                pixelSize: 15
-                letterSpacing: 0.5
-            }
-
-            contentItem: Text {
-                text: signUpButtonId.text
-                font: signUpButtonId.font
-                color: "#FFFFFF"
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-            }
-
-            background: Rectangle {
-                color: "#2563EB"
-                radius: 10
-
-                MouseArea {
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    cursorShape: Qt.PointingHandCursor
-                    onEntered: parent.color = "#1D4ED8"
-                    onExited: parent.color = "#2563EB"
-                }
-            }
-
-            onClicked: {
-                // Validation
-                if (name.text === "" || email.text === "" || password.text === "" ||
-                    confirmPassword.text === "" || residentialAddress.text === "") {
-                    console.log("Please fill all fields")
-                } else if (password.text !== confirmPassword.text) {
-                    console.log("Passwords do not match")
-                } else {
-                    console.log("Sign up successful")
-                    // Add navigation logic here
-                }
-            }
-        }
-
-        // OR Divider
-        RowLayout {
-            Layout.fillWidth: true
-            Layout.topMargin: 12
-            spacing: 12
-
-            Rectangle {
-                Layout.fillWidth: true
-                height: 1
-                color: "#E2E8F0"
+                Layout.preferredWidth: 40
+                Layout.preferredHeight: 40
+                icon.source: "qrc:/ui/assets/back.png"
+                icon.width: 20
+                icon.height: 20
+                icon.color: root.textColor
+                onClicked: root.goBack()
             }
 
             Label {
-                text: "OR"
-                color: "#94A3B8"
-                font.pixelSize: 12
-                Layout.alignment: Qt.AlignHCenter
-            }
-
-            Rectangle {
+                text: "Acco Finder"
+                color: root.textColor
+                font.pixelSize: 18
+                font.bold: true
                 Layout.fillWidth: true
-                height: 1
-                color: "#E2E8F0"
             }
-        }
-
-        // Google Sign Up Button
-        Button {
-            id: googleButton
-            text: "Sign up with Google"
-            Layout.fillWidth: true
-            Layout.preferredHeight: 48
-
-            font {
-                bold: true
-                pixelSize: 14
-            }
-
-            contentItem: Text {
-                text: googleButton.text
-                font: googleButton.font
-                color: "#1F2937"
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-            }
-
-            background: Rectangle {
-                color: "#FFFFFF"
-                radius: 10
-                border.color: "#E2E8F0"
-                border.width: 1
-
-                MouseArea {
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    cursorShape: Qt.PointingHandCursor
-                    onEntered: parent.color = "#F8FAFC"
-                    onExited: parent.color = "#FFFFFF"
-                }
-            }
-
-            onClicked: {
-                console.log("Google Sign Up clicked")
-            }
-        }
-
-        // Spacer
-        Item {
-            Layout.preferredHeight: 10
-        }
-
-        // Sign In Link
-        RowLayout {
-            Layout.fillWidth: true
-            spacing: 4
-            Layout.alignment: Qt.AlignHCenter
 
             Label {
-                text: "Already have an account?"
-                color: "#6B7280"
+                text: (root.currentStep + 1) + "/4"
+                color: root.mutedColor
                 font.pixelSize: 13
             }
-
-            Label {
-                text: "Sign In"
-                color: "#2563EB"
-                font {
-                    pixelSize: 13
-                    bold: true
-                }
-
-                MouseArea {
-                    anchors.fill: parent
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: UtilsModule.NavigationUtils.pop()
-                }
-            }
-        }
-
-        // Bottom spacer
-        Item {
-            Layout.fillHeight: true
         }
     }
 
-    // Keyboard handling for Enter key
-    Shortcut {
-        sequence: "Return"
-        onActivated: {
-            if (name.activeFocus || email.activeFocus || password.activeFocus ||
-                confirmPassword.activeFocus || residentialAddress.activeFocus) {
-                signUpButtonId.clicked()
+    Flickable {
+        anchors.fill: parent
+        contentWidth: width
+        contentHeight: contentColumn.implicitHeight + 56
+        boundsBehavior: Flickable.StopAtBounds
+        clip: true
+
+        ColumnLayout {
+            id: contentColumn
+            width: Math.min(parent.width - 40, 440)
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: parent.top
+            anchors.topMargin: 24
+            spacing: 20
+
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 142
+                radius: 18
+                color: root.softBlueColor
+                border.color: "#DBEAFE"
+                border.width: 1
+
+                Rectangle {
+                    width: 42
+                    height: 42
+                    radius: 21
+                    color: root.secondaryColor
+                    opacity: 0.18
+                    anchors.right: parent.right
+                    anchors.rightMargin: 22
+                    anchors.top: parent.top
+                    anchors.topMargin: 18
+                }
+
+                RowLayout {
+                    anchors.fill: parent
+                    anchors.margins: 18
+                    spacing: 14
+
+                    Rectangle {
+                        Layout.preferredWidth: 62
+                        Layout.preferredHeight: 62
+                        radius: 18
+                        color: root.pageColor
+                        border.color: "#BFDBFE"
+                        border.width: 1
+
+                        Text {
+                            anchors.centerIn: parent
+                            text: "AF"
+                            color: root.primaryColor
+                            font.pixelSize: 22
+                            font.bold: true
+                        }
+
+                        Rectangle {
+                            width: 16
+                            height: 16
+                            radius: 8
+                            color: root.secondaryColor
+                            anchors.right: parent.right
+                            anchors.bottom: parent.bottom
+                            border.color: root.pageColor
+                            border.width: 2
+                        }
+                    }
+
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        spacing: 5
+
+                        Label {
+                            text: "Create your account"
+                            color: root.textColor
+                            font.pixelSize: 25
+                            font.bold: true
+                            wrapMode: Text.WordWrap
+                            Layout.fillWidth: true
+                        }
+
+                        Label {
+                            text: "A guided setup for safer accommodation search and booking updates."
+                            color: root.mutedColor
+                            font.pixelSize: 13
+                            lineHeight: 1.12
+                            wrapMode: Text.WordWrap
+                            Layout.fillWidth: true
+                        }
+                    }
+                }
+            }
+
+            ColumnLayout {
+                Layout.fillWidth: true
+                spacing: 10
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: 8
+
+                    Repeater {
+                        model: 4
+
+                        Rectangle {
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: 6
+                            radius: 3
+                            color: index <= root.currentStep ? root.primaryColor : root.borderColor
+
+                            Behavior on color {
+                                ColorAnimation {
+                                    duration: 160
+                                }
+                            }
+                        }
+                    }
+                }
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: 8
+
+                    Label {
+                        text: root.currentStep === 0 ? "Personal details"
+                              : root.currentStep === 1 ? "Email verification"
+                              : root.currentStep === 2 ? "Password setup"
+                              : "Confirm OTP"
+                        color: root.textColor
+                        font.pixelSize: 14
+                        font.bold: true
+                        Layout.fillWidth: true
+                    }
+
+                    Rectangle {
+                        Layout.preferredWidth: 58
+                        Layout.preferredHeight: 28
+                        radius: 14
+                        color: root.currentStep === 3 ? root.softGreenColor : root.softBlueColor
+                        border.color: root.currentStep === 3 ? "#BBF7D0" : "#BFDBFE"
+
+                        Label {
+                            anchors.centerIn: parent
+                            text: (root.currentStep + 1) + " of 4"
+                            color: root.currentStep === 3 ? "#166534" : root.primaryColor
+                            font.pixelSize: 11
+                            font.bold: true
+                        }
+                    }
+                }
+
+                Label {
+                    text: root.currentStep === 0 ? "Only names are collected in this step."
+                          : root.currentStep === 1 ? "The backend email verification call should attach here."
+                          : root.currentStep === 2 ? "Password is collected before OTP confirmation."
+                          : "Enter the email code to finish account verification."
+                    color: root.mutedColor
+                    font.pixelSize: 12
+                    wrapMode: Text.WordWrap
+                    Layout.fillWidth: true
+                }
+            }
+
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.preferredHeight: stepStack.implicitHeight + 28
+                radius: 16
+                color: root.pageColor
+                border.color: root.borderColor
+                border.width: 1
+
+                StackLayout {
+                    id: stepStack
+                    anchors.fill: parent
+                    anchors.margins: 14
+                    currentIndex: root.currentStep
+
+                    NamePage {
+                        id: nameStep
+                        primaryColor: root.primaryColor
+                        secondaryColor: root.secondaryColor
+                        surfaceColor: root.surfaceColor
+                        textColor: root.textColor
+                        mutedColor: root.mutedColor
+                        borderColor: root.borderColor
+                        errorColor: root.errorColor
+                        Layout.fillWidth: true
+                        onNextRequested: root.currentStep = 1
+                    }
+
+                    EmailPage {
+                        id: emailStep
+                        primaryColor: root.primaryColor
+                        secondaryColor: root.secondaryColor
+                        surfaceColor: root.surfaceColor
+                        textColor: root.textColor
+                        mutedColor: root.mutedColor
+                        borderColor: root.borderColor
+                        errorColor: root.errorColor
+                        Layout.fillWidth: true
+                        onNextRequested: root.currentStep = 2
+                    }
+
+                    PasswordPage {
+                        id: passwordStep
+                        primaryColor: root.primaryColor
+                        secondaryColor: root.secondaryColor
+                        surfaceColor: root.surfaceColor
+                        textColor: root.textColor
+                        mutedColor: root.mutedColor
+                        borderColor: root.borderColor
+                        errorColor: root.errorColor
+                        Layout.fillWidth: true
+                        onNextRequested: {
+                            console.log("TODO AuthController.signUp",
+                                        root.fullName(),
+                                        emailStep.email);
+                            root.currentStep = 3;
+                        }
+                    }
+
+                    OtpPage {
+                        id: otpStep
+                        email: emailStep.email
+                        primaryColor: root.primaryColor
+                        surfaceColor: root.surfaceColor
+                        textColor: root.textColor
+                        mutedColor: root.mutedColor
+                        borderColor: root.borderColor
+                        errorColor: root.errorColor
+                        Layout.fillWidth: true
+                        onConfirmed: UtilsModule.NavigationUtils.navigateToSignIn()
+                    }
+                }
+            }
+
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 54
+                radius: 12
+                color: root.surfaceColor
+
+                RowLayout {
+                    anchors.centerIn: parent
+                    spacing: 4
+
+                    Label {
+                        text: "Already have an account?"
+                        color: root.mutedColor
+                        font.pixelSize: 13
+                    }
+
+                    Label {
+                        text: "Sign in"
+                        color: root.primaryColor
+                        font.pixelSize: 13
+                        font.bold: true
+
+                        MouseArea {
+                            anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: UtilsModule.NavigationUtils.navigateToSignIn()
+                        }
+                    }
+                }
             }
         }
     }
 }
-

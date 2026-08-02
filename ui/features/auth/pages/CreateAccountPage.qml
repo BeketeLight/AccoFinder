@@ -1,40 +1,285 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import "../screens"
-//import "../components"
-import "../../home/components"
 import "../../../utils/NavigationUtils.js" as NavUtils
-Page{
-    id: root
-    // anchors.fill: parent
 
-    // header: AuthHeaderComponent{
-    // }
-    ColumnLayout {
-            anchors.centerIn: parent
-            spacing: 20
+Page {
+    id: root
+
+    property color primaryColor: "#2563EB"
+    property color secondaryColor: "#22C55E"
+    property color pageColor: "#FFFFFF"
+    property color surfaceColor: "#F5F5F5"
+    property color softBlueColor: "#EFF6FF"
+    property color softGreenColor: "#ECFDF5"
+    property color textColor: "#1F2937"
+    property color mutedColor: "#6B7280"
+    property color borderColor: "#E5E7EB"
+
+    anchors.fill: parent
+
+    background: Rectangle {
+        color: root.pageColor
+    }
+
+    header: ToolBar {
+        contentHeight: 56
+
+        background: Rectangle {
+            color: root.pageColor
+
+            Rectangle {
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                height: 1
+                color: root.borderColor
+            }
+        }
+
+        RowLayout {
+            anchors.fill: parent
+            anchors.leftMargin: 12
+            anchors.rightMargin: 20
+            spacing: 10
+
+            ToolButton {
+                Layout.preferredWidth: 40
+                Layout.preferredHeight: 40
+                icon.source: "qrc:/ui/assets/back.png"
+                icon.width: 20
+                icon.height: 20
+                icon.color: root.textColor
+                onClicked: NavUtils.pop()
+            }
 
             Label {
-                text: "Welcome to AccoFinder"
-                color: "black"
-                font.pixelSize: 20
+                text: "Acco Finder"
+                color: root.textColor
+                font.pixelSize: 18
                 font.bold: true
+                Layout.fillWidth: true
+            }
+        }
+    }
+
+    Flickable {
+        anchors.fill: parent
+        contentWidth: width
+        contentHeight: contentColumn.implicitHeight + 48
+        boundsBehavior: Flickable.StopAtBounds
+        clip: true
+
+        ColumnLayout {
+            id: contentColumn
+            width: Math.min(parent.width - 40, 440)
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: parent.top
+            anchors.topMargin: 28
+            spacing: 18
+
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 176
+                radius: 18
+                color: root.softBlueColor
+                border.color: "#DBEAFE"
+                border.width: 1
+
+                Rectangle {
+                    width: 54
+                    height: 54
+                    radius: 27
+                    color: root.secondaryColor
+                    opacity: 0.16
+                    anchors.right: parent.right
+                    anchors.rightMargin: 22
+                    anchors.top: parent.top
+                    anchors.topMargin: 20
+                }
+
+                ColumnLayout {
+                    anchors.fill: parent
+                    anchors.margins: 20
+                    spacing: 10
+
+                    Rectangle {
+                        Layout.preferredWidth: 64
+                        Layout.preferredHeight: 64
+                        radius: 18
+                        color: root.pageColor
+                        border.color: "#BFDBFE"
+                        border.width: 1
+
+                        Text {
+                            anchors.centerIn: parent
+                            text: "AF"
+                            color: root.primaryColor
+                            font.pixelSize: 23
+                            font.bold: true
+                        }
+
+                        Rectangle {
+                            width: 17
+                            height: 17
+                            radius: 9
+                            color: root.secondaryColor
+                            anchors.right: parent.right
+                            anchors.bottom: parent.bottom
+                            border.color: root.pageColor
+                            border.width: 2
+                        }
+                    }
+
+                    Label {
+                        text: "Find your next place with confidence"
+                        color: root.textColor
+                        font.pixelSize: 25
+                        font.bold: true
+                        wrapMode: Text.WordWrap
+                        Layout.fillWidth: true
+                    }
+
+                    Label {
+                        text: "Create an account to save accommodation options, manage bookings, and receive important updates."
+                        color: root.mutedColor
+                        font.pixelSize: 13
+                        lineHeight: 1.12
+                        wrapMode: Text.WordWrap
+                        Layout.fillWidth: true
+                    }
+                }
             }
 
-            Button {
-                text: "Register New Account"
-                onClicked: {
-                    // Pushes onto mainStack -> covers the footer!
-                    NavUtils.navigateToSignUp()
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.preferredHeight: benefitsColumn.implicitHeight + 28
+                radius: 16
+                color: root.pageColor
+                border.color: root.borderColor
+                border.width: 1
+
+                ColumnLayout {
+                    id: benefitsColumn
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.top: parent.top
+                    anchors.margins: 14
+                    spacing: 12
+
+                    Label {
+                        text: "Your account helps you"
+                        color: root.textColor
+                        font.pixelSize: 15
+                        font.bold: true
+                        Layout.fillWidth: true
+                    }
+
+                    Repeater {
+                        model: [
+                            "Keep booking details in one place",
+                            "Receive verification and security updates",
+                            "Contact landlords and agents more easily"
+                        ]
+
+                        RowLayout {
+                            Layout.fillWidth: true
+                            spacing: 10
+
+                            Rectangle {
+                                Layout.preferredWidth: 24
+                                Layout.preferredHeight: 24
+                                radius: 12
+                                color: root.softGreenColor
+
+                                Text {
+                                    anchors.centerIn: parent
+                                    text: "OK"
+                                    color: "#166534"
+                                    font.pixelSize: 9
+                                    font.bold: true
+                                }
+                            }
+
+                            Label {
+                                text: modelData
+                                color: root.mutedColor
+                                font.pixelSize: 13
+                                wrapMode: Text.WordWrap
+                                Layout.fillWidth: true
+                            }
+                        }
+                    }
                 }
             }
 
             Button {
-                text: "Sign In"
-                onClicked: {
-                    NavUtils.navigateToSignIn()
+                id: createButton
+                text: "Create account"
+                Layout.fillWidth: true
+                Layout.preferredHeight: 54
+                Layout.topMargin: 8
+
+                contentItem: Text {
+                    text: createButton.text
+                    color: "#FFFFFF"
+                    font.pixelSize: 15
+                    font.bold: true
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                }
+
+                background: Rectangle {
+                    radius: 12
+                    color: createButton.down ? "#1D4ED8" : root.primaryColor
+                }
+
+                onClicked: NavUtils.navigateToSignUp()
+            }
+
+            Button {
+                id: signInButton
+                text: "Sign in"
+                Layout.fillWidth: true
+                Layout.preferredHeight: 52
+
+                contentItem: Text {
+                    text: signInButton.text
+                    color: root.primaryColor
+                    font.pixelSize: 15
+                    font.bold: true
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                }
+
+                background: Rectangle {
+                    radius: 12
+                    color: signInButton.down ? root.softBlueColor : root.pageColor
+                    border.color: root.primaryColor
+                    border.width: 1
+                }
+
+                onClicked: NavUtils.navigateToSignIn()
+            }
+
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 58
+                radius: 12
+                color: root.surfaceColor
+
+                Label {
+                    anchors.fill: parent
+                    anchors.margins: 14
+                    text: "Use the same email you want to receive booking and verification messages on."
+                    color: root.mutedColor
+                    font.pixelSize: 12
+                    lineHeight: 1.1
+                    wrapMode: Text.WordWrap
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
                 }
             }
+        }
     }
 }

@@ -1,276 +1,284 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import "../screens"
-import "../../home/components"
 import "../../../utils" as UtilsModule
-import "../../../components/buttons"
 import "../../../components/inputs"
-import "../../../components/indicators"
 
 Page {
-    id: signInPage
+    id: root
+
+    property color primaryColor: "#2563EB"
+    property color secondaryColor: "#22C55E"
+    property color pageColor: "#FFFFFF"
+    property color surfaceColor: "#F5F5F5"
+    property color textColor: "#1F2937"
+    property color mutedColor: "#6B7280"
+    property color borderColor: "#E5E7EB"
+    property color errorColor: "#EF4444"
+
     anchors.fill: parent
+
     background: Rectangle {
-        color: "#F5F7FA"  // Soft background
+        color: root.pageColor
     }
 
-    // ===== HEADER WITH BACK BUTTON =====
     header: ToolBar {
+        contentHeight: 56
+
         background: Rectangle {
-            color: "#FFFFFF"
-            // Simple shadow line
+            color: root.pageColor
+
             Rectangle {
-                anchors {
-                    left: parent.left
-                    right: parent.right
-                    bottom: parent.bottom
-                }
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
                 height: 1
-                color: "#E2E8F0"
+                color: root.borderColor
             }
         }
-
-        contentHeight: 56
 
         RowLayout {
             anchors.fill: parent
-            anchors.leftMargin: 8
-            anchors.rightMargin: 16
+            anchors.leftMargin: 12
+            anchors.rightMargin: 20
+            spacing: 10
 
-            // Back Button
             ToolButton {
-                Image {
-                    id: home
-                    source: "qrc:/ui/assets/drawing.svg"
-                    fillMode: Image.PreserveAspectFit
-                    width: 24
-                    height: 24
-                    Layout.leftMargin: 24
-                    Layout.preferredHeight: 24
-                    Layout.preferredWidth: 24
-                    sourceSize.width: 48
-                    sourceSize.height: 48
-                    //Layout.alignment: Qt.AlignHCenter
-                    antialiasing: true
-                    smooth: true
-                    Layout.alignment: Qt.AlignHCenter
-
-                    MouseArea {
-                        anchors.fill: parent
-                        onClicked: UtilsModule.NavigationUtils.pop()
-                    }
-                }
+                Layout.preferredWidth: 40
+                Layout.preferredHeight: 40
+                icon.source: "qrc:/ui/assets/back.png"
+                icon.width: 20
+                icon.height: 20
+                icon.color: root.textColor
                 onClicked: UtilsModule.NavigationUtils.pop()
             }
 
-            // App Title
             Label {
-                text: "AccoFinder"
-                font {
-                    pixelSize: 18
-                    bold: true
-                }
-                color: "#1F2937"
-                Layout.alignment: Qt.AlignVCenter
+                text: "Acco Finder"
+                color: root.textColor
+                font.pixelSize: 18
+                font.bold: true
+                Layout.fillWidth: true
             }
-
-            Item { Layout.fillWidth: true }
         }
     }
 
-    // ===== MAIN CONTENT =====
-    ColumnLayout {
-        anchors {
-            top: parent.top
-            left: parent.left
-            right: parent.right
-            topMargin: 40
-            leftMargin: 24
-            rightMargin: 24
-        }
-        spacing: 10
+    Flickable {
+        anchors.fill: parent
+        contentWidth: width
+        contentHeight: contentColumn.implicitHeight + 56
+        boundsBehavior: Flickable.StopAtBounds
+        clip: true
 
-        // Welcome Label
-        Label {
-            text: "Welcome Back"
-            font.pixelSize: 28
-            font.bold: true
-            color: "#1F2937"
-            Layout.fillWidth: true
-        }
-
-        Label {
-            text: "Sign in to continue"
-            font.pixelSize: 14
-            color: "#6B7280"
-            Layout.fillWidth: true
-            Layout.topMargin: -8
-        }
-
-        // Spacer
-        Item {
-            Layout.preferredHeight: 10
-        }
-
-        // Email Field
         ColumnLayout {
-            Layout.fillWidth: true
-            spacing: 6
+            id: contentColumn
+            width: Math.min(parent.width - 40, 440)
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: parent.top
+            anchors.topMargin: 30
+            spacing: 18
+
+            Item {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 94
+
+                Rectangle {
+                    width: 72
+                    height: 72
+                    radius: 20
+                    color: "#EFF6FF"
+
+                    Text {
+                        anchors.centerIn: parent
+                        text: "A"
+                        color: root.primaryColor
+                        font.pixelSize: 32
+                        font.bold: true
+                    }
+
+                    Rectangle {
+                        width: 20
+                        height: 20
+                        radius: 10
+                        color: root.secondaryColor
+                        anchors.right: parent.right
+                        anchors.bottom: parent.bottom
+                        border.color: root.pageColor
+                        border.width: 3
+                    }
+                }
+            }
+
+            Label {
+                text: "Welcome back"
+                color: root.textColor
+                font.pixelSize: 30
+                font.bold: true
+                Layout.fillWidth: true
+            }
+
+            Label {
+                text: "Sign in to continue finding safe and reliable accommodation."
+                color: root.mutedColor
+                font.pixelSize: 14
+                wrapMode: Text.WordWrap
+                Layout.fillWidth: true
+                Layout.topMargin: -12
+            }
 
             AppTextInput {
-                label: "Email"
-                password: false
-                placeholder: "Enter your email"
+                id: emailInput
+                label: "Email address"
+                placeholder: "name@example.com"
+                required: true
+                backgroundColor: root.surfaceColor
+                focusColor: root.primaryColor
+                errorColor: root.errorColor
+                Layout.fillWidth: true
+                Layout.topMargin: 12
             }
-            // Password Field
+
             AppTextInput {
+                id: passwordInput
                 label: "Password"
-                password: true
                 placeholder: "Enter your password"
+                password: true
+                required: true
+                backgroundColor: root.surfaceColor
+                focusColor: root.primaryColor
+                errorColor: root.errorColor
+                Layout.fillWidth: true
             }
-        }
 
-        // Forgot Password
-        Label {
-            text: "Forgot Password?"
-            color: "#2563EB"
-            font {
-                pixelSize: 12
-                bold: true
-            }
-            Layout.alignment: Qt.AlignRight
-            Layout.topMargin: -8
+            RowLayout {
+                Layout.fillWidth: true
 
-            MouseArea {
-                anchors.fill: parent
-                cursorShape: Qt.PointingHandCursor
-                onClicked: {
-                    // Navigate to forgot password
-                    console.log("Forgot Password clicked")
+                CheckBox {
+                    id: rememberCheck
+                    text: "Remember me"
+                    checked: true
+                    font.pixelSize: 13
+                    contentItem: Text {
+                        text: rememberCheck.text
+                        color: root.mutedColor
+                        font: rememberCheck.font
+                        verticalAlignment: Text.AlignVCenter
+                        leftPadding: rememberCheck.indicator.width + rememberCheck.spacing
+                    }
                 }
-            }
-        }
 
-        // Sign In Button
-        AppPrimaryButton {
-            id: signinBtn
-            customText: "Sing in"
-        }
+                Item {
+                    Layout.fillWidth: true
+                }
 
-        // OR Divider
-        RowLayout {
-            Layout.fillWidth: true
-            Layout.topMargin: 12
-            spacing: 12
+                Label {
+                    text: "Forgot password?"
+                    color: root.primaryColor
+                    font.pixelSize: 13
+                    font.bold: true
 
-            Rectangle {
-                Layout.fillWidth: true
-                height: 1
-                color: "#E2E8F0"
-            }
-
-            Label {
-                text: "OR"
-                color: "#94A3B8"
-                font.pixelSize: 12
-                Layout.alignment: Qt.AlignHCenter
-            }
-
-            Rectangle {
-                Layout.fillWidth: true
-                height: 1
-                color: "#E2E8F0"
-            }
-        }
-
-        // Google Sign In Button
-        Button {
-            id: googleButton
-            text: ""
-            Layout.fillWidth: true
-            Layout.preferredHeight: 48
-
-            font {
-                bold: true
-                pixelSize: 14
-            }
-
-            contentItem: Text {
-                text: googleButton.text
-                font: googleButton.font
-                color: "#1F2937"
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-            }
-
-            background: Rectangle {
-                color: "#FFFFFF"
-                radius: 10
-                border.color: "#E2E8F0"
-                border.width: 1
-
-                MouseArea {
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    cursorShape: Qt.PointingHandCursor
-                    onEntered: parent.color = "#F8FAFC"
-                    onExited: parent.color = "#FFFFFF"
+                    MouseArea {
+                        anchors.fill: parent
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: UtilsModule.NavigationUtils.navigateToForgotPassword()
+                    }
                 }
             }
 
-            onClicked: {
-                console.log("Google Sign In clicked")
-            }
-        }
-
-        // Spacer
-        Item {
-            Layout.preferredHeight: 10
-        }
-
-        // Sign Up Link
-        RowLayout {
-            Layout.fillWidth: true
-            spacing: 4
-            Layout.alignment: Qt.AlignHCenter
-
             Label {
-                text: "Don't have an account?"
-                color: "#6B7280"
+                id: errorLabel
+                visible: text.length > 0
+                text: ""
+                color: root.errorColor
                 font.pixelSize: 13
+                wrapMode: Text.WordWrap
+                Layout.fillWidth: true
             }
 
-            Label {
-                text: "Sign Up"
-                color: "#2563EB"
-                font {
-                    pixelSize: 13
-                    bold: true
+            Button {
+                id: signInButton
+                text: "Sign in"
+                Layout.fillWidth: true
+                Layout.preferredHeight: 52
+
+                contentItem: Text {
+                    text: signInButton.text
+                    color: "#FFFFFF"
+                    font.pixelSize: 15
+                    font.bold: true
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
                 }
 
-                MouseArea {
-                    anchors.fill: parent
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: UtilsModule.NavigationUtils.navigateToSignUp()
+                background: Rectangle {
+                    radius: 12
+                    color: signInButton.down ? "#1D4ED8" : root.primaryColor
+                }
+
+                onClicked: {
+                    if (emailInput.text.trim().length === 0 || passwordInput.text.length === 0) {
+                        errorLabel.text = "Enter your email and password to continue.";
+                        return;
+                    }
+
+                    errorLabel.text = "";
+                    console.log("TODO AuthController.signIn", emailInput.text);
                 }
             }
-        }
 
-        // Bottom spacer
-        Item {
-            Layout.fillHeight: true
+            RowLayout {
+                Layout.fillWidth: true
+                Layout.topMargin: 8
+                spacing: 12
+
+                Rectangle {
+                    Layout.fillWidth: true
+                    height: 1
+                    color: root.borderColor
+                }
+
+                Label {
+                    text: "or"
+                    color: root.mutedColor
+                    font.pixelSize: 12
+                }
+
+                Rectangle {
+                    Layout.fillWidth: true
+                    height: 1
+                    color: root.borderColor
+                }
+            }
+
+            Button {
+                id: createButton
+                text: "Create an account"
+                Layout.fillWidth: true
+                Layout.preferredHeight: 50
+
+                contentItem: Text {
+                    text: createButton.text
+                    color: root.primaryColor
+                    font.pixelSize: 15
+                    font.bold: true
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                }
+
+                background: Rectangle {
+                    radius: 12
+                    color: createButton.down ? "#EFF6FF" : root.pageColor
+                    border.color: root.primaryColor
+                    border.width: 1
+                }
+
+                onClicked: UtilsModule.NavigationUtils.navigateToSignUp()
+            }
         }
     }
 
-    // Keyboard handling for Enter key
     Shortcut {
         sequence: "Return"
-        onActivated: {
-            if (email.activeFocus || password.activeFocus) {
-                signinButtonId.clicked()
-            }
-        }
-
+        onActivated: signInButton.clicked()
     }
 }
