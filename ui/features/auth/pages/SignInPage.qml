@@ -118,13 +118,13 @@ Page {
             Layout.fillWidth: true
             spacing: 6
 
-            TextInput {
+            AppTextInput {
                 label: "Email"
                 password: false
                 placeholder: "Enter your email"
             }
              // Password Field
-            TextInput {
+            AppTextInput {
                 label: "Password"
                 password: true
                 placeholder: "Enter your password"
