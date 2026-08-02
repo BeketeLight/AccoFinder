@@ -8,6 +8,7 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Quick Core)
+find_package(Qt6 REQUIRED COMPONENTS QuickControls2)
 
 qt_standard_project_setup(REQUIRES 6.10)
 
@@ -462,6 +463,7 @@ set_target_properties(appAccoFinder PROPERTIES
 
 target_link_libraries(appAccoFinder
     PRIVATE Qt6::Quick Qt6::Core
+    PRIVATE Qt6::QuickControls2
 )
 
 target_include_directories(appAccoFinder PRIVATE

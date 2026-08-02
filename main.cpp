@@ -1,12 +1,16 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QCoreApplication>
+#include <QQuickStyle>
 #include "src/core/utils/appsettings.h"
 #include <QQmlContext>
 #include <QTimer>
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
+
+    // Set the Material style (must be before loading QML)
+    QQuickStyle::setStyle("Material");
 
     qputenv("QT_ANDROID_NO_EXIT_CALL", "true");
 
