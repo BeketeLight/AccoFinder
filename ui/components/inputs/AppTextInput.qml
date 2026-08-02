@@ -15,7 +15,7 @@ Item {
     property bool required: false
     property bool password: false
     property bool error: false
-    property int fieldHeight: 52
+    property int fieldHeight: 37
     property int borderRadius: 12
 
     // Colors
@@ -34,7 +34,7 @@ Item {
 
     implicitWidth: 280
     implicitHeight: {
-        var h = height;
+        var h = fieldHeight;
         if (label)
             h += labelItem.height + 6;
         if (helperText || error)
@@ -42,48 +42,38 @@ Item {
         return h;
     }
 
-    // Label
+    ColumnLayout {
+        anchors.fill: parent
+        spacing: 6.5
+        // Label
 
-    Text {
-        id: labelItem
-        text: root.label + (root.required ? " *" : "")
-        font.pixelSize: 13
-        font.weight: Font.Medium
-        color: root.error ? root.errorColor : root.labelColor
-        visible: root.label.length > 0
-    }
+        // Helper / Error Text
 
-    // Input Field
-
-    Rectangle {
-        id: background
-        anchors.top: root.label ? labelItem.bottom : parent.top
-        anchors.topMargin: root.label ? 6 : 0
-        width: parent.width
-        height: root.fieldHeight
-        radius: root.borderRadius
-        color: root.enabled ? root.backgroundColor : "#EEEEEE"
-
-        border.color: {
-            if (root.error)
-                return root.errorColor;
-            if (textField.activeFocus)
-                return root.focusColor;
-            return root.borderColor;
+        Text {
+            anchors.top: background.bottom
+            anchors.topMargin: 4
+            anchors.left: parent.left
+            anchors.leftMargin: 4
+            text: root.error ? (root.helperText || "Invalid input") : root.helperText
+            font.pixelSize: 12
+            color: root.error ? root.errorColor : root.labelColor
+            visible: root.helperText.length > 0 || root.error
         }
-        border.width: textField.activeFocus || root.error ? 2 : 1
 
-        Behavior on border.color {
-            ColorAnimation {
-                duration: 150
-            }
+        Text {
+            id: labelItem
+            text: root.label + (root.required ? " *" : "")
+            font.pixelSize: 13
+            font.weight: Font.Medium
+            color: root.error ? root.errorColor : root.labelColor
+            visible: root.label.length > 0
         }
 
         TextField {
             id: textField
-            anchors.fill: parent
-            anchors.leftMargin: 14
-            anchors.rightMargin: 14
+            Layout.fillWidth: true
+            Layout.rightMargin: 14
+            // Layout.leftMargin: 14
             text: root.text
             placeholderText: root.placeholder
             enabled: root.enabled
@@ -103,18 +93,5 @@ Item {
             onAccepted: root.accepted()
             onEditingFinished: root.editingFinished()
         }
-    }
-
-    // Helper / Error Text
-
-    Text {
-        anchors.top: background.bottom
-        anchors.topMargin: 4
-        anchors.left: parent.left
-        anchors.leftMargin: 4
-        text: root.error ? (root.helperText || "Invalid input") : root.helperText
-        font.pixelSize: 12
-        color: root.error ? root.errorColor : root.labelColor
-        visible: root.helperText.length > 0 || root.error
     }
 }
