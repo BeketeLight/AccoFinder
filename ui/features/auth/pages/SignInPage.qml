@@ -153,7 +153,7 @@ Page {
         }
 
         // Sign In Button
-        PrimaryButton {
+        AppPrimaryButton {
             id: signinBtn
             customText: "Sing in"
         }
