@@ -15,7 +15,7 @@ Item {
     property bool required: false
     property bool password: false
     property bool error: false
-    property int height: 52
+    property int fieldHeight: 52
     property int borderRadius: 12
 
     // Colors
@@ -60,7 +60,7 @@ Item {
         anchors.top: root.label ? labelItem.bottom : parent.top
         anchors.topMargin: root.label ? 6 : 0
         width: parent.width
-        height: root.height
+        height: root.fieldHeight
         radius: root.borderRadius
         color: root.enabled ? root.backgroundColor : "#EEEEEE"
 
@@ -93,7 +93,7 @@ Item {
             font.pixelSize: 15
             selectByMouse: true
             verticalAlignment: Text.AlignVCenter
-            background: Item {}
+            // background: Item {}
 
             onTextChanged: {
                 root.text = text;
