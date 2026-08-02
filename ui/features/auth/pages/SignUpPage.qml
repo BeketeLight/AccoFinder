@@ -321,6 +321,32 @@ Page {
                 }
             }
 
+            Button {
+                id: previousStepButton
+                text: "Back to previous step"
+                visible: root.currentStep > 0
+                Layout.fillWidth: true
+                Layout.preferredHeight: visible ? 48 : 0
+
+                contentItem: Text {
+                    text: previousStepButton.text
+                    color: root.primaryColor
+                    font.pixelSize: 14
+                    font.bold: true
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                }
+
+                background: Rectangle {
+                    radius: 12
+                    color: previousStepButton.down ? root.softBlueColor : root.pageColor
+                    border.color: root.primaryColor
+                    border.width: 1
+                }
+
+                onClicked: root.goBack()
+            }
+
             Rectangle {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 54

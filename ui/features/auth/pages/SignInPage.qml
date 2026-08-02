@@ -131,10 +131,16 @@ Page {
                 label: "Email address"
                 placeholder: "name@example.com"
                 required: true
+                fieldHeight: 52
                 backgroundColor: root.surfaceColor
+                textColor: root.textColor
+                labelColor: root.textColor
+                placeholderColor: "#9CA3AF"
+                borderColor: root.borderColor
                 focusColor: root.primaryColor
                 errorColor: root.errorColor
                 Layout.fillWidth: true
+                Layout.preferredHeight: 76
                 Layout.topMargin: 12
             }
 
@@ -144,10 +150,16 @@ Page {
                 placeholder: "Enter your password"
                 password: true
                 required: true
+                fieldHeight: 52
                 backgroundColor: root.surfaceColor
+                textColor: root.textColor
+                labelColor: root.textColor
+                placeholderColor: "#9CA3AF"
+                borderColor: root.borderColor
                 focusColor: root.primaryColor
                 errorColor: root.errorColor
                 Layout.fillWidth: true
+                Layout.preferredHeight: 76
             }
 
             RowLayout {
@@ -248,6 +260,59 @@ Page {
                     height: 1
                     color: root.borderColor
                 }
+            }
+
+            Button {
+                id: googleButton
+                text: "Continue with Google"
+                Layout.fillWidth: true
+                Layout.preferredHeight: 50
+
+                contentItem: RowLayout {
+                    spacing: 10
+
+                    Item {
+                        Layout.fillWidth: true
+                    }
+
+                    Rectangle {
+                        Layout.preferredWidth: 24
+                        Layout.preferredHeight: 24
+                        radius: 12
+                        color: "#FFFFFF"
+                        border.color: root.borderColor
+                        border.width: 1
+
+                        Text {
+                            anchors.centerIn: parent
+                            text: "G"
+                            color: "#1F2937"
+                            font.pixelSize: 13
+                            font.bold: true
+                        }
+                    }
+
+                    Text {
+                        text: googleButton.text
+                        color: root.textColor
+                        font.pixelSize: 15
+                        font.bold: true
+                        verticalAlignment: Text.AlignVCenter
+                    }
+
+                    Item {
+                        Layout.fillWidth: true
+                    }
+                }
+
+                background: Rectangle {
+                    radius: 12
+                    color: googleButton.down ? root.surfaceColor : root.pageColor
+                    border.color: root.borderColor
+                    border.width: 1
+                }
+
+                onClicked: console.log("TODO AuthController.signInWithGoogle")
             }
 
             Button {
