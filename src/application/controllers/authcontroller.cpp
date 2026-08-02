@@ -8,6 +8,7 @@ AuthController::AuthController(QObject *parent)
     connect(m_userRepository, &UserRepositoryImpl::signUpSucceded, this, &AuthController::signUpSucceded);
     connect(m_userRepository, &UserRepositoryImpl::signUpFailed, this, &AuthController::signUpFailed);
     connect(m_userRepository, &UserRepositoryImpl::logOutSucceded, this, &AuthController::userLoggedOut);
+    connect(m_userRepository, &UserRepositoryImpl::emailVerified, this, &AuthController::emailVerified);
 }
 
 void AuthController::signIn(const QString &email, const QString &password)
@@ -56,4 +57,9 @@ void AuthController::logOut()
      * call logout function from m_userRepository and emita signal userLoggedout()
     */
     m_userRepository->logOut();
+}
+
+void AuthController::verifyEmail(const QString &otpCode)
+{
+    m_userRepository->verifyEmail(otpCode);
 }

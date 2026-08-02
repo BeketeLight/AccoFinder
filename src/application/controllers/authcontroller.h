@@ -19,6 +19,7 @@ public:
                 const QString& confirmPassword,
                 const QString& residentialAddress);
     void logOut();
+    void verifyEmail(const QString& otpCode);
 private:
     UserRepositoryImpl* m_userRepository = new UserRepositoryImpl();
 signals:
@@ -27,6 +28,7 @@ signals:
     void signUpSucceded(User* user);
     void signUpFailed(const QString& message);
     void userLoggedOut();
+    void emailVerified(const QString& status);
 };
 
 #endif // AUTHCONTROLLER_H

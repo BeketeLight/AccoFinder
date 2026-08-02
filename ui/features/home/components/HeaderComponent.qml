@@ -1,6 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Controls
 import QtQuick.Layouts
+import "../../../utils/NavigationUtils.js" as NavUtils
 import "../../../components/inputs"
 
 ColumnLayout {
@@ -43,7 +44,7 @@ ColumnLayout {
             smooth: true
             MouseArea {
                 anchors.fill: parent
-                onClicked: UtilsModule.NavigationUtils.navigateToNotifications()
+                onClicked: NavUtils.navigateToNotifications()
             }
             Layout.topMargin: 15
             Layout.rightMargin: 10
