@@ -110,14 +110,6 @@ Page {
             }
 
             Label {
-                text: "Welcome back"
-                color: root.textColor
-                font.pixelSize: 30
-                font.bold: true
-                Layout.fillWidth: true
-            }
-
-            Label {
                 text: "Sign in to continue finding safe and reliable accommodation."
                 color: root.mutedColor
                 font.pixelSize: 14

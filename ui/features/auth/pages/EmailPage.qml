@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import "../../../components/inputs"
 
 Item {
     id: root
@@ -22,7 +23,7 @@ Item {
         id: layout
         anchors.left: parent.left
         anchors.right: parent.right
-        spacing: 14
+        spacing: 10
 
         Label {
             text: "Add your email"
@@ -47,38 +48,30 @@ Item {
             Layout.topMargin: 12
             spacing: 7
 
-            Label {
-                text: "Email address"
-                color: root.textColor
-                font.pixelSize: 13
-                font.bold: true
+            AppTextInput {
+                id: emailField
+                label: "Email address"
+                placeholder: "name@example.com"
+                //Layout.fillWidth: true
+                required: true
+                fieldHeight: 52
+                backgroundColor: root.surfaceColor
+                textColor: root.textColor
+                labelColor: root.textColor
+                placeholderColor: "#9CA3AF"
+                borderColor: root.borderColor
+                focusColor: root.primaryColor
+                errorColor: root.errorColor
+                Layout.fillWidth: true
+                Layout.preferredHeight: 76
+                Layout.topMargin: 12
             }
 
-            TextField {
-                id: emailField
-                Layout.fillWidth: true
-                Layout.preferredHeight: 52
-                placeholderText: "name@example.com"
-                color: root.textColor
-                placeholderTextColor: "#9CA3AF"
-                font.pixelSize: 15
-                inputMethodHints: Qt.ImhEmailCharactersOnly
-                selectByMouse: true
-                verticalAlignment: Text.AlignVCenter
-                leftPadding: 14
-                rightPadding: 14
-                background: Rectangle {
-                    radius: 12
-                    color: root.surfaceColor
-                    border.color: emailField.activeFocus ? root.primaryColor : root.borderColor
-                    border.width: emailField.activeFocus ? 2 : 1
-                }
-            }
         }
 
         Rectangle {
             Layout.fillWidth: true
-            Layout.preferredHeight: 86
+            Layout.preferredHeight: 60
             radius: 12
             color: "#EFF6FF"
             border.color: "#BFDBFE"
@@ -97,7 +90,7 @@ Item {
 
                     Text {
                         anchors.centerIn: parent
-                        text: "@"
+                        text: "i"
                         color: "#FFFFFF"
                         font.pixelSize: 18
                         font.bold: true
@@ -105,7 +98,7 @@ Item {
                 }
 
                 Label {
-                    text: "Controller owner should trigger backend email verification after this step."
+                    text: "Your email will be verified"
                     color: "#1E40AF"
                     font.pixelSize: 13
                     lineHeight: 1.1

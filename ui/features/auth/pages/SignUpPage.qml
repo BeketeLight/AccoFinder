@@ -38,53 +38,6 @@ Page {
         color: root.pageColor
     }
 
-    header: ToolBar {
-        contentHeight: 56
-
-        background: Rectangle {
-            color: root.pageColor
-
-            Rectangle {
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.bottom: parent.bottom
-                height: 1
-                color: root.borderColor
-            }
-        }
-
-        RowLayout {
-            anchors.fill: parent
-            anchors.leftMargin: 12
-            anchors.rightMargin: 20
-            spacing: 10
-
-            ToolButton {
-                Layout.preferredWidth: 40
-                Layout.preferredHeight: 40
-                icon.source: "qrc:/ui/assets/back.png"
-                icon.width: 20
-                icon.height: 20
-                icon.color: root.textColor
-                onClicked: root.goBack()
-            }
-
-            Label {
-                text: "Acco Finder"
-                color: root.textColor
-                font.pixelSize: 18
-                font.bold: true
-                Layout.fillWidth: true
-            }
-
-            Label {
-                text: (root.currentStep + 1) + "/4"
-                color: root.mutedColor
-                font.pixelSize: 13
-            }
-        }
-    }
-
     Flickable {
         anchors.fill: parent
         contentWidth: width
@@ -108,50 +61,11 @@ Page {
                 border.color: "#DBEAFE"
                 border.width: 1
 
-                Rectangle {
-                    width: 42
-                    height: 42
-                    radius: 21
-                    color: root.secondaryColor
-                    opacity: 0.18
-                    anchors.right: parent.right
-                    anchors.rightMargin: 22
-                    anchors.top: parent.top
-                    anchors.topMargin: 18
-                }
-
                 RowLayout {
                     anchors.fill: parent
                     anchors.margins: 18
                     spacing: 14
 
-                    Rectangle {
-                        Layout.preferredWidth: 62
-                        Layout.preferredHeight: 62
-                        radius: 18
-                        color: root.pageColor
-                        border.color: "#BFDBFE"
-                        border.width: 1
-
-                        Text {
-                            anchors.centerIn: parent
-                            text: "AF"
-                            color: root.primaryColor
-                            font.pixelSize: 22
-                            font.bold: true
-                        }
-
-                        Rectangle {
-                            width: 16
-                            height: 16
-                            radius: 8
-                            color: root.secondaryColor
-                            anchors.right: parent.right
-                            anchors.bottom: parent.bottom
-                            border.color: root.pageColor
-                            border.width: 2
-                        }
-                    }
 
                     ColumnLayout {
                         Layout.fillWidth: true
@@ -238,7 +152,7 @@ Page {
 
                 Label {
                     text: root.currentStep === 0 ? "Only names are collected in this step."
-                          : root.currentStep === 1 ? "The backend email verification call should attach here."
+                          : root.currentStep === 1 ? "Email collection and verification."
                           : root.currentStep === 2 ? "Password is collected before OTP confirmation."
                           : "Enter the email code to finish account verification."
                     color: root.mutedColor
@@ -250,7 +164,7 @@ Page {
 
             Rectangle {
                 Layout.fillWidth: true
-                Layout.preferredHeight: stepStack.implicitHeight + 28
+                Layout.preferredHeight: stepStack.implicitHeight + 15
                 radius: 16
                 color: root.pageColor
                 border.color: root.borderColor

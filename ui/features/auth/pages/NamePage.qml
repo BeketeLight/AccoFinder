@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import "../../../components/inputs"
 
 Item {
     id: root
@@ -45,7 +46,7 @@ Item {
 
         Rectangle {
             Layout.fillWidth: true
-            Layout.preferredHeight: 64
+            Layout.preferredHeight: 70
             radius: 12
             color: "#ECFDF5"
             border.color: "#BBF7D0"
@@ -84,65 +85,41 @@ Item {
             Layout.fillWidth: true
             Layout.topMargin: 8
             spacing: 7
-
-            Label {
-                text: "First name"
-                color: root.textColor
-                font.pixelSize: 13
-                font.bold: true
-            }
-
-            TextField {
+            AppTextInput {
                 id: firstNameField
+                label: "First name"
+                placeholder: "Enter first name"
+                required: true
+                fieldHeight: 52
+                backgroundColor: root.surfaceColor
+                textColor: root.textColor
+                labelColor: root.textColor
+                placeholderColor: "#9CA3AF"
+                borderColor: root.borderColor
+                focusColor: root.primaryColor
+                errorColor: root.errorColor
                 Layout.fillWidth: true
-                Layout.preferredHeight: 52
-                placeholderText: "Enter first name"
-                color: root.textColor
-                placeholderTextColor: "#9CA3AF"
-                font.pixelSize: 15
-                selectByMouse: true
-                verticalAlignment: Text.AlignVCenter
-                leftPadding: 14
-                rightPadding: 14
-                background: Rectangle {
-                    radius: 12
-                    color: root.surfaceColor
-                    border.color: firstNameField.activeFocus ? root.primaryColor : root.borderColor
-                    border.width: firstNameField.activeFocus ? 2 : 1
-                }
+                Layout.preferredHeight: 76
+                Layout.topMargin: 12
             }
-        }
-
-        ColumnLayout {
-            Layout.fillWidth: true
-            spacing: 7
-
-            Label {
-                text: "Last name"
-                color: root.textColor
-                font.pixelSize: 13
-                font.bold: true
-            }
-
-            TextField {
+            AppTextInput {
                 id: lastNameField
+                label: "Last name"
+                placeholder: "Enter last name"
+                required: true
+                fieldHeight: 52
+                backgroundColor: root.surfaceColor
+                textColor: root.textColor
+                labelColor: root.textColor
+                placeholderColor: "#9CA3AF"
+                borderColor: root.borderColor
+                focusColor: root.primaryColor
+                errorColor: root.errorColor
                 Layout.fillWidth: true
-                Layout.preferredHeight: 52
-                placeholderText: "Enter last name"
-                color: root.textColor
-                placeholderTextColor: "#9CA3AF"
-                font.pixelSize: 15
-                selectByMouse: true
-                verticalAlignment: Text.AlignVCenter
-                leftPadding: 14
-                rightPadding: 14
-                background: Rectangle {
-                    radius: 12
-                    color: root.surfaceColor
-                    border.color: lastNameField.activeFocus ? root.primaryColor : root.borderColor
-                    border.width: lastNameField.activeFocus ? 2 : 1
-                }
+                Layout.preferredHeight: 76
+                Layout.topMargin: 12
             }
+
         }
 
         Label {

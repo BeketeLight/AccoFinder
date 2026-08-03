@@ -22,47 +22,6 @@ Page {
         color: root.pageColor
     }
 
-    header: ToolBar {
-        contentHeight: 56
-
-        background: Rectangle {
-            color: root.pageColor
-
-            Rectangle {
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.bottom: parent.bottom
-                height: 1
-                color: root.borderColor
-            }
-        }
-
-        RowLayout {
-            anchors.fill: parent
-            anchors.leftMargin: 12
-            anchors.rightMargin: 20
-            spacing: 10
-
-            ToolButton {
-                Layout.preferredWidth: 40
-                Layout.preferredHeight: 40
-                icon.source: "qrc:/ui/assets/back.png"
-                icon.width: 20
-                icon.height: 20
-                icon.color: root.textColor
-                onClicked: NavUtils.pop()
-            }
-
-            Label {
-                text: "Acco Finder"
-                color: root.textColor
-                font.pixelSize: 18
-                font.bold: true
-                Layout.fillWidth: true
-            }
-        }
-    }
-
     Flickable {
         anchors.fill: parent
         contentWidth: width
@@ -86,50 +45,11 @@ Page {
                 border.color: "#DBEAFE"
                 border.width: 1
 
-                Rectangle {
-                    width: 54
-                    height: 54
-                    radius: 27
-                    color: root.secondaryColor
-                    opacity: 0.16
-                    anchors.right: parent.right
-                    anchors.rightMargin: 22
-                    anchors.top: parent.top
-                    anchors.topMargin: 20
-                }
-
                 ColumnLayout {
                     anchors.fill: parent
                     anchors.margins: 20
                     spacing: 10
 
-                    Rectangle {
-                        Layout.preferredWidth: 64
-                        Layout.preferredHeight: 64
-                        radius: 18
-                        color: root.pageColor
-                        border.color: "#BFDBFE"
-                        border.width: 1
-
-                        Text {
-                            anchors.centerIn: parent
-                            text: "AF"
-                            color: root.primaryColor
-                            font.pixelSize: 23
-                            font.bold: true
-                        }
-
-                        Rectangle {
-                            width: 17
-                            height: 17
-                            radius: 9
-                            color: root.secondaryColor
-                            anchors.right: parent.right
-                            anchors.bottom: parent.bottom
-                            border.color: root.pageColor
-                            border.width: 2
-                        }
-                    }
 
                     Label {
                         text: "Find your next place with confidence"

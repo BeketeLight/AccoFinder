@@ -1,6 +1,8 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import "../../../components/inputs"
+
 
 Item {
     id: root
@@ -86,66 +88,42 @@ Item {
             Layout.topMargin: 8
             spacing: 7
 
-            Label {
-                text: "Password"
-                color: root.textColor
-                font.pixelSize: 13
-                font.bold: true
-            }
-
-            TextField {
+            AppTextInput {
                 id: passwordField
+                label: "Password"
+                placeholder: "Create password"
+                required: true
+                fieldHeight: 52
+                backgroundColor: root.surfaceColor
+                textColor: root.textColor
+                labelColor: root.textColor
+                placeholderColor: "#9CA3AF"
+                borderColor: root.borderColor
+                focusColor: root.primaryColor
+                errorColor: root.errorColor
                 Layout.fillWidth: true
-                Layout.preferredHeight: 52
-                placeholderText: "Create password"
-                echoMode: TextInput.Password
-                color: root.textColor
-                placeholderTextColor: "#9CA3AF"
-                font.pixelSize: 15
-                selectByMouse: true
-                verticalAlignment: Text.AlignVCenter
-                leftPadding: 14
-                rightPadding: 14
-                background: Rectangle {
-                    radius: 12
-                    color: root.surfaceColor
-                    border.color: passwordField.activeFocus ? root.primaryColor : root.borderColor
-                    border.width: passwordField.activeFocus ? 2 : 1
-                }
-            }
-        }
-
-        ColumnLayout {
-            Layout.fillWidth: true
-            spacing: 7
-
-            Label {
-                text: "Confirm password"
-                color: root.textColor
-                font.pixelSize: 13
-                font.bold: true
+                Layout.preferredHeight: 76
+                Layout.topMargin: 12
             }
 
-            TextField {
+            AppTextInput {
                 id: confirmPasswordField
+                label: "Confirm password"
+                placeholder: "Repeat password"
+                required: true
+                fieldHeight: 52
+                backgroundColor: root.surfaceColor
+                textColor: root.textColor
+                labelColor: root.textColor
+                placeholderColor: "#9CA3AF"
+                borderColor: root.borderColor
+                focusColor: root.primaryColor
+                errorColor: root.errorColor
                 Layout.fillWidth: true
-                Layout.preferredHeight: 52
-                placeholderText: "Repeat password"
-                echoMode: TextInput.Password
-                color: root.textColor
-                placeholderTextColor: "#9CA3AF"
-                font.pixelSize: 15
-                selectByMouse: true
-                verticalAlignment: Text.AlignVCenter
-                leftPadding: 14
-                rightPadding: 14
-                background: Rectangle {
-                    radius: 12
-                    color: root.surfaceColor
-                    border.color: confirmPasswordField.activeFocus ? root.primaryColor : root.borderColor
-                    border.width: confirmPasswordField.activeFocus ? 2 : 1
-                }
+                Layout.preferredHeight: 76
+                Layout.topMargin: 12
             }
+
         }
 
         Label {
