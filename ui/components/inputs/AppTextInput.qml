@@ -16,6 +16,7 @@ Item {
     property bool password: false
     property bool error: false
     property int fieldHeight: 37
+    property int fieldWidth: 280
     property int borderRadius: 12
 
     // Colors
@@ -32,7 +33,7 @@ Item {
     signal textEdited
     signal editingFinished
 
-    implicitWidth: 280
+    implicitWidth: fieldWidth
     implicitHeight: {
         var h = fieldHeight;
         if (label)
