@@ -36,7 +36,7 @@ Item {
         }
 
         Label {
-            text: "Create a password before moving to OTP verification."
+            text: "Create password."
             color: root.mutedColor
             font.pixelSize: 14
             lineHeight: 1.15
@@ -138,7 +138,7 @@ Item {
 
         Button {
             id: continueButton
-            text: "Continue to OTP"
+            text: "Continue"
             Layout.fillWidth: true
             Layout.preferredHeight: 52
             Layout.topMargin: 6
