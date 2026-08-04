@@ -20,7 +20,8 @@ public:
                 const QString& confirmPassword,
                 const QString& residentialAddress);
     void logOut();
-    void verifyEmail(const QString& otpCode);
+    void verifyEmail(const QString& email);
+    void checkExistingAccountWithEmail(const QString& email);
 private:
     UserRepositoryImpl* m_userRepository = new UserRepositoryImpl();
 signals:

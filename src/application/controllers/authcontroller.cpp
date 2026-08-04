@@ -59,7 +59,12 @@ void AuthController::logOut()
     m_userRepository->logOut();
 }
 
-void AuthController::verifyEmail(const QString &otpCode)
+void AuthController::verifyEmail(const QString &email)
 {
-    m_userRepository->verifyEmail(otpCode);
+    m_userRepository->verifyEmail(email);
+}
+
+void AuthController::checkExistingAccountWithEmail(const QString &email)
+{
+    m_userRepository->checkExistingAccountWithEmail(email);
 }

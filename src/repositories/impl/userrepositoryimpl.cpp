@@ -127,10 +127,10 @@ void UserRepositoryImpl::logOut()
     });
 }
 
-void UserRepositoryImpl::verifyEmail(const QString &otpCode)
+void UserRepositoryImpl::verifyEmail(const QString &email)
 {
     QJsonObject payload;
-    payload["otpCode"] = otpCode;
+    payload["email"] = email;
     APIClient::instance().post(
         "/auth/verifyEmail",
         payload,
@@ -144,5 +144,24 @@ void UserRepositoryImpl::verifyEmail(const QString &otpCode)
 
         }
     );
+}
+
+void UserRepositoryImpl::checkExistingAccountWithEmail(const QString &email)
+{
+    QJsonObject payload;
+    payload["email"] = email;
+    APIClient::instance().post(
+        "/auth/checkExistingAccountWithEmail",
+        payload,
+        [this](bool success,
+               const QJsonObject& response)
+        {
+
+            if(success){
+                emit emailVerified(response["status"].toString());
+            }
+
+        }
+        );
 }
 

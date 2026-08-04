@@ -23,7 +23,8 @@ public:
         const QString& residentialAddress) = 0;
 
     virtual void logOut() = 0;
-    virtual void verifyEmail(const QString& otpCode) = 0;
+    virtual void verifyEmail(const QString& email) = 0;
+    virtual void checkExistingAccountWithEmail(const QString& email) = 0;
 
     virtual ~IUserRepository(){}
 

@@ -22,7 +22,8 @@ public:
         const QString& residentialAddress) override;
         
     void logOut() override;
-    void verifyEmail(const QString& otpCode) override;
+    void verifyEmail(const QString& email) override;
+    void checkExistingAccountWithEmail(const QString& email) override;
 
 signals:
         void signInSucceded(User* user);
