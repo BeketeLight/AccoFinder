@@ -64,7 +64,7 @@ Item {
 
                     Text {
                         anchors.centerIn: parent
-                        text: "ID"
+                        text: "i"
                         color: "#FFFFFF"
                         font.pixelSize: 11
                         font.bold: true
