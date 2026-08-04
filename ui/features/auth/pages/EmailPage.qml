@@ -150,5 +150,23 @@ Item {
                 root.nextRequested();
             }
         }
+        Rectangle {
+            Layout.fillWidth: true
+            Layout.preferredHeight: 58
+            radius: 12
+            color: root.surfaceColor
+
+            Label {
+                anchors.fill: parent
+                anchors.margins: 14
+                text: "Use the same email you want to receive booking and verification messages on."
+                color: root.mutedColor
+                font.pixelSize: 12
+                lineHeight: 1.1
+                wrapMode: Text.WordWrap
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+            }
+        }
     }
 }

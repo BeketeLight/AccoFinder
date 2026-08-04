@@ -36,7 +36,7 @@ Item {
         }
 
         Label {
-            text: "Create a password before moving to OTP verification."
+            text: "Create password."
             color: root.mutedColor
             font.pixelSize: 14
             lineHeight: 1.15
