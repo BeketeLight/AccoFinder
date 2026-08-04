@@ -29,7 +29,8 @@ void UserRepositoryImpl::signIn(
         if(success){
             User* user = new User(
                 response["id"].toString(),
-                response["name"].toString(),
+                response["firstName"].toString(),
+                response["lastName"].toString(),
                 response["email"].toString(),
                 response["phone"].toString(),
                 QDateTime::fromString(response["createdAt"].toString(), Qt::ISODate),
@@ -54,7 +55,8 @@ void UserRepositoryImpl::signIn(
 }
 
 void UserRepositoryImpl::signUp(
-    const QString& name,
+    const QString& firstName,
+    const QString& lastName,
     const QString& email,
     const QString& password,
     const QString& confirmPassword,
@@ -62,7 +64,8 @@ void UserRepositoryImpl::signUp(
 )
 {
     QJsonObject payload;
-    payload["name"] = name;
+    payload["fistName"] = firstName;
+    payload["lastName"] = lastName,
     payload["email"] = email;
     payload["password"] = password;
     payload["confirmPassword"] = confirmPassword;
@@ -78,7 +81,8 @@ void UserRepositoryImpl::signUp(
         if(success){
             User* user = new User(
                 response["id"].toString(),
-                response["name"].toString(),
+                response["fistName"].toString(),
+                response["lastName"].toString(),
                 response["email"].toString(),
                 response["phone"].toString(),
                 QDateTime::fromString(response["createdAt"].toString(), Qt::ISODate),
@@ -86,7 +90,7 @@ void UserRepositoryImpl::signUp(
             );
             
             //====PERSIST SIGNEDUP USER DATA==
-            AppSettings::instance().setUserName(response.value("name").toString());
+            AppSettings::instance().setUserName(response.value("fistName").toString()+ response.value("lastName").toString());
             AppSettings::instance().setEmail(response.value("email").toString());
             AppSettings::instance().setPhone(response.value("phone").toString());
 

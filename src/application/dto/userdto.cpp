@@ -5,13 +5,15 @@ UserDto::UserDto()
 
 UserDto::UserDto(
     const QString& id,
-    const QString& name,
+    const QString& firstName,
+    const QString& lastName,
     const QString& email,
     const QString& phone,
     const QString& role,
     const QDateTime& createdAt)
     : id(id),
-    name(name),
+    m_firstName(firstName),
+    m_lastName(lastName),
     email(email),
     phone(phone),
     role(role),
@@ -27,8 +29,10 @@ UserDto UserDto::fromJson(
     dto.id =
         json["id"].toString();
 
-    dto.name =
-        json["name"].toString();
+    dto.m_firstName =
+        json["firstName"].toString();
+    dto.m_lastName =
+        json["lastName"].toString();
 
     dto.email =
         json["email"].toString();
@@ -53,7 +57,8 @@ QJsonObject UserDto::toJson() const
     QJsonObject json;
 
     json["id"] = id;
-    json["name"] = name;
+    json["firstName"] = m_firstName;
+    json["lastName"] = m_lastName;
     json["email"] = email;
     json["phone"] = phone;
     json["role"] = role;
@@ -67,7 +72,8 @@ User* UserDto::toDomainModel() const
     User* user = new User();
 
     user->setId(id);
-    user->setName(name);
+    user->setFirstName(m_firstName);
+    user->setLastName(m_lastName);
     user->setEmail(email);
     user->setPhone(phone);
     user->setCreatedAt(createdAt);

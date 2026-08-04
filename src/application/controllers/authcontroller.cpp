@@ -31,14 +31,14 @@ void AuthController::signIn(const QString &email, const QString &password)
     m_userRepository->signIn(email, password);
 }
 
-void AuthController::signUp(const QString &name, const QString &email, const QString &password, const QString &confirmPassword, const QString &residentialAddress)
+void AuthController::signUp(const QString& fistName,const QString& lastName, const QString &email, const QString &password, const QString &confirmPassword, const QString &residentialAddress)
 {
     /* what needs to be done
      * 1. make sure all function parametrs are available if not wmit signupFaild(missing fieds)
      * 2. compare pass and confirm passwrod ,,if thet dont mactch emit signupfaild(not mtching password)
      * create and regisyer a user by calling the signUp function from m_userRepository
     */
-    if (name.isEmpty() || email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty() || residentialAddress.isEmpty()) {
+    if (fistName.isEmpty() || lastName.isEmpty() || email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty() || residentialAddress.isEmpty()) {
         emit signUpFailed("missing fields");
         return;
     }
@@ -48,7 +48,7 @@ void AuthController::signUp(const QString &name, const QString &email, const QSt
         return;
     }
 
-    m_userRepository->signUp(name, email, password, confirmPassword, residentialAddress);
+    m_userRepository->signUp(fistName, lastName, email, password, confirmPassword, residentialAddress);
 }
 
 void AuthController::logOut()

@@ -2,12 +2,13 @@
 
 
 Client::Client(const QString &id,
-               const QString &name,
+               const QString &firstName,
+               const QString &lastName,
                const QString &email,
                const QString &phone,
                const QDateTime &createdAt,
                QObject *parent)
-    :User(id,name,email,phone,createdAt,parent)
+    :User(id,firstName,lastName,email,phone,createdAt,parent)
 {
     emit clientProfileCreated();
 

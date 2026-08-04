@@ -13,7 +13,8 @@ public:
     explicit AuthController(QObject *parent = nullptr);
 
     void signIn(const QString& email, const QString& password);
-    void signUp(const QString& name,
+    void signUp(const QString& fistName,
+                const QString& lastName,
                 const QString& email,
                 const QString& password,
                 const QString& confirmPassword,

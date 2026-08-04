@@ -8,7 +8,8 @@ class Client : public User
     Q_OBJECT
 public:
     explicit Client(const QString& id,
-                    const QString& name,
+                    const QString &firstName,
+                    const QString &lastName,
                     const QString& phone,
                     const QString& email,
                     const QDateTime& createdAt,

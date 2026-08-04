@@ -4,12 +4,13 @@ Agent::Agent(const QString& employeeId,
              const QString& assignedArea,
              const double& commissionRate,
              const bool& isActive,
-             const QString& name,
+             const QString& firstName,
+             const QString& lastName,
              const QString& email,
              const QString& phone,
              const QDateTime& createdAt,
              QObject* parent)
-    :User(employeeId,name,email,phone,createdAt)
+    :User(employeeId,firstName,lastName,email,phone,createdAt)
     ,m_employeeId(employeeId)
     ,m_assignedArea(assignedArea)
     ,m_commissionRate(commissionRate)

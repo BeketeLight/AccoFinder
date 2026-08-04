@@ -10,7 +10,8 @@ public:
     UserDto();
     UserDto(
         const QString& id,
-        const QString& name,
+        const QString& firstName,
+        const QString& lastName,
         const QString& email,
         const QString& phone,
         const QString& role,
@@ -19,7 +20,8 @@ public:
 
     // DTO Data
     QString id;
-    QString name;
+    QString m_firstName;
+    QString m_lastName;
     QString email;
     QString phone;
     QString role;

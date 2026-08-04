@@ -7,13 +7,15 @@ User::User(QObject *parent)
 }
 
 User::User(const QString &id,
-           const QString &name,
+           const QString& firstName,
+           const QString& lastName,
            const QString &email,
            const QString &phone,
            const QDateTime &createdAt,
            QObject *parent)
     :m_id(id)
-    ,m_name(name)
+    ,m_firstName(firstName)
+    ,m_lastName(lastName)
     ,m_email(email)
     ,m_createdAt(createdAt)
     ,QObject(parent)
@@ -30,19 +32,39 @@ void User::setId(const QString &newId)
     m_id = newId;
 }
 
-QString User::getName() const
+QString User::firstName() const
 {
-    return m_name;
+    return m_firstName;
 }
 
-void User::setName(const QString &name)
+void User::setFirstName(const QString &newFirstName)
 {
-    m_name = name;
-    if(getName() == name)
-    {
-        emit profileUpdated();
-    }
+    m_firstName = newFirstName;
 }
+
+QString User::lastName() const
+{
+    return m_lastName;
+}
+
+void User::setLastName(const QString &newLastName)
+{
+    m_lastName = newLastName;
+}
+
+// QString User::getName() const
+// {
+//     return m_name;
+// }
+
+// void User::setName(const QString &name)
+// {
+//     m_name = name;
+//     if(getName() == name)
+//     {
+//         emit profileUpdated();
+//     }
+// }
 
 QString User::getEmail() const
 {

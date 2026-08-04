@@ -14,7 +14,8 @@ public:
         const QString& password) override;
         
     void signUp(
-        const QString& name,
+        const QString& fistName,
+        const QString& lastName,
         const QString& email,
         const QString& password,
         const QString& confirmPassword,
