@@ -138,7 +138,7 @@ Item {
 
         Button {
             id: continueButton
-            text: "Continue to OTP"
+            text: "Continue"
             Layout.fillWidth: true
             Layout.preferredHeight: 52
             Layout.topMargin: 6

@@ -98,7 +98,7 @@ Item {
                 }
 
                 Label {
-                    text: "Your email will be verified"
+                    text: "Use a working email"
                     color: "#1E40AF"
                     font.pixelSize: 13
                     lineHeight: 1.1
