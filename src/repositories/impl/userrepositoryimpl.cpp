@@ -139,29 +139,11 @@ void UserRepositoryImpl::verifyEmail(const QString &email)
         {
 
             if(success){
-                emit emailVerified(response["status"].toString());
+                emit emailVerified(response["status"].toBool());
             }
 
         }
     );
 }
 
-void UserRepositoryImpl::checkExistingAccountWithEmail(const QString &email)
-{
-    QJsonObject payload;
-    payload["email"] = email;
-    APIClient::instance().post(
-        "/auth/checkExistingAccountWithEmail",
-        payload,
-        [this](bool success,
-               const QJsonObject& response)
-        {
-
-            if(success){
-                emit emailVerified(response["status"].toString());
-            }
-
-        }
-        );
-}
 

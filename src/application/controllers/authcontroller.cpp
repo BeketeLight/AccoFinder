@@ -64,7 +64,3 @@ void AuthController::verifyEmail(const QString &email)
     m_userRepository->verifyEmail(email);
 }
 
-void AuthController::checkExistingAccountWithEmail(const QString &email)
-{
-    m_userRepository->checkExistingAccountWithEmail(email);
-}
