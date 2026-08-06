@@ -23,7 +23,7 @@ public:
         
     void logOut() override;
     void verifyEmail(const QString& email) override;
-    void checkExistingAccountWithEmail(const QString& email) override;
+    void checkAccount(const QString& email) override;
 
 signals:
         void signInSucceded(User* user);
@@ -32,7 +32,7 @@ signals:
         void signUpFailed(const QString& error);
         void logOutSucceded();
         void emailVerified(const bool& status);
-        void existingAccountWithEmailChecked(const bool& status);
+        void accountChecked(const bool& status);
 };
 
 #endif // USERREPOSITORYIMPL_H

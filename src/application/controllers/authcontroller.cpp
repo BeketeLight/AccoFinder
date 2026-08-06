@@ -9,7 +9,7 @@ AuthController::AuthController(QObject *parent)
     connect(m_userRepository, &UserRepositoryImpl::signUpFailed, this, &AuthController::signUpFailed);
     connect(m_userRepository, &UserRepositoryImpl::logOutSucceded, this, &AuthController::userLoggedOut);
     connect(m_userRepository, &UserRepositoryImpl::emailVerified, this, &AuthController::emailVerified);
-    connect(m_userRepository, &UserRepositoryImpl::existingAccountWithEmailChecked, this, &AuthController::existingAccountWithEmailChecked);
+    connect(m_userRepository, &UserRepositoryImpl::accountChecked, this, &AuthController::accountChecked);
 }
 
 void AuthController::signIn(const QString &email, const QString &password)
@@ -65,8 +65,8 @@ void AuthController::verifyEmail(const QString &email)
     m_userRepository->verifyEmail(email);
 }
 
-void AuthController::checkExistingAccountWithEmail(const QString &email)
+void AuthController::checkAccount(const QString &email)
 {
-    m_userRepository->checkExistingAccountWithEmail(email);
+    m_userRepository->checkAccount(email);
 }
 
