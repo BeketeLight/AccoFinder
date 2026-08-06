@@ -21,6 +21,7 @@ public:
                 const QString& residentialAddress);
     void logOut();
     void verifyEmail(const QString& email);
+    void checkExistingAccountWithEmail(const QString& email);
 private:
     UserRepositoryImpl* m_userRepository = new UserRepositoryImpl();
 signals:
@@ -30,6 +31,7 @@ signals:
     void signUpFailed(const QString& message);
     void userLoggedOut();
     void emailVerified(const bool& status);
+    void existingAccountWithEmailChecked(const bool& status);
 };
 
 #endif // AUTHCONTROLLER_H
