@@ -52,7 +52,7 @@ function navigateToNotifications(){
     push("../features/notifications/screens/NotificationsScreen.qml")
 }
 function navigateToProperties(){
-    replace("../features/properties/screens/PropertiesScreen.qml")
+    push("../features/properties/screens/PropertiesScreen.qml")
 }
 function navigateToPayments(){
     push("../features/payments/screens/PaymentsScreen.qml")
@@ -65,7 +65,7 @@ function navigateToReviews(){
 }
 //========GLOBAL-AUTH=========
 function navigateToAccount(){
-    replace("../features/auth/screens/SignInScreen.qml")
+    push("../features/auth/screens/SignInScreen.qml")
 }
 function navigateToAdmins(){
     push("../features/auth/admins/screens/OtpScree.qml")
@@ -92,6 +92,12 @@ function navigateToPropertyDetails(){
 }
 function navigateToPaymentStatus(){
     push("../features/payments/screens/PaymentStatusScreen.qml")
+}
+function navigateToSearchScreen(){
+      push("../features/properties/screens/SearchPropertiesScreen.qml")
+}
+function navigateToAdminDashboard(){
+    push("../features/dashboards/admins/screens/AdminsDashboardScreen.qml")
 }
 
 function navigateToDashboard(role){
@@ -124,5 +130,6 @@ var Navigation = {
     navigateToBookings: navigateToBookings,
     navigateToPropertyDetails: navigateToPropertyDetails,
     navigateToPayments: navigateToPayments,
-    navigateToPaymentStatus:  navigateToPaymentStatus
+    navigateToPaymentStatus:  navigateToPaymentStatus,
+    navigateToSearchScreen: navigateToSearchScreen
 }

@@ -252,6 +252,9 @@ qt_add_qml_module(appAccoFinder
         android/src/com/accofinder/SplashActivity.java
         RESOURCES Rescources.qrc
         QML_FILES ui/features/auth/pages/EmailPage.qml ui/features/auth/pages/NamePage.qml ui/features/auth/pages/PasswordPage.qml
+        QML_FILES ui/components/navigations/AppHeaderNavBar.qml
+        QML_FILES ui/features/properties/pages/SearchPropertiesPage.qml
+        QML_FILES ui/features/properties/screens/SearchPropertiesScreen.qml
 )
 
 # ─────────────────────────────────────────────────────────────
