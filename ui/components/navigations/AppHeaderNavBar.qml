@@ -28,7 +28,7 @@ ToolBar{
     }
     RowLayout{
         anchors.fill: parent
-        anchors.leftMargin: 12
+        anchors.leftMargin: 8
         anchors.rightMargin: 12
 
         //loader for Avatar loading
@@ -48,12 +48,12 @@ ToolBar{
         Component{
             id: backButtonComponent
             ToolButton{
-                implicitHeight: 48
-                implicitWidth: 48
+                implicitHeight: 36
+                implicitWidth: 36
                 icon.source: "qrc:/ui/assets/back-icons.svg"
                 icon.color: "#111111"
-                icon.height: 14
-                icon.width: 14
+                icon.height: 16
+                icon.width: 10
                 visible: true
                 onClicked: root.backClicked()
             }
