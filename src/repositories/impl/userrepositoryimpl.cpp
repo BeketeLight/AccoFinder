@@ -146,4 +146,23 @@ void UserRepositoryImpl::verifyEmail(const QString &email)
     );
 }
 
+void UserRepositoryImpl::checkAccount(const QString &email)
+{
+    QJsonObject payload;
+    payload["email"] = email;
+    APIClient::instance().post(
+        "/auth/checkAccount",
+        payload,
+        [this](bool success,
+               const QJsonObject& response)
+        {
+
+            if(success){
+                emit emailVerified(response["status"].toBool());
+            }
+
+        }
+        );
+}
+
 
