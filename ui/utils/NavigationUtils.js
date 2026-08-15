@@ -81,7 +81,13 @@ function navigateToSignUp(){
     push("../features/auth/screens/SignUpScreen.qml")
 }
 function navigateToCreateAccount(){
-    push("../features/auth/pages/CreateAccountPage.qml")
+    if (typeof AppSettings !== "undefined" && AppSettings.isLoggedIn())
+        push("../features/auth/pages/Profile.qml")
+    else
+        push("../features/auth/pages/CreateAccountPage.qml")
+}
+function navigateToProfile(){
+    push("../features/auth/pages/Profile.qml")
 }
 function navigateToOtp(){
     push("../features/auth/pages/OtpPage.qml")
@@ -120,6 +126,7 @@ var Navigation = {
     navigateToOtp: navigateToOtp,
     navigateToForgotPassword: navigateToForgotPassword,
     navigateToAccount: navigateToAccount,
+    navigateToProfile: navigateToProfile,
     navigateToProperties: navigateToProperties,
     navigateToBookings: navigateToBookings,
     navigateToPropertyDetails: navigateToPropertyDetails,

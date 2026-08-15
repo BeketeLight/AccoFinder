@@ -3,6 +3,7 @@
 #include <QCoreApplication>
 #include <QQuickStyle>
 #include "src/core/utils/appsettings.h"
+#include "src/application/controllers/authcontroller.h"
 #include <QQmlContext>
 #include <QTimer>
 int main(int argc, char *argv[])
@@ -30,8 +31,11 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine engine;
     //Appsettings
     AppSettings& appSettings = AppSettings::instance();
+    //Auth Controller
+    AuthController authController;
     //ContextProperty
     engine.rootContext()->setContextProperty("AppSettings", &appSettings);
+    engine.rootContext()->setContextProperty("AuthController", &authController);
     QObject::connect(
         &engine,
         &QQmlApplicationEngine::objectCreationFailed,

@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import "../../../utils" as UtilsModule
+import "../../../components/dialogs"
 
 Page {
     id: root
@@ -18,8 +19,15 @@ Page {
     property color borderColor: "#E5E7EB"
     property color warningColor: "#F59E0B"
     property color errorColor: "#EF4444"
+    property bool busy: AuthController.isLoading
+
+    // Tracks which auth action is in flight so signal handlers know what to do.
+    property string pendingAction: ""
 
     function goBack() {
+        if (root.busy)
+            return;
+
         if (currentStep > 0) {
             currentStep -= 1;
             return;
@@ -30,6 +38,46 @@ Page {
 
     function fullName() {
         return (nameStep.firstName + " " + nameStep.lastName).trim();
+    }
+
+    function submitEmailStep() {
+        emailStep.clearError();
+        root.pendingAction = "checkAccount";
+        AuthController.checkAccount(emailStep.email.trim());
+    }
+
+    function submitSignUp() {
+        passwordStep.clearError();
+
+        const area = locationStep.location.trim();
+        if (area.length === 0) {
+            // Location is collected earlier; if somehow empty, send user back.
+            passwordStep.setError("Your area is required. Go back and enter a location.");
+            root.currentStep = 1;
+            return;
+        }
+
+        root.pendingAction = "signUp";
+        AuthController.signUp(
+            nameStep.firstName.trim(),
+            nameStep.lastName.trim(),
+            emailStep.email.trim(),
+            passwordStep.password,
+            passwordStep.confirmPassword,
+            area
+        );
+    }
+
+    function submitOtpVerification() {
+        otpStep.clearError();
+        root.pendingAction = "verifyEmail";
+        AuthController.verifyEmail(emailStep.email.trim());
+    }
+
+    function resendVerification() {
+        otpStep.clearError();
+        root.pendingAction = "resendEmail";
+        AuthController.verifyEmail(emailStep.email.trim());
     }
 
     anchors.fill: parent
@@ -101,7 +149,7 @@ Page {
                     spacing: 8
 
                     Repeater {
-                        model: 4
+                        model: 5
 
                         Rectangle {
                             Layout.fillWidth: true
@@ -124,8 +172,9 @@ Page {
 
                     Label {
                         text: root.currentStep === 0 ? "Personal details"
-                              : root.currentStep === 1 ? "Email verification"
-                              : root.currentStep === 2 ? "Password setup"
+                              : root.currentStep === 1 ? "Your location"
+                              : root.currentStep === 2 ? "Email verification"
+                              : root.currentStep === 3 ? "Password setup"
                               : "Confirm OTP"
                         color: root.textColor
                         font.pixelSize: 14
@@ -137,13 +186,13 @@ Page {
                         Layout.preferredWidth: 58
                         Layout.preferredHeight: 28
                         radius: 14
-                        color: root.currentStep === 3 ? root.softGreenColor : root.softBlueColor
-                        border.color: root.currentStep === 3 ? "#BBF7D0" : "#BFDBFE"
+                        color: root.currentStep === 4 ? root.softGreenColor : root.softBlueColor
+                        border.color: root.currentStep === 4 ? "#BBF7D0" : "#BFDBFE"
 
                         Label {
                             anchors.centerIn: parent
-                            text: (root.currentStep + 1) + " of 4"
-                            color: root.currentStep === 3 ? "#166534" : root.primaryColor
+                            text: (root.currentStep + 1) + " of 5"
+                            color: root.currentStep === 4 ? "#166534" : root.primaryColor
                             font.pixelSize: 11
                             font.bold: true
                         }
@@ -152,8 +201,9 @@ Page {
 
                 Label {
                     text: root.currentStep === 0 ? "Only names are collected in this step."
-                          : root.currentStep === 1 ? "Email collection and verification."
-                          : root.currentStep === 2 ? "Password is collected before OTP confirmation."
+                          : root.currentStep === 1 ? "Your area helps filter nearby properties."
+                          : root.currentStep === 2 ? "Email collection and verification."
+                          : root.currentStep === 3 ? "Password is collected before OTP confirmation."
                           : "Enter the email code to finish account verification."
                     color: root.mutedColor
                     font.pixelSize: 12
@@ -189,8 +239,8 @@ Page {
                         onNextRequested: root.currentStep = 1
                     }
 
-                    EmailPage {
-                        id: emailStep
+                    LocationPage {
+                        id: locationStep
                         primaryColor: root.primaryColor
                         secondaryColor: root.secondaryColor
                         surfaceColor: root.surfaceColor
@@ -202,8 +252,9 @@ Page {
                         onNextRequested: root.currentStep = 2
                     }
 
-                    PasswordPage {
-                        id: passwordStep
+                    EmailPage {
+                        id: emailStep
+                        busy: root.busy && root.pendingAction === "checkAccount"
                         primaryColor: root.primaryColor
                         secondaryColor: root.secondaryColor
                         surfaceColor: root.surfaceColor
@@ -212,17 +263,28 @@ Page {
                         borderColor: root.borderColor
                         errorColor: root.errorColor
                         Layout.fillWidth: true
-                        onNextRequested: {
-                            console.log("TODO AuthController.signUp",
-                                        root.fullName(),
-                                        emailStep.email);
-                            root.currentStep = 3;
-                        }
+                        onNextRequested: root.submitEmailStep()
+                    }
+
+                    PasswordPage {
+                        id: passwordStep
+                        busy: root.busy && root.pendingAction === "signUp"
+                        primaryColor: root.primaryColor
+                        secondaryColor: root.secondaryColor
+                        surfaceColor: root.surfaceColor
+                        textColor: root.textColor
+                        mutedColor: root.mutedColor
+                        borderColor: root.borderColor
+                        errorColor: root.errorColor
+                        Layout.fillWidth: true
+                        onNextRequested: root.submitSignUp()
                     }
 
                     OtpPage {
                         id: otpStep
                         email: emailStep.email
+                        busy: root.busy && (root.pendingAction === "verifyEmail"
+                                            || root.pendingAction === "resendEmail")
                         primaryColor: root.primaryColor
                         surfaceColor: root.surfaceColor
                         textColor: root.textColor
@@ -230,7 +292,8 @@ Page {
                         borderColor: root.borderColor
                         errorColor: root.errorColor
                         Layout.fillWidth: true
-                        onConfirmed: UtilsModule.NavigationUtils.navigateToSignIn()
+                        onConfirmed: root.submitOtpVerification()
+                        onResendRequested: root.resendVerification()
                     }
                 }
             }
@@ -239,6 +302,7 @@ Page {
                 id: previousStepButton
                 text: "Back to previous step"
                 visible: root.currentStep > 0
+                enabled: !root.busy
                 Layout.fillWidth: true
                 Layout.preferredHeight: visible ? 48 : 0
 
@@ -290,6 +354,82 @@ Page {
                         }
                     }
                 }
+            }
+        }
+    }
+
+    AppLoadingDialog {
+        id: loadingDialog
+    }
+
+    Connections {
+        target: AuthController
+
+        function onIsLoadingChanged(isLoading) {
+            if (isLoading)
+                loadingDialog.open();
+            else
+                loadingDialog.close();
+        }
+
+        function onAccountChecked(status) {
+            if (root.pendingAction !== "checkAccount")
+                return;
+
+            root.pendingAction = "";
+            loadingDialog.close();
+
+            // status true means the account already exists.
+            if (status) {
+                emailStep.setError("An account with this email already exists. Sign in instead.");
+                return;
+            }
+
+            emailStep.clearError();
+            root.currentStep = 3;
+        }
+
+        function onSignUpSucceded(user) {
+            if (root.pendingAction !== "signUp")
+                return;
+
+            root.pendingAction = "";
+            loadingDialog.close();
+            passwordStep.clearError();
+            root.currentStep = 4;
+        }
+
+        function onSignUpFailed(message) {
+            if (root.pendingAction !== "signUp")
+                return;
+
+            root.pendingAction = "";
+            loadingDialog.close();
+            passwordStep.setError(message)
+
+        }
+
+        function onEmailVerified(status) {
+            if (root.pendingAction !== "verifyEmail" && root.pendingAction !== "resendEmail")
+                return;
+
+            const action = root.pendingAction;
+            root.pendingAction = "";
+            loadingDialog.close();
+
+            if (action === "resendEmail") {
+                if (status)
+                    otpStep.setError(""); // clear any prior error; code re-sent
+                else
+                    otpStep.setError("Could not resend the verification code. Try again.");
+                return;
+            }
+
+            if (status) {
+                otpStep.clearError();
+                UtilsModule.NavigationUtils.navigateToSignIn();
+            } else {
+                otpStep.setError("Email verification failed. Check the code and try again.");
             }
         }
     }

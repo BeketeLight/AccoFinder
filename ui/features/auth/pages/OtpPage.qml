@@ -7,6 +7,7 @@ Item {
 
     property string email: ""
     property string otpCode: digitOne.text + digitTwo.text + digitThree.text + digitFour.text + digitFive.text + digitSix.text
+    property bool busy: false
     property color primaryColor: "#2563EB"
     property color surfaceColor: "#F5F5F5"
     property color textColor: "#1F2937"
@@ -16,6 +17,14 @@ Item {
 
     signal confirmed
     signal resendRequested
+
+    function setError(message) {
+        errorText.text = message || "";
+    }
+
+    function clearError() {
+        errorText.text = "";
+    }
 
     implicitHeight: layout.implicitHeight
 
@@ -169,7 +178,8 @@ Item {
 
         Button {
             id: confirmButton
-            text: "Verify account"
+            text: root.busy ? "Verifying..." : "Verify account"
+            enabled: !root.busy
             Layout.fillWidth: true
             Layout.preferredHeight: 52
             Layout.topMargin: 6
@@ -185,7 +195,9 @@ Item {
 
             background: Rectangle {
                 radius: 12
-                color: confirmButton.down ? "#1D4ED8" : root.primaryColor
+                color: !confirmButton.enabled ? "#93C5FD"
+                       : confirmButton.down ? "#1D4ED8"
+                       : root.primaryColor
             }
 
             onClicked: {
@@ -195,7 +207,6 @@ Item {
                 }
 
                 errorText.text = "";
-                console.log("TODO AuthController.verifyEmail", root.otpCode);
                 root.confirmed();
             }
         }
@@ -221,7 +232,8 @@ Item {
                     anchors.fill: parent
                     cursorShape: Qt.PointingHandCursor
                     onClicked: {
-                        console.log("TODO AuthController resend email OTP", root.email);
+                        if (root.busy)
+                            return;
                         root.resendRequested();
                     }
                 }

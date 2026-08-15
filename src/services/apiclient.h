@@ -1,4 +1,3 @@
-
 #ifndef APICLIENT_H
 #define APICLIENT_H
 
@@ -9,6 +8,7 @@
 #include <functional>
 #include <QMap>
 #include "core/utils/appsettings.h"
+#include <QNetworkCookieJar>
 
 class APIClient : public QObject
 {
@@ -26,30 +26,35 @@ public:
 
     void get(
         const QString& endpoint,
-        SuccessCallback callback
+        SuccessCallback callback,
+        bool skipAuth = false
         );
 
     void post(
         const QString& endpoint,
         const QJsonObject& data,
-        SuccessCallback callback
+        SuccessCallback callback,
+        bool skipAuth = false
         );
 
     void put(
         const QString& endpoint,
         const QJsonObject& data,
-        SuccessCallback callback
+        SuccessCallback callback,
+        bool skipAuth = false
         );
+
     void patch(
         const QString& endpoint,
         const QJsonObject& data,
-        SuccessCallback callback
+        SuccessCallback callback,
+        bool skipAuth = false
         );
-
 
     void del(
         const QString& endpoint,
-        SuccessCallback callback
+        SuccessCallback callback,
+        bool skipAuth = false
         );
 
 signals:
@@ -69,6 +74,7 @@ private:
     struct PendingRequest
     {
         SuccessCallback callback;
+        bool skipAuth = false;
     };
 
     QNetworkAccessManager* m_networkManager;
@@ -82,10 +88,12 @@ private:
         const QString& method,
         const QString& endpoint,
         const QJsonObject& data,
-        SuccessCallback callback
+        SuccessCallback callback,
+        bool skipAuth = false
         );
 
-    void setupHeaders(QNetworkRequest& request);
+    void setupHeaders(QNetworkRequest& request, bool skipAuth = false);
+    static QString errorMessageFromBody(const QJsonObject& body);
 };
 
 #endif

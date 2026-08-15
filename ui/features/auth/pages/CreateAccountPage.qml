@@ -18,6 +18,11 @@ Page {
 
     anchors.fill: parent
 
+    Component.onCompleted: {
+        if (AppSettings.isLoggedIn())
+            NavUtils.navigateToProfile();
+    }
+
     background: Rectangle {
         color: root.pageColor
     }

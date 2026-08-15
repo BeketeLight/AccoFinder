@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import "../../../utils" as UtilsModule
 import "../../../components/inputs"
+import "../../../components/dialogs"
 
 Page {
     id: root
@@ -15,6 +16,7 @@ Page {
     property color mutedColor: "#6B7280"
     property color borderColor: "#E5E7EB"
     property color errorColor: "#EF4444"
+    property bool busy: AuthController.isLoading
 
     anchors.fill: parent
 
@@ -201,7 +203,8 @@ Page {
 
             Button {
                 id: signInButton
-                text: "Sign in"
+                text: root.busy ? "Signing in..." : "Sign in"
+                enabled: !root.busy
                 Layout.fillWidth: true
                 Layout.preferredHeight: 52
 
@@ -216,18 +219,12 @@ Page {
 
                 background: Rectangle {
                     radius: 12
-                    color: signInButton.down ? "#1D4ED8" : root.primaryColor
+                    color: !signInButton.enabled ? "#93C5FD"
+                           : signInButton.down ? "#1D4ED8"
+                           : root.primaryColor
                 }
 
-                onClicked: {
-                    if (emailInput.text.trim().length === 0 || passwordInput.text.length === 0) {
-                        errorLabel.text = "Enter your email and password to continue.";
-                        return;
-                    }
-
-                    errorLabel.text = "";
-                    console.log("TODO AuthController.signIn", emailInput.text);
-                }
+                onClicked: root.submitSignIn()
             }
 
             RowLayout {
@@ -336,6 +333,56 @@ Page {
 
     Shortcut {
         sequence: "Return"
-        onActivated: signInButton.clicked()
+        enabled: !root.busy
+        onActivated: root.submitSignIn()
+    }
+
+    AppLoadingDialog {
+        id: loadingDialog
+    }
+
+    function submitSignIn() {
+        if (root.busy)
+            return;
+
+        const email = emailInput.text.trim().toLowerCase();
+        const password = passwordInput.text;
+
+        if (email.length === 0 || password.length === 0) {
+            errorLabel.text = "Enter your email and password to continue.";
+            return;
+        }
+
+        if (email.indexOf("@") === -1) {
+            errorLabel.text = "Enter a valid email address.";
+            return;
+        }
+
+        errorLabel.text = "";
+        AppSettings.setRememberLogin(rememberCheck.checked);
+        AuthController.signIn(email, password);
+    }
+
+    Connections {
+        target: AuthController
+
+        function onIsLoadingChanged(isLoading) {
+            if (isLoading)
+                loadingDialog.open();
+            else
+                loadingDialog.close();
+        }
+
+        function onSignInSucceded(user) {
+            errorLabel.text = "";
+            loadingDialog.close();
+
+            UtilsModule.NavigationUtils.navigateToProfile();
+        }
+
+        function onSignInFailed(message) {
+            loadingDialog.close();
+            errorLabel.text = message
+        }
     }
 }

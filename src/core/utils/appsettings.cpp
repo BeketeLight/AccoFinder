@@ -140,6 +140,27 @@ QString AppSettings::phone() const {
     return m_settings.value("user/phone").toString();
 }
 
+void AppSettings::setBankName(const QString &value) {
+    m_settings.setValue("user/bankName", value);
+}
+QString AppSettings::bankName() const {
+    return m_settings.value("user/bankName").toString();
+}
+
+void AppSettings::setBankAccountNumber(const QString &value) {
+    m_settings.setValue("user/bankAccountNumber", value);
+}
+QString AppSettings::bankAccountNumber() const {
+    return m_settings.value("user/bankAccountNumber").toString();
+}
+
+void AppSettings::setPaymentMethod(const QString &value) {
+    m_settings.setValue("user/paymentMethod", value);
+}
+QString AppSettings::paymentMethod() const {
+    return m_settings.value("user/paymentMethod", "Mobile money").toString();
+}
+
 // CLIENT
 
 void AppSettings::setIsStudent(bool value) {
