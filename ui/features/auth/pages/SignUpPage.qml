@@ -80,6 +80,25 @@ Page {
         AuthController.verifyEmail(emailStep.email.trim());
     }
 
+    function isExistingAccountMessage(message) {
+        const normalizedMessage = (message || "").toLowerCase();
+        const mentionsAccount = normalizedMessage.indexOf("account") !== -1
+                                || normalizedMessage.indexOf("email") !== -1
+                                || normalizedMessage.indexOf("user") !== -1;
+        const mentionsDuplicate = normalizedMessage.indexOf("exist") !== -1
+                                  || normalizedMessage.indexOf("already") !== -1
+                                  || normalizedMessage.indexOf("registered") !== -1;
+        return mentionsAccount && mentionsDuplicate;
+    }
+
+    function continueExistingAccountVerification() {
+        emailStep.clearError();
+        passwordStep.clearError();
+        otpStep.clearError();
+        root.currentStep = 4;
+        root.resendVerification();
+    }
+
     anchors.fill: parent
 
     background: Rectangle {
@@ -381,7 +400,7 @@ Page {
 
             // status true means the account already exists.
             if (status) {
-                emailStep.setError("An account with this email already exists. Sign in instead.");
+                root.continueExistingAccountVerification();
                 return;
             }
 
@@ -405,6 +424,11 @@ Page {
 
             root.pendingAction = "";
             loadingDialog.close();
+            if (root.isExistingAccountMessage(message)) {
+                root.continueExistingAccountVerification();
+                return;
+            }
+
             passwordStep.setError(message)
 
         }

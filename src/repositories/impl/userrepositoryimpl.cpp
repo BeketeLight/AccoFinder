@@ -28,7 +28,7 @@ void UserRepositoryImpl::signIn(
 
                 // Parse user fields from backend
                 QString userId = data["_id"].toString();
-                QString fullName = data["name"].toString();
+                QString fullName = data["firstName"].toString() +" "+ data["surname"].toString();
                 QString userEmail = data["email"].toString();
                 QString residentialAddress = data["residentialAddress"].toString();
                 QString role = data["role"].toString();
@@ -80,7 +80,8 @@ void UserRepositoryImpl::signUp(
     const QString& residentialAddress)
 {
     QJsonObject payload;
-    payload["name"] = firstName + " " + lastName;  // Combine into single name
+    payload["firstName"] = firstName;
+    payload["surname"] = lastName;
     payload["email"] = email;
     payload["password"] = password;
     payload["confirmPassword"] = confirmPassword;
