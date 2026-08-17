@@ -375,13 +375,13 @@ Page {
             }
         }
     }
-
     component FieldRow: ColumnLayout {
         id: field
         property string label: ""
         property string value: ""
-        property string placeholder: "Not set"
+        property string placeholder: ""
         property bool editable: false
+        property int floatingLabelTopMargin: 5
         signal edited(string value)
 
         Layout.fillWidth: true
@@ -396,15 +396,80 @@ Page {
         }
 
         TextField {
+            id: fieldInput
             Layout.fillWidth: true
             Layout.preferredHeight: 46
             text: field.value
             enabled: field.editable
-            placeholderText: field.placeholder
+            placeholderText: ""
             selectByMouse: true
             color: root.textColor
             font.pixelSize: 14
             onTextEdited: field.edited(text)
+
+            readonly property bool isFloating: activeFocus || text.length > 0
+            readonly property bool showNotSet: !field.editable && (field.value === "" || field.value === undefined || field.value === null)
+
+            // Adjust padding to make room for floating label
+            leftPadding: 12
+            rightPadding: 12
+            topPadding: isFloating ? floatingLabelTopMargin + 14 : 0
+            bottomPadding: isFloating ? 8 : 0
+            verticalAlignment: Text.AlignVCenter
+
+            // Custom floating placeholder
+            Text {
+                id: floatingLabel
+                text: field.placeholder
+                visible: field.editable && field.placeholder.length > 0
+                color: {
+                    if (fieldInput.activeFocus)
+                        return root.primaryColor
+                    return root.mutedColor
+                }
+                font.pixelSize: fieldInput.isFloating ? 11 : 14
+                font.weight: fieldInput.isFloating ? Font.Medium : Font.Normal
+
+                x: 12
+                width: parent.width - 24
+                elide: Text.ElideRight
+
+                y: fieldInput.isFloating
+                   ? floatingLabelTopMargin
+                   : Math.round((parent.height - height) / 2)
+
+                Behavior on y {
+                    NumberAnimation {
+                        duration: 140
+                        easing.type: Easing.OutCubic
+                    }
+                }
+                Behavior on font.pixelSize {
+                    NumberAnimation {
+                        duration: 140
+                        easing.type: Easing.OutCubic
+                    }
+                }
+                Behavior on color {
+                    ColorAnimation {
+                        duration: 140
+                    }
+                }
+            }
+
+            // "Not set" text for read-only mode
+            Text {
+                anchors.fill: parent
+                anchors.leftMargin: 12
+                anchors.rightMargin: 12
+                verticalAlignment: Text.AlignVCenter
+                horizontalAlignment: Text.AlignLeft
+                text: "Not set"
+                color: root.mutedColor
+                font.pixelSize: 14
+                visible: fieldInput.showNotSet
+                elide: Text.ElideRight
+            }
 
             background: Rectangle {
                 radius: 8
@@ -414,7 +479,6 @@ Page {
             }
         }
     }
-
     component BookingProgressRow: Rectangle {
         id: bookingRow
         property string propertyName: ""

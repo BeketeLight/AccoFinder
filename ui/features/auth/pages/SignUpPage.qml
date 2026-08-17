@@ -50,10 +50,17 @@ Page {
         passwordStep.clearError();
 
         const area = locationStep.location.trim();
+        const phone = phoneStep.normalizedPhone();
         if (area.length === 0) {
             // Location is collected earlier; if somehow empty, send user back.
             passwordStep.setError("Your area is required. Go back and enter a location.");
             root.currentStep = 1;
+            return;
+        }
+
+        if (phone.length === 0) {
+            passwordStep.setError("Your phone number is required. Go back and enter a phone number.");
+            root.currentStep = 2;
             return;
         }
 
@@ -62,6 +69,7 @@ Page {
             nameStep.firstName.trim(),
             nameStep.lastName.trim(),
             emailStep.email.trim(),
+            phone,
             passwordStep.password,
             passwordStep.confirmPassword,
             area
@@ -95,7 +103,7 @@ Page {
         emailStep.clearError();
         passwordStep.clearError();
         otpStep.clearError();
-        root.currentStep = 4;
+        root.currentStep = 5;
         root.resendVerification();
     }
 
@@ -168,7 +176,7 @@ Page {
                     spacing: 8
 
                     Repeater {
-                        model: 5
+                        model: 6
 
                         Rectangle {
                             Layout.fillWidth: true
@@ -192,8 +200,9 @@ Page {
                     Label {
                         text: root.currentStep === 0 ? "Personal details"
                               : root.currentStep === 1 ? "Your location"
-                              : root.currentStep === 2 ? "Email verification"
-                              : root.currentStep === 3 ? "Password setup"
+                              : root.currentStep === 2 ? "Phone contact"
+                              : root.currentStep === 3 ? "Email verification"
+                              : root.currentStep === 4 ? "Password setup"
                               : "Confirm OTP"
                         color: root.textColor
                         font.pixelSize: 14
@@ -205,13 +214,13 @@ Page {
                         Layout.preferredWidth: 58
                         Layout.preferredHeight: 28
                         radius: 14
-                        color: root.currentStep === 4 ? root.softGreenColor : root.softBlueColor
-                        border.color: root.currentStep === 4 ? "#BBF7D0" : "#BFDBFE"
+                        color: root.currentStep === 5 ? root.softGreenColor : root.softBlueColor
+                        border.color: root.currentStep === 5 ? "#BBF7D0" : "#BFDBFE"
 
                         Label {
                             anchors.centerIn: parent
-                            text: (root.currentStep + 1) + " of 5"
-                            color: root.currentStep === 4 ? "#166534" : root.primaryColor
+                            text: (root.currentStep + 1) + " of 6"
+                            color: root.currentStep === 5 ? "#166534" : root.primaryColor
                             font.pixelSize: 11
                             font.bold: true
                         }
@@ -221,8 +230,9 @@ Page {
                 Label {
                     text: root.currentStep === 0 ? "Only names are collected in this step."
                           : root.currentStep === 1 ? "Your area helps filter nearby properties."
-                          : root.currentStep === 2 ? "Email collection and verification."
-                          : root.currentStep === 3 ? "Password is collected before OTP confirmation."
+                          : root.currentStep === 2 ? "Your phone number helps with viewing and booking follow-ups."
+                          : root.currentStep === 3 ? "Email collection and verification."
+                          : root.currentStep === 4 ? "Password is collected before OTP confirmation."
                           : "Enter the email code to finish account verification."
                     color: root.mutedColor
                     font.pixelSize: 12
@@ -269,6 +279,19 @@ Page {
                         errorColor: root.errorColor
                         Layout.fillWidth: true
                         onNextRequested: root.currentStep = 2
+                    }
+
+                    PhonePage {
+                        id: phoneStep
+                        primaryColor: root.primaryColor
+                        secondaryColor: root.secondaryColor
+                        surfaceColor: root.surfaceColor
+                        textColor: root.textColor
+                        mutedColor: root.mutedColor
+                        borderColor: root.borderColor
+                        errorColor: root.errorColor
+                        Layout.fillWidth: true
+                        onNextRequested: root.currentStep = 3
                     }
 
                     EmailPage {
@@ -405,7 +428,7 @@ Page {
             }
 
             emailStep.clearError();
-            root.currentStep = 3;
+            root.currentStep = 4;
         }
 
         function onSignUpSucceded(user) {
@@ -415,7 +438,7 @@ Page {
             root.pendingAction = "";
             loadingDialog.close();
             passwordStep.clearError();
-            root.currentStep = 4;
+            root.currentStep = 5;
         }
 
         function onSignUpFailed(message) {

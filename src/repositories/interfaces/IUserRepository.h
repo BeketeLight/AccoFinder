@@ -18,6 +18,7 @@ public:
         const QString& fistName,
         const QString& lastName,
         const QString& email,
+        const QString& phone,
         const QString& password,
         const QString& confirmPassword,
         const QString& residentialAddress) = 0;

@@ -17,6 +17,7 @@ public:
         const QString& fistName,
         const QString& lastName,
         const QString& email,
+        const QString& phone,
         const QString& password,
         const QString& confirmPassword,
         const QString& residentialAddress) override;
@@ -31,6 +32,7 @@ signals:
         void signUpSucceded(User* user);
         void signUpFailed(const QString& error);
         void logOutSucceded();
+        void emailVerificationRequired(const QString& email);
         void emailVerified(const bool& status);
         void accountChecked(const bool& status);
 };

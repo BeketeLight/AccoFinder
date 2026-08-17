@@ -115,6 +115,7 @@ qt_add_qml_module(appAccoFinder
         ui/features/auth/pages/SignUpPage.qml
         ui/features/auth/pages/NamePage.qml
         ui/features/auth/pages/LocationPage.qml
+        ui/features/auth/pages/PhonePage.qml
         ui/features/auth/pages/EmailPage.qml
         ui/features/auth/pages/PasswordPage.qml
         ui/features/auth/screens/SignUpScreen.qml

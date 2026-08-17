@@ -384,5 +384,11 @@ Page {
             loadingDialog.close();
             errorLabel.text = message
         }
+
+        function onEmailVerificationRequired(email) {
+            loadingDialog.close();
+            errorLabel.text = "";
+            UtilsModule.NavigationUtils.navigateToOtp(email || emailInput.text.trim().toLowerCase());
+        }
     }
 }

@@ -20,8 +20,8 @@ void UserRepositoryImpl::signIn(
     APIClient::instance().post(
         "/auth/login",
         payload,
-        [this](bool success,
-               const QJsonObject& response)
+        [this, email](bool success,
+                      const QJsonObject& response)
         {
             if(success){
                 QJsonObject data = response["data"].toObject();
@@ -66,6 +66,12 @@ void UserRepositoryImpl::signIn(
                     error = response["error"].toString();
                 if(error.isEmpty())
                     error = "Login failed. Please check your credentials.";
+
+                if (error.trimmed().compare("Email not verified", Qt::CaseInsensitive) == 0) {
+                    emit emailVerificationRequired(email);
+                    return;
+                }
+
                 emit signInFailed(error);
             }
         }, true);
@@ -75,6 +81,7 @@ void UserRepositoryImpl::signUp(
     const QString& firstName,
     const QString& lastName,
     const QString& email,
+    const QString& phone,
     const QString& password,
     const QString& confirmPassword,
     const QString& residentialAddress)
@@ -83,6 +90,7 @@ void UserRepositoryImpl::signUp(
     payload["firstName"] = firstName;
     payload["surname"] = lastName;
     payload["email"] = email;
+    payload["phone"] = phone;
     payload["password"] = password;
     payload["confirmPassword"] = confirmPassword;
     payload["residentialAddress"] = residentialAddress;
@@ -90,8 +98,8 @@ void UserRepositoryImpl::signUp(
     APIClient::instance().post(
         "/auth/register",
         payload,
-        [this, residentialAddress](bool success,
-                                   const QJsonObject& response)
+        [this, phone, residentialAddress](bool success,
+                                          const QJsonObject& response)
         {
             if(success){
                 QJsonObject data = response["data"].toObject();
@@ -99,6 +107,7 @@ void UserRepositoryImpl::signUp(
                 QString userId = data["_id"].toString();
                 QString fullName = data["name"].toString();
                 QString userEmail = data["email"].toString();
+                QString userPhone = data["phone"].toString();
                 QString address = data["residentialAddress"].toString();
                 QString role = data["role"].toString();
 
@@ -115,6 +124,7 @@ void UserRepositoryImpl::signUp(
                 // Persist data
                 AppSettings::instance().setUserName(fullName);
                 AppSettings::instance().setEmail(userEmail);
+                AppSettings::instance().setPhone(userPhone.isEmpty() ? phone : userPhone);
 
                 QString area = address.isEmpty() ? residentialAddress : address;
                 AppSettings::instance().setPreferredLocation(area);

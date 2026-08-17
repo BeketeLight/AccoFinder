@@ -16,6 +16,11 @@ AuthController::AuthController(QObject *parent)
         stopLoading();
         emit signInFailed(message);
     });
+    connect(m_userRepository, &UserRepositoryImpl::emailVerificationRequired, this,
+            [this, stopLoading](const QString& email) {
+        stopLoading();
+        emit emailVerificationRequired(email);
+    });
     connect(m_userRepository, &UserRepositoryImpl::signUpSucceded, this,
             [this, stopLoading](User* user) {
         stopLoading();
@@ -69,6 +74,7 @@ void AuthController::signIn(const QString &email, const QString &password)
 void AuthController::signUp(const QString& fistName,
                             const QString& lastName,
                             const QString &email,
+                            const QString &phone,
                             const QString &password,
                             const QString &confirmPassword,
                             const QString &residentialAddress)
@@ -76,6 +82,7 @@ void AuthController::signUp(const QString& fistName,
     if (fistName.trimmed().isEmpty()
         || lastName.trimmed().isEmpty()
         || email.trimmed().isEmpty()
+        || phone.trimmed().isEmpty()
         || password.isEmpty()
         || confirmPassword.isEmpty()
         || residentialAddress.trimmed().isEmpty()) {
@@ -93,6 +100,7 @@ void AuthController::signUp(const QString& fistName,
         fistName.trimmed(),
         lastName.trimmed(),
         email.trimmed(),
+        phone.trimmed(),
         password,
         confirmPassword,
         residentialAddress.trimmed());
