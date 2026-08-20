@@ -28,7 +28,7 @@ void UserRepositoryImpl::signIn(
 
                 // Parse user fields from backend
                 QString userId = data["_id"].toString();
-                QString fullName = data["firstName"].toString() +" "+ data["surname"].toString();
+                QString fullName = data["firstName"].toString() + " " + data["surname"].toString();
                 QString userEmail = data["email"].toString();
                 QString residentialAddress = data["residentialAddress"].toString();
                 QString role = data["role"].toString();
@@ -40,7 +40,7 @@ void UserRepositoryImpl::signIn(
                 // Use the new constructor
                 User* user = new User(
                     userId,
-                    fullName,          // Backend sends single 'name' field
+                    fullName,
                     userEmail,
                     residentialAddress,
                     role,
@@ -61,13 +61,24 @@ void UserRepositoryImpl::signIn(
                 emit signInSucceded(user);
             }
             else{
+                // Extract error message from various possible locations
                 QString error = response["message"].toString();
-                if(error.isEmpty())
+                if (error.isEmpty())
                     error = response["error"].toString();
-                if(error.isEmpty())
+                if (error.isEmpty())
                     error = "Login failed. Please check your credentials.";
 
-                if (error.trimmed().compare("Email not verified", Qt::CaseInsensitive) == 0) {
+                // Debug logging to see what's actually being returned
+                qDebug() << "Login error received:" << error;
+                qDebug() << "Full response:" << response;
+
+                // Check for email not verified - case insensitive and handles trimmed spaces
+                QString errorLower = error.trimmed().toLower();
+                if (errorLower.contains("email not verified") ||
+                    errorLower.contains("not verified")) {
+                    qDebug() << "=== EMAIL NOT VERIFIED DETECTED ===";
+                    qDebug() << "Email:" << email;
+                    qDebug() << "Emitting emailVerificationRequired signal";
                     emit emailVerificationRequired(email);
                     return;
                 }
@@ -76,7 +87,6 @@ void UserRepositoryImpl::signIn(
             }
         }, true);
 }
-
 void UserRepositoryImpl::signUp(
     const QString& firstName,
     const QString& lastName,
@@ -165,21 +175,36 @@ void UserRepositoryImpl::logOut()
         }, false);
 }
 
-void UserRepositoryImpl::verifyEmail(const QString &email)
+void UserRepositoryImpl::requestOtp(const QString &email, const QString &purpose)
 {
     QJsonObject payload;
     payload["email"] = email;
+    payload["purpose"] = purpose;
+
     APIClient::instance().post(
-        "/auth/verifyEmail",
+        "/auth/otp/request",
         payload,
-        [this](bool success,
-               const QJsonObject& response)
+        [this](bool success, const QJsonObject &)
         {
-            if (success) {
-                emit emailVerified(response.value("status").toBool(true));
-            } else {
-                emit emailVerified(false);
-            }
+            emit otpRequested(success);
+        }, true);
+}
+
+void UserRepositoryImpl::verifyOtp(const QString &email,
+                                   const QString &code,
+                                   const QString &purpose)
+{
+    QJsonObject payload;
+    payload["email"] = email;
+    payload["code"] = code;
+    payload["purpose"] = purpose;
+
+    APIClient::instance().post(
+        "/auth/otp/verify",
+        payload,
+        [this](bool success, const QJsonObject &)
+        {
+            emit otpVerified(success);
         }, true);
 }
 
@@ -198,3 +223,5 @@ void UserRepositoryImpl::checkAccount(const QString &email)
             }
         }, true);
 }
+
+

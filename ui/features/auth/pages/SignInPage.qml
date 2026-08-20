@@ -17,6 +17,9 @@ Page {
     property color borderColor: "#E5E7EB"
     property color errorColor: "#EF4444"
     property bool busy: AuthController.isLoading
+    property string pendingAction: ""
+    property string pendingOtpEmail: ""
+    readonly property string otpPurpose: "registration"
 
     anchors.fill: parent
 
@@ -374,6 +377,7 @@ Page {
         }
 
         function onSignInSucceded(user) {
+            root.pendingAction = "";
             errorLabel.text = "";
             loadingDialog.close();
 
@@ -381,6 +385,7 @@ Page {
         }
 
         function onSignInFailed(message) {
+            root.pendingAction = "";
             loadingDialog.close();
             errorLabel.text = message
         }
@@ -388,7 +393,23 @@ Page {
         function onEmailVerificationRequired(email) {
             loadingDialog.close();
             errorLabel.text = "";
-            UtilsModule.NavigationUtils.navigateToOtp(email || emailInput.text.trim().toLowerCase());
+            root.pendingOtpEmail = email || emailInput.text.trim().toLowerCase();
+            root.pendingAction = "requestOtpAfterLogin";
+            AuthController.requestOtp(root.pendingOtpEmail, root.otpPurpose);
+        }
+
+        function onOtpRequested(status) {
+            if (root.pendingAction !== "requestOtpAfterLogin")
+                return;
+
+            const email = root.pendingOtpEmail;
+            root.pendingAction = "";
+            loadingDialog.close();
+            errorLabel.text = "";
+            UtilsModule.NavigationUtils.navigateToOtp(
+                email,
+                root.otpPurpose,
+                status ? "" : "Could not send the verification code. Use Resend to try again.");
         }
     }
 }

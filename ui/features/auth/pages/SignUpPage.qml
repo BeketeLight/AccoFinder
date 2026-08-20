@@ -23,6 +23,7 @@ Page {
 
     // Tracks which auth action is in flight so signal handlers know what to do.
     property string pendingAction: ""
+    readonly property string otpPurpose: "registration"
 
     function goBack() {
         if (root.busy)
@@ -76,16 +77,20 @@ Page {
         );
     }
 
+    function requestRegistrationOtp(pendingAction) {
+        otpStep.clearError();
+        root.pendingAction = pendingAction;
+        AuthController.requestOtp(emailStep.email.trim(), root.otpPurpose);
+    }
+
     function submitOtpVerification() {
         otpStep.clearError();
-        root.pendingAction = "verifyEmail";
-        AuthController.verifyEmail(emailStep.email.trim());
+        root.pendingAction = "verifyOtp";
+        AuthController.verifyOtp(emailStep.email.trim(), otpStep.otpCode, root.otpPurpose);
     }
 
     function resendVerification() {
-        otpStep.clearError();
-        root.pendingAction = "resendEmail";
-        AuthController.verifyEmail(emailStep.email.trim());
+        root.requestRegistrationOtp("resendOtp");
     }
 
     function isExistingAccountMessage(message) {
@@ -103,8 +108,7 @@ Page {
         emailStep.clearError();
         passwordStep.clearError();
         otpStep.clearError();
-        root.currentStep = 5;
-        root.resendVerification();
+        root.requestRegistrationOtp("requestOtpExisting");
     }
 
     anchors.fill: parent
@@ -296,7 +300,8 @@ Page {
 
                     EmailPage {
                         id: emailStep
-                        busy: root.busy && root.pendingAction === "checkAccount"
+                        busy: root.busy && (root.pendingAction === "checkAccount"
+                                            || root.pendingAction === "requestOtpExisting")
                         primaryColor: root.primaryColor
                         secondaryColor: root.secondaryColor
                         surfaceColor: root.surfaceColor
@@ -310,7 +315,8 @@ Page {
 
                     PasswordPage {
                         id: passwordStep
-                        busy: root.busy && root.pendingAction === "signUp"
+                        busy: root.busy && (root.pendingAction === "signUp"
+                                            || root.pendingAction === "requestOtpAfterSignUp")
                         primaryColor: root.primaryColor
                         secondaryColor: root.secondaryColor
                         surfaceColor: root.surfaceColor
@@ -325,8 +331,8 @@ Page {
                     OtpPage {
                         id: otpStep
                         email: emailStep.email
-                        busy: root.busy && (root.pendingAction === "verifyEmail"
-                                            || root.pendingAction === "resendEmail")
+                        busy: root.busy && (root.pendingAction === "verifyOtp"
+                                            || root.pendingAction === "resendOtp")
                         primaryColor: root.primaryColor
                         surfaceColor: root.surfaceColor
                         textColor: root.textColor
@@ -435,10 +441,9 @@ Page {
             if (root.pendingAction !== "signUp")
                 return;
 
-            root.pendingAction = "";
             loadingDialog.close();
             passwordStep.clearError();
-            root.currentStep = 5;
+            root.requestRegistrationOtp("requestOtpAfterSignUp");
         }
 
         function onSignUpFailed(message) {
@@ -456,21 +461,43 @@ Page {
 
         }
 
-        function onEmailVerified(status) {
-            if (root.pendingAction !== "verifyEmail" && root.pendingAction !== "resendEmail")
+        function onOtpRequested(status) {
+            if (root.pendingAction !== "requestOtpAfterSignUp"
+                    && root.pendingAction !== "requestOtpExisting"
+                    && root.pendingAction !== "resendOtp")
                 return;
 
             const action = root.pendingAction;
             root.pendingAction = "";
             loadingDialog.close();
 
-            if (action === "resendEmail") {
+            if (action === "resendOtp") {
                 if (status)
-                    otpStep.setError(""); // clear any prior error; code re-sent
+                    otpStep.clearError();
                 else
                     otpStep.setError("Could not resend the verification code. Try again.");
                 return;
             }
+
+            if (status) {
+                otpStep.clearError();
+                root.currentStep = 5;
+                return;
+            }
+
+            const errorMessage = "Could not send the verification code. Try again.";
+            if (action === "requestOtpExisting")
+                emailStep.setError(errorMessage);
+            else
+                passwordStep.setError(errorMessage);
+        }
+
+        function onOtpVerified(status) {
+            if (root.pendingAction !== "verifyOtp")
+                return;
+
+            root.pendingAction = "";
+            loadingDialog.close();
 
             if (status) {
                 otpStep.clearError();
@@ -479,5 +506,6 @@ Page {
                 otpStep.setError("Email verification failed. Check the code and try again.");
             }
         }
+
     }
 }

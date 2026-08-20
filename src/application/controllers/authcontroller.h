@@ -2,6 +2,7 @@
 #define AUTHCONTROLLER_H
 
 #include <QObject>
+#include <QString>
 #include "repositories/impl/userrepositoryimpl.h"
 
 class User;
@@ -24,7 +25,8 @@ public:
                             const QString& confirmPassword,
                             const QString& residentialAddress);
     Q_INVOKABLE void logOut();
-    Q_INVOKABLE void verifyEmail(const QString& email);
+    Q_INVOKABLE void requestOtp(const QString& email, const QString& purpose);
+    Q_INVOKABLE void verifyOtp(const QString& email, const QString& code, const QString& purpose);
     Q_INVOKABLE void checkAccount(const QString& email);
 
 signals:
@@ -34,7 +36,8 @@ signals:
     void signUpFailed(const QString& message);
     void userLoggedOut();
     void emailVerificationRequired(const QString& email);
-    void emailVerified(const bool& status);
+    void otpRequested(bool status);
+    void otpVerified(bool status);
     void accountChecked(const bool& status);
     void isLoadingChanged(bool isLoading);
 

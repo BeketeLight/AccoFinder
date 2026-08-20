@@ -89,8 +89,12 @@ function navigateToCreateAccount(){
 function navigateToProfile(){
     push("../features/auth/pages/Profile.qml")
 }
-function navigateToOtp(email){
-    push("../features/auth/screens/OtpScree.qml", { email: email || "" })
+function navigateToOtp(email, purpose, initialError){
+    push("../features/auth/screens/OtpScree.qml", {
+             email: email || "",
+             purpose: purpose || "registration",
+             initialError: initialError || ""
+         })
 }
 //========================AUTH================
 function navigateToPropertyDetails(){

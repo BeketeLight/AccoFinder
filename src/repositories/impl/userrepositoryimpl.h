@@ -23,7 +23,8 @@ public:
         const QString& residentialAddress) override;
         
     void logOut() override;
-    void verifyEmail(const QString& email) override;
+    void requestOtp(const QString& email, const QString& purpose) override;
+    void verifyOtp(const QString& email, const QString& code, const QString& purpose) override;
     void checkAccount(const QString& email) override;
 
 signals:
@@ -33,7 +34,8 @@ signals:
         void signUpFailed(const QString& error);
         void logOutSucceded();
         void emailVerificationRequired(const QString& email);
-        void emailVerified(const bool& status);
+        void otpRequested(bool status);
+        void otpVerified(bool status);
         void accountChecked(const bool& status);
 };
 

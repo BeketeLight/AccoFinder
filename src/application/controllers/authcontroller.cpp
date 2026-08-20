@@ -1,4 +1,5 @@
 #include "authcontroller.h"
+#include "core/utils/ERegistrationPurpose.h"
 
 AuthController::AuthController(QObject *parent)
     : QObject(parent)
@@ -36,10 +37,15 @@ AuthController::AuthController(QObject *parent)
         stopLoading();
         emit userLoggedOut();
     });
-    connect(m_userRepository, &UserRepositoryImpl::emailVerified, this,
-            [this, stopLoading](const bool& status) {
+    connect(m_userRepository, &UserRepositoryImpl::otpRequested, this,
+            [this, stopLoading](bool status) {
         stopLoading();
-        emit emailVerified(status);
+        emit otpRequested(status);
+    });
+    connect(m_userRepository, &UserRepositoryImpl::otpVerified, this,
+            [this, stopLoading](bool status) {
+        stopLoading();
+        emit otpVerified(status);
     });
     connect(m_userRepository, &UserRepositoryImpl::accountChecked, this,
             [this, stopLoading](const bool& status) {
@@ -112,15 +118,33 @@ void AuthController::logOut()
     m_userRepository->logOut();
 }
 
-void AuthController::verifyEmail(const QString &email)
+void AuthController::requestOtp(const QString &email, const QString &purpose)
 {
     if (email.trimmed().isEmpty()) {
-        emit emailVerified(false);
+        emit otpRequested(false);
         return;
     }
 
     setLoading(true);
-    m_userRepository->verifyEmail(email.trimmed());
+    m_userRepository->requestOtp(
+        email.trimmed(),
+        normalizeRegistrationPurpose(purpose));
+}
+
+void AuthController::verifyOtp(const QString &email,
+                               const QString &code,
+                               const QString &purpose)
+{
+    if (email.trimmed().isEmpty() || code.trimmed().isEmpty()) {
+        emit otpVerified(false);
+        return;
+    }
+
+    setLoading(true);
+    m_userRepository->verifyOtp(
+        email.trimmed(),
+        code.trimmed(),
+        normalizeRegistrationPurpose(purpose));
 }
 
 void AuthController::checkAccount(const QString &email)

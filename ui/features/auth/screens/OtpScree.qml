@@ -9,6 +9,8 @@ Page {
     id: root
 
     property string email: ""
+    property string purpose: "registration"
+    property string initialError: ""
     property color primaryColor: "#2563EB"
     property color pageColor: "#FFFFFF"
     property color surfaceColor: "#F5F5F5"
@@ -100,8 +102,12 @@ Page {
                     mutedColor: root.mutedColor
                     borderColor: root.borderColor
                     errorColor: root.errorColor
-                    onConfirmed: root.verifyEmail()
-                    onResendRequested: root.resendVerification()
+                    onConfirmed: root.verifyOtp()
+                    onResendRequested: root.resendOtp()
+                    Component.onCompleted: {
+                        if (root.initialError.length > 0)
+                            otpStep.setError(root.initialError);
+                    }
                 }
             }
         }
@@ -111,14 +117,14 @@ Page {
         id: loadingDialog
     }
 
-    function verifyEmail() {
+    function verifyOtp() {
         otpStep.clearError();
-        AuthController.verifyEmail(root.email);
+        AuthController.verifyOtp(root.email, otpStep.otpCode, root.purpose);
     }
 
-    function resendVerification() {
+    function resendOtp() {
         otpStep.clearError();
-        AuthController.verifyEmail(root.email);
+        AuthController.requestOtp(root.email, root.purpose);
     }
 
     Connections {
@@ -131,7 +137,7 @@ Page {
                 loadingDialog.close();
         }
 
-        function onEmailVerified(status) {
+        function onOtpVerified(status) {
             loadingDialog.close();
 
             if (status) {
@@ -140,6 +146,15 @@ Page {
             } else {
                 otpStep.setError("Email verification failed. Check the code and try again.");
             }
+        }
+
+        function onOtpRequested(status) {
+            loadingDialog.close();
+
+            if (status)
+                otpStep.clearError();
+            else
+                otpStep.setError("Could not resend the verification code. Try again.");
         }
     }
 

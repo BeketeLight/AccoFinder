@@ -209,6 +209,7 @@ qt_add_qml_module(appAccoFinder
         src/core/utils/EPaymentStatus.h
         src/core/utils/EVerificationStatus.h
         src/core/utils/EDisputeStatus.h
+        src/core/utils/ERegistrationPurpose.h
         src/presentation/models/propertylistmodel.h
         src/presentation/models/propertylistmodel.cpp
         src/presentation/models/roomlistmodel.h
