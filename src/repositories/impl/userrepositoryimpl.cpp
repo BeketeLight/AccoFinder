@@ -96,10 +96,12 @@ void UserRepositoryImpl::signUp(
     const QString& confirmPassword,
     const QString& residentialAddress)
 {
+    // Normalize email to lowercase
+    QString normalizedEmail = email.trimmed().toLower();
     QJsonObject payload;
     payload["firstName"] = firstName;
     payload["surname"] = lastName;
-    payload["email"] = email;
+    payload["email"] = normalizedEmail;
     payload["phone"] = phone;
     payload["password"] = password;
     payload["confirmPassword"] = confirmPassword;
@@ -177,8 +179,9 @@ void UserRepositoryImpl::logOut()
 
 void UserRepositoryImpl::requestOtp(const QString &email, const QString &purpose)
 {
+    QString normalizedEmail = email.trimmed().toLower();
     QJsonObject payload;
-    payload["email"] = email;
+    payload["email"] = normalizedEmail;
     payload["purpose"] = purpose;
 
     APIClient::instance().post(
@@ -194,8 +197,9 @@ void UserRepositoryImpl::verifyOtp(const QString &email,
                                    const QString &code,
                                    const QString &purpose)
 {
+    QString normalizedEmail = email.trimmed().toLower();
     QJsonObject payload;
-    payload["email"] = email;
+    payload["email"] = normalizedEmail;
     payload["code"] = code;
     payload["purpose"] = purpose;
 
@@ -210,8 +214,9 @@ void UserRepositoryImpl::verifyOtp(const QString &email,
 
 void UserRepositoryImpl::checkAccount(const QString &email)
 {
+    QString normalizedEmail = email.trimmed().toLower();
     APIClient::instance().get(  // Use GET
-        "/auth/check-email?email=" + email,  // Query parameter
+        "/auth/check-email?email=" + normalizedEmail,  // Query parameter
         [this](bool success,
                const QJsonObject& response)
         {

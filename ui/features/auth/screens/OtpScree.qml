@@ -19,6 +19,7 @@ Page {
     property color borderColor: "#E5E7EB"
     property color errorColor: "#EF4444"
     property bool busy: AuthController.isLoading
+    property string pendingAction: ""
 
     anchors.fill: parent
 
@@ -119,11 +120,14 @@ Page {
 
     function verifyOtp() {
         otpStep.clearError();
+        root.pendingAction = "verifyOtp";
         AuthController.verifyOtp(root.email, otpStep.otpCode, root.purpose);
     }
 
     function resendOtp() {
         otpStep.clearError();
+        otpStep.clearOtp();
+        root.pendingAction = "resendOtp";
         AuthController.requestOtp(root.email, root.purpose);
     }
 
@@ -131,13 +135,14 @@ Page {
         target: AuthController
 
         function onIsLoadingChanged(isLoading) {
-            if (isLoading)
+            if (isLoading && root.pendingAction.length > 0)
                 loadingDialog.open();
             else
                 loadingDialog.close();
         }
 
         function onOtpVerified(status) {
+            root.pendingAction = "";
             loadingDialog.close();
 
             if (status) {
@@ -149,6 +154,7 @@ Page {
         }
 
         function onOtpRequested(status) {
+            root.pendingAction = "";
             loadingDialog.close();
 
             if (status)

@@ -363,6 +363,7 @@ Page {
 
         errorLabel.text = "";
         AppSettings.setRememberLogin(rememberCheck.checked);
+        root.pendingAction = "signIn";
         AuthController.signIn(email, password);
     }
 
@@ -370,7 +371,7 @@ Page {
         target: AuthController
 
         function onIsLoadingChanged(isLoading) {
-            if (isLoading)
+            if (isLoading && root.pendingAction.length > 0)
                 loadingDialog.open();
             else
                 loadingDialog.close();

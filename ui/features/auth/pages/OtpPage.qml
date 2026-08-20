@@ -26,6 +26,16 @@ Item {
         errorText.text = "";
     }
 
+    function clearOtp() {
+        digitOne.text = "";
+        digitTwo.text = "";
+        digitThree.text = "";
+        digitFour.text = "";
+        digitFive.text = "";
+        digitSix.text = "";
+        digitOne.forceActiveFocus();
+    }
+
     implicitHeight: layout.implicitHeight
 
     function focusNext(field, nextField) {
@@ -234,6 +244,7 @@ Item {
                     onClicked: {
                         if (root.busy)
                             return;
+                        root.clearOtp();
                         root.resendRequested();
                     }
                 }

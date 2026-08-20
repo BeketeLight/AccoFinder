@@ -67,14 +67,14 @@ Page {
 
         root.pendingAction = "signUp";
         AuthController.signUp(
-            nameStep.firstName.trim(),
-            nameStep.lastName.trim(),
-            emailStep.email.trim(),
-            phone,
-            passwordStep.password,
-            passwordStep.confirmPassword,
-            area
-        );
+                    nameStep.firstName.trim(),
+                    nameStep.lastName.trim(),
+                    emailStep.email.trim(),
+                    phone,
+                    passwordStep.password,
+                    passwordStep.confirmPassword,
+                    area
+                    );
     }
 
     function requestRegistrationOtp(pendingAction) {
@@ -90,17 +90,18 @@ Page {
     }
 
     function resendVerification() {
+        otpStep.clearOtp();
         root.requestRegistrationOtp("resendOtp");
     }
 
     function isExistingAccountMessage(message) {
         const normalizedMessage = (message || "").toLowerCase();
         const mentionsAccount = normalizedMessage.indexOf("account") !== -1
-                                || normalizedMessage.indexOf("email") !== -1
-                                || normalizedMessage.indexOf("user") !== -1;
+                              || normalizedMessage.indexOf("email") !== -1
+                              || normalizedMessage.indexOf("user") !== -1;
         const mentionsDuplicate = normalizedMessage.indexOf("exist") !== -1
-                                  || normalizedMessage.indexOf("already") !== -1
-                                  || normalizedMessage.indexOf("registered") !== -1;
+                                || normalizedMessage.indexOf("already") !== -1
+                                || normalizedMessage.indexOf("registered") !== -1;
         return mentionsAccount && mentionsDuplicate;
     }
 
@@ -203,11 +204,11 @@ Page {
 
                     Label {
                         text: root.currentStep === 0 ? "Personal details"
-                              : root.currentStep === 1 ? "Your location"
-                              : root.currentStep === 2 ? "Phone contact"
-                              : root.currentStep === 3 ? "Email verification"
-                              : root.currentStep === 4 ? "Password setup"
-                              : "Confirm OTP"
+                                                     : root.currentStep === 1 ? "Your location"
+                                                                              : root.currentStep === 2 ? "Phone contact"
+                                                                                                       : root.currentStep === 3 ? "Email verification"
+                                                                                                                                : root.currentStep === 4 ? "Password setup"
+                                                                                                                                                         : "Confirm OTP"
                         color: root.textColor
                         font.pixelSize: 14
                         font.bold: true
@@ -233,11 +234,11 @@ Page {
 
                 Label {
                     text: root.currentStep === 0 ? "Only names are collected in this step."
-                          : root.currentStep === 1 ? "Your area helps filter nearby properties."
-                          : root.currentStep === 2 ? "Your phone number helps with viewing and booking follow-ups."
-                          : root.currentStep === 3 ? "Email collection and verification."
-                          : root.currentStep === 4 ? "Password is collected before OTP confirmation."
-                          : "Enter the email code to finish account verification."
+                                                 : root.currentStep === 1 ? "Your area helps filter nearby properties."
+                                                                          : root.currentStep === 2 ? "Your phone number helps with viewing and booking follow-ups."
+                                                                                                   : root.currentStep === 3 ? "Email collection and verification."
+                                                                                                                            : root.currentStep === 4 ? "Password is collected before OTP confirmation."
+                                                                                                                                                     : "Enter the email code to finish account verification."
                     color: root.mutedColor
                     font.pixelSize: 12
                     wrapMode: Text.WordWrap
@@ -414,7 +415,7 @@ Page {
         target: AuthController
 
         function onIsLoadingChanged(isLoading) {
-            if (isLoading)
+            if (isLoading && root.pendingAction.length > 0)
                 loadingDialog.open();
             else
                 loadingDialog.close();
@@ -443,6 +444,7 @@ Page {
 
             loadingDialog.close();
             passwordStep.clearError();
+            // Just request OTP - navigation will happen in onOtpRequested
             root.requestRegistrationOtp("requestOtpAfterSignUp");
         }
 
@@ -479,19 +481,23 @@ Page {
                 return;
             }
 
-            if (status) {
-                otpStep.clearError();
-                root.currentStep = 5;
-                return;
+            // Always navigate to OTP screen regardless of status
+            // If status is false, pass an error message
+            const errorMessage = status ? "" : "Could not send the verification code. Please try again using the resend option.";
+
+            // Navigate to OTP page
+            UtilsModule.NavigationUtils.navigateToOtp(
+                emailStep.email.trim().toLowerCase(),  // Ensure lowercase
+                root.otpPurpose,
+                errorMessage
+            );
+
+            // If it was an existing account case and failed, we need to handle differently
+            if (!status && action === "requestOtpExisting") {
+                // The OTP page will show the error message
+                // The user can manually request OTP again from the OTP page
             }
-
-            const errorMessage = "Could not send the verification code. Try again.";
-            if (action === "requestOtpExisting")
-                emailStep.setError(errorMessage);
-            else
-                passwordStep.setError(errorMessage);
         }
-
         function onOtpVerified(status) {
             if (root.pendingAction !== "verifyOtp")
                 return;
