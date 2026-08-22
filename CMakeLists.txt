@@ -258,6 +258,7 @@ qt_add_qml_module(appAccoFinder
         android/src/com/accofinder/SplashActivity.java
         RESOURCES Rescources.qrc
         QML_FILES ui/features/auth/pages/Profile.qml
+        SOURCES src/core/utils/apppermission.h src/core/utils/apppermission.cpp
 )
 
 # ─────────────────────────────────────────────────────────────
