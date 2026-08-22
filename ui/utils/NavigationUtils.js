@@ -21,6 +21,18 @@ function replace(screenUrl, properties = {}){
     }
     stackView.replace(screenUrl, properties)
 }
+function replaceAll(screenUrl, properties = {}){
+    if(!stackView){
+        console.warn("NavigationUtils cannot replaceAll: Stackview not initialized")
+        return
+    }
+
+    // Leave only this page on the stack so Back cannot return to prior screens.
+    if (stackView.depth > 0)
+        stackView.replace(stackView.get(0), screenUrl, properties)
+    else
+        stackView.push(screenUrl, properties)
+}
 function pop() {
     if (!stackView) {
         console.warn("[NavigationUtils] stackView is null");
@@ -77,6 +89,9 @@ function navigateToForgotPassword(){
 function navigateToSignIn(){
     push("../features/auth/screens/SignInScreen.qml")
 }
+function resetToSignIn(){
+    replaceAll("../features/auth/screens/SignInScreen.qml")
+}
 function navigateToSignUp(){
     push("../features/auth/screens/SignUpScreen.qml")
 }
@@ -124,8 +139,10 @@ function navigateToDashboard(role){
 var Navigation = {
     init: init,
     pop: pop,
+    replaceAll: replaceAll,
     navigateToNotifications: navigateToNotifications,
     navigateToSignIn: navigateToSignIn,
+    resetToSignIn: resetToSignIn,
     navigateToSignUp: navigateToSignUp,
     navigateToOtp: navigateToOtp,
     navigateToForgotPassword: navigateToForgotPassword,

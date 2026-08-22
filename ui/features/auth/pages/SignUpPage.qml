@@ -507,7 +507,7 @@ Page {
 
             if (status) {
                 otpStep.clearError();
-                UtilsModule.NavigationUtils.navigateToSignIn();
+                UtilsModule.NavigationUtils.resetToSignIn();
             } else {
                 otpStep.setError("Email verification failed. Check the code and try again.");
             }
