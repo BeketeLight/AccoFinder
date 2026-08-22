@@ -26,6 +26,18 @@ function replace(screenUrl, properties = {}){
     }
     stackView.replace(screenUrl, properties)
 }
+function replaceAll(screenUrl, properties = {}){
+    if(!stackView){
+        console.warn("NavigationUtils cannot replaceAll: Stackview not initialized")
+        return
+    }
+
+    // Leave only this page on the stack so Back cannot return to prior screens.
+    if (stackView.depth > 0)
+        stackView.replace(stackView.get(0), screenUrl, properties)
+    else
+        stackView.push(screenUrl, properties)
+}
 function pop() {
     if (!stackView) {
         console.warn("[NavigationUtils] stackView is null");
@@ -83,14 +95,27 @@ function navigateToForgotPassword(){
 function navigateToSignIn(){
     push("../features/auth/screens/SignInScreen.qml")
 }
+function resetToSignIn(){
+    replaceAll("../features/auth/screens/SignInScreen.qml")
+}
 function navigateToSignUp(){
     push("../features/auth/screens/SignUpScreen.qml")
 }
 function navigateToCreateAccount(){
-    push("../features/auth/pages/CreateAccountPage.qml")
+    if (typeof AppSettings !== "undefined" && AppSettings.isLoggedIn())
+        push("../features/auth/pages/Profile.qml")
+    else
+        push("../features/auth/pages/CreateAccountPage.qml")
 }
-function navigateToOtp(){
-    push("../features/auth/pages/OtpPage.qml")
+function navigateToProfile(){
+    push("../features/auth/pages/Profile.qml")
+}
+function navigateToOtp(email, purpose, initialError){
+    push("../features/auth/screens/OtpScree.qml", {
+             email: email || "",
+             purpose: purpose || "registration",
+             initialError: initialError || ""
+         })
 }
 //========================AUTH================
 function navigateToPropertyDetails(){
@@ -126,12 +151,15 @@ function navigateToDashboard(role){
 var Navigation = {
     init: init,
     pop: pop,
+    replaceAll: replaceAll,
     navigateToNotifications: navigateToNotifications,
     navigateToSignIn: navigateToSignIn,
+    resetToSignIn: resetToSignIn,
     navigateToSignUp: navigateToSignUp,
     navigateToOtp: navigateToOtp,
     navigateToForgotPassword: navigateToForgotPassword,
     navigateToAccount: navigateToAccount,
+    navigateToProfile: navigateToProfile,
     navigateToProperties: navigateToProperties,
     navigateToBookings: navigateToBookings,
     navigateToPropertyDetails: navigateToPropertyDetails,

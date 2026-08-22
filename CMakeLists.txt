@@ -113,6 +113,11 @@ qt_add_qml_module(appAccoFinder
         ui/features/auth/pages/ForgotPasswordPage.qml
         ui/features/auth/pages/CreateAccountPage.qml
         ui/features/auth/pages/SignUpPage.qml
+        ui/features/auth/pages/NamePage.qml
+        ui/features/auth/pages/LocationPage.qml
+        ui/features/auth/pages/PhonePage.qml
+        ui/features/auth/pages/EmailPage.qml
+        ui/features/auth/pages/PasswordPage.qml
         ui/features/auth/screens/SignUpScreen.qml
         #======FEATURE-REVIEWS======
         ui/features/reviews/screens/WriteReviewScreen.qml
@@ -204,6 +209,7 @@ qt_add_qml_module(appAccoFinder
         src/core/utils/EPaymentStatus.h
         src/core/utils/EVerificationStatus.h
         src/core/utils/EDisputeStatus.h
+        src/core/utils/ERegistrationPurpose.h
         src/presentation/models/propertylistmodel.h
         src/presentation/models/propertylistmodel.cpp
         src/presentation/models/roomlistmodel.h
@@ -251,10 +257,9 @@ qt_add_qml_module(appAccoFinder
         android/src/com/accofinder/SplashActivity.java
         android/src/com/accofinder/SplashActivity.java
         RESOURCES Rescources.qrc
-        QML_FILES ui/features/auth/pages/EmailPage.qml ui/features/auth/pages/NamePage.qml ui/features/auth/pages/PasswordPage.qml
-        QML_FILES ui/components/navigations/AppHeaderNavBar.qml
-        QML_FILES ui/features/properties/pages/SearchPropertiesPage.qml
-        QML_FILES ui/features/properties/screens/SearchPropertiesScreen.qml
+        QML_FILES ui/features/auth/pages/Profile.qml
+        SOURCES src/core/utils/apppermission.h src/core/utils/apppermission.cpp
+        QML_FILES ui/components/navigations/AppHeader.qml
 )
 
 # ─────────────────────────────────────────────────────────────

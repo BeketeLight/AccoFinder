@@ -59,7 +59,7 @@ ApplicationWindow {
         anchors.fill: parent
         spacing: 0
 
-        AppHeaderNavBar{
+        AppHeader{
             id: appHeader
             Layout.fillWidth: true
             //collapse header if not specified
@@ -114,7 +114,9 @@ ApplicationWindow {
             //signals
             onHomeTapped: loader.source = "./ui/features/home/screens/HomeScreen.qml"
             onPropertiesTapped: loader.source = "./ui/features/properties/screens/PropertiesScreen.qml"
-            onAccountTapped: loader.source = "./ui/features/auth/pages/CreateAccountPage.qml"
+            onAccountTapped: loader.source = AppSettings.isLoggedIn()
+                             ? "./ui/features/auth/pages/Profile.qml"
+                             : "./ui/features/auth/pages/CreateAccountPage.qml"
             onBookingsTapped: loader.source = "./ui/features/bookings/screens/BookingsScreen.qml"
         }
 

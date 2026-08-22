@@ -17,12 +17,15 @@ public:
         const QString& fistName,
         const QString& lastName,
         const QString& email,
+        const QString& phone,
         const QString& password,
         const QString& confirmPassword,
         const QString& residentialAddress) override;
         
     void logOut() override;
-    void verifyEmail(const QString& email) override;
+    void requestOtp(const QString& email, const QString& purpose) override;
+    void verifyOtp(const QString& email, const QString& code, const QString& purpose) override;
+    void checkAccount(const QString& email) override;
 
 signals:
         void signInSucceded(User* user);
@@ -30,7 +33,10 @@ signals:
         void signUpSucceded(User* user);
         void signUpFailed(const QString& error);
         void logOutSucceded();
-        void emailVerified(const bool& status);
+        void emailVerificationRequired(const QString& email);
+        void otpRequested(bool status);
+        void otpVerified(bool status);
+        void accountChecked(const bool& status);
 };
 
 #endif // USERREPOSITORYIMPL_H

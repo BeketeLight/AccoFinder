@@ -18,12 +18,15 @@ public:
         const QString& fistName,
         const QString& lastName,
         const QString& email,
+        const QString& phone,
         const QString& password,
         const QString& confirmPassword,
         const QString& residentialAddress) = 0;
 
     virtual void logOut() = 0;
-    virtual void verifyEmail(const QString& email) = 0;
+    virtual void requestOtp(const QString& email, const QString& purpose) = 0;
+    virtual void verifyOtp(const QString& email, const QString& code, const QString& purpose) = 0;
+    virtual void checkAccount(const QString& email) =0;
 
     virtual ~IUserRepository(){}
 

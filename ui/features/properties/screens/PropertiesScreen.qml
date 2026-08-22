@@ -12,7 +12,7 @@ Item {
     property bool searchReadOnly: true
     function onSearchBarTapped(){
         console.log("SearchBar Tapped")
-        NavUtils.navigateToSearchScreen()
+        //NavUtils.navigateToSearchScreen()
     }
     property Component rightComponentAction: Component {
             Item {

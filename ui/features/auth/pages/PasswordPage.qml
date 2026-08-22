@@ -9,6 +9,7 @@ Item {
 
     property string password: passwordField.text
     property string confirmPassword: confirmPasswordField.text
+    property bool busy: false
     property color primaryColor: "#2563EB"
     property color secondaryColor: "#22C55E"
     property color surfaceColor: "#F5F5F5"
@@ -18,6 +19,14 @@ Item {
     property color errorColor: "#EF4444"
 
     signal nextRequested
+
+    function setError(message) {
+        errorText.text = message || "";
+    }
+
+    function clearError() {
+        errorText.text = "";
+    }
 
     implicitHeight: layout.implicitHeight
 
@@ -92,7 +101,9 @@ Item {
                 id: passwordField
                 label: "Password"
                 placeholder: "Create password"
+                password: true
                 required: true
+                enabled: !root.busy
                 fieldHeight: 52
                 backgroundColor: root.surfaceColor
                 textColor: root.textColor
@@ -110,7 +121,9 @@ Item {
                 id: confirmPasswordField
                 label: "Confirm password"
                 placeholder: "Repeat password"
+                password: true
                 required: true
+                enabled: !root.busy
                 fieldHeight: 52
                 backgroundColor: root.surfaceColor
                 textColor: root.textColor
@@ -138,7 +151,8 @@ Item {
 
         Button {
             id: continueButton
-            text: "Continue"
+            text: root.busy ? "Creating account..." : "Continue"
+            enabled: !root.busy
             Layout.fillWidth: true
             Layout.preferredHeight: 52
             Layout.topMargin: 6
@@ -154,7 +168,9 @@ Item {
 
             background: Rectangle {
                 radius: 12
-                color: continueButton.down ? "#1D4ED8" : root.primaryColor
+                color: !continueButton.enabled ? "#93C5FD"
+                       : continueButton.down ? "#1D4ED8"
+                       : root.primaryColor
             }
 
             onClicked: {

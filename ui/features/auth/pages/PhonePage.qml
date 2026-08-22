@@ -6,8 +6,7 @@ import "../../../components/inputs"
 Item {
     id: root
 
-    property string email: emailField.text
-    property bool busy: false
+    property string phone: phoneField.text
     property color primaryColor: "#2563EB"
     property color secondaryColor: "#22C55E"
     property color surfaceColor: "#F5F5F5"
@@ -17,6 +16,10 @@ Item {
     property color errorColor: "#EF4444"
 
     signal nextRequested
+
+    function normalizedPhone() {
+        return phoneField.text.trim().replace(/\s+/g, "");
+    }
 
     function setError(message) {
         errorText.text = message || "";
@@ -32,10 +35,10 @@ Item {
         id: layout
         anchors.left: parent.left
         anchors.right: parent.right
-        spacing: 10
+        spacing: 14
 
         Label {
-            text: "Add your email"
+            text: "Add your phone"
             color: root.textColor
             font.pixelSize: 26
             font.bold: true
@@ -43,7 +46,7 @@ Item {
         }
 
         Label {
-            text: "Booking alerts, receipts, and account recovery will be sent here."
+            text: "Landlords and agents can use this number for booking follow-ups."
             color: root.mutedColor
             font.pixelSize: 14
             lineHeight: 1.15
@@ -52,17 +55,53 @@ Item {
             Layout.topMargin: -6
         }
 
+        Rectangle {
+            Layout.fillWidth: true
+            Layout.preferredHeight: 70
+            radius: 12
+            color: "#EFF6FF"
+            border.color: "#BFDBFE"
+
+            RowLayout {
+                anchors.fill: parent
+                anchors.margins: 14
+                spacing: 10
+
+                Rectangle {
+                    Layout.preferredWidth: 34
+                    Layout.preferredHeight: 34
+                    radius: 17
+                    color: root.primaryColor
+
+                    Text {
+                        anchors.centerIn: parent
+                        text: "+265"
+                        color: "#FFFFFF"
+                        font.pixelSize: 10
+                        font.bold: true
+                    }
+                }
+
+                Label {
+                    text: "Use a number you can answer when arranging viewings or confirmations."
+                    color: "#1E40AF"
+                    font.pixelSize: 13
+                    wrapMode: Text.WordWrap
+                    Layout.fillWidth: true
+                }
+            }
+        }
+
         ColumnLayout {
             Layout.fillWidth: true
-            Layout.topMargin: 12
+            Layout.topMargin: 8
             spacing: 7
 
             AppTextInput {
-                id: emailField
-                label: "Email address"
-                placeholder: "name@example.com"
+                id: phoneField
+                label: "Phone number"
+                placeholder: "e.g. +265 999 123 456"
                 required: true
-                enabled: !root.busy
                 fieldHeight: 52
                 backgroundColor: root.surfaceColor
                 textColor: root.textColor
@@ -71,49 +110,10 @@ Item {
                 borderColor: root.borderColor
                 focusColor: root.primaryColor
                 errorColor: root.errorColor
+                helperText: "Include the country code when possible."
                 Layout.fillWidth: true
-                Layout.preferredHeight: 76
+                Layout.preferredHeight: 94
                 Layout.topMargin: 12
-            }
-
-        }
-
-        Rectangle {
-            Layout.fillWidth: true
-            Layout.preferredHeight: 60
-            radius: 12
-            color: "#EFF6FF"
-            border.color: "#BFDBFE"
-            border.width: 1
-
-            RowLayout {
-                anchors.fill: parent
-                anchors.margins: 14
-                spacing: 12
-
-                Rectangle {
-                    Layout.preferredWidth: 36
-                    Layout.preferredHeight: 36
-                    radius: 18
-                    color: root.primaryColor
-
-                    Text {
-                        anchors.centerIn: parent
-                        text: "i"
-                        color: "#FFFFFF"
-                        font.pixelSize: 18
-                        font.bold: true
-                    }
-                }
-
-                Label {
-                    text: "Use a working email"
-                    color: "#1E40AF"
-                    font.pixelSize: 13
-                    lineHeight: 1.1
-                    wrapMode: Text.WordWrap
-                    Layout.fillWidth: true
-                }
             }
         }
 
@@ -129,8 +129,7 @@ Item {
 
         Button {
             id: continueButton
-            text: root.busy ? "Checking email..." : "Continue"
-            enabled: !root.busy
+            text: "Continue"
             Layout.fillWidth: true
             Layout.preferredHeight: 52
             Layout.topMargin: 6
@@ -146,37 +145,25 @@ Item {
 
             background: Rectangle {
                 radius: 12
-                color: !continueButton.enabled ? "#93C5FD"
-                       : continueButton.down ? "#1D4ED8"
-                       : root.primaryColor
+                color: continueButton.down ? "#1D4ED8" : root.primaryColor
             }
 
             onClicked: {
-                if (emailField.text.trim().length === 0 || emailField.text.indexOf("@") === -1) {
-                    errorText.text = "Enter a valid email address.";
+                const value = root.normalizedPhone();
+                const digits = value.replace(/\D/g, "");
+
+                if (value.length === 0) {
+                    errorText.text = "Enter your phone number.";
+                    return;
+                }
+
+                if (digits.length < 9) {
+                    errorText.text = "Enter a valid phone number.";
                     return;
                 }
 
                 errorText.text = "";
                 root.nextRequested();
-            }
-        }
-        Rectangle {
-            Layout.fillWidth: true
-            Layout.preferredHeight: 58
-            radius: 12
-            color: root.surfaceColor
-
-            Label {
-                anchors.fill: parent
-                anchors.margins: 14
-                text: "Use the same email you want to receive booking and verification messages on."
-                color: root.mutedColor
-                font.pixelSize: 12
-                lineHeight: 1.1
-                wrapMode: Text.WordWrap
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
             }
         }
     }

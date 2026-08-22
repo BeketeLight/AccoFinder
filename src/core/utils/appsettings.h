@@ -54,6 +54,15 @@ public:
     Q_INVOKABLE void setPhone(const QString &value);
     Q_INVOKABLE QString phone() const;
 
+    Q_INVOKABLE void setBankName(const QString &value);
+    Q_INVOKABLE QString bankName() const;
+
+    Q_INVOKABLE void setBankAccountNumber(const QString &value);
+    Q_INVOKABLE QString bankAccountNumber() const;
+
+    Q_INVOKABLE void setPaymentMethod(const QString &value);
+    Q_INVOKABLE QString paymentMethod() const;
+
     // =========================
     // CLIENT
     // =========================
