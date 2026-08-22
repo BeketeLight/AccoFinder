@@ -141,11 +141,6 @@ var Navigation = {
     navigateToBookings: navigateToBookings,
     navigateToPropertyDetails: navigateToPropertyDetails,
     navigateToPayments: navigateToPayments,
-<<<<<<< HEAD
-    navigateToPaymentStatus:  navigateToPaymentStatus
-}
-=======
     navigateToPaymentStatus:  navigateToPaymentStatus,
     navigateToSearchScreen: navigateToSearchScreen
 }
->>>>>>> 4f34c1fdae6b09da5a3f0700833ba97458e077bd
