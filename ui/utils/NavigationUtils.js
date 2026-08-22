@@ -164,6 +164,5 @@ var Navigation = {
     navigateToBookings: navigateToBookings,
     navigateToPropertyDetails: navigateToPropertyDetails,
     navigateToPayments: navigateToPayments,
-    navigateToPaymentStatus:  navigateToPaymentStatus,
-    navigateToSearchScreen: navigateToSearchScreen
+    navigateToPaymentStatus:  navigateToPaymentStatus
 }
