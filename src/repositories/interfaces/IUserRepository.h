@@ -24,7 +24,6 @@ public:
 
     virtual void logOut() = 0;
     virtual void verifyEmail(const QString& email) = 0;
-    virtual void checkAccount(const QString& email) =0;
 
     virtual ~IUserRepository(){}
 
