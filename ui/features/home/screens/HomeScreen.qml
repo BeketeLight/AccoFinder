@@ -7,7 +7,10 @@ import "../pages"
 Item {
     id: rootId
     objectName: "HomeScreen"
+    anchors.fill: parent
+    property bool showHeader:  false
     HomePage{
+
         anchors.fill: parent
     }
 

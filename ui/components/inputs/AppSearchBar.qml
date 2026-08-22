@@ -12,7 +12,7 @@ Item {
     property bool searchEnabled: true
     property int searchBarHeight: 37
     property int borderRadius: 8          // Fully rounded (Material style)
-
+    property bool readOnly: false //-- added by B
     // Colors
     property color backgroundColor: "red"
     property color textColor: "#202124"
@@ -21,6 +21,7 @@ Item {
     property color focusColor: "yellow"
 
     // Signals
+    signal searchBarTapped // B-- added this
     signal accepted
     signal cleared
     signal textEdited
@@ -81,7 +82,7 @@ Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
             placeholderText: root.placeholder
-            enabled: root.searchEnabled
+            enabled: root.searchEnabled && !root.readOnly //modified -- B
             color: root.textColor
             placeholderTextColor: root.placeholderColor
             font.pixelSize: 15
@@ -170,5 +171,10 @@ Item {
                 }
             }
         }
+    }
+    MouseArea{
+        anchors.fill: parent
+        onClicked: root.searchBarTapped()
+        enabled: root.readOnly //accepts clicks when its true
     }
 }
