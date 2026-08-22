@@ -19,11 +19,14 @@ Page{
       }
        RowLayout {
            anchors.fill: parent
-
+           spacing: 0
            Item {
                Layout.preferredWidth: 10
            }
          ColumnLayout{
+            Layout.preferredHeight: 0
+            Layout.fillWidth: true  // 👈 Distributes tab to 25% of parent width
+            Layout.fillHeight: true
             spacing: 0
             ToolButton{
                icon.name: "Home-icon"
@@ -46,7 +49,13 @@ Page{
                font.bold: currentIndex === 0
             }
          }
+         Item {
+             Layout.preferredWidth: 10
+         }
          ColumnLayout{
+            Layout.preferredHeight: 0
+            Layout.fillWidth: true  // 👈 Distributes tab to 25% of parent width
+            Layout.fillHeight: true
             spacing: 0
             ToolButton{
                icon.name: "Properties-icon"
@@ -71,12 +80,15 @@ Page{
          }
 
          ColumnLayout{
+            Layout.preferredHeight: 0
+            Layout.fillWidth: true // 👈 Distributes tab to 25% of parent width
+            Layout.fillHeight: true
             spacing: 0
             ToolButton{
                icon.name: "Bookings-icon"
                icon.source:"qrc:/ui/assets/bookings-icon.svg"
-               icon.height: 20
-               icon.width: 20
+               icon.height: 24
+               icon.width: 24
                icon.color: currentIndex === 2 ? "#2563EB" : "gray"
                Layout.alignment: Qt.AlignHCenter
                background: null
@@ -94,6 +106,9 @@ Page{
             }
          }
          ColumnLayout{
+            Layout.preferredHeight: 0
+            Layout.fillWidth: true// 👈 Distributes tab to 25% of parent width
+            Layout.fillHeight: true
             spacing: 0
             ToolButton{
                icon.name: "Account-icon"

@@ -12,8 +12,13 @@ function push(screenUrl, properties = {}){
         console.log("NavigationUtils cannot push :Stackview not initialized")
         return
     }
-    stackView.push(screenUrl, properties)
-}
+    if(stackView.depth ===0){
+        stackView.push(screenUrl,properties)
+    }else{
+        stackView.push(screenUrl, properties)
+   }
+    }
+
 function replace(screenUrl, properties = {}){
     if(!stackView){
         console.warn("NavigationUtils cannot replace: Stackview not initialized")
@@ -37,7 +42,8 @@ function pop() {
         // Root page on mainStack -> Clear stack to reveal the Loader/SignInScreen beneath!
         stackView.clear();
         console.log("[NavigationUtils] Stack cleared to reveal underlying Loader!");
-    } else {
+    }
+    else {
         console.warn("[NavigationUtils] Stack is already empty.");
     }
 }
