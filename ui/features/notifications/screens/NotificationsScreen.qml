@@ -63,7 +63,7 @@ Page {
     property string pageTitle: "Notifications"
     property bool isSearchBar: false
     // 2. Enable back button
-    property bool showBack: true
+    property bool showBackButton: true
 
     // 3. Leave custom slots null
     property Component leftComponentAction: null

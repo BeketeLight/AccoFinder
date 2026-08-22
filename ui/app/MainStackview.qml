@@ -7,7 +7,7 @@ Item{
     property alias depth : mainStackview.depth //exposing MainStackview depth to main.qml
     property alias stackView: mainStackview
     property alias currentItem: mainStackview.currentItem
-
+    property string initialPage: "../features/auth/pages/CreateAccountPage.qml"
     Rectangle{ //opaque background for stakview footer wont be visible on push/pop
         anchors.fill: parent
         color: "#FFFFFF"
@@ -84,6 +84,10 @@ Item{
                 }
         Component.onCompleted: {
             NavUtils.init(mainStackview)
+
+            // if(root.initialPage !==""){
+            //     mainStackview.push(root.initialPage, {}, StackView.Immediate)
+            // }
         }
     }
 }

@@ -59,7 +59,7 @@ ApplicationWindow {
         anchors.fill: parent
         spacing: 0
 
-        AppHeaderNavBar{
+        AppHeader{
             id: appHeader
             Layout.fillWidth: true
             //collapse header if not specified
