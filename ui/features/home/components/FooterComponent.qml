@@ -12,6 +12,7 @@ Page{
    signal propertiesTapped()
    signal bookingsTapped()
    signal accountTapped()
+   signal saveTapped()
 
     Component.onCompleted: console.log("FooterComponent loaded, currentIndex property exists")
       background: Rectangle {
@@ -46,7 +47,7 @@ Page{
             Text{
                text: qsTr("Home")
                Layout.alignment: Qt.AlignHCenter
-               font.bold: currentIndex === 0
+               //font.bold: currentIndex === 0
             }
          }
          Item {
@@ -75,9 +76,35 @@ Page{
             Text{
                text: qsTr("Properties")
                Layout.alignment: Qt.AlignHCenter
-               font.bold: currentIndex === 1
+               //font.bold: currentIndex === 1
             }
          }
+         ColumnLayout{
+            Layout.preferredHeight: 0
+            Layout.fillWidth: true  // 👈 Distributes tab to 25% of parent width
+            Layout.fillHeight: true
+            spacing: 0
+         ToolButton{
+            icon.name: "Save-icon"
+            icon.source:"qrc:/ui/assets/save-icon.svg"
+            icon.height: 24
+            icon.width: 24
+            background: null
+            icon.color: currentIndex === 2 ? "#2563EB" : "gray"
+            Layout.alignment: Qt.AlignHCenter
+            onClicked: {
+                     if(currentIndex === 2) return
+                     currentIndex = 2
+                     footerPageId.saveTapped()
+                     tabSelected(2)
+               }
+            }
+         Text{
+            text: qsTr("Save")
+            Layout.alignment: Qt.AlignHCenter
+            //font.bold: currentIndex === 2
+         }
+      }
 
          ColumnLayout{
             Layout.preferredHeight: 0
@@ -89,20 +116,20 @@ Page{
                icon.source:"qrc:/ui/assets/bookings-icon.svg"
                icon.height: 24
                icon.width: 24
-               icon.color: currentIndex === 2 ? "#2563EB" : "gray"
+               icon.color: currentIndex === 3 ? "#2563EB" : "gray"
                Layout.alignment: Qt.AlignHCenter
                background: null
                onClicked: {
-                  if(currentIndex === 2) return
+                  if(currentIndex === 3) return
                      footerPageId.bookingsTapped()
-                     currentIndex = 2
-                     tabSelected(2)
+                     currentIndex = 3
+                     tabSelected(3)
                   }
             }
             Text{
                text: qsTr("Bookings")
                Layout.alignment: Qt.AlignHCenter
-               font.bold: currentIndex === 2
+               //font.bold: currentIndex === 2
             }
          }
          ColumnLayout{
@@ -115,24 +142,25 @@ Page{
                icon.source:"qrc:/ui/assets/account-icon.svg"
                icon.height: 24
                icon.width: 24
-               icon.color: currentIndex === 3 ? "#2563EB" : "gray"
+               icon.color: currentIndex === 4 ? "#2563EB" : "gray"
                Layout.alignment: Qt.AlignHCenter
                background: null
                onClicked: {
-                  if(currentIndex === 3) return
-                     currentIndex = 3
+                  if(currentIndex === 4) return
+                     currentIndex = 4
                      footerPageId.accountTapped()
-                     tabSelected(3)
+                     tabSelected(4)
                }
             }
             Text{
                text: qsTr("Account")
                Layout.alignment: Qt.AlignHCenter
-               font.bold: currentIndex === 3
+               //font.bold: currentIndex === 3
             }
 
          }
-   }
+}
+
 }
 
 

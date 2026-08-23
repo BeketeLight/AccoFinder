@@ -118,6 +118,7 @@ ApplicationWindow {
                              ? "./ui/features/auth/pages/Profile.qml"
                              : "./ui/features/auth/pages/CreateAccountPage.qml"
             onBookingsTapped: loader.source = "./ui/features/bookings/screens/BookingsScreen.qml"
+            onSaveTapped: loader.source = ""
         }
 
     }
