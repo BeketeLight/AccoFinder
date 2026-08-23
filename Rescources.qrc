@@ -18,5 +18,6 @@
         <file>ui/assets/properties.svg</file>
         <file>ui/assets/search.png</file>
         <file>ui/assets/back-icons.svg</file>
+        <file>ui/assets/save-icon.svg</file>
     </qresource>
 </RCC>
