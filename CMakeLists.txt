@@ -248,6 +248,8 @@ qt_add_qml_module(appAccoFinder
         QML_FILES ui/features/auth/pages/Profile.qml
         SOURCES src/core/utils/apppermission.h src/core/utils/apppermission.cpp
         QML_FILES ui/components/navigations/AppHeader.qml
+        QML_FILES ui/features/dashboards/Agets/pages/AgentsDashboardPage.qml
+        QML_FILES ui/features/dashboards/Agets/screens/AgentsDashboardScreen.qml
 )
 
 # ─────────────────────────────────────────────────────────────
