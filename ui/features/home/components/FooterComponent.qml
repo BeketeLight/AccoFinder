@@ -85,7 +85,7 @@ Page{
             Layout.fillWidth: true  // 👈 Distributes tab to 25% of parent width
             Layout.fillHeight: true
             spacing: 0
-            visible: AppSettings.userType()  === "CLIENT"
+            visible: AppSettings.userType()  === "CLIENT" ||  AppSettings.userType()  ===  ""
          ToolButton{
             icon.name: "Save-icon"
             icon.source:"qrc:/ui/assets/save-icon.svg"
