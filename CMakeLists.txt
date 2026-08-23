@@ -77,33 +77,13 @@ qt_add_qml_module(appAccoFinder
         ui/features/notifications/models/NotificationListModel.qml
         ui/features/notifications/pages/NotificationsPage.qml
         ui/features/notifications/screens/NotificationListScreen.qml
-        # #======FEATURE-AUTH-AGENTS======
-        # ui/features/auth/agents/screens/EarningsScreen.qml
-        # ui/features/auth/agents/screens/AgentDashboardScreen.qml
-        # ui/features/auth/agents/pages/AgentsPage.qml
-        # ui/features/auth/agents/models/AgentsModel.qml
-        # ui/features/auth/agents/delegates/AgentsDelegate.qml
-        # #======FEATURE-AUTH-ADMINS======
-        # ui/features/auth/admins/screens/AdminDashboardScreen.qml
-        # ui/features/auth/admins/screens/PropertyApprovalScreen.qml
-        # ui/features/auth/admins/screens/RegisterAgentScreen.qml
-        # ui/features/auth/admins/screens/UserManagementScreen.qml
-        # ui/features/auth/admins/models/AdminsModel.qml
-        # ui/features/auth/admins/delegates/AdminsDelegate.qml
-        # ui/features/auth/admins/pages/RegisterAgentPage.qml
-        # ui/features/auth/admins/pages/UserManagementPage.qml
 
         #========FEATURE-DASHBOARD-AGENT-ADMIN--CLIENT========
         ui/features/dashboards/admins/pages/PropertyApprovalPage.qml
         ui/features/dashboards/admins/pages/RegisterAgentPage.qml
         ui/features/dashboards/admins/pages/UserManagementPage.qml
-        ui/features/dashboards/agents/pages/AgentEarningsPage.qml
         ui/features/dashboards/admins/screens/AdminsDashboardScreen.qml
         ui/features/dashboards/admins/pages/AdminsDashboardPage.qml
-        ui/features/dashboards/agents/pages/AgentsDashboardPage.qml
-        ui/features/dashboards/agents/screens/AgentsDashboardScreen.qml
-        ui/features/dashboards/clients/pages/ClientsDashboardPage.qml
-        ui/features/dashboards/clients/screens/ClientDashboardScreen.qml
         #======FEATURE-AUTH-GLOBAL======
         ui/features/auth/screens/ForgotPasswordScreen.qml
         ui/features/auth/screens/OtpScree.qml
@@ -513,4 +493,3 @@ else()
 endif()
 message(STATUS "Qt version: ${Qt6_VERSION}")
 message(STATUS "========================================")
-
