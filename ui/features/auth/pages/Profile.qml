@@ -26,6 +26,8 @@ Page {
     property string profileBank: ""
     property string profileAccount: ""
     property string profilePaymentMethod: "Mobile money"
+    property string pageTitle: "Profile"
+    property bool showHeader: true
 
     anchors.fill: parent
 
@@ -336,7 +338,7 @@ Page {
         target: AuthController
 
         function onUserLoggedOut() {
-            NavUtils.navigateToCreateAccount();
+            NavUtils.resetToSignIn();
         }
     }
 

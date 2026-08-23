@@ -1,9 +1,7 @@
 import QtQuick
-import "../components"
+
 Item {
     id: rootId
-
-    AuthHeaderComponent{
-        anchors.fill: parent
-    }
+    property string pageTitle: "Account"
+    property bool showHeader: true
 }

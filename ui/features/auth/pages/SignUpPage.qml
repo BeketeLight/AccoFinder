@@ -20,6 +20,8 @@ Page {
     property color warningColor: "#F59E0B"
     property color errorColor: "#EF4444"
     property bool busy: AuthController.isLoading
+    property string pageTitle: "Create account"
+    property bool showHeader: true
 
     // Tracks which auth action is in flight so signal handlers know what to do.
     property string pendingAction: ""
