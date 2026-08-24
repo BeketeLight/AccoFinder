@@ -8,40 +8,23 @@ Item {
 
     property string pageTitle: qsTr("Admin Dashboard")
     property bool showHeader: true
-    property bool showBack: true
+    property bool showBack: false
 
-    signal goBack()
     signal quickActionTriggered(var actionTitle)
+    signal usersRequested()
+    signal agentsRequested()
+    signal propertiesRequested()
+    signal approvalsRequested()
+    signal bookingsRequested()
+    signal paymentsRequested()
+    signal disputesRequested()
+    signal notificationsRequested()
+    signal activityTriggered(var kind)
 
     Page {
         anchors.fill: parent
         background: Rectangle { color: "#F8FAFC" }
 
-        header: ToolBar {
-            background: Rectangle { color: "#FFFFFF" }
-
-            RowLayout {
-                anchors.fill: parent
-                anchors.leftMargin: 8
-                anchors.rightMargin: 16
-                spacing: 4
-
-                ToolButton {
-                    visible: root.showBack
-                    text: qsTr("←")
-                    font.pixelSize: 20
-                    onClicked: root.goBack()
-                }
-
-                Label {
-                    Layout.fillWidth: true
-                    text: root.pageTitle
-                    font.pixelSize: 18
-                    font.bold: true
-                    color: "#1F2937"
-                }
-            }
-        }
 
         Flickable {
             id: flick
@@ -59,6 +42,15 @@ Item {
                 width: Math.min(flick.width - 24, 520)
 
                 onQuickActionTriggered: (actionTitle) => root.quickActionTriggered(actionTitle)
+                onUsersRequested: root.usersRequested()
+                onAgentsRequested: root.agentsRequested()
+                onPropertiesRequested: root.propertiesRequested()
+                onApprovalsRequested: root.approvalsRequested()
+                onBookingsRequested: root.bookingsRequested()
+                onPaymentsRequested: root.paymentsRequested()
+                onDisputesRequested: root.disputesRequested()
+                onNotificationsRequested: root.notificationsRequested()
+                onActivityTriggered: (kind) => root.activityTriggered(kind)
             }
         }
     }

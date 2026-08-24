@@ -23,6 +23,14 @@ ApplicationWindow {
 
     Component.onCompleted: {
         AppSettings.setStatusBarAppearance(Qt.rgba(0,0,0,0),true)
+        if (AppSettings.isLoggedIn() &&
+                (AppSettings.userType() === "ADMIN" || AppSettings.userType() === "SUPER_ADMIN"))
+            loader.source = "./ui/features/dashboards/admins/screens/AdminsDashboardScreen.qml"
+    }
+
+    function isRootLandingPage(url) {
+        var s = url.toString()
+        return s.endsWith("HomeScreen.qml") || s.endsWith("AdminsDashboardScreen.qml")
     }
     readonly property var currentPage: (mainStack.depth > 0 && mainStack.currentItem)
                                     ? mainStack.currentItem
@@ -40,9 +48,12 @@ ApplicationWindow {
                 mainStack.stackView.clear()
                 return
             }
-            // If on Account, Properties, or Bookings  go back to Home tab to exit
-            if (!loader.source.toString().endsWith("HomeScreen.qml")) {
-                loader.source = "./ui/features/home/screens/HomeScreen.qml"
+            // Root landing pages (Home for clients, Admin Dashboard for admins) exit the app
+            if (!isRootLandingPage(loader.source)) {
+                loader.source = (AppSettings.isLoggedIn() &&
+                                 (AppSettings.userType() === "ADMIN" || AppSettings.userType() === "SUPER_ADMIN"))
+                                ? "./ui/features/dashboards/admins/screens/AdminsDashboardScreen.qml"
+                                : "./ui/features/home/screens/HomeScreen.qml"
 
                 if (typeof bottomNavBar.currentIndex !== "undefined") {
                     bottomNavBar.currentIndex = 0
@@ -98,18 +109,23 @@ ApplicationWindow {
                 }
             }
         }
-        Loader{
-            id: loader
+        // Plain Item container: anchored children keep their size even while
+        // invisible, so the first push of a session always lands in a sized stack.
+        Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            visible: mainStack.depth === 0
-            source: "./ui/features/home/screens/HomeScreen.qml"
-        }
-        MainStackview{
-            id: mainStack
-            Layout.fillHeight: true
-            Layout.fillWidth: true
-            visible: depth > 0
+
+            Loader{
+                id: loader
+                anchors.fill: parent
+                visible: mainStack.depth === 0
+                source: "./ui/features/home/screens/HomeScreen.qml"
+            }
+            MainStackview{
+                id: mainStack
+                anchors.fill: parent
+                visible: depth > 0
+            }
         }
 
         Connections {
@@ -120,8 +136,67 @@ ApplicationWindow {
                     loader.source = "./ui/features/auth/pages/CreateAccountPage.qml"
             }
             function onSignInSucceded(user) {
-                if (loader.source.toString().endsWith("CreateAccountPage.qml"))
+                var role = AppSettings.userType()
+                if (role === "ADMIN" || role === "SUPER_ADMIN")
+                    loader.source = "./ui/features/dashboards/admins/screens/AdminsDashboardScreen.qml"
+                else if (loader.source.toString().endsWith("CreateAccountPage.qml"))
                     loader.source = "./ui/features/auth/pages/Profile.qml"
+            }
+        }
+
+        // Admin dashboard routing: stat cards, quick actions and activity rows.
+        Connections {
+            target: (loader.item && loader.item.quickActionTriggered !== undefined) ? loader.item : null
+
+            function onQuickActionTriggered(actionTitle) {
+                if (actionTitle === qsTr("Verification queue") || actionTitle === qsTr("Property approvals"))
+                    NavUtils.push(Qt.resolvedUrl("./ui/features/dashboards/admins/screens/PropertyApprovalScreen.qml"))
+                else if (actionTitle === qsTr("User management"))
+                    NavUtils.push(Qt.resolvedUrl("./ui/features/dashboards/admins/screens/UserManagementScreen.qml"))
+                else if (actionTitle === qsTr("Register agent"))
+                    NavUtils.push(Qt.resolvedUrl("./ui/features/dashboards/admins/screens/RegisterAgentScreen.qml"))
+                else if (actionTitle === qsTr("Dispute resolution"))
+                    NavUtils.push(Qt.resolvedUrl("./ui/features/dashboards/admins/screens/DisputesScreen.qml"))
+                else if (actionTitle === qsTr("Payments oversight"))
+                    NavUtils.push(Qt.resolvedUrl("./ui/features/dashboards/admins/screens/PaymentsOversightScreen.qml"))
+                else
+                    console.log("Unhandled admin quick action:", actionTitle)
+            }
+            function onUsersRequested() {
+                NavUtils.push(Qt.resolvedUrl("./ui/features/dashboards/admins/screens/UserManagementScreen.qml"))
+            }
+            function onAgentsRequested() {
+                NavUtils.push(Qt.resolvedUrl("./ui/features/dashboards/admins/screens/AgentManagementScreen.qml"))
+            }
+            function onPropertiesRequested() {
+                NavUtils.push(Qt.resolvedUrl("./ui/features/properties/screens/PropertiesScreen.qml"))
+            }
+            function onApprovalsRequested() {
+                NavUtils.push(Qt.resolvedUrl("./ui/features/dashboards/admins/screens/PropertyApprovalScreen.qml"))
+            }
+            function onBookingsRequested() {
+                loader.source = "./ui/features/bookings/screens/BookingsScreen.qml"
+            }
+            function onPaymentsRequested() {
+                NavUtils.push(Qt.resolvedUrl("./ui/features/dashboards/admins/screens/PaymentsOversightScreen.qml"))
+            }
+            function onDisputesRequested() {
+                NavUtils.push(Qt.resolvedUrl("./ui/features/dashboards/admins/screens/DisputesScreen.qml"))
+            }
+            function onNotificationsRequested() {
+                NavUtils.push(Qt.resolvedUrl("./ui/features/dashboards/admins/screens/SystemNotificationsScreen.qml"))
+            }
+            function onActivityTriggered(kind) {
+                if (kind === "users" || kind === "agents-register")
+                    NavUtils.push(Qt.resolvedUrl("./ui/features/dashboards/admins/screens/UserManagementScreen.qml"))
+                else if (kind === "approvals")
+                    NavUtils.push(Qt.resolvedUrl("./ui/features/dashboards/admins/screens/PropertyApprovalScreen.qml"))
+                else if (kind === "payments")
+                    NavUtils.push(Qt.resolvedUrl("./ui/features/dashboards/admins/screens/PaymentsOversightScreen.qml"))
+                else if (kind === "disputes")
+                    NavUtils.push(Qt.resolvedUrl("./ui/features/dashboards/admins/screens/DisputesScreen.qml"))
+                else
+                    console.log("Unhandled admin activity kind:", kind)
             }
         }
 

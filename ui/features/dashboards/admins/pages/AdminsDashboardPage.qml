@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import "../../models"
 import "../../../properties/components"
 
 Item {
@@ -14,23 +15,26 @@ Item {
     readonly property color dangerColor: "#DC2626"
     readonly property color surfaceColor: "#FFFFFF"
     readonly property color softBlueColor: "#EFF6FF"
+    readonly property color softAmberColor: "#FFFBEB"
+    readonly property color softRedColor: "#FEF2F2"
     readonly property color textColor: "#1F2937"
     readonly property color mutedColor: "#6B7280"
     readonly property color borderColor: "#E5E7EB"
 
-    property string adminName: AppSettings.isLoggedIn() && AppSettings.userName().length > 0 ? AppSettings.userName() : "Admin"
+    property AdminDashboardModel dashboardModel: AdminDashboardModel {}
 
-    property int totalUsers: 1284
-    property int totalAgents: 36
-    property int totalProperties: 214
-    property int pendingVerifications: 9
-    property int verifiedProperties: 168
-    property int openDisputes: 4
-    property int totalBookings: 512
-    property real bookingValue: 12480000
-    property real platformCommission: 998400
-
+    signal addPropertyRequested()
+    signal attentionClicked(var propertyTitle)
     signal quickActionTriggered(var actionTitle)
+    signal usersRequested()
+    signal agentsRequested()
+    signal propertiesRequested()
+    signal approvalsRequested()
+    signal bookingsRequested()
+    signal paymentsRequested()
+    signal disputesRequested()
+    signal notificationsRequested()
+    signal activityTriggered(var kind)
 
     implicitWidth: 400
     implicitHeight: contentColumn.implicitHeight
@@ -65,26 +69,31 @@ Item {
                 anchors.right: parent.right
                 anchors.top: parent.top
                 anchors.margins: 18
-                spacing: 10
-
-                Label {
-                    Layout.fillWidth: true
-                    text: qsTr("System overview")
-                    color: Qt.rgba(1, 1, 1, 0.75)
-                    font.pixelSize: 13
-                }
+                spacing: 12
 
                 RowLayout {
                     Layout.fillWidth: true
                     spacing: 10
 
-                    Label {
+                    ColumnLayout {
                         Layout.fillWidth: true
-                        text: root.adminName
-                        color: "#FFFFFF"
-                        font.pixelSize: 20
-                        font.bold: true
-                        elide: Text.ElideRight
+                        spacing: 2
+
+                        Label {
+                            Layout.fillWidth: true
+                            text: qsTr("System overview")
+                            color: Qt.rgba(1, 1, 1, 0.75)
+                            font.pixelSize: 13
+                        }
+
+                        Label {
+                            Layout.fillWidth: true
+                            text: root.dashboardModel.adminName
+                            color: "#FFFFFF"
+                            font.pixelSize: 20
+                            font.bold: true
+                            elide: Text.ElideRight
+                        }
                     }
 
                     Rectangle {
@@ -103,6 +112,51 @@ Item {
                         }
                     }
                 }
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: 10
+
+                    Rectangle {
+                        Layout.preferredWidth: areaLabel.implicitWidth + 22
+                        Layout.preferredHeight: 30
+                        radius: 15
+                        color: Qt.rgba(1, 1, 1, 0.14)
+
+                        Label {
+                            id: areaLabel
+                            anchors.centerIn: parent
+                            text: qsTr("%1 users · %2 agents").arg(root.dashboardModel.totalUsers).arg(root.dashboardModel.registeredAgents)
+                            color: "#FFFFFF"
+                            font.pixelSize: 11
+                            font.bold: true
+                        }
+                    }
+
+                    Item { Layout.fillWidth: true }
+
+                    Button {
+                        id: heroNotifButton
+                        Layout.preferredHeight: 38
+                        text: qsTr("Announce")
+
+                        contentItem: Label {
+                            text: heroNotifButton.text
+                            color: root.primaryDarkColor
+                            font.pixelSize: 13
+                            font.bold: true
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                        }
+
+                        background: Rectangle {
+                            radius: 19
+                            color: heroNotifButton.down ? "#DBEAFE" : "#FFFFFF"
+                        }
+
+                        onClicked: root.notificationsRequested()
+                    }
+                }
             }
         }
 
@@ -115,63 +169,153 @@ Item {
             StatCard {
                 Layout.fillWidth: true
                 label: qsTr("Total users")
-                valueText: Number(root.totalUsers).toLocaleString()
+                valueText: String(root.dashboardModel.totalUsers)
                 accentColor: root.primaryColor
+                clickable: true
+                onClicked: root.usersRequested()
             }
             StatCard {
                 Layout.fillWidth: true
                 label: qsTr("Registered agents")
-                valueText: String(root.totalAgents)
+                valueText: String(root.dashboardModel.registeredAgents)
                 accentColor: root.secondaryColor
+                clickable: true
+                onClicked: root.agentsRequested()
             }
             StatCard {
                 Layout.fillWidth: true
                 label: qsTr("Total properties")
-                valueText: String(root.totalProperties)
-                accentColor: root.successColor
+                valueText: String(root.dashboardModel.totalProperties)
+                accentColor: root.primaryDarkColor
+                clickable: true
+                onClicked: root.propertiesRequested()
             }
             StatCard {
                 Layout.fillWidth: true
                 label: qsTr("Pending verifications")
-                valueText: String(root.pendingVerifications)
+                valueText: String(root.dashboardModel.pendingVerifications)
                 accentColor: root.warningColor
-                hint: root.pendingVerifications > 0 ? qsTr("Action needed") : ""
+                hint: root.dashboardModel.pendingVerifications > 0 ? qsTr("Action needed") : ""
+                clickable: true
+                onClicked: root.approvalsRequested()
             }
             StatCard {
                 Layout.fillWidth: true
                 label: qsTr("Verified properties")
-                valueText: String(root.verifiedProperties)
+                valueText: String(root.dashboardModel.verifiedProperties)
                 accentColor: root.successColor
+                clickable: true
+                onClicked: root.propertiesRequested()
             }
             StatCard {
                 Layout.fillWidth: true
                 label: qsTr("Open disputes")
-                valueText: String(root.openDisputes)
+                valueText: String(root.dashboardModel.openDisputes)
                 accentColor: root.dangerColor
-                hint: root.openDisputes > 0 ? qsTr("Needs review") : ""
+                hint: root.dashboardModel.openDisputes > 0 ? qsTr("Needs review") : ""
+                clickable: true
+                onClicked: root.disputesRequested()
             }
             StatCard {
                 Layout.fillWidth: true
-                label: qsTr("Total bookings")
-                valueText: String(root.totalBookings)
                 lableFontSize: 18
-                accentColor: root.primaryDarkColor
+                label: qsTr("Total bookings")
+                valueText: String(root.dashboardModel.totalBookings)
+                accentColor: root.textColor
+                clickable: true
+                onClicked: root.bookingsRequested()
             }
             StatCard {
                 Layout.fillWidth: true
+                lableFontSize: 18
                 label: qsTr("Booking value")
-                valueText: "MK " + Number(root.bookingValue).toLocaleString()
-                lableFontSize: 14
-                accentColor: root.textColor
+                valueText: "MK " + Number(root.dashboardModel.totalBookingValue).toLocaleString()
+                accentColor: root.successColor
+                clickable: true
+                onClicked: root.paymentsRequested()
+            }
+            StatCard {
+                lableFontSize: 18
+                Layout.fillWidth: true
+                label: qsTr("Platform commission")
+                valueText: "MK " + Number(root.dashboardModel.platformCommission).toLocaleString()
+                accentColor: root.warningColor
+                clickable: true
+                onClicked: root.paymentsRequested()
             }
         }
 
-        StatCard {
+        SectionHeader {
             Layout.fillWidth: true
-            label: qsTr("Platform commission earned")
-            valueText: "MK " + Number(root.platformCommission).toLocaleString()
-            lableFontSize: 16
-            accentColor: root.successColor
+            title: qsTr("Pending system activity")
+        }
+
+        Repeater {
+            model: root.dashboardModel.pendingActivitiesModel
+
+            delegate: Rectangle {
+                id: activityRow
+                required property var model
+                required property int index
+                Layout.fillWidth: true
+                implicitHeight: activityContent.implicitHeight + 16
+                radius: 12
+                color: mouseArea.pressed ? root.softAmberColor : root.surfaceColor
+                border.color: root.borderColor
+                border.width: 1
+
+                RowLayout {
+                    id: activityContent
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.top: parent.top
+                    anchors.margins: 10
+                    spacing: 10
+
+                    Rectangle {
+                        Layout.preferredWidth: 4
+                        Layout.preferredHeight: 34
+                        radius: 2
+                        color: "#F59E0B"
+                    }
+
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        spacing: 2
+
+                        Label {
+                            Layout.fillWidth: true
+                            text: activityRow.model.title
+                            color: root.textColor
+                            font.pixelSize: 13
+                            font.bold: true
+                            elide: Text.ElideRight
+                        }
+
+                        Label {
+                            Layout.fillWidth: true
+                            text: activityRow.model.detail
+                            color: root.mutedColor
+                            font.pixelSize: 11
+                            elide: Text.ElideRight
+                        }
+                    }
+
+                    Label {
+                        text: "›"
+                        color: "#9CA3AF"
+                        font.pixelSize: 18
+                        font.bold: true
+                    }
+                }
+
+                MouseArea {
+                    id: mouseArea
+                    anchors.fill: parent
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: root.activityTriggered(activityRow.model.kind)
+                }
+            }
         }
 
         SectionHeader {
@@ -179,115 +323,76 @@ Item {
             title: qsTr("Quick actions")
         }
 
-        Rectangle {
-            Layout.fillWidth: true
-            implicitHeight: quickActionsCol.implicitHeight
-            radius: 12
-            color: root.surfaceColor
-            border.color: root.borderColor
-            border.width: 1
+        Repeater {
+            model: [
+                { title: qsTr("Verification queue"), detail: qsTr("Approve or reject submitted listings"), kind: "approvals" },
+                { title: qsTr("User management"), detail: qsTr("View clients, agents and landlords"), kind: "users" },
+                { title: qsTr("Register agent"), detail: qsTr("Create a new agent account"), kind: "agents-register" },
+                { title: qsTr("Property approvals"), detail: qsTr("Pending verification queue"), kind: "approvals" },
+                { title: qsTr("Dispute resolution"), detail: qsTr("Review open disputes"), kind: "disputes" },
+                { title: qsTr("Payments oversight"), detail: qsTr("Commissions, payouts and payment status"), kind: "payments" }
+            ]
 
-            ColumnLayout {
-                id: quickActionsCol
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.top: parent.top
-                spacing: 0
+            delegate: Rectangle {
+                id: actionRow
+                required property var model
+                required property int index
+                Layout.fillWidth: true
+                implicitHeight: actionContent.implicitHeight + 16
+                radius: 12
+                color: actionMouse.pressed ? root.softBlueColor : root.surfaceColor
+                border.color: root.borderColor
+                border.width: 1
 
-                Repeater {
-                    model: [
-                        qsTr("Verification queue"),
-                        qsTr("User management"),
-                        qsTr("Register agent"),
-                        qsTr("Property approvals"),
-                        qsTr("Dispute resolution")
-                    ]
+                RowLayout {
+                    id: actionContent
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.top: parent.top
+                    anchors.margins: 10
+                    spacing: 10
 
-                    delegate: ColumnLayout {
-                        required property var modelData
-                        required property int index
+                    Rectangle {
+                        Layout.preferredWidth: 4
+                        Layout.preferredHeight: 34
+                        radius: 2
+                        color: root.primaryColor
+                    }
+
+                    ColumnLayout {
                         Layout.fillWidth: true
-                        spacing: 0
+                        spacing: 2
 
-                        Rectangle {
+                        Label {
                             Layout.fillWidth: true
-                            implicitHeight: actionRow.implicitHeight + 20
-                            color: actionMouse.pressed ? root.softBlueColor : "transparent"
-
-                            RowLayout {
-                                id: actionRow
-                                anchors.fill: parent
-                                anchors.margins: 12
-                                spacing: 12
-
-                                Rectangle {
-                                    Layout.preferredWidth: 34
-                                    Layout.preferredHeight: 34
-                                    radius: 17
-                                    color: root.softBlueColor
-
-                                    Label {
-                                        anchors.centerIn: parent
-                                        text: String(index + 1)
-                                        color: root.primaryColor
-                                        font.pixelSize: 13
-                                        font.bold: true
-                                    }
-                                }
-
-                                Label {
-                                    Layout.fillWidth: true
-                                    text: modelData
-                                    color: root.textColor
-                                    font.pixelSize: 13
-                                    font.bold: true
-                                    elide: Text.ElideRight
-                                }
-
-                                Item {
-                                    Layout.preferredWidth: 9
-                                    Layout.preferredHeight: 16
-
-                                    Rectangle {
-                                        width: 10
-                                        height: 1.8
-                                        radius: 0.9
-                                        color: root.mutedColor
-                                        rotation: 45
-                                        transformOrigin: Item.Left
-                                        x: 0
-                                        y: 2.5
-                                    }
-
-                                    Rectangle {
-                                        width: 10
-                                        height: 1.8
-                                        radius: 0.9
-                                        color: root.mutedColor
-                                        rotation: -45
-                                        transformOrigin: Item.Left
-                                        x: 0
-                                        y: 13.5
-                                    }
-                                }
-                            }
-
-                            MouseArea {
-                                id: actionMouse
-                                anchors.fill: parent
-                                cursorShape: Qt.PointingHandCursor
-                                onClicked: root.quickActionTriggered(modelData)
-                            }
+                            text: actionRow.model.title
+                            color: root.textColor
+                            font.pixelSize: 13
+                            font.bold: true
                         }
 
-                        Rectangle {
-                            visible: index < 4
+                        Label {
                             Layout.fillWidth: true
-                            Layout.preferredHeight: 1
-                            Layout.leftMargin: 16
-                            color: root.borderColor
+                            text: actionRow.model.detail
+                            color: root.mutedColor
+                            font.pixelSize: 11
+                            elide: Text.ElideRight
                         }
                     }
+
+                    Label {
+                        text: "›"
+                        color: "#9CA3AF"
+                        font.pixelSize: 18
+                        font.bold: true
+                    }
+                }
+
+                MouseArea {
+                    id: actionMouse
+                    anchors.fill: parent
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: root.quickActionTriggered(actionRow.model.title)
                 }
             }
         }

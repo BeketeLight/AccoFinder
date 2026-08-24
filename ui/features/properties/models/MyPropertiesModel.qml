@@ -147,6 +147,17 @@ Item {
         return null
     }
 
+    function setPropertyStatus(propertyId, status) {
+        for (var i = 0; i < propertiesModelId.count; i++) {
+            var it = propertiesModelId.get(i)
+            if (it.propertyId === propertyId) {
+                it.status = status
+                propertiesModelId.set(i, it)
+                break
+            }
+        }
+    }
+
     function modelToArray(value) {
         var arr = []
         if (!value)
