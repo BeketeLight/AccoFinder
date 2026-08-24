@@ -59,6 +59,7 @@ Page{
             Layout.fillWidth: true  // 👈 Distributes tab to 25% of parent width
             Layout.fillHeight: true
             spacing: 0
+            visible: AppSettings.userType()  === "AGENT" || AppSettings.userType()  === "ADMIN"
             ToolButton{
                icon.name: "Properties-icon"
                icon.source:"qrc:/ui/assets/properties-icon.svg"
@@ -85,6 +86,7 @@ Page{
             Layout.fillWidth: true  // 👈 Distributes tab to 25% of parent width
             Layout.fillHeight: true
             spacing: 0
+            visible: AppSettings.userType()  === "CLIENT" ||  AppSettings.userType()  ===  ""
          ToolButton{
             icon.name: "Save-icon"
             icon.source:"qrc:/ui/assets/save-icon.svg"
@@ -101,7 +103,7 @@ Page{
                }
             }
          Text{
-            text: qsTr("Save")
+            text: qsTr("Saved")
             Layout.alignment: Qt.AlignHCenter
             //font.bold: currentIndex === 2
          }

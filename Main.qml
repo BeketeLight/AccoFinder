@@ -85,10 +85,12 @@ ApplicationWindow {
             rightAction: currentPage && currentPage.rightComponentAction ? currentPage.rightComponentAction: null
 
             onBackClicked: {
-                if(mainStack.depth > 0){
-                    NavUtils.pop()
-                } else if(currentPage && typeof currentPage.goBack === "function"){
+                if (currentPage && typeof currentPage.goBack === "function") {
                     currentPage.goBack()
+                    return
+                }
+                if (mainStack.depth > 0) {
+                    NavUtils.pop()
                 }
             }
         }
@@ -104,6 +106,19 @@ ApplicationWindow {
             Layout.fillHeight: true
             Layout.fillWidth: true
             visible: depth > 0
+        }
+
+        Connections {
+            target: AuthController
+            function onUserLoggedOut() {
+                NavUtils.resetToSignIn()
+                if (loader.source.toString().endsWith("Profile.qml"))
+                    loader.source = "./ui/features/auth/pages/CreateAccountPage.qml"
+            }
+            function onSignInSucceded(user) {
+                if (loader.source.toString().endsWith("CreateAccountPage.qml"))
+                    loader.source = "./ui/features/auth/pages/Profile.qml"
+            }
         }
 
         FooterComponent{

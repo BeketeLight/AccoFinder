@@ -21,51 +21,13 @@ Page {
     property string pendingOtpEmail: ""
     readonly property string otpPurpose: "registration"
 
+    property string pageTitle: "Sign in"
+    property bool showHeader: true
+
     anchors.fill: parent
 
     background: Rectangle {
         color: root.pageColor
-    }
-
-    header: ToolBar {
-        contentHeight: 56
-
-        background: Rectangle {
-            color: root.pageColor
-
-            Rectangle {
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.bottom: parent.bottom
-                height: 1
-                color: root.borderColor
-            }
-        }
-
-        RowLayout {
-            anchors.fill: parent
-            anchors.leftMargin: 12
-            anchors.rightMargin: 20
-            spacing: 10
-
-            ToolButton {
-                Layout.preferredWidth: 40
-                Layout.preferredHeight: 40
-                icon.source: "qrc:/ui/assets/back.png"
-                icon.width: 20
-                icon.height: 20
-                icon.color: root.textColor
-                onClicked: UtilsModule.NavigationUtils.pop()
-            }
-
-            Label {
-                text: "Acco Finder"
-                color: root.textColor
-                font.pixelSize: 18
-                font.bold: true
-                Layout.fillWidth: true
-            }
-        }
     }
 
     Flickable {
@@ -382,7 +344,7 @@ Page {
             errorLabel.text = "";
             loadingDialog.close();
 
-            UtilsModule.NavigationUtils.navigateToProfile();
+            UtilsModule.NavigationUtils.resetToProfile();
         }
 
         function onSignInFailed(message) {

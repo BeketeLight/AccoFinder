@@ -1,9 +1,16 @@
 import QtQuick
 import "../pages"
 Item {
-    id:signUpItemId
+    id: signUpItemId
+    property alias pageTitle: signUpPage.pageTitle
+    property alias showHeader: signUpPage.showHeader
 
-    SignUpPage{
+    function goBack() {
+        signUpPage.goBack()
+    }
+
+    SignUpPage {
+        id: signUpPage
         anchors.fill: parent
     }
 }

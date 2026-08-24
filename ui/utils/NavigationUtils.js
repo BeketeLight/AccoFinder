@@ -110,6 +110,9 @@ function navigateToCreateAccount(){
 function navigateToProfile(){
     push("../features/auth/pages/Profile.qml")
 }
+function resetToProfile(){
+    replaceAll("../features/auth/pages/Profile.qml")
+}
 function navigateToOtp(email, purpose, initialError){
     push("../features/auth/screens/OtpScree.qml", {
              email: email || "",
@@ -160,6 +163,7 @@ var Navigation = {
     navigateToForgotPassword: navigateToForgotPassword,
     navigateToAccount: navigateToAccount,
     navigateToProfile: navigateToProfile,
+    resetToProfile: resetToProfile,
     navigateToProperties: navigateToProperties,
     navigateToBookings: navigateToBookings,
     navigateToPropertyDetails: navigateToPropertyDetails,

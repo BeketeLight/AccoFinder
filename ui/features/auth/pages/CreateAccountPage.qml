@@ -15,12 +15,14 @@ Page {
     property color textColor: "#1F2937"
     property color mutedColor: "#6B7280"
     property color borderColor: "#E5E7EB"
+    property string pageTitle: "Account"
+    property bool showHeader: true
 
     anchors.fill: parent
 
     Component.onCompleted: {
         if (AppSettings.isLoggedIn())
-            NavUtils.navigateToProfile();
+            NavUtils.resetToProfile();
     }
 
     background: Rectangle {
