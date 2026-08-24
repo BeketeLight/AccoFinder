@@ -71,6 +71,24 @@ qt_add_qml_module(appAccoFinder
         ui/features/home/delegates/HomeDelegate.qml
         ui/features/home/components/HeaderComponent.qml
         ui/features/home/components/FooterComponent.qml
+        ui/features/home/delegates/PropertyCardDelegate.qml
+        ui/features/home/delegates/PropertyListDelegate.qml
+        ui/features/home/models/PropertyCategoryModel.qml
+        ui/features/home/models/PropertyListModel.qml
+        ui/features/home/pages/AddPropertyPage.qml
+        ui/features/home/pages/FilterBottomSheet.qml
+        ui/features/home/pages/MyPropertiesPage.qml
+        ui/features/home/pages/PropertiesPage.qml
+        ui/features/home/pages/PropertyDetailsPage.qml
+        ui/features/home/pages/SearchPropertiesPage.qml
+        ui/features/home/pages/WelcomePage.qml
+        ui/features/home/screens/PropertiesScreen.qml
+        ui/features/home/screens/PropertyDetailScreen.qml
+        ui/features/home/screens/SearchPropertiesScreen.qml
+        ui/features/home/components/PropertyEmptyState.qml
+        ui/features/home/components/PropertyFilterBar.qml
+        ui/features/home/components/PropertyLoadingSkeleton.qml
+        ui/features/home/components/StickyActionBar.qml
         #======FEATURE-NOTIFICATIONS=====
         ui/features/notifications/components/NotificationItem.qml
         ui/features/notifications/delegates/NotificationDelegate.qml
@@ -255,6 +273,7 @@ qt_add_qml_module(appAccoFinder
         QML_FILES ui/components/navigations/AppHeader.qml
         QML_FILES ui/features/dashboards/Agets/pages/AgentsDashboardPage.qml
         QML_FILES ui/features/dashboards/Agets/screens/AgentsDashboardScreen.qml
+
 )
 
 # ─────────────────────────────────────────────────────────────
