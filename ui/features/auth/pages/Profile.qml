@@ -26,7 +26,7 @@ Page {
     property string profileBank: ""
     property string profileAccount: ""
     property string profilePaymentMethod: "Mobile money"
-    property string pageTitle: "Profile"
+    property string pageTitle: "  Profile"
     property bool showHeader: true
 
     anchors.fill: parent

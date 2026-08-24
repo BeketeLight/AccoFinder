@@ -11,7 +11,6 @@ Item {
     property string label: ""
     property string placeholder: ""
     property string helperText: ""
-    property bool enabled: true
     property bool required: false
     property bool password: false
     property bool error: false

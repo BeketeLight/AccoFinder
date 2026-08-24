@@ -12,7 +12,6 @@ Item {
     property var model: []                       // List of options
     property int currentIndex: -1
     property string currentText: currentIndex >= 0 ? model[currentIndex] : ""
-    property bool enabled: true
     property bool required: false
 
     // Styling
@@ -23,11 +22,10 @@ Item {
     property color placeholderColor: "#999999"
     property int borderRadius: 8
     property int fontSize: 14
-    property int height: 42
+    property int fieldHeight: 42
 
     // Signals
     signal activated(int index)
-    signal currentIndexChanged
 
     implicitWidth: 250
     implicitHeight: label ? labelItem.height + 6 + combo.height : combo.height
@@ -49,7 +47,7 @@ Item {
         anchors.top: root.label ? labelItem.bottom : parent.top
         anchors.topMargin: root.label ? 6 : 0
         width: parent.width
-        height: root.height
+        height: root.fieldHeight
         model: root.model
         currentIndex: root.currentIndex
         enabled: root.enabled

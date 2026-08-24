@@ -129,17 +129,22 @@ qt_add_qml_module(appAccoFinder
         ui/features/payments/pages/PaymentsHistoryPage.qml
         ui/features/payments/screens/PaymentsScreen.qml
         #======FEATURE-PROPERTIES======
-        ui/features/properties/delegates/PropertyDelegate.qml
+        ui/features/properties/components/StatCard.qml
+        ui/features/properties/components/StatusChip.qml
+        ui/features/properties/components/SectionHeader.qml
+        ui/features/dashboards/models/AgentDashboardModel.qml
+        ui/features/properties/models/MyPropertiesModel.qml
         ui/features/properties/screens/PropertyDetailScreen.qml
-        ui/features/properties/screens/PropertyListScreen.qml
+        ui/features/properties/screens/SearchPropertiesScreen.qml
         ui/features/properties/pages/PropertiesPage.qml
         ui/features/properties/pages/AddPropertiesPage.qml
+        ui/features/properties/pages/PropertyInfoPage.qml
+        ui/features/properties/pages/PropertyRoomsPage.qml
+        ui/features/properties/pages/PropertyPhotosPage.qml
+        ui/features/properties/pages/PropertyReviewPage.qml
         ui/features/properties/pages/PropertyDetailsPage.qml
-        ui/features/properties/pages/PropertiesListPage.qml
         ui/features/properties/screens/PropertiesScreen.qml
         ui/features/properties/screens/AddPropertyScreen.qml
-        ui/features/properties/pages/MyPropertiesPage.qml
-        ui/features/properties/screens/MyPropertiesScreen.qml
 
     SOURCES
         src/models/user.h src/models/user.cpp
