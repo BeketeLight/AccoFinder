@@ -13,6 +13,7 @@ Page{
    signal bookingsTapped()
    signal accountTapped()
    signal saveTapped()
+   signal dashboardTapped()
 
     Component.onCompleted: console.log("FooterComponent loaded, currentIndex property exists")
       background: Rectangle {
@@ -156,6 +157,33 @@ Page{
             }
             Text{
                text: qsTr("Account")
+               Layout.alignment: Qt.AlignHCenter
+               //font.bold: currentIndex === 3
+            }
+
+         }
+         ColumnLayout{
+            Layout.preferredHeight: 0
+            Layout.fillWidth: true// 👈 Distributes tab to 25% of parent width
+            Layout.fillHeight: true
+            spacing: 0
+            ToolButton{
+               icon.name: "dashboard-icon"
+               icon.source:"qrc:/ui/assets/dashboard-icon.svg"
+               icon.height: 24
+               icon.width: 24
+               icon.color: currentIndex === 5? "#2563EB" : "gray"
+               Layout.alignment: Qt.AlignHCenter
+               background: null
+               onClicked: {
+                  if(currentIndex === 5) return
+                     currentIndex = 5
+                     footerPageId.dashboardTapped()
+                     tabSelected(5)
+               }
+            }
+            Text{
+               text: qsTr("Dashboard")
                Layout.alignment: Qt.AlignHCenter
                //font.bold: currentIndex === 3
             }
