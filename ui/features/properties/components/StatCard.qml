@@ -10,12 +10,14 @@ Rectangle {
     property color accentColor: "#2563EB"
     property string hint: ""
     property int lableFontSize: 22
+    property bool clickable: false
+    signal clicked()
 
     implicitWidth: 160
     implicitHeight: contentCol.implicitHeight + 26
     radius: 12
-    color: "#FFFFFF"
-    border.color: "#E5E7EB"
+    color: mouseArea.pressed ? "#F8FAFC" : "#FFFFFF"
+    border.color: clickable ? "#BFDBFE" : "#E5E7EB"
     border.width: 1
 
     Rectangle {
@@ -60,5 +62,13 @@ Rectangle {
             color: root.accentColor
             elide: Text.ElideRight
         }
+    }
+
+    MouseArea {
+        id: mouseArea
+        anchors.fill: parent
+        enabled: root.clickable
+        cursorShape: root.clickable ? Qt.PointingHandCursor : Qt.ArrowCursor
+        onClicked: root.clicked()
     }
 }
