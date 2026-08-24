@@ -90,7 +90,8 @@ Item {
                     visible: root.status.length > 0
                     anchors.left: parent.left
                     anchors.top: parent.top
-                    anchors.margins: 8
+                    anchors.leftMargin: 30
+                    anchors.topMargin: 5
                     height: 22
                     radius: 6
 
@@ -133,9 +134,10 @@ Item {
                 RoundButton {
                     anchors.right: parent.right
                     anchors.top: parent.top
+                    anchors.topMargin: 5
                     anchors.margins: 8
                     width: 32
-                    height: 32
+                    height: 22
                     flat: true
 
                     background: Rectangle {
