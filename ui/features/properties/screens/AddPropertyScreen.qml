@@ -1,5 +1,6 @@
 import QtQuick
 import "../pages"
+import "../../../utils/NavigationUtils.js" as NavUtils
 
 Item {
     id: addItemdId
@@ -21,6 +22,11 @@ Item {
 
         onDraftSaved: function (payload) {
             console.log("Property draft saved:", JSON.stringify(payload.name))
+        }
+
+        onRegistrationFinished: function (payload) {
+            NavUtils.replace("../features/properties/screens/PropertyDetailScreen.qml",
+                             { initialPayload: payload })
         }
     }
 }

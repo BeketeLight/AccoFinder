@@ -6,9 +6,10 @@ import "../components"
 Item {
     id: root
 
-    property string propertyNameValue: ""
-    property string propertyTypeValue: ""
-    property string propertyLocationValue: ""
+    property string titleValue: ""
+    property string districtValue: ""
+    property string villageValue: ""
+    property var amenitiesValue: []
     property string landlordValue: ""
     property string landlordPhoneValue: ""
     property real priceValue: 0
@@ -97,16 +98,20 @@ Item {
                 spacing: 8
 
                 ReviewField {
-                    labelText: qsTr("Name")
-                    valueText: root.propertyNameValue
+                    labelText: qsTr("Title")
+                    valueText: root.titleValue
                 }
                 ReviewField {
-                    labelText: qsTr("Type")
-                    valueText: root.propertyTypeValue
+                    labelText: qsTr("District")
+                    valueText: root.districtValue
                 }
                 ReviewField {
-                    labelText: qsTr("Location")
-                    valueText: root.propertyLocationValue
+                    labelText: qsTr("Village / Area")
+                    valueText: root.villageValue
+                }
+                ReviewField {
+                    labelText: qsTr("Amenities")
+                    valueText: root.amenitiesLabel()
                 }
                 ReviewField {
                     labelText: qsTr("Landlord")
@@ -373,8 +378,22 @@ Item {
         }
     }
 
-    function availableRoomCount() {
-        if (!roomsModelRef)
+    function amenitiesLabel() {
+        var labels = {
+            "WIFI": qsTr("Wi-Fi"), "PARKING": qsTr("Parking"), "SECURITY": qsTr("Security"),
+            "WATER": qsTr("Water"), "ELECTRICITY": qsTr("Electricity"),
+            "FURNISHED": qsTr("Furnished"), "AC": qsTr("A/C")
+        }
+        var parts = []
+        var list = root.amenitiesValue ? root.amenitiesValue : []
+        for (var i = 0; i < list.length; i++) {
+            var token = list[i]
+            parts.push(labels[token] !== undefined ? labels[token] : token)
+        }
+        return parts.length > 0 ? parts.join(", ") : ""
+    }
+
+    function availableRoomCount() {        if (!roomsModelRef)
             return 0
         var count = 0
         for (var i = 0; i < roomsModelRef.count; i++) {

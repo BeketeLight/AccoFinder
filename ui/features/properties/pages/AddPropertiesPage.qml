@@ -27,6 +27,9 @@ Page {
 
     signal propertySubmitted(var payload)
     signal draftSaved(var payload)
+    signal registrationFinished(var payload)
+
+    property var lastPayload: null
 
     property string pageTitle: qsTr("Add Property")
     property bool showBack: true
@@ -217,9 +220,10 @@ Page {
 
                     PropertyReviewPage {
                         id: reviewStep
-                        propertyNameValue: infoStep.propertyNameValue
-                        propertyTypeValue: infoStep.propertyTypeValue
-                        propertyLocationValue: infoStep.propertyLocationValue
+                        titleValue: infoStep.titleValue
+                        districtValue: infoStep.districtValue
+                        villageValue: infoStep.villageValue
+                        amenitiesValue: infoStep.amenitiesValue
                         landlordValue: infoStep.landlordValue
                         landlordPhoneValue: infoStep.landlordPhoneValue
                         priceValue: infoStep.priceValue
@@ -318,10 +322,13 @@ Page {
         Timer {
             id: successTimer
             interval: 1400
-            onTriggered: UtilsModule.NavigationUtils.pop()
+            onTriggered: root.registrationFinished(root.lastPayload)
         }
     }
 
+    // Payload mirrors the backend Property schema:
+    // title, description, physicalAddress{district,village}, verificationStatus,
+    // amenities[], isActive — plus client extras (price/landlord) and room/media refs.
     function buildPayload(status, verificationStatus) {
         var rooms = []
         for (var i = 0; i < roomsStep.roomsModel.count; i++) {
@@ -334,22 +341,27 @@ Page {
             photos.push({ path: p.path, isPrimary: p.isPrimary, roomId: p.roomId })
         }
         return {
-            name: infoStep.propertyNameValue,
-            type: infoStep.propertyTypeValue,
-            location: infoStep.propertyLocationValue,
+            title: infoStep.titleValue,
+            description: infoStep.descriptionValue,
+            owner: AppSettings.isLoggedIn() ? AppSettings.userName() : "",
+            physicalAddress: {
+                district: infoStep.districtValue,
+                village: infoStep.villageValue
+            },
+            verificationStatus: verificationStatus,
+            amenities: infoStep.amenitiesValue,
+            isActive: true,
+            price: infoStep.priceValue,
             landlord: infoStep.landlordValue,
             landlordPhone: infoStep.landlordPhoneValue,
-            price: infoStep.priceValue,
-            description: infoStep.descriptionValue,
             rooms: rooms,
-            photos: photos,
-            status: status,
-            verificationStatus: verificationStatus
+            photos: photos
         }
     }
 
     function submitProperty() {
-        var payload = root.buildPayload("Pending", "Pending")
+        var payload = root.buildPayload("Pending", "PENDING")
+        root.lastPayload = payload
         root.propertySubmitted(payload)
         showSuccess(qsTr("Submitted for verification"),
                     qsTr("The verification team has been notified. You can track progress from your properties list."))
@@ -357,6 +369,7 @@ Page {
 
     function saveDraft() {
         var payload = root.buildPayload("Draft", "")
+        root.lastPayload = payload
         root.draftSaved(payload)
         showSuccess(qsTr("Draft saved"),
                     qsTr("You can complete this property anytime from Properties requiring attention."))

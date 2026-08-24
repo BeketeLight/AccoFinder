@@ -6,6 +6,7 @@ Page {
     id: root
     property string pageTitle: "Forgot password"
     property bool showHeader: true
+    property bool showBottomBorder: false
 
     ColumnLayout {
             anchors.centerIn: parent

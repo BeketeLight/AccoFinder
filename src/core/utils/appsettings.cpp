@@ -104,14 +104,20 @@ QString AppSettings::userId() const {
 }
 
 void AppSettings::setUserType(const QString &value) {
+    if (userType() == value)
+        return;
     m_settings.setValue("auth/userType", value);
+    emit userSessionChanged();
 }
 QString AppSettings::userType() const {
     return m_settings.value("auth/userType").toString();
 }
 
 void AppSettings::setIsLoggedIn(bool value) {
+    if (isLoggedIn() == value)
+        return;
     m_settings.setValue("auth/isLoggedIn", value);
+    emit userSessionChanged();
 }
 bool AppSettings::isLoggedIn() const {
     return m_settings.value("auth/isLoggedIn", false).toBool();
@@ -120,7 +126,10 @@ bool AppSettings::isLoggedIn() const {
 // USER
 
 void AppSettings::setUserName(const QString &value) {
+    if (userName() == value)
+        return;
     m_settings.setValue("user/name", value);
+    emit userSessionChanged();
 }
 QString AppSettings::userName() const {
     return m_settings.value("user/name").toString();

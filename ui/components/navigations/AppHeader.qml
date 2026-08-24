@@ -12,6 +12,8 @@ property bool showBackButton: false
 property Component leftAction: null
 property Component rightAction: null
 property bool searchReadOnly: false // exposing readonly for searchBar
+property int titleFontSize: 18
+property bool showBottomBorder: true
 
 signal backClicked()
 signal searchBarTapped()
@@ -19,6 +21,7 @@ signal searchBarTapped()
 background: Rectangle{
     color: "#FFFFFF"
     Rectangle{
+    visible: root.showBottomBorder
     anchors.left: parent.left
     anchors.right: parent.right
     anchors.bottom: parent.bottom
@@ -64,7 +67,7 @@ RowLayout{
     //show when isSearchBar is set to false
     Label{
         text: root.title
-        font.pixelSize: 18
+        font.pixelSize: root.titleFontSize
         font.bold: true
         color: "#111111"
         visible: !root.isSearchBar

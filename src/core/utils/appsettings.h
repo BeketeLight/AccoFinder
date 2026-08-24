@@ -169,6 +169,10 @@ public:
     Q_INVOKABLE QString recentRoomId() const;
 
 signals:
+    // Emitted whenever login state, role or user identity changes so that
+    // QML views with non-reactive Q_INVOKABLE bindings (e.g. the footer)
+    // can refresh themselves.
+    void userSessionChanged();
 
 private:
     QSettings m_settings;

@@ -7,6 +7,7 @@ Page {
     id: root
 
     property color primaryColor: "#2563EB"
+    property color primaryDarkColor: "#1D4ED8"
     property color secondaryColor: "#22C55E"
     property color pageColor: "#FFFFFF"
     property color surfaceColor: "#F5F5F5"
@@ -17,6 +18,7 @@ Page {
     property color borderColor: "#E5E7EB"
     property string pageTitle: "Account"
     property bool showHeader: true
+    property bool showBottomBorder: false
 
     anchors.fill: parent
 
@@ -46,30 +48,57 @@ Page {
 
             Rectangle {
                 Layout.fillWidth: true
-                Layout.preferredHeight: 176
-                radius: 18
-                color: root.softBlueColor
-                border.color: "#DBEAFE"
-                border.width: 1
+                implicitHeight: heroContent.implicitHeight + 40
+                radius: 16
+                gradient: Gradient {
+                    GradientStop { position: 0.0; color: root.primaryColor }
+                    GradientStop { position: 1.0; color: root.primaryDarkColor }
+                }
+
+                Rectangle {
+                    x: parent.width - 70
+                    y: -30
+                    width: 140
+                    height: 140
+                    radius: 70
+                    color: Qt.rgba(1, 1, 1, 0.08)
+                }
+
+                Rectangle {
+                    x: parent.width - 150
+                    y: 60
+                    width: 90
+                    height: 90
+                    radius: 45
+                    color: Qt.rgba(1, 1, 1, 0.06)
+                }
 
                 ColumnLayout {
-                    anchors.fill: parent
-                    anchors.margins: 20
-                    spacing: 10
-
+                    id: heroContent
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.top: parent.top
+                    anchors.margins: 18
+                    spacing: 12
 
                     Label {
-                        text: "Find your next place with confidence"
-                        color: root.textColor
-                        font.pixelSize: 25
+                        text: qsTr("Welcome to AccoFinder")
+                        color: Qt.rgba(1, 1, 1, 0.75)
+                        font.pixelSize: 13
+                    }
+
+                    Label {
+                        text: qsTr("Find your next place with confidence")
+                        color: "#FFFFFF"
+                        font.pixelSize: 23
                         font.bold: true
                         wrapMode: Text.WordWrap
                         Layout.fillWidth: true
                     }
 
                     Label {
-                        text: "Create an account to save accommodation options, manage bookings, and receive important updates."
-                        color: root.mutedColor
+                        text: qsTr("Create an account to save accommodation options, manage bookings, and receive important updates.")
+                        color: Qt.rgba(1, 1, 1, 0.78)
                         font.pixelSize: 13
                         lineHeight: 1.12
                         wrapMode: Text.WordWrap

@@ -6,16 +6,37 @@ import "../../../utils" as UtilsModule
 Page{
    id: footerPageId
    property int currentIndex : 0
-   // At the top of FooterComponent.qml
-   signal tabSelected(int index)
-   signal homeTapped()
-   signal propertiesTapped()
-   signal bookingsTapped()
-   signal accountTapped()
-   signal saveTapped()
-   signal dashboardTapped()
+   // Refreshed explicitly via AppSettings.userSessionChanged — Q_INVOKABLE
+   // calls alone are not reactive.
+   property string userRole: ""
+   property bool isAdminUser: false
 
-    Component.onCompleted: console.log("FooterComponent loaded, currentIndex property exists")
+   function refreshSessionState() {
+       userRole = AppSettings.userType()
+       isAdminUser = userRole === "ADMIN" || userRole === "SUPER_ADMIN"
+       if (currentIndex === 2 && !(userRole === "CLIENT" || userRole === ""))
+           currentIndex = 0
+   }
+
+    Component.onCompleted: {
+        refreshSessionState()
+        console.log("FooterComponent loaded, currentIndex property exists")
+    }
+
+    Connections {
+        target: AppSettings
+        function onUserSessionChanged() { footerPageId.refreshSessionState() }
+    }
+
+// At the top of FooterComponent.qml
+    signal tabSelected(int index)
+    signal homeTapped()
+    signal propertiesTapped()
+    signal bookingsTapped()
+    signal accountTapped()
+    signal saveTapped()
+    signal dashboardTapped()
+
       background: Rectangle {
          color: "#F8F9FA"
       }
@@ -31,8 +52,8 @@ Page{
             Layout.fillHeight: true
             spacing: 0
             ToolButton{
-               icon.name: "Home-icon"
-               icon.source:"qrc:/ui/assets/home-icon.svg"
+               icon.name: footerPageId.isAdminUser ? "dashboard-icon" : "Home-icon"
+               icon.source: footerPageId.isAdminUser ? "qrc:/ui/assets/dashboard-icon.svg" : "qrc:/ui/assets/home-icon.svg"
                icon.height: 24
                icon.width: 24
                background: null
@@ -41,12 +62,15 @@ Page{
                onClicked: {
                         if(currentIndex === 0) return
                         currentIndex = 0
-                        footerPageId.homeTapped()
+                        if (footerPageId.isAdminUser)
+                            footerPageId.dashboardTapped()
+                        else
+                            footerPageId.homeTapped()
                         tabSelected(0)
                   }
                }
             Text{
-               text: qsTr("Home")
+               text: footerPageId.isAdminUser ? qsTr("Dashboard") : qsTr("Home")
                Layout.alignment: Qt.AlignHCenter
                //font.bold: currentIndex === 0
             }
@@ -59,7 +83,7 @@ Page{
             Layout.fillWidth: true  // 👈 Distributes tab to 25% of parent width
             Layout.fillHeight: true
             spacing: 0
-            visible: AppSettings.userType()  === "AGENT" || AppSettings.userType()  === "ADMIN"
+            visible: footerPageId.userRole === "AGENT" || footerPageId.isAdminUser
             ToolButton{
                icon.name: "Properties-icon"
                icon.source:"qrc:/ui/assets/properties-icon.svg"
@@ -86,7 +110,7 @@ Page{
             Layout.fillWidth: true  // 👈 Distributes tab to 25% of parent width
             Layout.fillHeight: true
             spacing: 0
-            visible: AppSettings.userType()  === "CLIENT" ||  AppSettings.userType()  ===  ""
+            visible: footerPageId.userRole === "CLIENT" || footerPageId.userRole === ""
          ToolButton{
             icon.name: "Save-icon"
             icon.source:"qrc:/ui/assets/save-icon.svg"
@@ -135,60 +159,33 @@ Page{
                //font.bold: currentIndex === 2
             }
          }
-         ColumnLayout{
-            Layout.preferredHeight: 0
-            Layout.fillWidth: true// 👈 Distributes tab to 25% of parent width
-            Layout.fillHeight: true
-            spacing: 0
-            ToolButton{
-               icon.name: "Account-icon"
-               icon.source:"qrc:/ui/assets/account-icon.svg"
-               icon.height: 24
-               icon.width: 24
-               icon.color: currentIndex === 4 ? "#2563EB" : "gray"
-               Layout.alignment: Qt.AlignHCenter
-               background: null
-               onClicked: {
-                  if(currentIndex === 4) return
-                     currentIndex = 4
-                     footerPageId.accountTapped()
-                     tabSelected(4)
-               }
-            }
-            Text{
-               text: qsTr("Account")
-               Layout.alignment: Qt.AlignHCenter
-               //font.bold: currentIndex === 3
-            }
+          ColumnLayout{
+             Layout.preferredHeight: 0
+             Layout.fillWidth: true// 👈 Distributes tab to 25% of parent width
+             Layout.fillHeight: true
+             spacing: 0
+             ToolButton{
+                icon.name: "Account-icon"
+                icon.source:"qrc:/ui/assets/account-icon.svg"
+                icon.height: 24
+                icon.width: 24
+                icon.color: currentIndex === 4 ? "#2563EB" : "gray"
+                Layout.alignment: Qt.AlignHCenter
+                background: null
+                onClicked: {
+                   if(currentIndex === 4) return
+                      currentIndex = 4
+                      footerPageId.accountTapped()
+                      tabSelected(4)
+                }
+             }
+             Text{
+                text: qsTr("Account")
+                Layout.alignment: Qt.AlignHCenter
+                //font.bold: currentIndex === 3
+             }
 
-         }
-         ColumnLayout{
-            Layout.preferredHeight: 0
-            Layout.fillWidth: true// 👈 Distributes tab to 25% of parent width
-            Layout.fillHeight: true
-            spacing: 0
-            ToolButton{
-               icon.name: "dashboard-icon"
-               icon.source:"qrc:/ui/assets/dashboard-icon.svg"
-               icon.height: 24
-               icon.width: 24
-               icon.color: currentIndex === 5? "#2563EB" : "gray"
-               Layout.alignment: Qt.AlignHCenter
-               background: null
-               onClicked: {
-                  if(currentIndex === 5) return
-                     currentIndex = 5
-                     footerPageId.dashboardTapped()
-                     tabSelected(5)
-               }
-            }
-            Text{
-               text: qsTr("Dashboard")
-               Layout.alignment: Qt.AlignHCenter
-               //font.bold: currentIndex === 3
-            }
-
-         }
+          }
 }
 
 }

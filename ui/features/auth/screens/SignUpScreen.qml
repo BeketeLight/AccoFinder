@@ -4,6 +4,7 @@ Item {
     id: signUpItemId
     property alias pageTitle: signUpPage.pageTitle
     property alias showHeader: signUpPage.showHeader
+    property alias showBottomBorder: signUpPage.showBottomBorder
 
     function goBack() {
         signUpPage.goBack()

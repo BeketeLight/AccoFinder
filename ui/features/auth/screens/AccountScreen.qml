@@ -4,4 +4,5 @@ Item {
     id: rootId
     property string pageTitle: "Account"
     property bool showHeader: true
+    property bool showBottomBorder: false
 }

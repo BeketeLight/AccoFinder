@@ -254,7 +254,7 @@ Page {
 
                                 Label {
                                     Layout.fillWidth: true
-                                    text: model.location + " · " + model.rooms + qsTr(" rooms") + " · MK " + Number(model.price).toLocaleString() + qsTr("/mo")
+                                    text: model.district + " · " + model.village + " · " + model.rooms + qsTr(" rooms") + " · MK " + Number(model.price).toLocaleString() + qsTr("/mo")
                                     color: root.mutedColor
                                     font.pixelSize: 11
                                     elide: Text.ElideRight
@@ -262,11 +262,14 @@ Page {
                             }
 
                             StatusChip {
-                                textValue: model.status
-                                variant: model.status === "Verified" ? "success"
-                                       : model.status === "Pending" ? "warning"
-                                       : model.status === "Draft" ? "neutral"
-                                       : "danger"
+                                textValue: root.listModel.prettyStatus(model.status)
+                                variant: {
+                                    var s = String(model.status).toUpperCase()
+                                    if (s === "VERIFIED") return "success"
+                                    if (s === "PENDING") return "warning"
+                                    if (s === "REJECTED") return "danger"
+                                    return "neutral"
+                                }
                             }
 
                             Item {

@@ -23,6 +23,7 @@ Page {
 
     property string pageTitle: "Sign in"
     property bool showHeader: true
+    property bool showBottomBorder: false
 
     anchors.fill: parent
 

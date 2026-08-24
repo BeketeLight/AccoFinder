@@ -80,6 +80,10 @@ ApplicationWindow {
             }
             title: currentPage && currentPage.pageTitle ? currentPage.pageTitle:""
             isSearchBar: Boolean(currentPage && currentPage.isSearchBar)
+            titleFontSize: (currentPage && typeof currentPage.titleFontSize !== "undefined")
+                           ? currentPage.titleFontSize : 18
+            showBottomBorder: (currentPage && typeof currentPage.showBottomBorder !== "undefined")
+                              ? currentPage.showBottomBorder : true
             showBackButton: mainStack.depth > 0 || Boolean(currentPage && currentPage.showBack)
             leftAction: currentPage && currentPage.leftComponentAction ? currentPage.leftComponentAction: null
             rightAction: currentPage && currentPage.rightComponentAction ? currentPage.rightComponentAction: null
@@ -134,6 +138,7 @@ ApplicationWindow {
                              : "./ui/features/auth/pages/CreateAccountPage.qml"
             onBookingsTapped: loader.source = "./ui/features/bookings/screens/BookingsScreen.qml"
             onSaveTapped: loader.source = ""
+            onDashboardTapped: loader.source = "./ui/features/dashboards/admins/screens/AdminsDashboardScreen.qml"
         }
 
     }

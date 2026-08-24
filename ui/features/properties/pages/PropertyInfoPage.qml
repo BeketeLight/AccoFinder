@@ -6,9 +6,14 @@ import "../../../components/inputs"
 Item {
     id: root
 
-    readonly property string propertyNameValue: nameInput.text.trim()
-    readonly property string propertyTypeValue: typeDropdown.currentText
-    readonly property string propertyLocationValue: locationInput.text.trim()
+    // Field names mirror the backend Property schema:
+    // title / physicalAddress.district / physicalAddress.village /
+    // verificationStatus (set on submit) / amenities[] / isActive
+    readonly property string titleValue: nameInput.text.trim()
+    readonly property string districtValue: districtDropdown.currentText
+    readonly property string villageValue: villageInput.text.trim()
+    property var selectedAmenities: []
+    readonly property var amenitiesValue: selectedAmenities
     readonly property string landlordValue: landlordInput.text.trim()
     readonly property string landlordPhoneValue: landlordPhoneInput.text.trim()
     readonly property real priceValue: {
@@ -16,6 +21,16 @@ Item {
         return isNaN(parsed) ? 0 : parsed
     }
     readonly property string descriptionValue: descriptionArea.text.trim()
+
+    function toggleAmenity(token) {
+        var arr = selectedAmenities.slice()
+        var idx = arr.indexOf(token)
+        if (idx === -1)
+            arr.push(token)
+        else
+            arr.splice(idx, 1)
+        selectedAmenities = arr
+    }
 
     property color primaryColor: "#2563EB"
     property color secondaryColor: "#22C55E"
@@ -76,24 +91,24 @@ Item {
             }
 
             AppDropdown {
-                id: typeDropdown
+                id: districtDropdown
                 Layout.fillWidth: true
                 Layout.preferredHeight: 76
                 fieldHeight: 52
-                label: qsTr("Property type")
-                placeholder: qsTr("Select property type...")
-                model: ["Hostel", "Room","Quaties"]
+                label: qsTr("District")
+                placeholder: qsTr("Select district...")
+                model: ["Lilongwe", "Blantyre", "Mzuzu", "Zomba", "Kasungu", "Salima", "Mangochi"]
                 backgroundColor: root.surfaceColor
-                borderColor: typeError.visible ? root.errorColor : root.borderColor
+                borderColor: districtError.visible ? root.errorColor : root.borderColor
                 focusBorderColor: root.primaryColor
                 textColor: root.textColor
             }
         }
 
         AppTextInput {
-            id: locationInput
-            label: qsTr("Location")
-            placeholder: qsTr("e.g. Area 47, Lilongwe")
+            id: villageInput
+            label: qsTr("Village / Area")
+            placeholder: qsTr("e.g. Area 47")
             required: true
             fieldHeight: 52
             backgroundColor: root.surfaceColor
@@ -105,6 +120,63 @@ Item {
             errorColor: root.errorColor
             Layout.fillWidth: true
             Layout.preferredHeight: 76
+        }
+
+        ColumnLayout {
+            Layout.fillWidth: true
+            spacing: 7
+
+            Label {
+                text: qsTr("Amenities")
+                color: root.textColor
+                font.pixelSize: 13
+                font.weight: Font.Medium
+            }
+
+            Flow {
+                Layout.fillWidth: true
+                spacing: 8
+
+                Repeater {
+                    model: [
+                        { token: "WIFI", label: qsTr("Wi-Fi") },
+                        { token: "PARKING", label: qsTr("Parking") },
+                        { token: "SECURITY", label: qsTr("Security") },
+                        { token: "WATER", label: qsTr("Water") },
+                        { token: "ELECTRICITY", label: qsTr("Electricity") },
+                        { token: "FURNISHED", label: qsTr("Furnished") },
+                        { token: "AC", label: qsTr("A/C") }
+                    ]
+
+                    delegate: Rectangle {
+                        required property var modelData
+                        width: amenityLabel.implicitWidth + 28
+                        height: 32
+                        radius: 16
+                        color: root.selectedAmenities.indexOf(modelData.token) !== -1
+                               ? root.primaryColor : root.surfaceColor
+                        border.color: root.selectedAmenities.indexOf(modelData.token) !== -1
+                                      ? root.primaryColor : root.borderColor
+                        border.width: 1
+
+                        Label {
+                            id: amenityLabel
+                            anchors.centerIn: parent
+                            text: modelData.label
+                            color: root.selectedAmenities.indexOf(modelData.token) !== -1
+                                   ? "#FFFFFF" : root.mutedColor
+                            font.pixelSize: 12
+                            font.bold: root.selectedAmenities.indexOf(modelData.token) !== -1
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: root.toggleAmenity(modelData.token)
+                        }
+                    }
+                }
+            }
         }
 
         AppTextInput {
@@ -232,9 +304,9 @@ Item {
         }
 
         Label {
-            id: typeError
+            id: districtError
             visible: false
-            text: qsTr("Select the property type")
+            text: qsTr("Select the district and enter the village or area")
             color: root.errorColor
             font.pixelSize: 12
             Layout.fillWidth: true
@@ -296,17 +368,13 @@ Item {
     function validateAndContinue() {
         errorText.text = ""
 
-        if (root.propertyNameValue.length === 0) {
+        if (root.titleValue.length === 0) {
             errorText.text = qsTr("Enter the property name.")
             return
         }
-        if (typeDropdown.currentIndex < 0) {
-            typeError.visible = true
+        if (districtDropdown.currentIndex < 0 || root.villageValue.length === 0) {
+            districtError.visible = true
             errorText.text = qsTr("Complete the highlighted fields to continue.")
-            return
-        }
-        if (root.propertyLocationValue.length === 0) {
-            errorText.text = qsTr("Enter the property location.")
             return
         }
         if (root.landlordValue.length === 0 || root.landlordPhoneValue.length < 7) {
@@ -324,7 +392,7 @@ Item {
             return
         }
 
-        typeError.visible = false
+        districtError.visible = false
         landlordError.visible = false
         descriptionError.visible = false
         root.nextRequested()

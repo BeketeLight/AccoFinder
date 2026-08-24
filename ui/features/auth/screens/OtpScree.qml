@@ -22,6 +22,7 @@ Page {
     property string pendingAction: ""
     property string pageTitle: "Verify email"
     property bool showHeader: true
+    property bool showBottomBorder: false
 
     anchors.fill: parent
 

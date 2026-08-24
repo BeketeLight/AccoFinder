@@ -7,6 +7,7 @@ Page {
     id: root
 
     property color primaryColor: "#2563EB"
+    property color primaryDarkColor: "#1D4ED8"
     property color successColor: "#16A34A"
     property color warningColor: "#D97706"
     property color pageColor: "#F8FAFC"
@@ -28,6 +29,7 @@ Page {
     property string profilePaymentMethod: "Mobile money"
     property string pageTitle: "  Profile"
     property bool showHeader: true
+    property bool showBottomBorder: false
 
     anchors.fill: parent
 
@@ -61,75 +63,77 @@ Page {
 
             Rectangle {
                 Layout.fillWidth: true
-                Layout.preferredHeight: headerContent.implicitHeight + 30
-                radius: 8
-                color: root.surfaceColor
-                border.color: root.borderColor
-                border.width: 1
+                implicitHeight: heroContent.implicitHeight + 40
+                radius: 16
+                gradient: Gradient {
+                    GradientStop { position: 0.0; color: root.primaryColor }
+                    GradientStop { position: 1.0; color: root.primaryDarkColor }
+                }
+
+                Rectangle {
+                    x: parent.width - 70
+                    y: -30
+                    width: 140
+                    height: 140
+                    radius: 70
+                    color: Qt.rgba(1, 1, 1, 0.08)
+                }
+
+                Rectangle {
+                    x: parent.width - 150
+                    y: 60
+                    width: 90
+                    height: 90
+                    radius: 45
+                    color: Qt.rgba(1, 1, 1, 0.06)
+                }
 
                 ColumnLayout {
-                    id: headerContent
-                    anchors.fill: parent
-                    anchors.margins: 15
-                    spacing: 14
+                    id: heroContent
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.top: parent.top
+                    anchors.margins: 18
+                    spacing: 12
 
                     RowLayout {
                         Layout.fillWidth: true
-                        spacing: 12
-
-                        Rectangle {
-                            Layout.preferredWidth: 58
-                            Layout.preferredHeight: 58
-                            radius: 29
-                            color: root.softBlueColor
-                            border.color: "#BFDBFE"
-
-                            Text {
-                                anchors.centerIn: parent
-                                text: initials(root.profileName)
-                                color: root.primaryColor
-                                font.pixelSize: 20
-                                font.bold: true
-                            }
-                        }
+                        spacing: 10
 
                         ColumnLayout {
                             Layout.fillWidth: true
-                            spacing: 4
+                            spacing: 2
+
+                            Label {
+                                Layout.fillWidth: true
+                                text: qsTr("Welcome back,")
+                                color: Qt.rgba(1, 1, 1, 0.75)
+                                font.pixelSize: 13
+                            }
 
                             Label {
                                 Layout.fillWidth: true
                                 text: valueOr(root.profileName, "Your profile")
-                                color: root.textColor
-                                font.pixelSize: 22
+                                color: "#FFFFFF"
+                                font.pixelSize: 20
                                 font.bold: true
-                                elide: Text.ElideRight
-                            }
-
-                            Label {
-                                Layout.fillWidth: true
-                                text: valueOr(root.profileEmail, "No email saved")
-                                color: root.mutedColor
-                                font.pixelSize: 13
                                 elide: Text.ElideRight
                             }
                         }
 
                         Rectangle {
-                            Layout.preferredWidth: 78
-                            Layout.preferredHeight: 30
-                            radius: 15
-                            color: root.softGreenColor
+                            Layout.preferredHeight: 28
+                            Layout.preferredWidth: roleChipLabel.implicitWidth + 20
+                            radius: 14
+                            color: Qt.rgba(1, 1, 1, 0.16)
 
                             Label {
+                                id: roleChipLabel
                                 anchors.centerIn: parent
-                                text: valueOr(AppSettings.userType(), "client")
-                                color: "#166534"
-                                font.pixelSize: 12
+                                text: prettyRole(AppSettings.userType())
+                                color: "#FFFFFF"
+                                font.pixelSize: 11
                                 font.bold: true
-                                elide: Text.ElideRight
-                                width: parent.width - 14
-                                horizontalAlignment: Text.AlignHCenter
                             }
                         }
                     }
@@ -138,25 +142,59 @@ Page {
                         Layout.fillWidth: true
                         spacing: 10
 
-                        Button {
-                            id: editButton
-                            Layout.fillWidth: true
-                            Layout.preferredHeight: 46
-                            text: root.editMode ? "Cancel" : "Edit profile"
+                        Rectangle {
+                            Layout.preferredWidth: 54
+                            Layout.preferredHeight: 54
+                            radius: 27
+                            color: Qt.rgba(1, 1, 1, 0.18)
 
-                            contentItem: Text {
-                                text: editButton.text
-                                color: root.primaryColor
-                                font.pixelSize: 14
+                            Text {
+                                anchors.centerIn: parent
+                                text: initials(root.profileName)
+                                color: "#FFFFFF"
+                                font.pixelSize: 19
+                                font.bold: true
+                            }
+                        }
+
+                        ColumnLayout {
+                            Layout.fillWidth: true
+                            spacing: 2
+
+                            Label {
+                                Layout.fillWidth: true
+                                text: valueOr(root.profileEmail, "No email saved")
+                                color: Qt.rgba(1, 1, 1, 0.78)
+                                font.pixelSize: 13
+                                elide: Text.ElideRight
+                            }
+
+                            Label {
+                                Layout.fillWidth: true
+                                text: valueOr(root.profilePhone, "No phone number yet")
+                                color: Qt.rgba(1, 1, 1, 0.6)
+                                font.pixelSize: 11
+                                elide: Text.ElideRight
+                            }
+                        }
+
+                        Button {
+                            id: heroEditButton
+                            Layout.preferredHeight: 38
+                            text: root.editMode ? qsTr("Cancel") : qsTr("Edit profile")
+
+                            contentItem: Label {
+                                text: heroEditButton.text
+                                color: root.primaryDarkColor
+                                font.pixelSize: 13
                                 font.bold: true
                                 horizontalAlignment: Text.AlignHCenter
                                 verticalAlignment: Text.AlignVCenter
                             }
 
                             background: Rectangle {
-                                radius: 8
-                                color: editButton.down ? "#DBEAFE" : root.softBlueColor
-                                border.color: "#BFDBFE"
+                                radius: 19
+                                color: heroEditButton.down ? "#DBEAFE" : "#FFFFFF"
                             }
 
                             onClicked: {
@@ -165,32 +203,32 @@ Page {
                                     loadProfile();
                             }
                         }
-
-                        Button {
-                            id: saveButton
-                            Layout.fillWidth: true
-                            Layout.preferredHeight: 46
-                            visible: root.editMode
-                            text: "Save"
-
-                            contentItem: Text {
-                                text: saveButton.text
-                                color: "#FFFFFF"
-                                font.pixelSize: 14
-                                font.bold: true
-                                horizontalAlignment: Text.AlignHCenter
-                                verticalAlignment: Text.AlignVCenter
-                            }
-
-                            background: Rectangle {
-                                radius: 8
-                                color: saveButton.down ? "#1D4ED8" : root.primaryColor
-                            }
-
-                            onClicked: saveProfile()
-                        }
                     }
                 }
+            }
+
+            Button {
+                id: saveButton
+                Layout.fillWidth: true
+                Layout.preferredHeight: 46
+                visible: root.editMode
+                text: qsTr("Save changes")
+
+                contentItem: Text {
+                    text: saveButton.text
+                    color: "#FFFFFF"
+                    font.pixelSize: 14
+                    font.bold: true
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                }
+
+                background: Rectangle {
+                    radius: 8
+                    color: saveButton.down ? "#1D4ED8" : root.primaryColor
+                }
+
+                onClicked: saveProfile()
             }
 
             ProfileSection {
@@ -577,6 +615,17 @@ Page {
 
     function valueOr(value, fallback) {
         return value && value.length > 0 ? value : fallback;
+    }
+
+    function prettyRole(role) {
+        var r = String(role || "client").toLowerCase();
+        if (r === "admin" || r === "super_admin")
+            return qsTr("Administrator");
+        if (r === "agent")
+            return qsTr("Agent");
+        if (r === "landlord")
+            return qsTr("Landlord");
+        return qsTr("Client");
     }
 
     function initials(name) {

@@ -7,10 +7,12 @@ import "../../../utils/NavigationUtils.js" as NavUtils
 Item {
     id: root
 
-    property string pageTitle: qsTr("Properties")
+    property string pageTitle: qsTr("AccoFinder")
     property bool showHeader: true
     property bool showBackButton: false
-    property bool isSearchBar: true
+    property bool isSearchBar: false
+    property int titleFontSize: 25
+    property bool showBottomBorder: false
     property bool searchReadOnly: true
 
     readonly property bool isAgentUser: AppSettings.userType() === "AGENT"
@@ -37,17 +39,28 @@ Item {
     }
 
     PropertiesPage {
+        id: propertiesPage
         anchors.fill: parent
         visible: root.isAgentUser
 
         onAddPropertyRequested: NavUtils.navigateToAddProperty()
         onAttentionClicked: function (propertyTitle) {
-            console.log("Attention item:", propertyTitle)
-            NavUtils.navigateToPropertyDetails()
+            var payload = propertiesPage.listModel.registrationPayloadFor(propertyTitle, "title")
+            if (!payload) {
+                console.log("No property found for attention item:", propertyTitle)
+                return
+            }
+            NavUtils.push("../features/properties/screens/PropertyDetailScreen.qml",
+                          { initialPayload: payload })
         }
         onPropertyClicked: function (propertyId) {
-            console.log("Open property:", propertyId)
-            NavUtils.navigateToPropertyDetails()
+            var payload = propertiesPage.listModel.registrationPayloadFor(propertyId, "propertyId")
+            if (!payload) {
+                console.log("No property found:", propertyId)
+                return
+            }
+            NavUtils.push("../features/properties/screens/PropertyDetailScreen.qml",
+                          { initialPayload: payload })
         }
         onBookingClicked: NavUtils.navigateToBookings()
         onNotificationClicked: NavUtils.navigateToNotifications()
