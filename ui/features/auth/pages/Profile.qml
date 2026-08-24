@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import "../../../utils/NavigationUtils.js" as NavUtils
+import "../../properties/components"
 
 Page {
     id: root
@@ -400,12 +401,9 @@ Page {
             anchors.margins: 14
             spacing: 12
 
-            Label {
+            SectionHeader {
                 Layout.fillWidth: true
-                text: section.title
-                color: root.textColor
-                font.pixelSize: 16
-                font.bold: true
+                title: section.title
             }
 
             ColumnLayout {

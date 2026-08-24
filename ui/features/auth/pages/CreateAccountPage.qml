@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import "../../../utils/NavigationUtils.js" as NavUtils
+import "../../properties/components"
 
 Page {
     id: root
@@ -123,12 +124,9 @@ Page {
                     anchors.margins: 14
                     spacing: 12
 
-                    Label {
-                        text: "Your account helps you"
-                        color: root.textColor
-                        font.pixelSize: 15
-                        font.bold: true
+                    SectionHeader {
                         Layout.fillWidth: true
+                        title: "Your account helps you"
                     }
 
                     Repeater {

@@ -17,11 +17,11 @@ Item {
         anchors.fill: parent
 
         onPropertySubmitted: function (payload) {
-            console.log("Property submitted for verification:", JSON.stringify(payload.name))
+            console.log("Property submitted for verification:", JSON.stringify(payload))
         }
 
         onDraftSaved: function (payload) {
-            console.log("Property draft saved:", JSON.stringify(payload.name))
+            console.log("Property draft saved:", JSON.stringify(payload))
         }
 
         onRegistrationFinished: function (payload) {
