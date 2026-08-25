@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import "../../../properties/models"
 import "../../../properties/components"
+import "../../../../utils/Utils.js" as Utils
 
 Item {
     id: root
@@ -106,7 +107,7 @@ Item {
                     Label {
                         Layout.fillWidth: true
                         text: approvalRow.model.district + " · " + approvalRow.model.village
-                              + " · MK " + Number(approvalRow.model.price).toLocaleString() + "/mo"
+                              + " · " + Utils.formatCurrency(approvalRow.model.price) + "/mo"
                         color: "#6B7280"
                         font.pixelSize: 11
                         elide: Text.ElideRight

@@ -20,14 +20,14 @@ Item {
     property real paymentsCollected: 4579000
     property int paymentsPendingSettlement: 6
     property real agentCommissionsDue: 38400
-    property int landlordPayoutsPending: 3
+    property int ownerPayoutsPending: 3
 
     readonly property alias pendingActivitiesModel: pendingActivitiesModelId
 
     ListModel {
         id: pendingActivitiesModelId
         ListElement { title: "9 properties awaiting verification"; detail: "Oldest waiting since 19 Aug"; kind: "approvals" }
-        ListElement { title: "3 landlord payouts pending"; detail: "MK 96,500 due for release"; kind: "payments" }
+        ListElement { title: "3 owner payouts pending"; detail: "MK 96,500 due for release"; kind: "payments" }
         ListElement { title: "4 open disputes"; detail: "2 escalated beyond 48 hours"; kind: "disputes" }
         ListElement { title: "2 agent applications"; detail: "Chilumba M., Yankho N."; kind: "agents" }
     }

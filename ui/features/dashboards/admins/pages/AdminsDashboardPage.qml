@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import "../../models"
 import "../../../properties/components"
+import "../../../../utils/Utils.js" as Utils
 
 Item {
     id: root
@@ -229,7 +230,7 @@ Item {
                 Layout.fillWidth: true
                 lableFontSize: 18
                 label: qsTr("Booking value")
-                valueText: "MK " + Number(root.dashboardModel.totalBookingValue).toLocaleString()
+                valueText: Utils.formatCurrency(root.dashboardModel.totalBookingValue)
                 accentColor: root.successColor
                 clickable: true
                 onClicked: root.paymentsRequested()
@@ -238,7 +239,7 @@ Item {
                 lableFontSize: 18
                 Layout.fillWidth: true
                 label: qsTr("Platform commission")
-                valueText: "MK " + Number(root.dashboardModel.platformCommission).toLocaleString()
+                valueText: Utils.formatCurrency(root.dashboardModel.platformCommission)
                 accentColor: root.warningColor
                 clickable: true
                 onClicked: root.paymentsRequested()
@@ -326,7 +327,7 @@ Item {
         Repeater {
             model: [
                 { title: qsTr("Verification queue"), detail: qsTr("Approve or reject submitted listings"), kind: "approvals" },
-                { title: qsTr("User management"), detail: qsTr("View clients, agents and landlords"), kind: "users" },
+                { title: qsTr("User management"), detail: qsTr("View clients and agents"), kind: "users" },
                 { title: qsTr("Register agent"), detail: qsTr("Create a new agent account"), kind: "agents-register" },
                 { title: qsTr("Property approvals"), detail: qsTr("Pending verification queue"), kind: "approvals" },
                 { title: qsTr("Dispute resolution"), detail: qsTr("Review open disputes"), kind: "disputes" },

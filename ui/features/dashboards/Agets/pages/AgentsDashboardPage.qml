@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import "../../models"
 import "../../../properties/components"
+import "../../../../utils/Utils.js" as Utils
 
 Item {
     id: root
@@ -210,14 +211,14 @@ Item {
                 Layout.fillWidth: true
                 label: qsTr("Total booking value")
                 lableFontSize: 16
-                valueText: "MK " + Number(root.dashboardModel.totalBookingValue).toLocaleString()
+                valueText: Utils.formatCurrency(root.dashboardModel.totalBookingValue)
                 accentColor: root.textColor
             }
             StatCard {
                 Layout.fillWidth: true
                 lableFontSize: 16
                 label: qsTr("Commission earned")
-                valueText: "MK " + Number(root.dashboardModel.commissionEarned).toLocaleString()
+                valueText: Utils.formatCurrency(root.dashboardModel.commissionEarned)
                 accentColor: root.successColor
             }
         }
@@ -511,7 +512,7 @@ Item {
 
                                     Label {
                                         Layout.fillWidth: true
-                                        text: model.client + " · " + model.date + " · MK " + Number(model.amount).toLocaleString()
+                                        text: model.client + " · " + model.date + " · " + Utils.formatCurrency(model.amount)
                                         color: root.mutedColor
                                         font.pixelSize: 11
                                         elide: Text.ElideRight

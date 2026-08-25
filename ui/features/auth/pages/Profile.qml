@@ -28,6 +28,12 @@ Page {
     property string profileBank: ""
     property string profileAccount: ""
     property string profilePaymentMethod: "Mobile money"
+    property bool passwordChangeMode: false
+    property string currentPassword: ""
+    property string newPassword: ""
+    property string confirmPassword: ""
+    property string passwordError: ""
+    property string passwordSuccess: ""
     property string pageTitle: "  Profile"
     property bool showHeader: true
     property bool showBottomBorder: false
@@ -345,6 +351,217 @@ Page {
                 }
             }
 
+            ProfileSection {
+                title: "Change password"
+
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 8
+                    visible: root.passwordChangeMode
+
+                    Label {
+                        text: "Current password"
+                        color: root.mutedColor
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+
+                    TextField {
+                        id: currentPassField
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: 44
+                        placeholderText: "Enter current password"
+                        echoMode: TextInput.Password
+                        font.pixelSize: 13
+                        color: root.textColor
+                        onTextChanged: root.currentPassword = text
+
+                        background: Rectangle {
+                            radius: 8
+                            color: "#FFFFFF"
+                            border.color: currentPassField.activeFocus ? root.primaryColor : root.borderColor
+                        }
+                    }
+
+                    Label {
+                        text: "New password"
+                        color: root.mutedColor
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+
+                    TextField {
+                        id: newPassField
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: 44
+                        placeholderText: "Enter new password"
+                        echoMode: TextInput.Password
+                        font.pixelSize: 13
+                        color: root.textColor
+                        onTextChanged: root.newPassword = text
+
+                        background: Rectangle {
+                            radius: 8
+                            color: "#FFFFFF"
+                            border.color: newPassField.activeFocus ? root.primaryColor : root.borderColor
+                        }
+                    }
+
+                    Label {
+                        text: "Confirm new password"
+                        color: root.mutedColor
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+
+                    TextField {
+                        id: confirmPassField
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: 44
+                        placeholderText: "Re-enter new password"
+                        echoMode: TextInput.Password
+                        font.pixelSize: 13
+                        color: root.textColor
+                        onTextChanged: root.confirmPassword = text
+
+                        background: Rectangle {
+                            radius: 8
+                            color: "#FFFFFF"
+                            border.color: confirmPassField.activeFocus ? root.primaryColor : root.borderColor
+                        }
+                    }
+
+                    Label {
+                        visible: root.passwordError.length > 0
+                        Layout.fillWidth: true
+                        text: root.passwordError
+                        color: "#B91C1C"
+                        font.pixelSize: 12
+                        wrapMode: Text.WordWrap
+                    }
+
+                    Label {
+                        visible: root.passwordSuccess.length > 0
+                        Layout.fillWidth: true
+                        text: root.passwordSuccess
+                        color: "#16A34A"
+                        font.pixelSize: 12
+                        wrapMode: Text.WordWrap
+                    }
+
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: 8
+
+                        Button {
+                            id: cancelPassButton
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: 44
+                            text: "Cancel"
+
+                            contentItem: Label {
+                                horizontalAlignment: Text.AlignHCenter
+                                verticalAlignment: Text.AlignVCenter
+                                text: cancelPassButton.text
+                                color: "#6B7280"
+                                font.pixelSize: 13
+                                font.bold: true
+                            }
+
+                            background: Rectangle {
+                                radius: 8
+                                color: cancelPassButton.down ? "#F3F4F6" : "#FFFFFF"
+                                border.color: "#E5E7EB"
+                            }
+
+                            onClicked: {
+                                root.passwordChangeMode = false
+                                root.currentPassword = ""
+                                root.newPassword = ""
+                                root.confirmPassword = ""
+                                root.passwordError = ""
+                                root.passwordSuccess = ""
+                            }
+                        }
+
+                        Button {
+                            id: changePassButton
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: 44
+                            text: "Update password"
+
+                            contentItem: Label {
+                                horizontalAlignment: Text.AlignHCenter
+                                verticalAlignment: Text.AlignVCenter
+                                text: changePassButton.text
+                                color: "#FFFFFF"
+                                font.pixelSize: 13
+                                font.bold: true
+                            }
+
+                            background: Rectangle {
+                                radius: 8
+                                color: changePassButton.down ? "#1D4ED8" : root.primaryColor
+                            }
+
+                            onClicked: {
+                                root.passwordError = ""
+                                root.passwordSuccess = ""
+
+                                if (root.currentPassword.length === 0) {
+                                    root.passwordError = "Please enter your current password."
+                                    return
+                                }
+                                if (root.newPassword.length < 6) {
+                                    root.passwordError = "New password must be at least 6 characters."
+                                    return
+                                }
+                                if (root.newPassword !== root.confirmPassword) {
+                                    root.passwordError = "New passwords do not match."
+                                    return
+                                }
+                                root.passwordSuccess = "Password updated successfully."
+                                root.currentPassword = ""
+                                root.newPassword = ""
+                                root.confirmPassword = ""
+                                currentPassField.text = ""
+                                newPassField.text = ""
+                                confirmPassField.text = ""
+                            }
+                        }
+                    }
+                }
+
+                Button {
+                    id: changePasswordButton
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 46
+                    visible: !root.passwordChangeMode
+                    text: "Change password"
+
+                    contentItem: Text {
+                        text: changePasswordButton.text
+                        color: root.primaryColor
+                        font.pixelSize: 14
+                        font.bold: true
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+
+                    background: Rectangle {
+                        radius: 8
+                        color: changePasswordButton.down ? "#DBEAFE" : root.softBlueColor
+                        border.color: "#BFDBFE"
+                    }
+
+                    onClicked: {
+                        root.passwordChangeMode = true
+                        root.passwordError = ""
+                        root.passwordSuccess = ""
+                    }
+                }
+            }
+
             Button {
                 id: logoutButton
                 Layout.fillWidth: true
@@ -621,8 +838,6 @@ Page {
             return qsTr("Administrator");
         if (r === "agent")
             return qsTr("Agent");
-        if (r === "landlord")
-            return qsTr("Landlord");
         return qsTr("Client");
     }
 

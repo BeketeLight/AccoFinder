@@ -20,7 +20,8 @@ ApplicationWindow {
             return Qt.Window
         }
     }
-
+    Material.primary : "#2563EB"
+    Material.accent : Material.Blue
     Component.onCompleted: {
         AppSettings.setStatusBarAppearance(Qt.rgba(0,0,0,0),true)
         if (AppSettings.isLoggedIn() &&
@@ -195,6 +196,8 @@ ApplicationWindow {
                     NavUtils.push(Qt.resolvedUrl("./ui/features/dashboards/admins/screens/PaymentsOversightScreen.qml"))
                 else if (kind === "disputes")
                     NavUtils.push(Qt.resolvedUrl("./ui/features/dashboards/admins/screens/DisputesScreen.qml"))
+                else if (kind === "agents")
+                    NavUtils.push(Qt.resolvedUrl("./ui/features/dashboards/admins/screens/AgentApplicationsScreen.qml"))
                 else
                     console.log("Unhandled admin activity kind:", kind)
             }

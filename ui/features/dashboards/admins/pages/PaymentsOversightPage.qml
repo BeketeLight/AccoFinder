@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import "../../../properties/components"
 import "../../models"
+import "../../../../utils/Utils.js" as Utils
 
 Item {
     id: root
@@ -45,7 +46,7 @@ Item {
                 lableFontSize: 18
                 Layout.fillWidth: true
                 label: qsTr("Collected")
-                valueText: "MK " + Number(root.paymentsModel.totalCollected).toLocaleString()
+                valueText: Utils.formatCurrency(root.paymentsModel.totalCollected)
                 accentColor: root.successColor
             }
             StatCard {
@@ -58,7 +59,7 @@ Item {
                 lableFontSize: 18
                 Layout.fillWidth: true
                 label: qsTr("Commissions due")
-                valueText: "MK " + Number(root.paymentsModel.commissionsDue).toLocaleString()
+                valueText: Utils.formatCurrency(root.paymentsModel.commissionsDue)
                 accentColor: root.primaryColor
             }
             StatCard {
@@ -141,7 +142,7 @@ Item {
 
                             Label {
                                 Layout.fillWidth: true
-                                text: payRow.model.paymentId + " · MK " + Number(payRow.model.amount).toLocaleString()
+                                text: payRow.model.paymentId + " · " + Utils.formatCurrency(payRow.model.amount)
                                 color: "#111827"
                                 font.pixelSize: 13
                                 font.bold: true
@@ -247,7 +248,7 @@ Item {
 
                             Label {
                                 Layout.fillWidth: true
-                                text: commRow.model.agent + " · MK " + Number(commRow.model.amount).toLocaleString()
+                                text: commRow.model.agent + " · " + Utils.formatCurrency(commRow.model.amount)
                                 color: "#111827"
                                 font.pixelSize: 13
                                 font.bold: true
@@ -335,7 +336,7 @@ Item {
 
                             Label {
                                 Layout.fillWidth: true
-                                text: payoutRow.model.landlord + " · MK " + Number(payoutRow.model.amount).toLocaleString()
+                                text: payoutRow.model.landlord + " · " + Utils.formatCurrency(payoutRow.model.amount)
                                 color: "#111827"
                                 font.pixelSize: 13
                                 font.bold: true
