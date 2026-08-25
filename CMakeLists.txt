@@ -208,6 +208,7 @@ qt_add_qml_module(appAccoFinder
         src/repositories/interfaces/IUserRepository.h
         src/repositories/interfaces/IPaymentGateway.h
         src/repositories/interfaces/IDisputeRepository.h
+        src/repositories/interfaces/IRoomRepository.h
         src/repositories/impl/bookingrepositoryimpl.h
         src/repositories/impl/bookingrepositoryimpl.cpp
         src/repositories/impl/propertyrepositoryimpl.h
@@ -264,6 +265,20 @@ qt_add_qml_module(appAccoFinder
         src/presentation/viewmodels/disputeslistviewmodel.cpp
         src/application/controllers/roomcontroller.h
         src/application/controllers/roomcontroller.cpp
+        src/repositories/impl/roomrepositoryimpl.h
+        src/repositories/impl/roomrepositoryimpl.cpp
+        src/application/controllers/usercontroller.h
+        src/application/controllers/usercontroller.cpp
+        src/application/controllers/agentcontroller.h
+        src/application/controllers/agentcontroller.cpp
+        src/application/controllers/dashboardcontroller.h
+        src/application/controllers/dashboardcontroller.cpp
+        src/repositories/interfaces/IAdminUserRepository.h
+        src/repositories/interfaces/IAgentRepository.h
+        src/repositories/impl/adminuserrepositoryimpl.h
+        src/repositories/impl/adminuserrepositoryimpl.cpp
+        src/repositories/impl/agentrepositoryimpl.h
+        src/repositories/impl/agentrepositoryimpl.cpp
 
 
     RESOURCES

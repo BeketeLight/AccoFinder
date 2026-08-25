@@ -18,12 +18,12 @@ public:
         SecondNameRole,
         TitleRole,
         LocationRole,
+        PriceRole,
         AgentIdRole,
         LandlordIdRole,
-        CreatedAtRole ,
+        CreatedAtRole,
         DescriptionRole,
         StatusRole
-
     };
     explicit PropertyListModel(QObject *parent = nullptr);
 

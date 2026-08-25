@@ -5,6 +5,14 @@
 #include "src/core/utils/appsettings.h"
 #include "src/core/utils/apppermission.h"
 #include "src/application/controllers/authcontroller.h"
+#include "src/application/controllers/propertycontroller.h"
+#include "src/application/controllers/bookingcontroller.h"
+#include "src/application/controllers/paymentcontroller.h"
+#include "src/application/controllers/disputecontroller.h"
+#include "src/application/controllers/roomcontroller.h"
+#include "src/application/controllers/usercontroller.h"
+#include "src/application/controllers/agentcontroller.h"
+#include "src/application/controllers/dashboardcontroller.h"
 #include <QQmlContext>
 #include <QTimer>
 int main(int argc, char *argv[])
@@ -34,12 +42,28 @@ int main(int argc, char *argv[])
     AppSettings& appSettings = AppSettings::instance();
     //AppPermission
     AppPermission& appPermission = AppPermission::instance();
-    //Auth Controller
+    //Controllers
     AuthController authController;
+    PropertyController propertyController;
+    BookingController bookingController;
+    PaymentController paymentController;
+    DisputeController disputeController;
+    RoomController roomController;
+    UserController userController;
+    AgentController agentController;
+    DashboardController dashboardController;
     //ContextProperty
     engine.rootContext()->setContextProperty("AppSettings", &appSettings);
     engine.rootContext()->setContextProperty("AppPermission", &appPermission);
     engine.rootContext()->setContextProperty("AuthController", &authController);
+    engine.rootContext()->setContextProperty("PropertyController", &propertyController);
+    engine.rootContext()->setContextProperty("BookingController", &bookingController);
+    engine.rootContext()->setContextProperty("PaymentController", &paymentController);
+    engine.rootContext()->setContextProperty("DisputeController", &disputeController);
+    engine.rootContext()->setContextProperty("RoomController", &roomController);
+    engine.rootContext()->setContextProperty("UserController", &userController);
+    engine.rootContext()->setContextProperty("AgentController", &agentController);
+    engine.rootContext()->setContextProperty("DashboardController", &dashboardController);
     QObject::connect(
         &engine,
         &QQmlApplicationEngine::objectCreationFailed,

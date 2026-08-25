@@ -1,7 +1,8 @@
 #include "disputecontroller.h"
 
 DisputeController::DisputeController(QObject *parent)
-    : QObject{parent}
+    : QObject{parent},
+      m_disputeRepository(new DisputeRepositoryImpl(this))
 {
     connect(m_disputeRepository,&DisputeRepositoryImpl::disputesLoaded,
             this,&DisputeController::disputesLoaded);

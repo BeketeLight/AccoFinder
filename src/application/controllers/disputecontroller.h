@@ -11,15 +11,17 @@ class DisputeController : public QObject
     Q_OBJECT
 public:
     explicit DisputeController(QObject *parent = nullptr);
-    void raiseDispute(const QString& raisedBy,
-                      const QString& title,
-                      const QString& status,
-                      const QString& description);
-    void resolveDispute(const QString& disputeId);
-    void getDisputes();
+
+    Q_INVOKABLE void raiseDispute(const QString& raisedBy,
+                                  const QString& title,
+                                  const QString& status,
+                                  const QString& description);
+    Q_INVOKABLE void resolveDispute(const QString& disputeId);
+    Q_INVOKABLE void getDisputes();
+
 private:
     DisputeRepositoryImpl* m_disputeRepository = nullptr;
-    QList<Dispute*> m_disputes;
+
 signals:
     void disputeRaised(Dispute* dispute);
     void disputeResolved(Dispute* dispute);

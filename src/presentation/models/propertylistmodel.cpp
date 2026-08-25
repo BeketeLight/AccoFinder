@@ -39,6 +39,8 @@ QVariant PropertyListModel::data(const QModelIndex &index, int role) const
             return property->getTitle();
         case LocationRole:
             return property->getLocation();
+        case PriceRole:
+            return property->getPrice();
         case AgentIdRole:
             return property->getAgentId();
         case LandlordIdRole:
@@ -74,8 +76,11 @@ QHash<int, QByteArray> PropertyListModel::roleNames() const
 {
     static QHash<int,QByteArray> mapping{
         {IdRole, "id"},
+        {FirstNameRole, "firstName"},
+        {SecondNameRole, "secondName"},
         {TitleRole, "title"},
         {LocationRole, "location"},
+        {PriceRole, "price"},
         {AgentIdRole, "agentId"},
         {LandlordIdRole, "landlordId"},
         {CreatedAtRole, "createdAt"},
@@ -87,14 +92,10 @@ QHash<int, QByteArray> PropertyListModel::roleNames() const
 
 void PropertyListModel::setProperties(QList<Property*>&  newProperties)
 {
-    beginInsertRows(
-        QModelIndex(),
-        rowCount(),
-        rowCount());
-
+    beginResetModel();
+    qDeleteAll(m_properties);
     m_properties = newProperties;
-
-    endInsertRows();
+    endResetModel();
 }
 void PropertyListModel::updateProperty(int index, Property* property)
 {

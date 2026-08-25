@@ -60,7 +60,7 @@ QHash<int, QByteArray> DisputesListModel::roleNames() const
         {IdRole,"id"},
         {BookingIdRole,"bookingId"},
         {IssueRole,"issue"},
-        {StatusRole,"staus"}
+        {StatusRole,"status"}
     };
 
     return mappings;
@@ -69,14 +69,10 @@ QHash<int, QByteArray> DisputesListModel::roleNames() const
 
 void DisputesListModel::addDisputes(QList<Dispute *> &disputes)
 {
-    beginInsertRows(
-        QModelIndex(),
-        rowCount(),
-        rowCount());
-
+    beginResetModel();
+    qDeleteAll(m_disputes);
     m_disputes = disputes;
-
-    endInsertRows();
+    endResetModel();
 }
 
 void DisputesListModel::updateDispute(int index, Dispute* newDispute)

@@ -84,7 +84,7 @@ PropertyStatus Property::getStatus() const
 
 void Property::setStatus(PropertyStatus status)
 {
-    status = status;
+    m_status = status;
     emit propertyUpdated();
 }
 

@@ -98,7 +98,7 @@ void DisputeRepositoryImpl::resolveDispute(const QString& disputeId)
 void DisputeRepositoryImpl::getDisputes()
 {
     APIClient::instance().get(
-        "/disputes",
+        "api/disputes/",
         [this](bool success,
               const QJsonObject& response)
         {
