@@ -9,13 +9,13 @@ Item {
     property AdminUsersModel usersModel: AdminUsersModel {}
 
     signal userToggled(var userId, var name, var active)
+    signal userRoleChanged(var userId, var name, var newRole)
 
     implicitWidth: 400
     implicitHeight: contentColumn.implicitHeight
 
     function roleColor(role) {
         if (role === "AGENT") return "#2563EB"
-        if (role === "LANDLORD") return "#D97706"
         return "#16A34A"
     }
 
@@ -67,8 +67,7 @@ Item {
                 model: [
                     { key: "ALL", label: qsTr("All") },
                     { key: "CLIENT", label: qsTr("Clients") },
-                    { key: "AGENT", label: qsTr("Agents") },
-                    { key: "LANDLORD", label: qsTr("Landlords") }
+                    { key: "AGENT", label: qsTr("Agents") }
                 ]
 
                 delegate: Button {
@@ -244,18 +243,43 @@ Item {
                         spacing: 6
 
                         Rectangle {
-                            implicitHeight: 18
-                            implicitWidth: roleLabel.implicitWidth + 14
-                            radius: 9
+                            implicitHeight: 24
+                            implicitWidth: roleCombo.width + 14
+                            radius: 12
                             color: "#F3F4F6"
+                            border.color: roleCombo.activeFocus ? "#2563EB" : "#E5E7EB"
 
-                            Label {
-                                id: roleLabel
+                            ComboBox {
+                                id: roleCombo
                                 anchors.centerIn: parent
-                                text: userCard.model.role
-                                color: userCard.roleTint
+                                width: 80
+                                height: 20
                                 font.pixelSize: 10
-                                font.bold: true
+                                model: ["CLIENT", "AGENT"]
+                                currentIndex: {
+                                    var r = userCard.model.role
+                                    if (r === "AGENT") return 1
+                                    return 0
+                                }
+                                onCurrentIndexChanged: {
+                                    var newRole = model[currentIndex]
+                                    if (newRole !== userCard.model.role) {
+                                        root.usersModel.setUserRole(userCard.model.userId, newRole)
+                                        root.userRoleChanged(userCard.model.userId, userCard.model.name, newRole)
+                                    }
+                                }
+                                contentItem: Label {
+                                    text: roleCombo.displayText
+                                    color: root.roleColor(userCard.model.role)
+                                    font.pixelSize: 10
+                                    font.bold: true
+                                    verticalAlignment: Text.AlignVCenter
+                                    horizontalAlignment: Text.AlignHCenter
+                                }
+                                background: Rectangle {
+                                    radius: 10
+                                    color: roleCombo.pressed ? "#E5E7EB" : "transparent"
+                                }
                             }
                         }
 

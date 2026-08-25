@@ -95,6 +95,10 @@ qt_add_qml_module(appAccoFinder
         ui/features/dashboards/admins/screens/PaymentsOversightScreen.qml
         ui/features/dashboards/admins/screens/DisputesScreen.qml
         ui/features/dashboards/admins/screens/SystemNotificationsScreen.qml
+        ui/features/dashboards/admins/pages/AgentApplicationsPage.qml
+        ui/features/dashboards/admins/screens/AgentApplicationsScreen.qml
+        ui/features/dashboards/admins/pages/AgentApplicationDetailsPage.qml
+        ui/features/dashboards/admins/screens/AgentApplicationDetailsScreen.qml
         #======FEATURE-AUTH-GLOBAL======
         ui/features/auth/screens/ForgotPasswordScreen.qml
         ui/features/auth/screens/OtpScree.qml
@@ -149,6 +153,7 @@ qt_add_qml_module(appAccoFinder
         ui/features/dashboards/models/AdminAgentsModel.qml
         ui/features/dashboards/models/AdminPaymentsModel.qml
         ui/features/dashboards/models/AdminDisputesModel.qml
+        ui/features/dashboards/models/AdminAgentApplicationsModel.qml
         ui/features/dashboards/models/AdminSystemNotificationsModel.qml
         ui/features/properties/models/MyPropertiesModel.qml
         ui/features/properties/screens/PropertyDetailScreen.qml

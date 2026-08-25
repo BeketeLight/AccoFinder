@@ -142,7 +142,7 @@ Item {
                         Layout.fillWidth: true
                         Layout.preferredHeight: 42
                         placeholder: qsTr("Select audience")
-                        model: ["All users", "Clients", "Agents", "Landlords"]
+                        model: ["All users", "Clients", "Agents"]
                     }
                 }
 
