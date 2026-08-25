@@ -151,3 +151,13 @@ QJsonObject PropertyDto::toUpdateJson() const
 
     return json;
 }
+
+QJsonObject PropertyDto::toCreateJson() const
+{
+    QJsonObject json;
+    json["title"] = title;
+    json["description"] = description;
+    json["price"] = price;
+    json["costCategory"] = costCategory;
+    return json;
+}
