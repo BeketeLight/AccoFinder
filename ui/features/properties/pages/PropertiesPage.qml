@@ -4,6 +4,7 @@ import QtQuick.Layouts
 import "../components"
 import "../models"
 import "../../dashboards/Agets/pages"
+import "../../../components/inputs"
 
 Page {
     id: root
@@ -66,91 +67,20 @@ Page {
                 actionLabel: qsTr("%1 shown").arg(root.listModel.resultCount)
             }
 
-            Rectangle {
+            AppSearchBar {
                 Layout.fillWidth: true
-                implicitHeight: 44
-                radius: 22
-                color: root.surfaceColor
-                border.color: searchField.activeFocus ? root.primaryColor : root.borderColor
-                border.width: searchField.activeFocus ? 2 : 1
-
-                RowLayout {
-                    anchors.fill: parent
-                    anchors.leftMargin: 14
-                    anchors.rightMargin: 14
-                    spacing: 10
-
-                    Item {
-                        Layout.preferredWidth: 16
-                        Layout.preferredHeight: 16
-
-                        Rectangle {
-                            x: 0.5
-                            y: 0.5
-                            width: 11
-                            height: 11
-                            radius: 5.5
-                            color: "transparent"
-                            border.color: root.mutedColor
-                            border.width: 1.7
-                        }
-
-                        Rectangle {
-                            width: 6
-                            height: 1.7
-                            radius: 0.85
-                            color: root.mutedColor
-                            rotation: 45
-                            transformOrigin: Item.Left
-                            x: 10.2
-                            y: 10.2
-                        }
-                    }
-
-                    TextField {
-                        id: searchField
-                        Layout.fillWidth: true
-                        placeholderText: qsTr("Search by name or location")
-                        font.pixelSize: 13
-                        color: root.textColor
-                        background: null
-                        verticalAlignment: TextInput.AlignVCenter
-
-                        onTextChanged: {
-                            root.listModel.searchText = text
-                            root.listModel.applyFilters()
-                        }
-                    }
-
-                    Item {
-                        visible: searchField.text.length > 0
-                        Layout.preferredWidth: 14
-                        Layout.preferredHeight: 14
-
-                        MouseArea {
-                            anchors.fill: parent
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: searchField.text = ""
-                        }
-
-                        Rectangle {
-                            anchors.centerIn: parent
-                            width: 13
-                            height: 1.7
-                            radius: 0.85
-                            color: root.mutedColor
-                            rotation: 45
-                        }
-
-                        Rectangle {
-                            anchors.centerIn: parent
-                            width: 13
-                            height: 1.7
-                            radius: 0.85
-                            color: root.mutedColor
-                            rotation: -45
-                        }
-                    }
+                placeholder: qsTr("Search by name or location")
+                backgroundColor: root.surfaceColor
+                focusColor: root.primaryColor
+                fieldHeight: 44
+                text: root.listModel.searchText
+                onTextEdited: {
+                    root.listModel.searchText = text
+                    root.listModel.applyFilters()
+                }
+                onCleared: {
+                    root.listModel.searchText = ""
+                    root.listModel.applyFilters()
                 }
             }
 

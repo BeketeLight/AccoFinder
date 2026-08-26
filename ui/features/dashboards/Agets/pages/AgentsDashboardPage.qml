@@ -180,7 +180,6 @@ Item {
                 label: qsTr("Pending verifications")
                 valueText: String(root.dashboardModel.pendingVerifications)
                 accentColor: root.warningColor
-                hint: root.dashboardModel.pendingVerifications > 0 ? qsTr("Action needed") : ""
             }
             StatCard {
                 Layout.fillWidth: true
@@ -205,7 +204,6 @@ Item {
                 label: qsTr("Open disputes")
                 valueText: String(root.dashboardModel.disputesModel.count)
                 accentColor: root.dangerColor
-                hint: root.dashboardModel.disputesModel.count > 0 ? qsTr("Needs review") : ""
             }
             StatCard {
                 Layout.fillWidth: true

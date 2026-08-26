@@ -767,7 +767,6 @@ Page {
                     label: qsTr("Rooms")
                     valueText: String(root.roomsList.length)
                     accentColor: root.primaryColor
-                    hint: root.roomsList.length === 0 ? qsTr("Not listed") : ""
                 }
 
                 StatCard {
@@ -789,7 +788,6 @@ Page {
                     label: qsTr("Amenities")
                     valueText: String(root.amenitiesList.length)
                     accentColor: root.primaryDarkColor
-                    hint: root.amenitiesList.length === 0 ? qsTr("None listed") : ""
                 }
             }
 

@@ -20,6 +20,7 @@ Item {
     signal disputesRequested()
     signal notificationsRequested()
     signal activityTriggered(var kind)
+    signal menuRequested()
 
     Page {
         anchors.fill: parent

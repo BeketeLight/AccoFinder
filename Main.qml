@@ -36,6 +36,9 @@ ApplicationWindow {
     readonly property var currentPage: (mainStack.depth > 0 && mainStack.currentItem)
                                     ? mainStack.currentItem
                                     :(loader.item ? loader.item: null)
+    readonly property bool isAdminDashboard: currentPage
+                                             && typeof currentPage.pageTitle !== "undefined"
+                                             && currentPage.pageTitle === qsTr("Admin Dashboard")
 
     Shortcut {
         sequences: ["Back", "Esc"]
@@ -97,7 +100,8 @@ ApplicationWindow {
             showBottomBorder: (currentPage && typeof currentPage.showBottomBorder !== "undefined")
                               ? currentPage.showBottomBorder : true
             showBackButton: mainStack.depth > 0 || Boolean(currentPage && currentPage.showBack)
-            leftAction: currentPage && currentPage.leftComponentAction ? currentPage.leftComponentAction: null
+            leftAction: isAdminDashboard ? hamburgerMenuComponent
+                        : (currentPage && currentPage.leftComponentAction ? currentPage.leftComponentAction : null)
             rightAction: currentPage && currentPage.rightComponentAction ? currentPage.rightComponentAction: null
 
             onBackClicked: {
@@ -109,6 +113,7 @@ ApplicationWindow {
                     NavUtils.pop()
                 }
             }
+            onMenuButtonClicked: adminDrawer.open()
         }
         // Plain Item container: anchored children keep their size even while
         // invisible, so the first push of a session always lands in a sized stack.
@@ -132,16 +137,20 @@ ApplicationWindow {
         Connections {
             target: AuthController
             function onUserLoggedOut() {
-                NavUtils.resetToSignIn()
-                if (loader.source.toString().endsWith("Profile.qml"))
-                    loader.source = "./ui/features/auth/pages/CreateAccountPage.qml"
+                mainStack.stackView.clear()
+                loader.source = "./ui/features/auth/pages/CreateAccountPage.qml"
+                bottomNavBar.currentIndex = 4
             }
             function onSignInSucceded(user) {
+                mainStack.stackView.clear()
                 var role = AppSettings.userType()
-                if (role === "ADMIN" || role === "SUPER_ADMIN")
+                if (role === "ADMIN" || role === "SUPER_ADMIN") {
                     loader.source = "./ui/features/dashboards/admins/screens/AdminsDashboardScreen.qml"
-                else if (loader.source.toString().endsWith("CreateAccountPage.qml"))
+                    bottomNavBar.currentIndex = 0
+                } else {
                     loader.source = "./ui/features/auth/pages/Profile.qml"
+                    bottomNavBar.currentIndex = 4
+                }
             }
         }
 
@@ -170,7 +179,7 @@ ApplicationWindow {
                 NavUtils.push(Qt.resolvedUrl("./ui/features/dashboards/admins/screens/AgentManagementScreen.qml"))
             }
             function onPropertiesRequested() {
-                NavUtils.push(Qt.resolvedUrl("./ui/features/properties/screens/PropertiesScreen.qml"))
+                NavUtils.push(Qt.resolvedUrl("./ui/features/dashboards/admins/screens/AllPropertiesScreen.qml"))
             }
             function onApprovalsRequested() {
                 NavUtils.push(Qt.resolvedUrl("./ui/features/dashboards/admins/screens/PropertyApprovalScreen.qml"))
@@ -201,6 +210,9 @@ ApplicationWindow {
                 else
                     console.log("Unhandled admin activity kind:", kind)
             }
+            function onMenuRequested() {
+                adminDrawer.open()
+            }
         }
 
         FooterComponent{
@@ -221,4 +233,134 @@ ApplicationWindow {
 
     }
 
+    Component {
+        id: hamburgerMenuComponent
+        ToolButton {
+            implicitHeight: 48
+            implicitWidth: 48
+            icon.source: "qrc:/ui/assets/hamburger-icon.svg"
+            icon.color: "#111111"
+            icon.height: 20
+            icon.width: 20
+            onClicked: appHeader.menuButtonClicked()
+        }
+    }
+
+    Drawer {
+        id: adminDrawer
+        width: 280
+        height: parent.height
+        edge: Qt.LeftEdge
+        background: Rectangle { color: "#FFFFFF" }
+
+        ColumnLayout {
+            anchors.fill: parent
+            anchors.margins: 16
+            spacing: 4
+
+            Rectangle {
+                Layout.fillWidth: true
+                implicitHeight: 56
+                radius: 12
+                color: "#EFF6FF"
+
+                Label {
+                    anchors.centerIn: parent
+                    text: qsTr("Quick actions")
+                    color: "#2563EB"
+                    font.pixelSize: 16
+                    font.bold: true
+                }
+            }
+
+            Repeater {
+                model: [
+                    { title: qsTr("Verification queue"), detail: qsTr("Approve or reject listings"), kind: "approvals" },
+                    { title: qsTr("User management"), detail: qsTr("View clients and agents"), kind: "users" },
+                    { title: qsTr("Register agent"), detail: qsTr("Create a new agent account"), kind: "agents-register" },
+                    { title: qsTr("Property approvals"), detail: qsTr("Pending verification queue"), kind: "approvals" },
+                    { title: qsTr("Dispute resolution"), detail: qsTr("Review open disputes"), kind: "disputes" },
+                    { title: qsTr("Payments oversight"), detail: qsTr("Commissions and payouts"), kind: "payments" }
+                ]
+
+                delegate: Rectangle {
+                    required property var model
+                    required property int index
+                    Layout.fillWidth: true
+                    Layout.topMargin: index === 0 ? 6 : 0
+                    implicitHeight: drawerRow.implicitHeight + 16
+                    radius: 10
+                    color: drawerMouse.pressed ? "#F0F4FF" : "transparent"
+
+                    Rectangle {
+                        visible: index > 0
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.top: parent.top
+                        anchors.topMargin: 0
+                        height: 1
+                        color: "#E5E7EB"
+                    }
+
+                    RowLayout {
+                        id: drawerRow
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.top: parent.top
+                        anchors.margins: 10
+                        spacing: 10
+
+                        Rectangle {
+                            Layout.preferredWidth: 4
+                            Layout.preferredHeight: 32
+                            radius: 2
+                            color: "#2563EB"
+                        }
+
+                        ColumnLayout {
+                            Layout.fillWidth: true
+                            spacing: 1
+
+                            Label {
+                                Layout.fillWidth: true
+                                text: model.title
+                                color: "#1F2937"
+                                font.pixelSize: 13
+                                font.bold: true
+                            }
+
+                            Label {
+                                Layout.fillWidth: true
+                                text: model.detail
+                                color: "#6B7280"
+                                font.pixelSize: 11
+                                elide: Text.ElideRight
+                            }
+                        }
+                    }
+
+                    MouseArea {
+                        id: drawerMouse
+                        anchors.fill: parent
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: {
+                            adminDrawer.close()
+                            if (model.kind === "users")
+                                NavUtils.push(Qt.resolvedUrl("./ui/features/dashboards/admins/screens/UserManagementScreen.qml"))
+                            else if (model.kind === "approvals")
+                                NavUtils.push(Qt.resolvedUrl("./ui/features/dashboards/admins/screens/PropertyApprovalScreen.qml"))
+                            else if (model.kind === "agents-register")
+                                NavUtils.push(Qt.resolvedUrl("./ui/features/dashboards/admins/screens/RegisterAgentScreen.qml"))
+                            else if (model.kind === "disputes")
+                                NavUtils.push(Qt.resolvedUrl("./ui/features/dashboards/admins/screens/DisputesScreen.qml"))
+                            else if (model.kind === "payments")
+                                NavUtils.push(Qt.resolvedUrl("./ui/features/dashboards/admins/screens/PaymentsOversightScreen.qml"))
+                        }
+                    }
+                }
+            }
+
+            Item { Layout.fillHeight: true }
+        }
+    }
 }

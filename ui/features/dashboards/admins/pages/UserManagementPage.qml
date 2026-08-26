@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import "../../models"
+import "../../../../components/inputs"
 
 Item {
     id: root
@@ -29,32 +30,20 @@ Item {
             Layout.fillWidth: true
             spacing: 10
 
-            Rectangle {
+            AppSearchBar {
                 Layout.fillWidth: true
-                implicitHeight: 30
-                radius: 15
-                color: "#FFFFFF"
-                border.color: searchField.activeFocus ? "#2563EB" : "#E5E7EB"
-
-                RowLayout {
-                    anchors.fill: parent
-                    anchors.leftMargin: 12
-                    anchors.rightMargin: 12
-                    spacing: 6
-
-                    Text { text: "⌕"; color: "#9CA3AF"; font.pixelSize: 15 }
-
-                    TextField {
-                        id: searchField
-                        Layout.fillWidth: true
-                        placeholderText: qsTr("Search name or email")
-                        font.pixelSize: 13
-                        background: null
-                        onTextChanged: {
-                            root.usersModel.searchQuery = text
-                            root.usersModel.applyFilters()
-                        }
-                    }
+                placeholder: qsTr("Search name or email")
+                backgroundColor: "#FFFFFF"
+                focusColor: "#2563EB"
+                fieldHeight: 48
+                text: root.usersModel.searchQuery
+                onTextEdited: {
+                    root.usersModel.searchQuery = text
+                    root.usersModel.applyFilters()
+                }
+                onCleared: {
+                    root.usersModel.searchQuery = ""
+                    root.usersModel.applyFilters()
                 }
             }
         }

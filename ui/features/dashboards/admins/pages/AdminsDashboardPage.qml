@@ -169,78 +169,84 @@ Item {
 
             StatCard {
                 Layout.fillWidth: true
+                Layout.preferredHeight: 100
                 label: qsTr("Total users")
                 valueText: String(root.dashboardModel.totalUsers)
                 accentColor: root.primaryColor
+                actionHint: qsTr("Manage")
                 clickable: true
                 onClicked: root.usersRequested()
             }
             StatCard {
                 Layout.fillWidth: true
+                Layout.preferredHeight: 100
                 label: qsTr("Registered agents")
                 valueText: String(root.dashboardModel.registeredAgents)
                 accentColor: root.secondaryColor
+                actionHint: qsTr("View all")
                 clickable: true
                 onClicked: root.agentsRequested()
             }
             StatCard {
                 Layout.fillWidth: true
+                Layout.preferredHeight: 100
                 label: qsTr("Total properties")
                 valueText: String(root.dashboardModel.totalProperties)
                 accentColor: root.primaryDarkColor
+                actionHint: qsTr("View all")
                 clickable: true
                 onClicked: root.propertiesRequested()
             }
             StatCard {
                 Layout.fillWidth: true
+                Layout.preferredHeight: 100
                 label: qsTr("Pending verifications")
                 valueText: String(root.dashboardModel.pendingVerifications)
                 accentColor: root.warningColor
-                hint: root.dashboardModel.pendingVerifications > 0 ? qsTr("Action needed") : ""
+                actionHint: qsTr("Review queue")
                 clickable: true
                 onClicked: root.approvalsRequested()
             }
             StatCard {
                 Layout.fillWidth: true
-                label: qsTr("Verified properties")
-                valueText: String(root.dashboardModel.verifiedProperties)
-                accentColor: root.successColor
-                clickable: true
-                onClicked: root.propertiesRequested()
-            }
-            StatCard {
-                Layout.fillWidth: true
+                Layout.preferredHeight: 100
                 label: qsTr("Open disputes")
                 valueText: String(root.dashboardModel.openDisputes)
                 accentColor: root.dangerColor
-                hint: root.dashboardModel.openDisputes > 0 ? qsTr("Needs review") : ""
+                actionHint: qsTr("Resolve")
                 clickable: true
                 onClicked: root.disputesRequested()
             }
             StatCard {
                 Layout.fillWidth: true
+                Layout.preferredHeight: 100
                 lableFontSize: 18
                 label: qsTr("Total bookings")
                 valueText: String(root.dashboardModel.totalBookings)
                 accentColor: root.textColor
+                actionHint: qsTr("View all")
                 clickable: true
                 onClicked: root.bookingsRequested()
             }
             StatCard {
                 Layout.fillWidth: true
+                Layout.preferredHeight: 100
                 lableFontSize: 18
                 label: qsTr("Booking value")
                 valueText: Utils.formatCurrency(root.dashboardModel.totalBookingValue)
                 accentColor: root.successColor
+                actionHint: qsTr("Oversight")
                 clickable: true
                 onClicked: root.paymentsRequested()
             }
             StatCard {
+                Layout.preferredHeight: 100
                 lableFontSize: 18
                 Layout.fillWidth: true
                 label: qsTr("Platform commission")
                 valueText: Utils.formatCurrency(root.dashboardModel.platformCommission)
                 accentColor: root.warningColor
+                actionHint: qsTr("Oversight")
                 clickable: true
                 onClicked: root.paymentsRequested()
             }
@@ -248,7 +254,7 @@ Item {
 
         SectionHeader {
             Layout.fillWidth: true
-            title: qsTr("Pending system activity")
+            title: qsTr("Actions & activity")
         }
 
         Repeater {
@@ -302,12 +308,7 @@ Item {
                         }
                     }
 
-                    Label {
-                        text: "›"
-                        color: "#9CA3AF"
-                        font.pixelSize: 18
-                        font.bold: true
-                    }
+
                 }
 
                 MouseArea {
@@ -319,83 +320,5 @@ Item {
             }
         }
 
-        SectionHeader {
-            Layout.fillWidth: true
-            title: qsTr("Quick actions")
-        }
-
-        Repeater {
-            model: [
-                { title: qsTr("Verification queue"), detail: qsTr("Approve or reject submitted listings"), kind: "approvals" },
-                { title: qsTr("User management"), detail: qsTr("View clients and agents"), kind: "users" },
-                { title: qsTr("Register agent"), detail: qsTr("Create a new agent account"), kind: "agents-register" },
-                { title: qsTr("Property approvals"), detail: qsTr("Pending verification queue"), kind: "approvals" },
-                { title: qsTr("Dispute resolution"), detail: qsTr("Review open disputes"), kind: "disputes" },
-                { title: qsTr("Payments oversight"), detail: qsTr("Commissions, payouts and payment status"), kind: "payments" }
-            ]
-
-            delegate: Rectangle {
-                id: actionRow
-                required property var model
-                required property int index
-                Layout.fillWidth: true
-                implicitHeight: actionContent.implicitHeight + 16
-                radius: 12
-                color: actionMouse.pressed ? root.softBlueColor : root.surfaceColor
-                border.color: root.borderColor
-                border.width: 1
-
-                RowLayout {
-                    id: actionContent
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.top: parent.top
-                    anchors.margins: 10
-                    spacing: 10
-
-                    Rectangle {
-                        Layout.preferredWidth: 4
-                        Layout.preferredHeight: 34
-                        radius: 2
-                        color: root.primaryColor
-                    }
-
-                    ColumnLayout {
-                        Layout.fillWidth: true
-                        spacing: 2
-
-                        Label {
-                            Layout.fillWidth: true
-                            text: actionRow.model.title
-                            color: root.textColor
-                            font.pixelSize: 13
-                            font.bold: true
-                        }
-
-                        Label {
-                            Layout.fillWidth: true
-                            text: actionRow.model.detail
-                            color: root.mutedColor
-                            font.pixelSize: 11
-                            elide: Text.ElideRight
-                        }
-                    }
-
-                    Label {
-                        text: "›"
-                        color: "#9CA3AF"
-                        font.pixelSize: 18
-                        font.bold: true
-                    }
-                }
-
-                MouseArea {
-                    id: actionMouse
-                    anchors.fill: parent
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: root.quickActionTriggered(actionRow.model.title)
-                }
-            }
-        }
     }
 }
