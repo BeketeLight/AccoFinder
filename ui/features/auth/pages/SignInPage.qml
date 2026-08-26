@@ -344,8 +344,6 @@ Page {
             root.pendingAction = "";
             errorLabel.text = "";
             loadingDialog.close();
-
-            UtilsModule.NavigationUtils.resetToProfile();
         }
 
         function onSignInFailed(message) {

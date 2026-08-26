@@ -17,6 +17,7 @@ property bool showBottomBorder: true
 
 signal backClicked()
 signal searchBarTapped()
+signal menuButtonClicked()
 
 background: Rectangle{
     color: "#FFFFFF"

@@ -36,6 +36,7 @@ Page {
     property string passwordSuccess: ""
     property string pageTitle: "  Profile"
     property bool showHeader: true
+    property bool showBack: false
     property bool showBottomBorder: false
 
     anchors.fill: parent

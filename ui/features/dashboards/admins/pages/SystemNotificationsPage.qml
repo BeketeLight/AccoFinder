@@ -17,21 +17,23 @@ Item {
     implicitHeight: contentColumn.implicitHeight
 
     readonly property color primaryColor: "#2563EB"
+    readonly property color surfaceColor: "#F5F5F5"
     readonly property color textColor: "#1F2937"
     readonly property color mutedColor: "#6B7280"
     readonly property color borderColor: "#E5E7EB"
+    readonly property color errorColor: "#DC2626"
 
     function send() {
-        titleError.text = ""
-        messageError.text = ""
+        titleError.visible = false
+        messageError.visible = false
 
         var valid = true
         if (titleInput.text.trim().length < 3) {
-            titleError.text = qsTr("Give the announcement a title")
+            titleError.visible = true
             valid = false
         }
-        if (messageInput.text.trim().length < 10) {
-            messageError.text = qsTr("Write at least a sentence")
+        if (messageArea.text.trim().length < 10) {
+            messageError.visible = true
             valid = false
         }
         if (!valid)
@@ -39,7 +41,7 @@ Item {
 
         var payload = {
             title: titleInput.text.trim(),
-            message: messageInput.text.trim(),
+            message: messageArea.text.trim(),
             audience: audienceDropdown.currentText,
             date: Qt.formatDate(new Date(), "d MMM yyyy"),
             delivered: 0
@@ -52,8 +54,8 @@ Item {
         sentBanner.visible = true
         sentTimer.restart()
 
-        titleInput.clear()
-        messageInput.clear()
+        titleInput.text = ""
+        messageArea.text = ""
         audienceDropdown.currentIndex = -1
     }
 
@@ -84,65 +86,130 @@ Item {
                 anchors.margins: 14
                 spacing: 12
 
-                ColumnLayout {
+                AppTextInput {
+                    id: titleInput
                     Layout.fillWidth: true
-                    spacing: 4
+                    Layout.preferredHeight: 76
+                    label: qsTr("Title")
+                    placeholder: qsTr("e.g. Scheduled maintenance")
+                    required: true
+                    fieldHeight: 52
+                    backgroundColor: root.surfaceColor
+                    textColor: root.textColor
+                    labelColor: root.textColor
+                    placeholderColor: "#9CA3AF"
+                    borderColor: root.borderColor
+                    focusColor: root.primaryColor
+                    errorColor: root.errorColor
+                }
 
-                    Label { text: qsTr("Title"); font.pixelSize: 12; font.bold: true; color: root.textColor }
-
-                    TextField {
-                        id: titleInput
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: 44
-                        placeholderText: qsTr("e.g. Scheduled maintenance")
-                        font.pixelSize: 13
-                        color: root.textColor
-                        background: Rectangle {
-                            radius: 8
-                            border.color: titleInput.activeFocus ? root.primaryColor : "#E5E7EB"
-                            border.width: 1
-                        }
-                    }
-
-                    Label { id: titleError; visible: text.length > 0; text: ""; color: "#DC2626"; font.pixelSize: 11 }
+                Label {
+                    id: titleError
+                    visible: false
+                    text: qsTr("Give the announcement a title")
+                    color: root.errorColor
+                    font.pixelSize: 12
+                    Layout.fillWidth: true
                 }
 
                 ColumnLayout {
                     Layout.fillWidth: true
-                    spacing: 4
+                    spacing: 5
 
-                    Label { text: qsTr("Message"); font.pixelSize: 12; font.bold: true; color: root.textColor }
+                    Label {
+                        text: qsTr("Message *")
+                        color: root.textColor
+                        font.pixelSize: 13
+                        font.weight: Font.Medium
+                    }
 
                     TextArea {
-                        id: messageInput
+                        id: messageArea
                         Layout.fillWidth: true
-                        implicitHeight: Math.max(88, contentHeight + 20)
-                        placeholderText: qsTr("Write your announcement…")
-                        font.pixelSize: 13
+                        Layout.preferredHeight: 110
+                        placeholderText: ""
                         color: root.textColor
-                        wrapMode: TextEdit.WordWrap
-                        background: Rectangle {
-                            radius: 8
-                            border.color: messageInput.activeFocus ? root.primaryColor : "#E5E7EB"
-                            border.width: 1
+                        font.pixelSize: 14
+                        wrapMode: TextEdit.Wrap
+                        selectByMouse: true
+                        leftPadding: 14
+                        rightPadding: 14
+                        topPadding: messageArea.activeFocus || messageArea.text.length > 0 ? 26 : 14
+                        bottomPadding: messageArea.activeFocus || messageArea.text.length > 0 ? 8 : 14
+
+                        background: Item {
+                            Rectangle {
+                                anchors.fill: parent
+                                radius: 12
+                                color: root.surfaceColor
+                                border.width: messageArea.activeFocus || messageError.visible ? 2 : 1
+                                border.color: messageError.visible ? root.errorColor
+                                             : messageArea.activeFocus ? root.primaryColor
+                                             : root.borderColor
+                            }
+
+                            Text {
+                                id: messageFloating
+                                readonly property bool isFloating: messageArea.activeFocus || messageArea.text.length > 0
+                                text: qsTr("Write your announcement\u2026")
+                                color: messageError.visible ? root.errorColor
+                                       : messageArea.activeFocus ? root.primaryColor
+                                       : "#9CA3AF"
+                                font.pixelSize: isFloating ? 11 : 14
+                                font.weight: isFloating ? Font.Medium : Font.Normal
+                                x: 14
+                                width: parent.width - 28
+                                elide: Text.ElideRight
+
+                                y: isFloating ? 7 : Math.round((parent.height - height) / 2)
+
+                                Behavior on y {
+                                    NumberAnimation {
+                                        duration: 140
+                                        easing.type: Easing.OutCubic
+                                    }
+                                }
+                                Behavior on font.pixelSize {
+                                    NumberAnimation {
+                                        duration: 140
+                                        easing.type: Easing.OutCubic
+                                    }
+                                }
+                                Behavior on color {
+                                    ColorAnimation {
+                                        duration: 140
+                                    }
+                                }
+                            }
                         }
                     }
+                }
 
-                    Label { id: messageError; visible: text.length > 0; text: ""; color: "#DC2626"; font.pixelSize: 11 }
+                Label {
+                    id: messageError
+                    visible: false
+                    text: qsTr("Write at least a sentence")
+                    color: root.errorColor
+                    font.pixelSize: 12
+                    Layout.fillWidth: true
                 }
 
                 ColumnLayout {
                     Layout.fillWidth: true
-                    spacing: 4
-
-                    Label { text: qsTr("Audience"); font.pixelSize: 12; font.bold: true; color: root.textColor }
+                    spacing: 7
 
                     AppDropdown {
                         id: audienceDropdown
                         Layout.fillWidth: true
-                        Layout.preferredHeight: 42
+                        Layout.preferredHeight: 76
+                        fieldHeight: 52
+                        label: qsTr("Audience")
                         placeholder: qsTr("Select audience")
                         model: ["All users", "Clients", "Agents"]
+                        backgroundColor: root.surfaceColor
+                        borderColor: root.borderColor
+                        focusBorderColor: root.primaryColor
+                        textColor: root.textColor
                     }
                 }
 
@@ -257,7 +324,7 @@ Item {
 
                     Label {
                         Layout.fillWidth: true
-                        text: historyRow.model.date + " · " + qsTr("delivered to %1 users").arg(historyRow.model.delivered)
+                        text: historyRow.model.date + " \u00B7 " + qsTr("delivered to %1 users").arg(historyRow.model.delivered)
                         color: "#9CA3AF"
                         font.pixelSize: 10
                     }

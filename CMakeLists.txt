@@ -117,6 +117,8 @@ qt_add_qml_module(appAccoFinder
         ui/features/dashboards/admins/screens/AgentApplicationsScreen.qml
         ui/features/dashboards/admins/pages/AgentApplicationDetailsPage.qml
         ui/features/dashboards/admins/screens/AgentApplicationDetailsScreen.qml
+        ui/features/dashboards/admins/pages/AllPropertiesPage.qml
+        ui/features/dashboards/admins/screens/AllPropertiesScreen.qml
         #======FEATURE-AUTH-GLOBAL======
         ui/features/auth/screens/ForgotPasswordScreen.qml
         ui/features/auth/screens/OtpScree.qml

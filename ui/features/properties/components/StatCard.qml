@@ -8,7 +8,7 @@ Rectangle {
     property string label: ""
     property string valueText: ""
     property color accentColor: "#2563EB"
-    property string hint: ""
+    property string actionHint: ""
     property int lableFontSize: 22
     property bool clickable: false
     signal clicked()
@@ -17,7 +17,7 @@ Rectangle {
     implicitHeight: contentCol.implicitHeight + 26
     radius: 12
     color: mouseArea.pressed ? "#F8FAFC" : "#FFFFFF"
-    border.color: clickable ? "#BFDBFE" : "#E5E7EB"
+    border.color: "#E5E7EB"
     border.width: 1
 
     Rectangle {
@@ -56,12 +56,14 @@ Rectangle {
 
         Label {
             Layout.fillWidth: true
-            text: root.hint
+            visible: root.actionHint.length > 0 && root.clickable
+            text: root.actionHint + " \u203A"
             font.pixelSize: 11
             font.bold: true
             color: root.accentColor
-            elide: Text.ElideRight
+            Layout.bottomMargin: 10
         }
+
     }
 
     MouseArea {
