@@ -10,6 +10,7 @@ Item {
 
     property AdminSystemNotificationsModel notificationsModel: AdminSystemNotificationsModel {}
     property string pageTitle: qsTr("Announcements")
+    property int maxMessageChars: 500
 
     signal announcementSent(var payload)
 
@@ -126,16 +127,25 @@ Item {
                     TextArea {
                         id: messageArea
                         Layout.fillWidth: true
-                        Layout.preferredHeight: 110
-                        placeholderText: ""
+                        Layout.preferredHeight: Math.min(Math.max(messageArea.contentHeight + 36, 110), 220)
                         color: root.textColor
                         font.pixelSize: 14
                         wrapMode: TextEdit.Wrap
                         selectByMouse: true
                         leftPadding: 14
                         rightPadding: 14
-                        topPadding: messageArea.activeFocus || messageArea.text.length > 0 ? 26 : 14
-                        bottomPadding: messageArea.activeFocus || messageArea.text.length > 0 ? 8 : 14
+                        topPadding: messageArea.activeFocus || messageArea.text.length > 0 ? 30 : 14
+                        bottomPadding: 10
+
+                        property int maxLength: root.maxMessageChars
+
+                        onTextChanged: {
+                            if (text.length > maxLength) {
+                                var cursorPos = cursorPosition
+                                text = text.substring(0, maxLength)
+                                cursorPosition = Math.min(cursorPos, text.length)
+                            }
+                        }
 
                         background: Item {
                             Rectangle {
@@ -148,8 +158,14 @@ Item {
                                              : root.borderColor
                             }
 
-                            Text {
+                            Label {
                                 id: messageFloating
+                                anchors.left: parent.left
+                                anchors.right: parent.right
+                                anchors.top: parent.top
+                                anchors.leftMargin: 14
+                                anchors.rightMargin: 14
+                                anchors.topMargin: 8
                                 readonly property bool isFloating: messageArea.activeFocus || messageArea.text.length > 0
                                 text: qsTr("Write your announcement\u2026")
                                 color: messageError.visible ? root.errorColor
@@ -157,18 +173,10 @@ Item {
                                        : "#9CA3AF"
                                 font.pixelSize: isFloating ? 11 : 14
                                 font.weight: isFloating ? Font.Medium : Font.Normal
-                                x: 14
-                                width: parent.width - 28
                                 elide: Text.ElideRight
+                                verticalAlignment: Text.AlignVCenter
+                                height: isFloating ? 18 : parent.height
 
-                                y: isFloating ? 7 : Math.round((parent.height - height) / 2)
-
-                                Behavior on y {
-                                    NumberAnimation {
-                                        duration: 140
-                                        easing.type: Easing.OutCubic
-                                    }
-                                }
                                 Behavior on font.pixelSize {
                                     NumberAnimation {
                                         duration: 140
@@ -181,6 +189,19 @@ Item {
                                     }
                                 }
                             }
+                        }
+                    }
+
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: 8
+
+                        Label {
+                            id: messageCount
+                            Layout.alignment: Qt.AlignRight
+                            text: qsTr("%L1 / %L2 characters").arg(messageArea.length).arg(root.maxMessageChars)
+                            color: messageArea.length >= root.maxMessageChars ? root.errorColor : "#9CA3AF"
+                            font.pixelSize: 11
                         }
                     }
                 }
