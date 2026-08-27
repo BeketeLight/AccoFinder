@@ -241,7 +241,7 @@ Item {
                             ComboBox {
                                 id: roleCombo
                                 anchors.centerIn: parent
-                                width: 80
+                                width: 86
                                 height: 20
                                 font.pixelSize: 10
                                 model: ["CLIENT", "AGENT"]
@@ -264,10 +264,55 @@ Item {
                                     font.bold: true
                                     verticalAlignment: Text.AlignVCenter
                                     horizontalAlignment: Text.AlignHCenter
+                                    elide: Text.ElideRight
                                 }
                                 background: Rectangle {
                                     radius: 10
                                     color: roleCombo.pressed ? "#E5E7EB" : "transparent"
+                                }
+
+                                popup: Popup {
+                                    y: roleCombo.height + 4
+                                    width: 108
+                                    padding: 4
+                                    modal: true
+                                    focus: true
+
+                                    contentItem: ListView {
+                                        clip: true
+                                        implicitHeight: contentHeight
+                                        model: roleCombo.popup.visible ? roleCombo.delegateModel : null
+                                        currentIndex: roleCombo.highlightedIndex
+
+                                        ScrollIndicator.vertical: ScrollIndicator {}
+                                    }
+
+                                    background: Rectangle {
+                                        radius: 8
+                                        color: "#FFFFFF"
+                                        border.color: "#E5E7EB"
+                                        border.width: 1
+                                    }
+                                }
+
+                                delegate: ItemDelegate {
+                                    width: roleCombo.popup.width - 8
+                                    height: 30
+
+                                    contentItem: Label {
+                                        text: modelData
+                                        color: "#374151"
+                                        font.pixelSize: 11
+                                        font.bold: true
+                                        verticalAlignment: Text.AlignVCenter
+                                        elide: Text.ElideRight
+                                        leftPadding: 8
+                                    }
+
+                                    background: Rectangle {
+                                        radius: 6
+                                        color: highlighted ? "#EFF6FF" : "transparent"
+                                    }
                                 }
                             }
                         }
@@ -338,8 +383,10 @@ Item {
     Dialog {
         id: confirmDialog
         modal: true
-        width: Math.min(parent ? parent.width - 40 : 320, 340)
-        anchors.centerIn: parent
+        parent: Overlay.overlay
+        width: Math.min(340, Overlay.overlay ? Overlay.overlay.width - 40 : 340)
+        x: Overlay.overlay ? Math.round((Overlay.overlay.width - width) / 2) : 0
+        y: Overlay.overlay ? Math.round((Overlay.overlay.height - height) / 2) : 0
         padding: 18
 
         property string userName: ""

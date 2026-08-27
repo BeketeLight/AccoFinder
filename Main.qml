@@ -248,7 +248,7 @@ ApplicationWindow {
 
     Drawer {
         id: adminDrawer
-        width: 280
+        width: 300
         height: parent.height
         edge: Qt.LeftEdge
         background: Rectangle { color: "#FFFFFF" }
@@ -256,7 +256,7 @@ ApplicationWindow {
         ColumnLayout {
             anchors.fill: parent
             anchors.margins: 16
-            spacing: 4
+            spacing: 6
 
             Rectangle {
                 Layout.fillWidth: true
@@ -288,7 +288,7 @@ ApplicationWindow {
                     required property int index
                     Layout.fillWidth: true
                     Layout.topMargin: index === 0 ? 6 : 0
-                    implicitHeight: drawerRow.implicitHeight + 16
+                    implicitHeight: drawerRow.implicitHeight + 18
                     radius: 10
                     color: drawerMouse.pressed ? "#F0F4FF" : "transparent"
 
@@ -319,7 +319,7 @@ ApplicationWindow {
 
                         ColumnLayout {
                             Layout.fillWidth: true
-                            spacing: 1
+                            spacing: 2
 
                             Label {
                                 Layout.fillWidth: true
@@ -327,6 +327,7 @@ ApplicationWindow {
                                 color: "#1F2937"
                                 font.pixelSize: 13
                                 font.bold: true
+                                elide: Text.ElideRight
                             }
 
                             Label {
