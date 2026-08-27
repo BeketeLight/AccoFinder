@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import "../components"
+import "../../../components/inputs"
 import "../../../utils" as UtilsModule
 
 Page {
@@ -24,7 +25,10 @@ Page {
     property string propertyTitleName: qsTr("Sunset Apartments")
     property string propertyDistrictValue: qsTr("Lilongwe")
     property string propertyVillageValue: qsTr("Area 47")
-    property real monthlyPrice: 85000
+    property real monthlyPrice: 0
+    // The whole-property price is optional (per-room prices apply for
+    // hostel/quarter listings). This flag hides the price UI when absent.
+    readonly property bool hasMonthlyPrice: root.monthlyPrice > 0
     // verificationStatus mirrors the backend enum: PENDING / VERIFIED / REJECTED ("" = local draft)
     property string verificationStatus: "PENDING"
     property string descriptionTextValue: qsTr("Modern three-bedroom house with spacious rooms, tiled floors and a perimeter fence. Close to shops and public transport.")
@@ -57,8 +61,25 @@ Page {
     property string editLandlordNameValue: ""
     property string editLandlordPhoneValue: ""
 
+    // Key of the local draft this page was opened from (empty for a normal
+    // server-backed property). Set when a draft is opened via detail.
+    property string draftKey: ""
+
+    // A draft is a local unsent listing awaiting review/resend. It exposes a
+    // dedicated "Resend" action instead of "Edit property".
+    readonly property bool isDraftItem: root.draftKey.length > 0
+                                        || String(root.verificationStatus).toUpperCase() === "DRAFT"
+
     signal propertyUpdated(var data)
     signal propertyDeleted()
+
+    function resendProperty() {
+        if (root.draftKey.length === 0)
+            return
+        // Re-submit through DraftViewModel: the draft is removed only on
+        // success and kept on failure so it stays recoverable.
+        DraftViewModel.resendDraft(root.draftKey)
+    }
 
     function applyPayload(p) {
         if (!p) return
@@ -76,13 +97,15 @@ Page {
         root.photosList = p.photos ? p.photos : []
         if (p.verificationStatus !== undefined)
             root.verificationStatus = String(p.verificationStatus)
+        if (p.draftKey !== undefined)
+            root.draftKey = String(p.draftKey)
     }
 
     function startEditing() {
         root.editNameValue = root.propertyTitleName
         root.editDistrictValue = root.propertyDistrictValue
         root.editVillageValue = root.propertyVillageValue
-        root.editMonthlyPriceValue = String(Math.round(root.monthlyPrice))
+        root.editMonthlyPriceValue = root.hasMonthlyPrice ? String(Math.round(root.monthlyPrice)) : ""
         root.editDescriptionValue = root.descriptionTextValue
         root.editLandlordNameValue = root.landlordName
         root.editLandlordPhoneValue = root.landlordPhone
@@ -111,7 +134,7 @@ Page {
             root.landlordPhone = root.editLandlordPhoneValue.trim()
         root.editMode = false
         // Same shape the backend Property model expects
-        root.propertyUpdated({
+        var updated = {
             title: root.propertyTitleName,
             description: root.descriptionTextValue,
             physicalAddress: {
@@ -123,7 +146,28 @@ Page {
             price: root.monthlyPrice,
             landlord: root.landlordName,
             landlordPhone: root.landlordPhone
-        })
+        }
+
+        // A draft is local: persist the edits back into the draft store so the
+        // changes survive until the agent resends it.
+        if (root.isDraftItem && root.draftKey.length > 0) {
+            var stored = DraftViewModel.getDraft(root.draftKey) || {}
+            var merged = {}
+            var k
+            for (k in stored) merged[k] = stored[k]
+            merged.title = updated.title
+            merged.description = updated.description
+            merged.physicalAddress = updated.physicalAddress
+            merged.verificationStatus = updated.verificationStatus
+            merged.isActive = updated.isActive
+            if (updated.price > 0)
+                merged.price = updated.price
+            merged.landlord = updated.landlord
+            merged.landlordPhone = updated.landlordPhone
+            DraftViewModel.updateDraft(root.draftKey, merged)
+        }
+
+        root.propertyUpdated(updated)
     }
 
     background: Rectangle { color: root.pageColor }
@@ -189,7 +233,7 @@ Page {
                 visible: root.agentMode
                 Layout.preferredWidth: 74
                 Layout.preferredHeight: 32
-                text: root.editMode ? qsTr("Done") : qsTr("Edit")
+                text: root.editMode ? qsTr("Done") : qsTr(isDraftItem ? "Edit draft" : "Edit")
 
                 contentItem: Label {
                     text: editToggleButton.text
@@ -267,30 +311,21 @@ Page {
                         wrapMode: Text.WordWrap
                     }
 
-                    Rectangle {
+                    AppTextInput {
                         visible: root.editMode
                         Layout.fillWidth: true
-                        implicitHeight: 44
-                        radius: 10
-                        color: Qt.rgba(1, 1, 1, 0.14)
-                        border.color: nameField.activeFocus ? "#FFFFFF" : Qt.rgba(1, 1, 1, 0.4)
-                        border.width: 1
-
-                        TextField {
-                            id: nameField
-                            anchors.fill: parent
-                            anchors.leftMargin: 12
-                            anchors.rightMargin: 12
-                            text: root.editNameValue
-                            onTextChanged: root.editNameValue = text
-                            placeholderText: qsTr("Property name")
-                            color: "#FFFFFF"
-                            placeholderTextColor: Qt.rgba(1, 1, 1, 0.55)
-                            font.pixelSize: 15
-                            font.bold: true
-                            background: null
-                            verticalAlignment: TextInput.AlignVCenter
-                        }
+                        fieldHeight: 44
+                        Layout.preferredHeight: 44
+                        label: ""
+                        placeholder: qsTr("Property name")
+                        text: root.editNameValue
+                        onTextEdited: root.editNameValue = text
+                        backgroundColor: Qt.rgba(1, 1, 1, 0.14)
+                        textColor: "#FFFFFF"
+                        placeholderColor: Qt.rgba(1, 1, 1, 0.55)
+                        borderColor: Qt.rgba(1, 1, 1, 0.4)
+                        focusColor: "#FFFFFF"
+                        errorColor: root.dangerColor
                     }
 
                     RowLayout {
@@ -314,54 +349,38 @@ Page {
                         Item { Layout.fillWidth: true }
                     }
 
-                    Rectangle {
+                    AppTextInput {
                         visible: root.editMode
                         Layout.fillWidth: true
-                        implicitHeight: 44
-                        radius: 10
-                        color: Qt.rgba(1, 1, 1, 0.14)
-                        border.color: districtField.activeFocus ? "#FFFFFF" : Qt.rgba(1, 1, 1, 0.4)
-                        border.width: 1
-
-                        TextField {
-                            id: districtField
-                            anchors.fill: parent
-                            anchors.leftMargin: 12
-                            anchors.rightMargin: 12
-                            text: root.editDistrictValue
-                            onTextChanged: root.editDistrictValue = text
-                            placeholderText: qsTr("District")
-                            color: "#FFFFFF"
-                            placeholderTextColor: Qt.rgba(1, 1, 1, 0.55)
-                            font.pixelSize: 13
-                            background: null
-                            verticalAlignment: TextInput.AlignVCenter
-                        }
+                        fieldHeight: 44
+                        Layout.preferredHeight: 44
+                        label: ""
+                        placeholder: qsTr("District")
+                        text: root.editDistrictValue
+                        onTextEdited: root.editDistrictValue = text
+                        backgroundColor: Qt.rgba(1, 1, 1, 0.14)
+                        textColor: "#FFFFFF"
+                        placeholderColor: Qt.rgba(1, 1, 1, 0.55)
+                        borderColor: Qt.rgba(1, 1, 1, 0.4)
+                        focusColor: "#FFFFFF"
+                        errorColor: root.dangerColor
                     }
 
-                    Rectangle {
+                    AppTextInput {
                         visible: root.editMode
                         Layout.fillWidth: true
-                        implicitHeight: 44
-                        radius: 10
-                        color: Qt.rgba(1, 1, 1, 0.14)
-                        border.color: villageField.activeFocus ? "#FFFFFF" : Qt.rgba(1, 1, 1, 0.4)
-                        border.width: 1
-
-                        TextField {
-                            id: villageField
-                            anchors.fill: parent
-                            anchors.leftMargin: 12
-                            anchors.rightMargin: 12
-                            text: root.editVillageValue
-                            onTextChanged: root.editVillageValue = text
-                            placeholderText: qsTr("e.g. Area 47")
-                            color: "#FFFFFF"
-                            placeholderTextColor: Qt.rgba(1, 1, 1, 0.55)
-                            font.pixelSize: 13
-                            background: null
-                            verticalAlignment: TextInput.AlignVCenter
-                        }
+                        fieldHeight: 44
+                        Layout.preferredHeight: 44
+                        label: ""
+                        placeholder: qsTr("e.g. Area 47")
+                        text: root.editVillageValue
+                        onTextEdited: root.editVillageValue = text
+                        backgroundColor: Qt.rgba(1, 1, 1, 0.14)
+                        textColor: "#FFFFFF"
+                        placeholderColor: Qt.rgba(1, 1, 1, 0.55)
+                        borderColor: Qt.rgba(1, 1, 1, 0.4)
+                        focusColor: "#FFFFFF"
+                        errorColor: root.dangerColor
                     }
 
                     Rectangle {
@@ -378,7 +397,15 @@ Page {
                             spacing: 6
 
                             Label {
-                                visible: !root.editMode
+                                visible: !root.editMode && !root.hasMonthlyPrice
+                                text: qsTr("Rent on request")
+                                color: Qt.rgba(1, 1, 1, 0.85)
+                                font.pixelSize: 22
+                                font.bold: true
+                            }
+
+                            Label {
+                                visible: !root.editMode && root.hasMonthlyPrice
                                 text: "MK " + Number(root.monthlyPrice).toLocaleString()
                                 color: "#FFFFFF"
                                 font.pixelSize: 22
@@ -386,7 +413,7 @@ Page {
                             }
 
                             Label {
-                                visible: !root.editMode
+                                visible: !root.editMode && root.hasMonthlyPrice
                                 text: qsTr("/ month")
                                 color: Qt.rgba(1, 1, 1, 0.75)
                                 font.pixelSize: 13
@@ -400,27 +427,21 @@ Page {
                                 font.bold: true
                             }
 
-                            TextField {
-                                id: priceField
+                            AppTextInput {
                                 visible: root.editMode
-                                Layout.preferredWidth: 130
+                                Layout.preferredWidth: 150
+                                fieldHeight: 40
+                                label: ""
+                                placeholder: qsTr("Rent / month")
                                 text: root.editMonthlyPriceValue
-                                onTextChanged: root.editMonthlyPriceValue = text
-                                placeholderText: qsTr("Rent per month")
-                                color: "#FFFFFF"
-                                placeholderTextColor: Qt.rgba(1, 1, 1, 0.55)
-                                font.pixelSize: 15
-                                font.bold: true
-                                inputMethodHints: Qt.ImhDigitsOnly
-                                background: Rectangle {
-                                    radius: 8
-                                    color: Qt.rgba(1, 1, 1, 0.14)
-                                    border.color: priceField.activeFocus ? "#FFFFFF" : Qt.rgba(1, 1, 1, 0.4)
-                                    border.width: 1
-                                }
-                                verticalAlignment: TextInput.AlignVCenter
-                                leftPadding: 10
-                                rightPadding: 10
+                                onTextEdited: root.editMonthlyPriceValue = text
+                                backgroundColor: Qt.rgba(1, 1, 1, 0.14)
+                                textColor: "#FFFFFF"
+                                placeholderColor: Qt.rgba(1, 1, 1, 0.55)
+                                borderColor: Qt.rgba(1, 1, 1, 0.4)
+                                focusColor: "#FFFFFF"
+                                errorColor: root.dangerColor
+                                Layout.preferredHeight: 40
                             }
 
                             Item { Layout.fillWidth: true }
@@ -585,14 +606,43 @@ Page {
             }
 
             ColumnLayout {
-                visible: root.roomsList.length > 0
                 Layout.fillWidth: true
                 spacing: 10
 
                 SectionHeader {
                     Layout.fillWidth: true
                     title: qsTr("Rooms")
-                    actionLabel: qsTr("%1 listed").arg(root.roomsList.length)
+                    actionLabel: root.roomsList.length > 0 ? qsTr("%1 listed").arg(root.roomsList.length) : ""
+                }
+
+                Rectangle {
+                    visible: root.roomsList.length === 0
+                    Layout.fillWidth: true
+                    implicitHeight: 76
+                    radius: 12
+                    color: root.surfaceColor
+                    border.color: root.borderColor
+                    border.width: 1
+
+                    ColumnLayout {
+                        anchors.centerIn: parent
+                        spacing: 3
+
+                        Label {
+                            Layout.alignment: Qt.AlignHCenter
+                            text: qsTr("No rooms added yet")
+                            color: root.textColor
+                            font.pixelSize: 13
+                            font.bold: true
+                        }
+
+                        Label {
+                            Layout.alignment: Qt.AlignHCenter
+                            text: qsTr("Room types, prices and availability will appear here.")
+                            color: root.mutedColor
+                            font.pixelSize: 11
+                        }
+                    }
                 }
 
                 Repeater {
@@ -703,9 +753,38 @@ Page {
             }
 
             SectionHeader {
-                visible: root.amenitiesList.length > 0
                 Layout.fillWidth: true
                 title: qsTr("Amenities")
+            }
+
+            Rectangle {
+                visible: root.amenitiesList.length === 0
+                Layout.fillWidth: true
+                implicitHeight: 76
+                radius: 12
+                color: root.surfaceColor
+                border.color: root.borderColor
+                border.width: 1
+
+                ColumnLayout {
+                    anchors.centerIn: parent
+                    spacing: 3
+
+                    Label {
+                        Layout.alignment: Qt.AlignHCenter
+                        text: qsTr("No amenities listed")
+                        color: root.textColor
+                        font.pixelSize: 13
+                        font.bold: true
+                    }
+
+                    Label {
+                        Layout.alignment: Qt.AlignHCenter
+                        text: qsTr("Add amenities such as Wi-Fi, parking or security.")
+                        color: root.mutedColor
+                        font.pixelSize: 11
+                    }
+                }
             }
 
             Rectangle {
@@ -769,12 +848,14 @@ Page {
                     accentColor: root.primaryColor
                 }
 
-                StatCard {
-                    Layout.fillWidth: true
-                    label: qsTr("Monthly rent")
-                    valueText: "MK " + Number(root.monthlyPrice).toLocaleString()
-                    accentColor: root.successColor
-                }
+                    StatCard {
+                        Layout.fillWidth: true
+                        label: qsTr("Monthly rent")
+                        valueText: root.hasMonthlyPrice
+                                   ? "MK " + Number(root.monthlyPrice).toLocaleString()
+                                   : qsTr("On request")
+                        accentColor: root.successColor
+                    }
 
                 StatCard {
                     Layout.fillWidth: true
@@ -882,59 +963,44 @@ Page {
                     anchors.margins: 13
                     spacing: 10
 
-                    Rectangle {
+                    AppTextInput {
                         Layout.fillWidth: true
-                        implicitHeight: 46
-                        radius: 10
-                        color: root.pageColor
-                        border.color: landlordNameField.activeFocus ? root.primaryColor : root.borderColor
-                        border.width: 1
-
-                        TextField {
-                            id: landlordNameField
-                            anchors.fill: parent
-                            anchors.leftMargin: 12
-                            anchors.rightMargin: 12
-                            text: root.editLandlordNameValue
-                            onTextChanged: root.editLandlordNameValue = text
-                            placeholderText: qsTr("Landlord name")
-                            color: root.textColor
-                            placeholderTextColor: root.mutedColor
-                            font.pixelSize: 13
-                            background: null
-                            verticalAlignment: TextInput.AlignVCenter
-                        }
+                        Layout.preferredHeight: 66
+                        label: qsTr("Landlord name")
+                        placeholder: qsTr("e.g. Bryan Phiri")
+                        fieldHeight: 44
+                        text: root.editLandlordNameValue
+                        onTextEdited: root.editLandlordNameValue = text
+                        backgroundColor: root.pageColor
+                        textColor: root.textColor
+                        labelColor: root.textColor
+                        placeholderColor: root.mutedColor
+                        borderColor: root.borderColor
+                        focusColor: root.primaryColor
+                        errorColor: root.dangerColor
                     }
 
-                    Rectangle {
+                    AppTextInput {
                         Layout.fillWidth: true
-                        implicitHeight: 46
-                        radius: 10
-                        color: root.pageColor
-                        border.color: landlordPhoneField.activeFocus ? root.primaryColor : root.borderColor
-                        border.width: 1
-
-                        TextField {
-                            id: landlordPhoneField
-                            anchors.fill: parent
-                            anchors.leftMargin: 12
-                            anchors.rightMargin: 12
-                            text: root.editLandlordPhoneValue
-                            onTextChanged: root.editLandlordPhoneValue = text
-                            placeholderText: qsTr("+265 999 123 456")
-                            color: root.textColor
-                            placeholderTextColor: root.mutedColor
-                            font.pixelSize: 13
-                            inputMethodHints: Qt.ImhDialableCharactersOnly
-                            background: null
-                            verticalAlignment: TextInput.AlignVCenter
-                        }
+                        Layout.preferredHeight: 66
+                        label: qsTr("Landlord phone")
+                        placeholder: qsTr("+265 999 123 456")
+                        fieldHeight: 44
+                        text: root.editLandlordPhoneValue
+                        onTextEdited: root.editLandlordPhoneValue = text
+                        backgroundColor: root.pageColor
+                        textColor: root.textColor
+                        labelColor: root.textColor
+                        placeholderColor: root.mutedColor
+                        borderColor: root.borderColor
+                        focusColor: root.primaryColor
+                        errorColor: root.dangerColor
                     }
                 }
             }
 
             Rectangle {
-                visible: root.agentMode
+                visible: root.agentMode && !root.editMode
                 Layout.fillWidth: true
                 implicitHeight: deleteRow.implicitHeight + 28
                 radius: 12
@@ -944,7 +1010,7 @@ Page {
 
                 RowLayout {
                     id: deleteRow
-                    visible: root.agentMode
+                    visible: root.agentMode && !root.editMode
                     anchors.fill: parent
                     anchors.margins: 14
                     spacing: 12
@@ -954,7 +1020,7 @@ Page {
                         spacing: 2
 
                         Label {
-                            text: qsTr("Delete property")
+                            text: root.isDraftItem ? qsTr("Delete draft") : qsTr("Delete property")
                             color: root.dangerColor
                             font.pixelSize: 13
                             font.bold: true
@@ -962,7 +1028,9 @@ Page {
 
                         Label {
                             Layout.fillWidth: true
-                            text: qsTr("Permanently remove this listing and all its rooms.")
+                            text: root.isDraftItem
+                                  ? qsTr("Permanently delete this draft. This cannot be undone.")
+                                  : qsTr("Permanently remove this listing and all its rooms.")
                             color: root.mutedColor
                             font.pixelSize: 11
                             wrapMode: Text.WordWrap
@@ -1082,7 +1150,10 @@ Page {
 
                     onClicked: {
                         deleteDialog.close()
-                        root.propertyDeleted()
+                        if (root.isDraftItem && root.draftKey.length > 0)
+                            DraftViewModel.removeDraft(root.draftKey)
+                        else
+                            root.propertyDeleted()
                         UtilsModule.NavigationUtils.pop()
                     }
                 }
@@ -1113,7 +1184,9 @@ Page {
                 spacing: 1
 
                 Label {
-                    text: "MK " + Number(root.monthlyPrice).toLocaleString()
+                    text: root.hasMonthlyPrice
+                          ? "MK " + Number(root.monthlyPrice).toLocaleString()
+                          : qsTr("Rent on request")
                     color: root.textColor
                     font.pixelSize: 17
                     font.bold: true
@@ -1131,7 +1204,9 @@ Page {
                 visible: root.agentMode
                 Layout.preferredWidth: 170
                 Layout.preferredHeight: 48
-                text: root.editMode ? qsTr("Save changes") : qsTr("Edit property")
+                text: root.editMode
+                      ? qsTr("Save changes")
+                      : (root.isDraftItem ? qsTr("Resend draft") : qsTr("Edit property"))
 
                 contentItem: Label {
                     text: agentFooterButton.text
@@ -1147,7 +1222,15 @@ Page {
                     color: agentFooterButton.down ? root.primaryDarkColor : root.primaryColor
                 }
 
-                onClicked: root.editMode ? root.saveChanges() : root.startEditing()
+                onClicked: {
+                    if (root.editMode) {
+                        root.saveChanges()
+                    } else if (root.isDraftItem) {
+                        root.resendProperty()
+                    } else {
+                        root.startEditing()
+                    }
+                }
             }
 
             Button {

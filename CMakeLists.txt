@@ -167,8 +167,10 @@ qt_add_qml_module(appAccoFinder
         ui/features/properties/pages/PropertyPhotosPage.qml
         ui/features/properties/pages/PropertyReviewPage.qml
         ui/features/properties/pages/PropertyDetailsPage.qml
+        ui/features/properties/pages/DraftsPage.qml
         ui/features/properties/screens/PropertiesScreen.qml
         ui/features/properties/screens/AddPropertyScreen.qml
+        ui/features/properties/screens/DraftsScreen.qml
 
     SOURCES
         src/models/user.h src/models/user.cpp
@@ -176,6 +178,7 @@ qt_add_qml_module(appAccoFinder
         src/models/landlord.h src/models/landlord.cpp
         src/models/property.h src/models/property.cpp
         src/models/room.h src/models/room.cpp
+        src/models/media.h src/models/media.cpp
         src/models/booking.h src/models/booking.cpp
         src/models/payment.h src/models/payment.cpp
         src/models/review.h src/models/review.cpp
@@ -211,6 +214,7 @@ qt_add_qml_module(appAccoFinder
         src/repositories/interfaces/IPaymentGateway.h
         src/repositories/interfaces/IDisputeRepository.h
         src/repositories/interfaces/IRoomRepository.h
+        src/repositories/interfaces/IMediaRepository.h
         src/repositories/impl/bookingrepositoryimpl.h
         src/repositories/impl/bookingrepositoryimpl.cpp
         src/repositories/impl/propertyrepositoryimpl.h
@@ -230,6 +234,8 @@ qt_add_qml_module(appAccoFinder
         src/presentation/models/propertylistmodel.cpp
         src/presentation/models/roomlistmodel.h
         src/presentation/models/roomlistmodel.cpp
+        src/presentation/models/medialistmodel.h
+        src/presentation/models/medialistmodel.cpp
         src/presentation/models/bookinglistmodel.h
         src/presentation/models/bookinglistmodel.cpp
         src/presentation/models/reviewlistmodel.h
@@ -242,6 +248,10 @@ qt_add_qml_module(appAccoFinder
         src/presentation/viewmodels/reviewviewmodel.cpp
         src/presentation/viewmodels/roomviewmodel.h
         src/presentation/viewmodels/roomviewmodel.cpp
+        src/presentation/viewmodels/mediaviewmodel.h
+        src/presentation/viewmodels/mediaviewmodel.cpp
+        src/presentation/viewmodels/draftviewmodel.h
+        src/presentation/viewmodels/draftviewmodel.cpp
         src/models/client.h src/models/client.cpp
         src/models/notification.h
         src/models/notification.cpp
@@ -261,14 +271,24 @@ qt_add_qml_module(appAccoFinder
         src/application/dto/disputedto.cpp
         src/application/dto/roomdto.h
         src/application/dto/roomdto.cpp
+        src/application/dto/mediadto.h
+        src/application/dto/mediadto.cpp
         src/presentation/models/disputeslistmodel.h
         src/presentation/models/disputeslistmodel.cpp
         src/presentation/viewmodels/disputeslistviewmodel.h
         src/presentation/viewmodels/disputeslistviewmodel.cpp
+        src/presentation/models/notificationlistmodel.h
+        src/presentation/models/notificationlistmodel.cpp
+        src/presentation/viewmodels/notificationviewmodel.h
+        src/presentation/viewmodels/notificationviewmodel.cpp
         src/application/controllers/roomcontroller.h
         src/application/controllers/roomcontroller.cpp
+        src/application/controllers/mediacontroller.h
+        src/application/controllers/mediacontroller.cpp
         src/repositories/impl/roomrepositoryimpl.h
         src/repositories/impl/roomrepositoryimpl.cpp
+        src/repositories/impl/mediarepositoryimpl.h
+        src/repositories/impl/mediarepositoryimpl.cpp
         src/application/controllers/usercontroller.h
         src/application/controllers/usercontroller.cpp
         src/application/controllers/agentcontroller.h

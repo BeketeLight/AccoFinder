@@ -35,6 +35,11 @@ void RoomViewModel::loadRoom(const QString &roomId)
     m_roomController->loadRoom(roomId);
 }
 
+void RoomViewModel::createRoom(const QString &propertyId, const QString &type, bool available)
+{
+    m_roomController->createRoom(propertyId, type, available);
+}
+
 void RoomViewModel::onRoomsLoaded(const QList<QSharedPointer<Room>> &rooms)
 {
     setLoading(false);

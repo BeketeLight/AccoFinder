@@ -8,13 +8,40 @@ Page {
 
     property int currentStep: 0
 
-    readonly property var stepTitles: [qsTr("Information"), qsTr("Rooms"), qsTr("Photos"), qsTr("Review")]
-    readonly property var stepHints: [
-        qsTr("Name, type, location, landlord and pricing."),
-        qsTr("Add every bookable room with its own price."),
-        qsTr("Upload photos and choose the primary cover."),
-        qsTr("Confirm the details, then submit or save a draft.")
-    ]
+    readonly property bool hasRoomsStep: infoStep.needsRooms
+
+    function stepTitleFor(i) {
+        if (infoStep.needsRooms)
+            return [qsTr("Information"), qsTr("Rooms"), qsTr("Photos"), qsTr("Review")][i]
+        return [qsTr("Information"), qsTr("Photos"), qsTr("Review")][i]
+    }
+
+    function stepHintFor(i) {
+        if (infoStep.needsRooms)
+            return [
+                qsTr("Name, type, location, landlord and pricing."),
+                qsTr("Add every bookable room with its own price."),
+                qsTr("Upload photos and choose the primary cover."),
+                qsTr("Confirm the details, then submit or save a draft.")
+            ][i]
+        return [
+            qsTr("Name, type, location and landlord."),
+            qsTr("Upload photos and choose the primary cover."),
+            qsTr("Confirm the details, then submit or save a draft.")
+        ][i]
+    }
+
+    function totalSteps() {
+        return infoStep.needsRooms ? 4 : 3
+    }
+
+    // Whole-property listings have no per-room step, so the rooms page is
+    // omitted from the StackLayout; map the logical step to its physical index.
+    function stepStackIndexFor(step) {
+        if (infoStep.needsRooms)
+            return step
+        return step >= 1 ? step + 1 : step
+    }
 
     property color primaryColor: "#2563EB"
     property color secondaryColor: "#22C55E"
@@ -38,6 +65,7 @@ Page {
     function goBack() {
         if (currentStep > 0) {
             currentStep -= 1
+            stepStack.currentIndex = root.stepStackIndexFor(currentStep)
             return
         }
         UtilsModule.NavigationUtils.pop()
@@ -109,7 +137,7 @@ Page {
                     spacing: 8
 
                     Repeater {
-                        model: 4
+                        model: root.totalSteps()
 
                         Rectangle {
                             Layout.fillWidth: true
@@ -131,7 +159,7 @@ Page {
                     spacing: 8
 
                     Label {
-                        text: root.stepTitles[root.currentStep]
+                        text: root.stepTitleFor(root.currentStep)
                         color: root.textColor
                         font.pixelSize: 14
                         font.bold: true
@@ -142,13 +170,13 @@ Page {
                         Layout.preferredWidth: 58
                         Layout.preferredHeight: 28
                         radius: 14
-                        color: root.currentStep === 3 ? "#ECFDF5" : root.softBlueColor
-                        border.color: root.currentStep === 3 ? "#BBF7D0" : "#BFDBFE"
+                        color: root.currentStep === root.totalSteps() - 1 ? "#ECFDF5" : root.softBlueColor
+                        border.color: root.currentStep === root.totalSteps() - 1 ? "#BBF7D0" : "#BFDBFE"
 
                         Label {
                             anchors.centerIn: parent
-                            text: (root.currentStep + 1) + qsTr(" of ") + "4"
-                            color: root.currentStep === 3 ? "#166534" : root.primaryColor
+                            text: (root.currentStep + 1) + qsTr(" of ") + root.totalSteps()
+                            color: root.currentStep === root.totalSteps() - 1 ? "#166534" : root.primaryColor
                             font.pixelSize: 11
                             font.bold: true
                         }
@@ -156,7 +184,7 @@ Page {
                 }
 
                 Label {
-                    text: root.stepHints[root.currentStep]
+                    text: root.stepHintFor(root.currentStep)
                     color: root.mutedColor
                     font.pixelSize: 12
                     wrapMode: Text.WordWrap
@@ -176,7 +204,7 @@ Page {
                     id: stepStack
                     anchors.fill: parent
                     anchors.margins: 15
-                    currentIndex: root.currentStep
+                    currentIndex: root.stepStackIndexFor(root.currentStep)
 
                     PropertyInfoPage {
                         id: infoStep
@@ -215,7 +243,7 @@ Page {
                         borderColor: root.borderColor
                         errorColor: "#EF4444"
                         Layout.fillWidth: true
-                        onNextRequested: root.currentStep = 3
+                        onNextRequested: root.currentStep = infoStep.needsRooms ? 3 : 2
                     }
 
                     PropertyReviewPage {
@@ -344,6 +372,7 @@ Page {
             title: infoStep.titleValue,
             description: infoStep.descriptionValue,
             owner: AppSettings.isLoggedIn() ? AppSettings.userName() : "",
+            propertyType: infoStep.propertyTypeValue,
             physicalAddress: {
                 district: infoStep.districtValue,
                 village: infoStep.villageValue

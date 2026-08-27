@@ -18,6 +18,7 @@ public:
 
     Q_INVOKABLE void loadRooms();
     Q_INVOKABLE void loadRoom(const QString& roomId);
+    Q_INVOKABLE void createRoom(const QString& propertyId, const QString& type, bool available);
 
 private:
     bool m_isLoading = false;

@@ -13,19 +13,26 @@ PropertyRepositoryImpl::PropertyRepositoryImpl(QObject *parent)
 void PropertyRepositoryImpl::getProperties()
 {
     APIClient::instance().get(
-        "api/house-listing/",
+        "/house-listing/",
         [this] (bool success, const QJsonObject& response )
         {
+            if (!success) {
+                // Always clear loading state even when the fetch fails.
+                emit propertyError(response.value("message").toString(
+                                       QStringLiteral("Failed to load properties")));
+                return;
+            }
             QList<Property*> properties;
-            if(success && response.contains("data")){
+            if(response.contains("data")){
                 QJsonArray dataArray = response["data"].toArray();
                 for(const QJsonValue& value: std::as_const(dataArray)){
                     PropertyDto dto = PropertyDto::fromJson(value.toObject());
                     properties.append(dto.toDomainModel());
                 }
                 emit propertiesLoaded(properties);
+            } else {
+                emit propertiesLoaded(properties);
             }
-          
         }
     );
 
@@ -34,9 +41,14 @@ void PropertyRepositoryImpl::getProperties()
 void PropertyRepositoryImpl::getPropertyById(const QString& houseId)
 {
     APIClient::instance().get(
-        "api/house-listing/" + houseId,
+        "/house-listing/" + houseId,
         [this] (bool success, const QJsonObject& response)
         {
+            if (!success) {
+                emit propertyError(response.value("message").toString(
+                                       QStringLiteral("Failed to load property")));
+                return;
+            }
             if(success){
                 PropertyDto dto = PropertyDto::fromJson(response["data"].toObject());
                 Property* property = dto.toDomainModel();
@@ -49,12 +61,18 @@ void PropertyRepositoryImpl::getPropertyById(const QString& houseId)
     
 }
 
-void PropertyRepositoryImpl::updateProperty(const QString& houseId,const QString& title,const QString& description,double price,const QString& costCategory)
+void PropertyRepositoryImpl::updateProperty(const QString& houseId, const QString& title,
+                                            const QString& description, double price,
+                                            const QString& district, const QString& village,
+                                            const QStringList& amenities, const QString& landlord,
+                                            const QString& landlordPhone, const QString& verificationStatus,
+                                            bool isActive)
 {
-    PropertyDto dto(title,description,price,costCategory);
+    PropertyDto dto(title, description, price, QString(), district, village, amenities,
+                    landlord, landlordPhone, verificationStatus, isActive);
 
     APIClient::instance().put(
-        "api/house-listing/:" + houseId, 
+        "/house-listing/:" + houseId, 
          dto.toUpdateJson(),
         [this] (bool success, const QJsonObject& response)
         {
@@ -64,7 +82,7 @@ void PropertyRepositoryImpl::updateProperty(const QString& houseId,const QString
                 emit propertyUpdated(property);
             }
           
-        }
+        }, false
     );
 
 }
@@ -72,7 +90,7 @@ void PropertyRepositoryImpl::updateProperty(const QString& houseId,const QString
 void PropertyRepositoryImpl::getPropertiesByStatus(const QString &status)
 {
     APIClient::instance().get(
-        "api/house-listing/?status=" + status,
+        "/house-listing/?status=" + status,
         [this] (bool success, const QJsonObject& response)
         {
             QList<Property*> properties;
@@ -88,12 +106,17 @@ void PropertyRepositoryImpl::getPropertiesByStatus(const QString &status)
     );
 }
 
-void PropertyRepositoryImpl::createProperty(const QString &title, const QString &description, double price, const QString &costCategory)
+void PropertyRepositoryImpl::createProperty(const QString &title, const QString &description, double price,
+                                            const QString &propertyType, const QString &district, const QString &village,
+                                            const QStringList &amenities, const QString &landlord,
+                                            const QString &landlordPhone, const QString &verificationStatus,
+                                            bool isActive, const QJsonArray &rooms)
 {
-    PropertyDto dto(title, description, price, costCategory);
+    PropertyDto dto(title, description, price, propertyType, district, village, amenities,
+                    landlord, landlordPhone, verificationStatus, isActive, rooms);
 
     APIClient::instance().post(
-        "api/house-listing/",
+        "/house-listing/",
         dto.toCreateJson(),
         [this] (bool success, const QJsonObject& response)
         {
@@ -104,14 +127,14 @@ void PropertyRepositoryImpl::createProperty(const QString &title, const QString 
             } else {
                 emit propertyError(response.value("message").toString());
             }
-        }
+        }, false
     );
 }
 
 void PropertyRepositoryImpl::deleteProperty(const QString &houseId)
 {
     APIClient::instance().del(
-        "api/house-listing/" + houseId,
+        "/house-listing/" + houseId,
         [this, houseId] (bool success, const QJsonObject& response)
         {
             if(success){
@@ -119,7 +142,28 @@ void PropertyRepositoryImpl::deleteProperty(const QString &houseId)
             } else {
                 emit propertyError(response.value("message").toString());
             }
-        }
+        }, false
+    );
+}
+
+void PropertyRepositoryImpl::attachMedia(const QString &houseId, const QStringList &mediaIds)
+{
+    QJsonArray mediaArray;
+    for (const QString& id : mediaIds)
+        mediaArray.append(id);
+
+    QJsonObject payload;
+    payload["media"] = mediaArray;
+
+    APIClient::instance().put(
+        "/house-listing/" + houseId,
+        payload,
+        [this, houseId] (bool success, const QJsonObject& response)
+        {
+            if (!success)
+                emit propertyError(response.value("message").toString());
+            Q_UNUSED(houseId)
+        }, false
     );
 }
 

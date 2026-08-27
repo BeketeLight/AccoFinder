@@ -11,6 +11,8 @@ PropertyViewModel::PropertyViewModel(QObject *parent)
             this, &PropertyViewModel::onGetPropertyById);
     connect(m_propertyController, &PropertyController::propertyUpdated,
             this, &PropertyViewModel::onUpdateProperty);
+    connect(m_propertyController, &PropertyController::propertyCreated,
+            this, &PropertyViewModel::onCreateProperty);
     connect(m_propertyController, &PropertyController::propertyError,
             this, &PropertyViewModel::onPropertyError);
 }
@@ -29,29 +31,53 @@ void PropertyViewModel::getProperties()
     m_propertyController->getProperties();
 }
 
+QVariantList PropertyViewModel::propertiesForView() const
+{
+    QVariantList list;
+    const int count = m_propertyListModel->rowCount();
+    for (int i = 0; i < count; ++i) {
+        const QModelIndex idx = m_propertyListModel->index(i, 0);
+        QVariantMap row;
+        row["id"] = m_propertyListModel->data(idx, PropertyListModel::IdRole);
+        row["title"] = m_propertyListModel->data(idx, PropertyListModel::TitleRole);
+        row["district"] = m_propertyListModel->data(idx, PropertyListModel::DistrictRole);
+        row["village"] = m_propertyListModel->data(idx, PropertyListModel::VillageRole);
+        row["price"] = m_propertyListModel->data(idx, PropertyListModel::PriceRole);
+        row["verificationStatus"] = m_propertyListModel->data(idx, PropertyListModel::VerificationStatusRole);
+        row["propertyType"] = m_propertyListModel->data(idx, PropertyListModel::PropertyTypeRole);
+        list.append(row);
+    }
+    return list;
+}
+
 void PropertyViewModel::getPropertyById(const QString &houseId)
 {
     setLoading(true);
     m_propertyController->getPropertyById(houseId);
 }
 
-void PropertyViewModel::updateProperty(int index, const QString &houseId, const QString &title, const QString &description, double price, const QString &costCategory)
+void PropertyViewModel::updateProperty(int index, const QString &houseId, const QString &title, const QString &description, double price, const QString &district, const QString &village, const QStringList &amenities, const QString &landlord, const QString &landlordPhone, const QString &verificationStatus, bool isActive)
 {
     m_index = index;
     setLoading(true);
-    m_propertyController->updateProperty(houseId, title, description, price, costCategory);
+    m_propertyController->updateProperty(houseId, title, description, price, district, village, amenities, landlord, landlordPhone, verificationStatus, isActive);
 }
 
-void PropertyViewModel::createProperty(const QString &title, const QString &description, double price, const QString &costCategory)
+void PropertyViewModel::createProperty(const QString &title, const QString &description, double price, const QString &propertyType, const QString &district, const QString &village, const QStringList &amenities, const QString &landlord, const QString &landlordPhone, const QString &verificationStatus, bool isActive, const QJsonArray &rooms)
 {
     setLoading(true);
-    m_propertyController->createProperty(title, description, price, costCategory);
+    m_propertyController->createProperty(title, description, price, propertyType, district, village, amenities, landlord, landlordPhone, verificationStatus, isActive, rooms);
 }
 
 void PropertyViewModel::deleteProperty(const QString &houseId)
 {
     setLoading(true);
     m_propertyController->deleteProperty(houseId);
+}
+
+void PropertyViewModel::attachMedia(const QString &houseId, const QStringList &mediaIds)
+{
+    m_propertyController->attachMedia(houseId, mediaIds);
 }
 
 void PropertyViewModel::onPropertiesLoaded(QList<Property*> &properties)
@@ -71,6 +97,15 @@ void PropertyViewModel::onUpdateProperty(Property *property)
     setLoading(false);
     if (m_index >= 0)
         m_propertyListModel->updateProperty(m_index, property);
+}
+
+void PropertyViewModel::onCreateProperty(Property *property)
+{
+    setLoading(false);
+    if (property) {
+        m_propertyListModel->appendProperty(property);
+        emit propertyCreatedSignal(property->getId(), property->getTitle());
+    }
 }
 
 void PropertyViewModel::onPropertyError(const QString &error)

@@ -88,3 +88,13 @@ void BookingListModel::removeBooking(int index)
 
     emit countChanged(m_bookings.size());
 }
+
+void BookingListModel::clear()
+{
+    if (m_bookings.isEmpty())
+        return;
+    beginResetModel();
+    m_bookings.clear();
+    endResetModel();
+    emit countChanged(0);
+}

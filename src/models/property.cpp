@@ -121,6 +121,76 @@ void Property::setLandlordId(const QString &newLandlordId)
     m_landlordId = newLandlordId;
 }
 
+QString Property::getDistrict() const
+{
+    return m_district;
+}
+
+void Property::setDistrict(const QString &district)
+{
+    m_district = district;
+}
+
+QString Property::getVillage() const
+{
+    return m_village;
+}
+
+void Property::setVillage(const QString &village)
+{
+    m_village = village;
+}
+
+QStringList Property::getAmenities() const
+{
+    return m_amenities;
+}
+
+void Property::setAmenities(const QStringList &amenities)
+{
+    m_amenities = amenities;
+}
+
+QString Property::getLandlordPhone() const
+{
+    return m_landlordPhone;
+}
+
+void Property::setLandlordPhone(const QString &phone)
+{
+    m_landlordPhone = phone;
+}
+
+bool Property::isActive() const
+{
+    return m_active;
+}
+
+void Property::setActive(bool active)
+{
+    m_active = active;
+}
+
+QString Property::getPropertyType() const
+{
+    return m_propertyType;
+}
+
+void Property::setPropertyType(const QString &propertyType)
+{
+    m_propertyType = propertyType;
+}
+
+QString Property::getVerificationStatus() const
+{
+    return m_verificationStatus;
+}
+
+void Property::setVerificationStatus(const QString &status)
+{
+    m_verificationStatus = status;
+}
+
 QString Property::firstName() const
 {
     return m_firstName;

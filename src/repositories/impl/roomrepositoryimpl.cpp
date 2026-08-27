@@ -13,7 +13,7 @@ void RoomRepositoryImpl::createRoom(const QString &id,
 {
     RoomDto dto(id,propertyId,type,available);
     APIClient::instance().post(
-        "room/create",
+        "/room/create",
         dto.toJson(),
         [this](bool success,
                const QJsonObject& response)
@@ -25,14 +25,14 @@ void RoomRepositoryImpl::createRoom(const QString &id,
 
                 emit roomCreated(room);
             }
-        }
+        }, false
         );
 }
 
 void RoomRepositoryImpl::getRooms()
 {
     APIClient::instance().get(
-        "room/",
+        "/room/",
         [this](bool success,
                const QJsonObject& response)
         {
@@ -46,14 +46,14 @@ void RoomRepositoryImpl::getRooms()
 
                 emit roomsLoaded(m_rooms);
             }
-        }
+        }, false
     );
 }
 
 void RoomRepositoryImpl::getRoomById(const QString &id)
 {
     APIClient::instance().get(
-        "room/:" + id,
+        "/room/:" + id,
         [this](bool success,
                const QJsonObject& response)
         {
@@ -65,14 +65,14 @@ void RoomRepositoryImpl::getRoomById(const QString &id)
             else {
                 emit error("no room was found");
             }
-        }
+        }, false
     );
 }
 
 void RoomRepositoryImpl::updateRoom(Room *room)
 {
     // APIClient::instance().patch(
-    //     "room/:" + id,
+    //     "/room/:" + id,
     //     [this](bool success,
     //            const QJsonObject& response)
     //     {
@@ -92,7 +92,7 @@ void RoomRepositoryImpl::updateRoom(Room *room)
 void RoomRepositoryImpl::deleteRoom(const QString &id)
 {
     APIClient::instance().del(
-        "room/:" + id,
+        "/room/:" + id,
         [this](bool success,
                const QJsonObject& response)
         {
@@ -104,6 +104,6 @@ void RoomRepositoryImpl::deleteRoom(const QString &id)
             else {
                 emit error("no room was found");
             }
-        }
+        }, false
         );
 }

@@ -16,6 +16,22 @@ Item {
     readonly property var amenitiesValue: selectedAmenities
     readonly property string landlordValue: landlordInput.text.trim()
     readonly property string landlordPhoneValue: landlordPhoneInput.text.trim()
+    readonly property var listingTypes: [
+        { label: qsTr("Whole Property"), value: "WHOLE" },
+        { label: qsTr("Hostel"), value: "HOSTEL" },
+        { label: qsTr("Quarter"), value: "QUARTER" }
+    ]
+    readonly property var typeLabels: {
+        var arr = []
+        for (var i = 0; i < root.listingTypes.length; i++)
+            arr.push(root.listingTypes[i].label)
+        return arr
+    }
+    readonly property string propertyTypeValue:
+        typeDropdown.currentIndex < 0 ? "" : root.listingTypes[typeDropdown.currentIndex].value
+    readonly property bool isWholeProperty: root.propertyTypeValue === "WHOLE"
+    readonly property bool needsRooms:
+        root.propertyTypeValue === "HOSTEL" || root.propertyTypeValue === "QUARTER"
     readonly property real priceValue: {
         var parsed = parseFloat(priceInput.text)
         return isNaN(parsed) ? 0 : parsed
@@ -213,8 +229,23 @@ Item {
             Layout.preferredHeight: 76
         }
 
+        AppDropdown {
+            id: typeDropdown
+            Layout.fillWidth: true
+            Layout.preferredHeight: 76
+            fieldHeight: 52
+            label: qsTr("Listing type")
+            placeholder: qsTr("Select listing type...")
+            model: root.typeLabels
+            backgroundColor: root.surfaceColor
+            borderColor: root.borderColor
+            focusBorderColor: root.primaryColor
+            textColor: root.textColor
+        }
+
         AppTextInput {
             id: priceInput
+            visible: root.isWholeProperty
             label: qsTr("Price (MK per month)")
             placeholder: qsTr("e.g. 25000")
             required: true
@@ -372,6 +403,10 @@ Item {
             errorText.text = qsTr("Enter the property name.")
             return
         }
+        if (typeDropdown.currentIndex < 0) {
+            errorText.text = qsTr("Select the listing type.")
+            return
+        }
         if (districtDropdown.currentIndex < 0 || root.villageValue.length === 0) {
             districtError.visible = true
             errorText.text = qsTr("Complete the highlighted fields to continue.")
@@ -380,10 +415,6 @@ Item {
         if (root.landlordValue.length === 0 || root.landlordPhoneValue.length < 7) {
             landlordError.visible = true
             errorText.text = qsTr("Complete the highlighted fields to continue.")
-            return
-        }
-        if (root.priceValue <= 0) {
-            errorText.text = qsTr("Enter a valid price greater than 0.")
             return
         }
         if (root.descriptionValue.length < 10) {

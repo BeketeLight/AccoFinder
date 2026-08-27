@@ -21,7 +21,7 @@ void VerificationRepositoryImpl::createVerification(const QString& id,
     VerificationDto dto(id,agentId,propertyId,notes,verifiedAt,status);
 
     APIClient::instance().post(
-        "api/property/:" + id,
+        "/property/:" + id,
         dto.toJson(),
         [this] (bool success, const QJsonObject& response)
         {
@@ -33,7 +33,7 @@ void VerificationRepositoryImpl::createVerification(const QString& id,
             }else{
                 emit propertyError(response["error"].toString());
             }
-        }
+        }, false
     );
 }                                                    
     
@@ -41,7 +41,7 @@ void VerificationRepositoryImpl::createVerification(const QString& id,
 void VerificationRepositoryImpl::getVerificationHistory()
 {
     APIClient::instance().get(
-        "/api/property/history",
+        "/property/history",
         [this]  (bool success, const QJsonObject& response)  
         {   QList<Verification*> verifications;
             if(success && response.contains("data")){
@@ -54,7 +54,7 @@ void VerificationRepositoryImpl::getVerificationHistory()
             }else{
                 emit propertyError(response["error"].toString());
             }
-        }
+        }, false
     );
 }
 
@@ -68,7 +68,7 @@ void VerificationRepositoryImpl::approveProperty(const QString& id,
     VerificationDto dto(id,agentId,propertyId,notes,verifiedAt,status);
 
     APIClient::instance().patch(
-        "api/property/:" + propertyId,
+        "/property/:" + propertyId,
         dto.toJson(),
         [this] (bool success, const QJsonObject& response)
         {
@@ -80,7 +80,7 @@ void VerificationRepositoryImpl::approveProperty(const QString& id,
             }else{
                 emit propertyError(response["error"].toString());
             }
-        }
+        }, false
     );
 
 }
@@ -94,7 +94,7 @@ void VerificationRepositoryImpl::rejectProperty(const QString& id,
     VerificationDto dto(id,agentId,propertyId,notes,verifiedAt,status);
 
     APIClient::instance().patch(
-        "api/property:" + propertyId,
+        "/property:" + propertyId,
         dto.toJson(),
         [this] (bool success,const QJsonObject& response)
         {
@@ -106,7 +106,7 @@ void VerificationRepositoryImpl::rejectProperty(const QString& id,
             }else{
                 emit propertyError(response["error"].toString());
             }
-        }
+        }, false
     );
 
 }

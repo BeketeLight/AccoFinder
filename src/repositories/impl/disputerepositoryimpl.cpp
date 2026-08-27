@@ -23,7 +23,7 @@ void DisputeRepositoryImpl::raiseDispute(const QString& raisedBy,
     payload["description"] = description;
 
     APIClient::instance().post(
-        "api/disputes/",
+        "/disputes/",
         payload,
         [this](bool success, 
         const QJsonObject& response)
@@ -40,13 +40,13 @@ void DisputeRepositoryImpl::raiseDispute(const QString& raisedBy,
             }else{
                 emit disputeError(response.value("error").toString());
             }
-        });
+        }, false);
 }
 
 // void DisputeRepositoryImpl::getDisputes()
 // {
 //     APIClient::instance().get(
-//         "api/disputes/",
+//         "/disputes/",
 //         [this](bool success,
 //         const QJsonObject& response)
 //         {
@@ -75,7 +75,7 @@ void DisputeRepositoryImpl::resolveDispute(const QString& disputeId)
     QJsonObject payload;
 
     APIClient::instance().patch(
-        "api/disputes/:" + disputeId + "/resolve",
+        "/disputes/:" + disputeId + "/resolve",
         payload,
         [this](bool success,
         const QJsonObject& response)
@@ -92,13 +92,13 @@ void DisputeRepositoryImpl::resolveDispute(const QString& disputeId)
             }else{
                 emit disputeError(response.value("error").toString());
             }
-        });
+        }, false);
 }
 
 void DisputeRepositoryImpl::getDisputes()
 {
     APIClient::instance().get(
-        "api/disputes/",
+        "/disputes/",
         [this](bool success,
               const QJsonObject& response)
         {
@@ -114,7 +114,7 @@ void DisputeRepositoryImpl::getDisputes()
 
 
             }
-        }
+        }, false
         );
 
 }

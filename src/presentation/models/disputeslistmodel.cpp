@@ -73,6 +73,7 @@ void DisputesListModel::addDisputes(QList<Dispute *> &disputes)
     qDeleteAll(m_disputes);
     m_disputes = disputes;
     endResetModel();
+    emit countChanged(m_disputes.size());
 }
 
 void DisputesListModel::updateDispute(int index, Dispute* newDispute)
@@ -80,4 +81,5 @@ void DisputesListModel::updateDispute(int index, Dispute* newDispute)
     beginResetModel();
     m_disputes[index] = newDispute;
     endResetModel();
+    emit countChanged(m_disputes.size());
 }

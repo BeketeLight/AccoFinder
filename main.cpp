@@ -13,6 +13,13 @@
 #include "src/application/controllers/usercontroller.h"
 #include "src/application/controllers/agentcontroller.h"
 #include "src/application/controllers/dashboardcontroller.h"
+#include "src/presentation/viewmodels/propertyviewmodel.h"
+#include "src/presentation/viewmodels/roomviewmodel.h"
+#include "src/presentation/viewmodels/mediaviewmodel.h"
+#include "src/presentation/viewmodels/draftviewmodel.h"
+#include "src/presentation/viewmodels/bookingviewmodel.h"
+#include "src/presentation/viewmodels/disputeslistviewmodel.h"
+#include "src/presentation/viewmodels/notificationviewmodel.h"
 #include <QQmlContext>
 #include <QTimer>
 int main(int argc, char *argv[])
@@ -52,6 +59,13 @@ int main(int argc, char *argv[])
     UserController userController;
     AgentController agentController;
     DashboardController dashboardController;
+    PropertyViewModel propertyViewModel;
+    RoomViewModel roomViewModel;
+    MediaViewModel mediaViewModel;
+    DraftViewModel draftViewModel(&propertyViewModel);
+    BookingViewModel bookingViewModel;
+    DisputesListViewModel disputesListViewModel;
+    NotificationViewModel notificationViewModel;
     //ContextProperty
     engine.rootContext()->setContextProperty("AppSettings", &appSettings);
     engine.rootContext()->setContextProperty("AppPermission", &appPermission);
@@ -64,6 +78,13 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("UserController", &userController);
     engine.rootContext()->setContextProperty("AgentController", &agentController);
     engine.rootContext()->setContextProperty("DashboardController", &dashboardController);
+    engine.rootContext()->setContextProperty("PropertyViewModel", &propertyViewModel);
+    engine.rootContext()->setContextProperty("RoomViewModel", &roomViewModel);
+    engine.rootContext()->setContextProperty("MediaViewModel", &mediaViewModel);
+    engine.rootContext()->setContextProperty("DraftViewModel", &draftViewModel);
+    engine.rootContext()->setContextProperty("BookingViewModel", &bookingViewModel);
+    engine.rootContext()->setContextProperty("DisputesListViewModel", &disputesListViewModel);
+    engine.rootContext()->setContextProperty("NotificationViewModel", &notificationViewModel);
     QObject::connect(
         &engine,
         &QQmlApplicationEngine::objectCreationFailed,

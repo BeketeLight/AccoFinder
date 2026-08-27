@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QString>
+#include <QStringList>
 #include <QDateTime>
 #include "core/utils/EPropertyStatus.h"
 
@@ -33,18 +34,30 @@ public:
     QString getAgentId() const;
     void setAgentId(const QString &agentId);
     QString getLandlordId() const;
+    void setLandlordId(const QString &newLandlordId);
     QDateTime getCreatedAt() const;
     void setCreatedAt(const QDateTime &createdAt);
-
-
-
-
-    void setLandlordId(const QString &newLandlordId);
 
     QString firstName() const;
     void setFirstName(const QString &newFirstName);
     QString secondName() const;
     void setSecondName(const QString &newSecondName);
+
+    // Extended property schema (mirrors the Add-Property wizard)
+    QString getDistrict() const;
+    void setDistrict(const QString &district);
+    QString getVillage() const;
+    void setVillage(const QString &village);
+    QStringList getAmenities() const;
+    void setAmenities(const QStringList &amenities);
+    QString getLandlordPhone() const;
+    void setLandlordPhone(const QString &phone);
+    QString getPropertyType() const;
+    void setPropertyType(const QString &propertyType);
+    bool isActive() const;
+    void setActive(bool active);
+    QString getVerificationStatus() const;
+    void setVerificationStatus(const QString &status);
 
 private:
     QString m_id;
@@ -52,11 +65,18 @@ private:
     QString m_secondName;
     QString m_title;
     QString m_location;
+    QString m_district;
+    QString m_village;
+    QStringList m_amenities;
     double m_price;
     QString m_description;
     PropertyStatus m_status;
     QString m_agentId;
     QString m_landlordId;
+    QString m_landlordPhone;
+    QString m_propertyType;
+    QString m_verificationStatus;
+    bool m_active = false;
     QDateTime m_createdAt;
 signals:
     void propertyVerfied();

@@ -3,6 +3,8 @@
 
 #include <QObject>
 #include <QList>
+#include <QStringList>
+#include <QJsonArray>
 #include "models/property.h"
 #include "repositories/impl/propertyrepositoryimpl.h"
 
@@ -19,13 +21,25 @@ public:
     Q_INVOKABLE void getPropertyById(const QString& houseId);
     Q_INVOKABLE void getPropertiesByStatus(const QString& status);
     Q_INVOKABLE void createProperty(const QString& title, const QString& description,
-                                    double price, const QString& costCategory);
+                                    double price, const QString& propertyType,
+                                    const QString& district,
+                                    const QString& village, const QStringList& amenities,
+                                    const QString& landlord, const QString& landlordPhone,
+                                    const QString& verificationStatus, bool isActive,
+                                    const QJsonArray& rooms = QJsonArray());
     Q_INVOKABLE void updateProperty(const QString& houseId,
                                     const QString& title,
                                     const QString& description,
                                     double price,
-                                    const QString& costCategory);
+                                    const QString& district,
+                                    const QString& village,
+                                    const QStringList& amenities,
+                                    const QString& landlord,
+                                    const QString& landlordPhone,
+                                    const QString& verificationStatus,
+                                    bool isActive);
     Q_INVOKABLE void deleteProperty(const QString& houseId);
+    Q_INVOKABLE void attachMedia(const QString& houseId, const QStringList& mediaIds);
 
 signals:
     void propertiesLoaded(QList<Property*>& properties);

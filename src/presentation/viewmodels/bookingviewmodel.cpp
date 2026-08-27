@@ -10,6 +10,8 @@ BookingViewModel::BookingViewModel(QObject *parent)
     
     // connect(m_bookingController, &BookingController::bookingsLoaded,
     //      this,&BookingViewModel::onBookingsLoaded);
+    connect(m_bookingController.data(), &BookingController::bookingsLoaded,
+        this,&BookingViewModel::onBookingsLoaded);
     connect(m_bookingController.data(), &BookingController::bookingLoaded,
         this,&BookingViewModel::onBookingLoaded);
     connect(m_bookingController.data(), &BookingController::bookingCancelled,
@@ -64,6 +66,14 @@ void BookingViewModel::onBookingLoaded(Booking* booking)
 {   
     if(m_bookingListModel)
     m_bookingListModel->addBooking(booking);
+}
+void BookingViewModel::onBookingsLoaded(const QList<Booking*>& bookings)
+{
+    if (!m_bookingListModel)
+        return;
+    m_bookingListModel->clear();
+    for (Booking* b : bookings)
+        m_bookingListModel->addBooking(b);
 }
 void BookingViewModel::onBookingCreated(Booking* booking)
 {   

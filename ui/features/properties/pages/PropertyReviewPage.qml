@@ -123,7 +123,9 @@ Item {
                 }
                 ReviewField {
                     labelText: qsTr("Price")
-                    valueText: qsTr("MK %1 / month").arg(Number(root.priceValue).toLocaleString())
+                    valueText: root.priceValue > 0
+                               ? qsTr("MK %1 / month").arg(Number(root.priceValue).toLocaleString())
+                               : qsTr("On request")
                 }
                 ReviewField {
                     labelText: qsTr("Description")
@@ -134,6 +136,7 @@ Item {
         }
 
         Rectangle {
+            visible: root.roomsModelRef && root.roomsModelRef.count > 0
             Layout.fillWidth: true
             implicitHeight: reviewRoomsCol.implicitHeight + 24
             radius: 12
