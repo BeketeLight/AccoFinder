@@ -191,6 +191,16 @@ void Property::setVerificationStatus(const QString &status)
     m_verificationStatus = status;
 }
 
+int Property::getRoomCount() const
+{
+    return m_roomCount;
+}
+
+void Property::setRoomCount(int roomCount)
+{
+    m_roomCount = roomCount;
+}
+
 QString Property::firstName() const
 {
     return m_firstName;

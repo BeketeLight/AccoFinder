@@ -20,6 +20,9 @@
 #include "src/presentation/viewmodels/bookingviewmodel.h"
 #include "src/presentation/viewmodels/disputeslistviewmodel.h"
 #include "src/presentation/viewmodels/notificationviewmodel.h"
+#include "src/presentation/viewmodels/userviewmodel.h"
+#include "src/presentation/viewmodels/agentviewmodel.h"
+#include "src/presentation/viewmodels/agentapplicationviewmodel.h"
 #include <QQmlContext>
 #include <QTimer>
 int main(int argc, char *argv[])
@@ -66,6 +69,9 @@ int main(int argc, char *argv[])
     BookingViewModel bookingViewModel;
     DisputesListViewModel disputesListViewModel;
     NotificationViewModel notificationViewModel;
+    UserViewModel userViewModel;
+    AgentViewModel agentViewModel;
+    AgentApplicationViewModel agentApplicationViewModel;
     //ContextProperty
     engine.rootContext()->setContextProperty("AppSettings", &appSettings);
     engine.rootContext()->setContextProperty("AppPermission", &appPermission);
@@ -85,6 +91,9 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("BookingViewModel", &bookingViewModel);
     engine.rootContext()->setContextProperty("DisputesListViewModel", &disputesListViewModel);
     engine.rootContext()->setContextProperty("NotificationViewModel", &notificationViewModel);
+    engine.rootContext()->setContextProperty("UserViewModel", &userViewModel);
+    engine.rootContext()->setContextProperty("AgentViewModel", &agentViewModel);
+    engine.rootContext()->setContextProperty("AgentApplicationViewModel", &agentApplicationViewModel);
     QObject::connect(
         &engine,
         &QQmlApplicationEngine::objectCreationFailed,

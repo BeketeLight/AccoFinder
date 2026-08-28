@@ -10,14 +10,16 @@ UserDto::UserDto(
     const QString& email,
     const QString& phone,
     const QString& role,
-    const QDateTime& createdAt)
+    const QDateTime& createdAt,
+    bool isActive)
     : id(id),
     m_firstName(firstName),
     m_lastName(lastName),
     email(email),
     phone(phone),
     role(role),
-    createdAt(createdAt)
+    createdAt(createdAt),
+    isActive(isActive)
 {
 }
 
@@ -43,6 +45,9 @@ UserDto UserDto::fromJson(
     dto.role =
         json["role"].toString();
 
+    dto.isActive =
+        json["isActive"].toBool(true);
+
     dto.createdAt =
         QDateTime::fromString(
             json["createdAt"].toString(),
@@ -62,6 +67,7 @@ QJsonObject UserDto::toJson() const
     json["email"] = email;
     json["phone"] = phone;
     json["role"] = role;
+    json["isActive"] = isActive;
     json["createdAt"] =
         createdAt.toString(Qt::ISODate);
 
@@ -77,6 +83,8 @@ User* UserDto::toDomainModel() const
     user->setEmail(email);
     user->setPhone(phone);
     user->setCreatedAt(createdAt);
+    user->setRole(role);
+    user->setIsActive(isActive);
 
     return user;
 }

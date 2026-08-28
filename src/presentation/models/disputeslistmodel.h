@@ -6,6 +6,7 @@
 #include <QList>
 #include <QHash>
 #include <QByteArray>
+#include <QVariantMap>
 #include "models/dispute.h"
 #include "core/utils/EDisputeStatus.h"
 
@@ -33,6 +34,9 @@ public:
     void addDisputes(QList<Dispute*>& disputes);
 
     void updateDispute(int index,Dispute* newDispute);
+
+    Q_INVOKABLE int size() const { return m_disputes.size(); }
+    Q_INVOKABLE QVariantMap at(int index) const;
 
 signals:
     void countChanged(int newCount);

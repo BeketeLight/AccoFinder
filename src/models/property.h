@@ -59,6 +59,9 @@ public:
     QString getVerificationStatus() const;
     void setVerificationStatus(const QString &status);
 
+    int getRoomCount() const;
+    void setRoomCount(int roomCount);
+
 private:
     QString m_id;
     QString m_firstName;
@@ -77,6 +80,7 @@ private:
     QString m_propertyType;
     QString m_verificationStatus;
     bool m_active = false;
+    int m_roomCount = 0;
     QDateTime m_createdAt;
 signals:
     void propertyVerfied();

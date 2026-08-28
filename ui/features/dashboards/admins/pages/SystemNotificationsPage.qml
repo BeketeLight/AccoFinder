@@ -352,6 +352,16 @@ Item {
                 }
             }
         }
+
+        Label {
+            visible: root.notificationsModel.notificationsModel.count === 0
+            Layout.fillWidth: true
+            horizontalAlignment: Text.AlignHCenter
+            text: qsTr("No announcements sent yet.")
+            color: root.mutedColor
+            font.pixelSize: 12
+            topPadding: 8
+        }
     }
 
     Timer {

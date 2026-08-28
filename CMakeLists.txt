@@ -303,6 +303,16 @@ qt_add_qml_module(appAccoFinder
         src/repositories/impl/adminuserrepositoryimpl.cpp
         src/repositories/impl/agentrepositoryimpl.h
         src/repositories/impl/agentrepositoryimpl.cpp
+        src/presentation/models/userlistmodel.h
+        src/presentation/models/userlistmodel.cpp
+        src/presentation/viewmodels/userviewmodel.h
+        src/presentation/viewmodels/userviewmodel.cpp
+        src/presentation/models/agentlistmodel.h
+        src/presentation/models/agentlistmodel.cpp
+        src/presentation/viewmodels/agentviewmodel.h
+        src/presentation/viewmodels/agentviewmodel.cpp
+        src/presentation/viewmodels/agentapplicationviewmodel.h
+        src/presentation/viewmodels/agentapplicationviewmodel.cpp
 
 
     RESOURCES

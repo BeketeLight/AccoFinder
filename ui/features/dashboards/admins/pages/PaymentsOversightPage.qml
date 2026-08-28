@@ -212,6 +212,16 @@ Item {
                     }
                 }
             }
+
+            Label {
+                visible: root.paymentsModel.paymentsModel.count === 0
+                Layout.fillWidth: true
+                horizontalAlignment: Text.AlignHCenter
+                text: qsTr("No payments recorded yet.")
+                color: root.mutedColor
+                font.pixelSize: 12
+                topPadding: 8
+            }
         }
 
         // ---- Commissions tab ----
@@ -299,6 +309,16 @@ Item {
                         }
                     }
                 }
+            }
+
+            Label {
+                visible: root.paymentsModel.commissionsModel.count === 0
+                Layout.fillWidth: true
+                horizontalAlignment: Text.AlignHCenter
+                text: qsTr("No commissions due yet.")
+                color: root.mutedColor
+                font.pixelSize: 12
+                topPadding: 8
             }
         }
 
@@ -391,6 +411,16 @@ Item {
                         }
                     }
                 }
+            }
+
+            Label {
+                visible: root.paymentsModel.payoutsModel.count === 0
+                Layout.fillWidth: true
+                horizontalAlignment: Text.AlignHCenter
+                text: qsTr("No payouts scheduled yet.")
+                color: root.mutedColor
+                font.pixelSize: 12
+                topPadding: 8
             }
         }
     }

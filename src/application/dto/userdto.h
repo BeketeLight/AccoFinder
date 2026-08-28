@@ -14,8 +14,9 @@ public:
         const QString& lastName,
         const QString& email,
         const QString& phone,
-        const QString& role,
-        const QDateTime& createdAt
+    const QString& role,
+    const QDateTime& createdAt,
+    bool isActive = true
         );
 
     // DTO Data
@@ -26,6 +27,7 @@ public:
     QString phone;
     QString role;
     QDateTime createdAt;
+    bool isActive = true;
 
     // JSON Conversion
     static UserDto fromJson(

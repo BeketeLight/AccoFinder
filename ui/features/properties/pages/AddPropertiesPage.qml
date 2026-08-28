@@ -8,6 +8,11 @@ Page {
 
     property int currentStep: 0
 
+    // Each step's page is taller than the viewport, so the outer Flickable gets
+    // scrolled down to reach "Continue". Reset it back to the top whenever the
+    // step changes so the next page opens at its start (not scrolled to the bottom).
+    onCurrentStepChanged: wizardFlick.contentY = 0
+
     readonly property bool hasRoomsStep: infoStep.needsRooms
 
     function stepTitleFor(i) {
@@ -78,6 +83,7 @@ Page {
     }
 
     Flickable {
+        id: wizardFlick
         anchors.fill: parent
         contentWidth: width
         contentHeight: contentColumn.implicitHeight + 56

@@ -13,6 +13,7 @@ class NotificationListModel : public QAbstractListModel
 {
     Q_OBJECT
     Q_PROPERTY(int count READ count NOTIFY countChanged)
+    Q_PROPERTY(int unreadCount READ unreadCount NOTIFY unreadCountChanged)
 
 public:
     enum roles {
@@ -26,6 +27,7 @@ public:
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     int count() const { return m_notifications.size(); }
+    int unreadCount() const;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
     QHash<int, QByteArray> roleNames() const override;
 
@@ -33,6 +35,7 @@ public:
 
 signals:
     void countChanged(int newCount);
+    void unreadCountChanged(int newCount);
 
 private:
     QVector<QSharedPointer<Notification>> m_notifications;
