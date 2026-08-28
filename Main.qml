@@ -475,7 +475,7 @@ ApplicationWindow {
                         onClicked: {
                             agentDrawer.close()
                             if (model.kind === "properties")
-                                NavUtils.push(Qt.resolvedUrl("./ui/features/properties/screens/PropertiesScreen.qml"))
+                                NavUtils.push(Qt.resolvedUrl("./ui/features/properties/screens/MyPropertiesScreen.qml"))
                             else if (model.kind === "bookings")
                                 NavUtils.push(Qt.resolvedUrl("./ui/features/bookings/screens/BookingsScreen.qml"))
                             else if (model.kind === "disputes")

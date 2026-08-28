@@ -168,9 +168,11 @@ qt_add_qml_module(appAccoFinder
         ui/features/properties/pages/PropertyReviewPage.qml
         ui/features/properties/pages/PropertyDetailsPage.qml
         ui/features/properties/pages/DraftsPage.qml
+        ui/features/properties/pages/MyPropertiesSection.qml
         ui/features/properties/screens/PropertiesScreen.qml
         ui/features/properties/screens/AddPropertyScreen.qml
         ui/features/properties/screens/DraftsScreen.qml
+        ui/features/properties/screens/MyPropertiesScreen.qml
 
     SOURCES
         src/models/user.h src/models/user.cpp

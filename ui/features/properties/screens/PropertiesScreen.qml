@@ -7,13 +7,13 @@ import "../../../utils/NavigationUtils.js" as NavUtils
 Item {
     id: root
 
-    property string pageTitle: AppSettings.userType() === "AGENT"
+    property string pageTitle: (AppSettings.userType() === "AGENT" || AppSettings.userType() === "ADMIN")
                                ? qsTr("Agent Dashboard")
                                : qsTr("AccoFinder")
     property bool showHeader: true
     property bool showBackButton: false
     property bool isSearchBar: false
-    property int titleFontSize: 25
+    property int titleFontSize: 18
     property bool showBottomBorder: false
     property bool searchReadOnly: true
 
@@ -22,6 +22,7 @@ Item {
     // True when this screen hosts the embedded agent dashboard (the agent's main
     // landing view). The header hamburger is driven off this in Main.qml.
     readonly property bool isAgentDashboardHost: AppSettings.userType() === "AGENT"
+                                                 || AppSettings.userType() === "ADMIN"
 
     function onSearchBarTapped() {
         NavUtils.navigateToSearchScreen()

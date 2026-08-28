@@ -2,11 +2,10 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import "../components"
-import "../../dashboards/Agets/pages"
 import "../../../components/inputs"
 import "../../../components/indicators"
 
-Page {
+Item {
     id: root
 
     readonly property color pageColor: "#F8FAFC"
@@ -18,35 +17,18 @@ Page {
     readonly property color mutedColor: "#6B7280"
     readonly property color borderColor: "#E5E7EB"
 
-    property string pageTitle: qsTr("Properties")
-    property bool showHeader: true
-    property bool showBack: false
-
     signal addPropertyRequested()
-    signal attentionClicked(var kind, var targetId)
     signal propertyClicked(var propertyId)
     signal draftClicked(var payload)
-    signal bookingClicked()
-    signal notificationClicked()
-    signal disputeClicked()
-    signal draftsClicked()
 
     // Selected filter chip: All / Verified / Pending / Draft / Rejected
     property string statusFilter: "All"
     property string searchText: ""
     property int resultCount: 0
     property int serverCount: 0
-    // True while the server-backed property list is fetching. The network runs
-    // asynchronously off the UI thread, so rendering stays smooth; we surface
-    // this so the user sees progress instead of an apparent hang. Toggled by
-    // the isLoadingChanged signal (true on start, false on success OR failure).
     property bool loading: false
-    // True while a pull-to-refresh is in flight. Set when the user drags the
-    // list down past the top and lets it snap back; cleared when the fetch ends.
     property bool refreshing: false
 
-    // Server-backed properties (VERIFIED/PENDING/REJECTED) merged with local
-    // DRAFT rows in a single QML model, so the same filtering code serves both.
     ListModel { id: filterChipsModel }
 
     ListModel { id: allPropertiesModel }
@@ -82,9 +64,6 @@ Page {
                 count++
         }
         root.resultCount = count
-        // Only show the "No properties yet" empty state when the account is
-        // genuinely empty — a saved draft is still a property to review. Hide
-        // it during the initial load so it doesn't flash before data arrives.
         var haveAny = root.serverCount > 0 || DraftViewModel.count > 0
         emptyServerState.visible = !root.loading && !haveAny
         noMatchState.visible = !root.loading && haveAny && count === 0
@@ -112,7 +91,6 @@ Page {
     function refreshAll() {
         allPropertiesModel.clear()
 
-        // Server-backed properties (from the C++ model / backend).
         var server = PropertyViewModel.propertiesForView() || []
         root.serverCount = server.length
         for (var s = 0; s < server.length; s++) {
@@ -129,8 +107,6 @@ Page {
             })
         }
 
-        // Local drafts never hit the backend, so they are surfaced separately
-        // under the DRAFT filter.
         var drafts = DraftViewModel.allDrafts() || {}
         var keys = Object.keys(drafts)
         for (var k = 0; k < keys.length; k++) {
@@ -150,25 +126,19 @@ Page {
         root.applyFilters()
     }
 
-    // Triggered by pull-to-refresh (and guarded against overlap): re-fetch the
-    // server list. The result flows back through PropertyViewModel signals.
     function refresh() {
         if (root.refreshing)
             return
         root.refreshing = true
         PropertyViewModel.getProperties()
-        // Also refresh the dashboard sections' data from their C++ view models.
         BookingViewModel.fetchBookings()
         NotificationViewModel.getNotifications()
         DisputesListViewModel.getDisputes()
     }
 
     function handlePullRelease() {
-        // Only refresh when the list was actually dragged down past the top
-        // (contentY < 0 while overscrolling, springs back to 0 on release).
         if (flick.contentY <= -56 && !root.refreshing) {
             root.refresh()
-            // Snap the list back to the top so the header isn't left hanging.
             flick.returnToBounds()
         }
     }
@@ -202,21 +172,17 @@ Page {
         function onRowsInserted(parent, first, last) { root.refreshAll() }
     }
 
-    background: Rectangle { color: root.pageColor }
-
     Flickable {
         id: flick
         anchors.fill: parent
         contentWidth: width
-        contentHeight: contentColumn.implicitHeight + 96
+        contentHeight: contentColumn.implicitHeight + 120
         clip: true
 
         ScrollBar.vertical: ScrollBar { }
 
         onMovementEnded: root.handlePullRelease()
 
-        // Pull-to-refresh indicator: a small strip shown at the top while the
-        // content is dragged down (or while a refresh is running).
         ColumnLayout {
             id: pullIndicator
             z: 10
@@ -246,35 +212,9 @@ Page {
         ColumnLayout {
             id: contentColumn
             x: Math.max(16, (flick.width - 560) / 2)
-            y: 20
+            y: 0
             width: Math.min(flick.width - 32, 560)
             spacing: 14
-
-            AgentsDashboardPage {
-                Layout.fillWidth: true
-
-                onAddPropertyRequested: root.addPropertyRequested()
-                onAttentionClicked: (kind, targetId) => {
-                    if (kind === "server") {
-                        // Rejected / missing-info server property: open the real
-                        // property detail page so the agent can edit whatever is
-                        // wrong there.
-                        root.propertyClicked(targetId)
-                    } else {
-                        // Local draft awaiting review/resend.
-                        var d = DraftViewModel.getDraft(targetId)
-                        if (d) {
-                            d.draftKey = targetId
-                            root.draftClicked(d)
-                        }
-                    }
-                }
-                onBookingClicked: root.bookingClicked()
-                onNotificationClicked: root.notificationClicked()
-                onDisputeClicked: root.disputeClicked()
-            }
-
-            Item { Layout.preferredHeight: 4; Layout.fillWidth: true }
 
             SectionHeader {
                 Layout.fillWidth: true
@@ -345,8 +285,6 @@ Page {
                 }
             }
 
-            // Inline loading state shown while the server list is fetching for
-            // the first time (drafts still render instantly below the dashboard).
             ColumnLayout {
                 visible: root.loading && root.serverCount === 0
                 Layout.fillWidth: true
@@ -492,8 +430,6 @@ Page {
                 }
             }
 
-            // Empty state: no server properties at all (nothing fetched yet,
-            // or the account genuinely has none).
             ColumnLayout {
                 id: emptyServerState
                 visible: false
@@ -539,7 +475,6 @@ Page {
                 }
             }
 
-            // No match for the selected filter/search (server has data).
             Label {
                 id: noMatchState
                 visible: false
