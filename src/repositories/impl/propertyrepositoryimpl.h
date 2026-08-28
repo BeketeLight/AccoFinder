@@ -4,6 +4,8 @@
 #include "application/dto/propertydto.h"
 #include "repositories/interfaces/IPropertyRepository.h"
 #include "models/property.h"
+#include <QStringList>
+#include <QJsonArray>
 
 class PropertyRepositoryImpl : public IPropertyRepository
 {
@@ -14,9 +16,18 @@ public:
     void getPropertyById(const QString& houseId) override;
     void getPropertiesByStatus(const QString& status) override;
     void createProperty(const QString& title, const QString& description,
-                        double price, const QString& costCategory) override;
-    void updateProperty(const QString& houseId,const QString& title,const QString& description,double price,const QString& costCategory) override;
+                        double price, const QString& propertyType, const QString& district, const QString& village,
+                        const QStringList& amenities, const QString& landlord,
+                        const QString& landlordPhone, const QString& verificationStatus,
+                        bool isActive, const QJsonArray& rooms) override;
+    void updateProperty(const QString& houseId, const QString& title,
+                        const QString& description, double price,
+                        const QString& district, const QString& village,
+                        const QStringList& amenities, const QString& landlord,
+                        const QString& landlordPhone, const QString& verificationStatus,
+                        bool isActive) override;
     void deleteProperty(const QString& houseId) override;
+    void attachMedia(const QString& houseId, const QStringList& mediaIds) override;
 
 private:
 

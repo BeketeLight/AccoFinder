@@ -1,4 +1,5 @@
 #include "propertydto.h"
+#include <QJsonArray>
 
 PropertyDto::PropertyDto()
 {
@@ -46,6 +47,36 @@ PropertyDto::PropertyDto(
     costCategory(costCategory)
 {}
 
+PropertyDto::PropertyDto(
+    const QString& title,
+    const QString& description,
+    double price,
+    const QString& propertyType,
+    const QString& district,
+    const QString& village,
+    const QStringList& amenities,
+    const QString& landlord,
+    const QString& landlordPhone,
+    const QString& verificationStatus,
+    bool isActive,
+    const QJsonArray& rooms)
+    : title(title),
+      description(description),
+      propertyType(propertyType),
+      district(district),
+      village(village),
+      amenities(amenities),
+      price(price),
+      verificationStatus(verificationStatus),
+      isActive(isActive),
+      rooms(rooms),
+      costCategory(QString()),
+      createdAt(QDateTime())
+{
+    this->landlordId = landlord;
+    this->landlordPhone = landlordPhone;
+}
+
 PropertyDto PropertyDto::fromJson(
     const QJsonObject& json)
 {
@@ -83,6 +114,24 @@ PropertyDto PropertyDto::fromJson(
             json["createdAt"].toString(),
             Qt::ISODate);
 
+    // Extended schema
+    const QJsonObject addr = json["physicalAddress"].toObject();
+    dto.district = addr["district"].toString();
+    dto.village = addr["village"].toString();
+
+    QStringList amens;
+    const QJsonArray amensArray = json["amenities"].toArray();
+    for (const QJsonValue& v : amensArray)
+        amens.append(v.toString());
+    dto.amenities = amens;
+
+    dto.landlordId = json["landlord"].toString();
+    dto.landlordPhone = json["landlordPhone"].toString();
+    dto.propertyType = json["propertyType"].toString();
+    dto.verificationStatus = json["verificationStatus"].toString();
+    dto.isActive = json["isActive"].toBool(true);
+    dto.rooms = json["rooms"].toArray();
+
     return dto;
 }
 
@@ -102,6 +151,25 @@ QJsonObject PropertyDto::toJson() const
     json["landlordId"] = landlordId;
     json["createdAt"] =
         createdAt.toString(Qt::ISODate);
+
+    QJsonObject address;
+    address["district"] = district;
+    address["village"] = village;
+    json["physicalAddress"] = address;
+
+    QJsonArray amens;
+    for (const QString& a : amenities)
+        amens.append(a);
+    json["amenities"] = amens;
+
+    json["landlord"] = landlordId;
+    json["landlordPhone"] = landlordPhone;
+    json["propertyType"] = propertyType;
+    json["verificationStatus"] = verificationStatus;
+    json["isActive"] = isActive;
+
+    if (!rooms.isEmpty())
+        json["rooms"] = rooms;
 
     return json;
 }
@@ -125,6 +193,15 @@ Property* PropertyDto::toDomainModel() const
     property->setLandlordId(landlordId);
     property->setCreatedAt(createdAt);
 
+    // Extended schema
+    property->setDistrict(district);
+    property->setVillage(village);
+    property->setAmenities(amenities);
+    property->setLandlordPhone(landlordPhone);
+    property->setPropertyType(propertyType);
+    property->setVerificationStatus(verificationStatus);
+    property->setActive(isActive);
+
     return property;
 }
 
@@ -143,11 +220,35 @@ QJsonObject PropertyDto::toUpdateJson() const
     if(!description.isEmpty())
         json["description"] = description;
 
-    if(!costCategory.isEmpty())
+    if(!costCategory.isNull() && !costCategory.isEmpty())
         json["costCategory"] = costCategory;
 
     if(price)
         json["price"] = price;
+
+    if(!district.isEmpty() || !village.isEmpty()) {
+        QJsonObject address;
+        if(!district.isEmpty())
+            address["district"] = district;
+        if(!village.isEmpty())
+            address["village"] = village;
+        json["physicalAddress"] = address;
+    }
+
+    if(!amenities.isEmpty()) {
+        QJsonArray amens;
+        for (const QString& a : amenities)
+            amens.append(a);
+        json["amenities"] = amens;
+    }
+
+    if(!landlordId.isEmpty())
+        json["landlord"] = landlordId;
+    if(!landlordPhone.isEmpty())
+        json["landlordPhone"] = landlordPhone;
+    if(!verificationStatus.isEmpty())
+        json["verificationStatus"] = verificationStatus;
+    json["isActive"] = isActive;
 
     return json;
 }
@@ -158,6 +259,29 @@ QJsonObject PropertyDto::toCreateJson() const
     json["title"] = title;
     json["description"] = description;
     json["price"] = price;
-    json["costCategory"] = costCategory;
+
+    if (!propertyType.isEmpty())
+        json["propertyType"] = propertyType;
+
+    QJsonObject address;
+    address["district"] = district;
+    address["village"] = village;
+    json["physicalAddress"] = address;
+
+    QJsonArray amens;
+    for (const QString& a : amenities)
+        amens.append(a);
+    json["amenities"] = amens;
+
+    json["landlord"] = landlordId;
+    json["landlordPhone"] = landlordPhone;
+    json["verificationStatus"] = verificationStatus;
+    json["isActive"] = isActive;
+    json["costCategory"] = costCategory.isNull() ? QString() : costCategory;
+
+    // Inline rooms create the rooms atomically with the property
+    if (!rooms.isEmpty())
+        json["rooms"] = rooms;
+
     return json;
 }

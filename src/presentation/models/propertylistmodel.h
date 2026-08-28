@@ -23,7 +23,14 @@ public:
         LandlordIdRole,
         CreatedAtRole,
         DescriptionRole,
-        StatusRole
+        StatusRole,
+        DistrictRole,
+        VillageRole,
+        AmenitiesRole,
+        LandlordPhoneRole,
+        VerificationStatusRole,
+        IsActiveRole,
+        PropertyTypeRole
     };
     explicit PropertyListModel(QObject *parent = nullptr);
 
@@ -40,6 +47,7 @@ public:
     QHash<int,QByteArray> roleNames() const override;
 
     void setProperties( QList<Property*>& newProperty);
+    void appendProperty(Property* property);
     void updateProperty(int index,Property* property);
     void getPropertyById(Property* property);
     void clear();

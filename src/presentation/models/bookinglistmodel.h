@@ -11,6 +11,7 @@
 class BookingListModel : public QAbstractListModel
 {
     Q_OBJECT
+    Q_PROPERTY(int count READ count NOTIFY countChanged)
 public:
    
     enum bookingRoles{
@@ -20,7 +21,7 @@ public:
         BookingDateRole,
         AmountRole,
         CommissionAmountRole,
-
+        StatusRole,
     };
      explicit BookingListModel(QObject *parent = nullptr);
     ~BookingListModel();
@@ -33,12 +34,19 @@ public:
     // Basic functionality:
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
 
+    int count() const { return m_bookings.size(); }
+
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
     QHash<int, QByteArray> roleNames() const override;
 
     // ====== INVOKABLE METHODS FOR QML
     Q_INVOKABLE void addBooking(Booking* booking);
     Q_INVOKABLE void removeBooking(int index);
+    Q_INVOKABLE void clear();
+
+    int countByStatus(BookingStatus status) const;
+    double sumAmount() const;
+    double sumCommission() const;
     // Q_INVOKABLE void clear();
 
  signals:

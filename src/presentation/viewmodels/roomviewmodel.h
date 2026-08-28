@@ -18,6 +18,10 @@ public:
 
     Q_INVOKABLE void loadRooms();
     Q_INVOKABLE void loadRoom(const QString& roomId);
+    Q_INVOKABLE void createRoom(const QString& propertyId, const QString& type, bool available);
+
+    Q_INVOKABLE int availableRoomsCount() const;
+    Q_INVOKABLE int bookedRoomsCount() const;
 
 private:
     bool m_isLoading = false;

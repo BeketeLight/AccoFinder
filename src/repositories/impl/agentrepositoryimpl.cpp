@@ -11,7 +11,7 @@ AgentRepositoryImpl::AgentRepositoryImpl(QObject *parent)
 void AgentRepositoryImpl::getAgents()
 {
     APIClient::instance().get(
-        "api/agents/",
+        "/agents/",
         [this](bool success, const QJsonObject& response)
         {
             QList<Agent*> agents;
@@ -37,14 +37,14 @@ void AgentRepositoryImpl::getAgents()
             } else {
                 emit agentError(response.value("message").toString());
             }
-        }
+        }, false
     );
 }
 
 void AgentRepositoryImpl::getAgentById(const QString &agentId)
 {
     APIClient::instance().get(
-        "api/agents/" + agentId,
+        "/agents/" + agentId,
         [this](bool success, const QJsonObject& response)
         {
             if (success) {
@@ -65,7 +65,7 @@ void AgentRepositoryImpl::getAgentById(const QString &agentId)
             } else {
                 emit agentError(response.value("message").toString());
             }
-        }
+        }, false
     );
 }
 
@@ -76,7 +76,7 @@ void AgentRepositoryImpl::updateAgent(const QString &agentId, const QString &are
     if (commissionRate > 0) payload["commissionRate"] = commissionRate;
 
     APIClient::instance().patch(
-        "api/agents/" + agentId,
+        "/agents/" + agentId,
         payload,
         [this](bool success, const QJsonObject& response)
         {
@@ -98,7 +98,7 @@ void AgentRepositoryImpl::updateAgent(const QString &agentId, const QString &are
             } else {
                 emit agentError(response.value("message").toString());
             }
-        }
+        }, false
     );
 }
 
@@ -108,7 +108,7 @@ void AgentRepositoryImpl::setAgentActive(const QString &agentId, bool active)
     payload["isActive"] = active;
 
     APIClient::instance().patch(
-        "api/agents/" + agentId + "/status",
+        "/agents/" + agentId + "/status",
         payload,
         [this](bool success, const QJsonObject& response)
         {
@@ -130,14 +130,14 @@ void AgentRepositoryImpl::setAgentActive(const QString &agentId, bool active)
             } else {
                 emit agentError(response.value("message").toString());
             }
-        }
+        }, false
     );
 }
 
 void AgentRepositoryImpl::getAgentApplications()
 {
     APIClient::instance().get(
-        "api/agent-applications/",
+        "/agent-applications/",
         [this](bool success, const QJsonObject& response)
         {
             QList<Agent*> applications;
@@ -162,7 +162,7 @@ void AgentRepositoryImpl::getAgentApplications()
             } else {
                 emit agentError(response.value("message").toString());
             }
-        }
+        }, false
     );
 }
 
@@ -172,7 +172,7 @@ void AgentRepositoryImpl::approveApplication(const QString &applicationId)
     payload["status"] = "Approved";
 
     APIClient::instance().patch(
-        "api/agent-applications/" + applicationId + "/approve",
+        "/agent-applications/" + applicationId + "/approve",
         payload,
         [this, applicationId](bool success, const QJsonObject& response)
         {
@@ -181,7 +181,7 @@ void AgentRepositoryImpl::approveApplication(const QString &applicationId)
             } else {
                 emit agentError(response.value("message").toString());
             }
-        }
+        }, false
     );
 }
 
@@ -191,7 +191,7 @@ void AgentRepositoryImpl::rejectApplication(const QString &applicationId)
     payload["status"] = "Rejected";
 
     APIClient::instance().patch(
-        "api/agent-applications/" + applicationId + "/reject",
+        "/agent-applications/" + applicationId + "/reject",
         payload,
         [this, applicationId](bool success, const QJsonObject& response)
         {
@@ -200,6 +200,6 @@ void AgentRepositoryImpl::rejectApplication(const QString &applicationId)
             } else {
                 emit agentError(response.value("message").toString());
             }
-        }
+        }, false
     );
 }

@@ -12,6 +12,7 @@
 class DisputesListModel : public QAbstractListModel
 {
     Q_OBJECT
+    Q_PROPERTY(int count READ count NOTIFY countChanged)
 
 public:
     enum roles{
@@ -25,12 +26,16 @@ public:
 
     // Basic functionality:
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
+    int count() const { return m_disputes.size(); }
 
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
     QHash<int,QByteArray> roleNames() const override;
     void addDisputes(QList<Dispute*>& disputes);
 
     void updateDispute(int index,Dispute* newDispute);
+
+signals:
+    void countChanged(int newCount);
 
 private:
     QVector<Dispute*> m_disputes;

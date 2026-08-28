@@ -7,16 +7,22 @@ import "../../../utils/NavigationUtils.js" as NavUtils
 Item {
     id: root
 
-    property string pageTitle: qsTr("AccoFinder")
+    property string pageTitle: (AppSettings.userType() === "AGENT" || AppSettings.userType() === "ADMIN")
+                               ? qsTr("Agent Dashboard")
+                               : qsTr("AccoFinder")
     property bool showHeader: true
     property bool showBackButton: false
     property bool isSearchBar: false
-    property int titleFontSize: 25
+    property int titleFontSize: 18
     property bool showBottomBorder: false
     property bool searchReadOnly: true
 
     readonly property bool isAgentUser: AppSettings.userType() === "AGENT"
                                         || AppSettings.userType() === "ADMIN"
+    // True when this screen hosts the embedded agent dashboard (the agent's main
+    // landing view). The header hamburger is driven off this in Main.qml.
+    readonly property bool isAgentDashboardHost: AppSettings.userType() === "AGENT"
+                                                 || AppSettings.userType() === "ADMIN"
 
     function onSearchBarTapped() {
         NavUtils.navigateToSearchScreen()
@@ -44,17 +50,22 @@ Item {
         visible: root.isAgentUser
 
         onAddPropertyRequested: NavUtils.navigateToAddProperty()
-        onAttentionClicked: function (propertyTitle) {
-            var payload = propertiesPage.listModel.registrationPayloadFor(propertyTitle, "title")
-            if (!payload) {
-                console.log("No property found for attention item:", propertyTitle)
-                return
+        onAttentionClicked: function (kind, targetId) {
+            // The embedded dashboard routes attention items internally via
+            // propertyClicked/draftClicked, so this top-level handler is only a
+            // safety net. Route the same way the page does.
+            if (kind === "server") {
+                propertiesPage.propertyClicked(targetId)
+            } else {
+                var d = DraftViewModel.getDraft(targetId)
+                if (d) {
+                    d.draftKey = targetId
+                    propertiesPage.draftClicked(d)
+                }
             }
-            NavUtils.push("../features/properties/screens/PropertyDetailScreen.qml",
-                          { initialPayload: payload })
         }
         onPropertyClicked: function (propertyId) {
-            var payload = propertiesPage.listModel.registrationPayloadFor(propertyId, "propertyId")
+            var payload = propertiesPage.payloadForId(propertyId)
             if (!payload) {
                 console.log("No property found:", propertyId)
                 return
@@ -62,9 +73,16 @@ Item {
             NavUtils.push("../features/properties/screens/PropertyDetailScreen.qml",
                           { initialPayload: payload })
         }
+        onDraftClicked: function (payload) {
+            // A draft opens the detail page so the agent can see what failed and
+            // edit/re-submit from there, instead of only listing it.
+            NavUtils.push("../features/properties/screens/PropertyDetailScreen.qml",
+                          { initialPayload: payload || {} })
+        }
         onBookingClicked: NavUtils.navigateToBookings()
         onNotificationClicked: NavUtils.navigateToNotifications()
         onDisputeClicked: NavUtils.navigateToDisputes()
+        onDraftsClicked: NavUtils.navigateToDrafts()
     }
 
     Rectangle {

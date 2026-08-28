@@ -6,47 +6,136 @@ Item {
     property string agentName: AppSettings.isLoggedIn() && AppSettings.userName().length > 0 ? AppSettings.userName() : "Agent"
     property double commissionRate: AppSettings.commissionRate()
 
-    property int totalProperties: 6
-    property int pendingVerifications: 2
-    property int verifiedProperties: 2
-    property int availableRooms: 37
-    property int bookedRooms: 21
-    property int pendingBookings: 1
-    property int confirmedBookings: 2
-    property int cancelledBookings: 1
-    property real totalBookingValue: 109000
-    property real commissionEarned: 8720
+    // Real stats computed from the live C++ view models. When there is no data
+    // yet these fall back to zero — no fake numbers are ever shown on cards.
+    // Each depends on refreshTick so they re-evaluate whenever the underlying
+    // view models signal that fresh data has arrived.
+    property int refreshTick: 0
+    property int totalProperties: (PropertyViewModel.propertyListModel ? PropertyViewModel.propertyListModel.count : 0) + refreshTick - refreshTick
+    property int pendingVerifications: PropertyViewModel.pendingPropertiesCount() + refreshTick - refreshTick
+    property int verifiedProperties: PropertyViewModel.verifiedPropertiesCount() + refreshTick - refreshTick
+    property int availableRooms: RoomViewModel.availableRoomsCount() + refreshTick - refreshTick
+    property int bookedRooms: RoomViewModel.bookedRoomsCount() + refreshTick - refreshTick
+    property int pendingBookings: BookingViewModel.pendingBookingsCount() + refreshTick - refreshTick
+    property int confirmedBookings: BookingViewModel.confirmedBookingsCount() + refreshTick - refreshTick
+    property int cancelledBookings: BookingViewModel.cancelledBookingsCount() + refreshTick - refreshTick
+    property real totalBookingValue: BookingViewModel.totalBookingValue() + refreshTick - refreshTick
+    property real commissionEarned: BookingViewModel.commissionEarned() + refreshTick - refreshTick
 
     readonly property alias attentionModel: attentionModelId
-    readonly property alias recentBookingsModel: recentBookingsModelId
-    readonly property alias notificationsModel: notificationsModelId
-    readonly property alias disputesModel: disputesModelId
+    // Live C++ list models. These are populated by their owning view models
+    // (BookingViewModel / NotificationViewModel / DisputesListViewModel). The
+    // delegates stay unchanged; the fake ListModel data has been removed.
+    readonly property var recentBookingsModel: BookingViewModel.bookingListModel
+    readonly property var notificationsModel: NotificationViewModel.notificationListModel
+    readonly property var disputesModel: DisputesListViewModel.disputesListModel
 
     ListModel {
         id: attentionModelId
-        ListElement { title: "Acacia Studio"; reason: "Draft incomplete: missing photos"; actionLabel: "Complete draft" }
-        ListElement { title: "Brookline Guest House"; reason: "Verification rejected: unclear ownership documents"; actionLabel: "Resubmit" }
-        ListElement { title: "Palm Bungalow"; reason: "Verification pending for 5 days"; actionLabel: "Follow up" }
     }
 
-    ListModel {
-        id: recentBookingsModelId
-        ListElement { client: "Brian P."; propertyTitle: "Sunview Apartments"; room: "Room B2"; amount: 25000; date: "22 Aug"; status: "Confirmed" }
-        ListElement { client: "Faith C."; propertyTitle: "Green Court Hostel"; room: "Room 7"; amount: 12000; date: "22 Aug"; status: "Pending" }
-        ListElement { client: "Chikondi B."; propertyTitle: "Palm Bungalow"; room: "Whole house"; amount: 40000; date: "21 Aug"; status: "Confirmed" }
-        ListElement { client: "Mary Z."; propertyTitle: "Riverside Flats"; room: "Room A1"; amount: 32000; date: "20 Aug"; status: "Cancelled" }
+    function refreshAttention() {
+        attentionModelId.clear()
+
+        // Server-backed properties that need the agent's action. Detection is
+        // limited to the fields exposed by propertiesForView(): status + price.
+        var server = PropertyViewModel.propertiesForView() || []
+        for (var s = 0; s < server.length; s++) {
+            var sp = server[s] || {}
+            var status = String(sp.verificationStatus || "").toUpperCase()
+            if (status === "REJECTED") {
+                attentionModelId.append({
+                    title: sp.title || "Untitled property",
+                    reason: qsTr("Verification rejected — resubmit"),
+                    actionLabel: qsTr("Resubmit"),
+                    kind: "server",
+                    targetId: String(sp.id || "")
+                })
+            } else if (status !== "VERIFIED" && (sp.price === undefined || Number(sp.price) <= 0)) {
+                attentionModelId.append({
+                    title: sp.title || "Untitled property",
+                    reason: qsTr("Missing or to-be-negotiated price — add pricing"),
+                    actionLabel: qsTr("Update"),
+                    kind: "server",
+                    targetId: String(sp.id || "")
+                })
+            }
+        }
+
+        // Local drafts never hit the backend (failed uploads needing review).
+        var drafts = DraftViewModel.allDrafts() || {}
+        var keys = Object.keys(drafts)
+        for (var i = 0; i < keys.length; i++) {
+            var d = drafts[keys[i]] || {}
+            var title = d.title || "Untitled property"
+            var reason = qsTr("Draft failed to upload — review and resend")
+            attentionModelId.append({
+                title: title,
+                reason: reason,
+                actionLabel: qsTr("Review"),
+                kind: "draft",
+                targetId: keys[i]
+            })
+        }
     }
 
-    ListModel {
-        id: notificationsModelId
-        ListElement { title: "New booking received"; message: "Green Court Hostel · Room 7 requested"; time: "2h ago"; unread: true }
-        ListElement { title: "Verification approved"; message: "Sunview Apartments is now live"; time: "5h ago"; unread: false }
-        ListElement { title: "Commission settled"; message: "MK 6,400 credited to your account"; time: "1d ago"; unread: false }
+    // Pull data for all dashboard sections from their C++ view models.
+    function refreshAll() {
+        root.refreshAttention()
+        PropertyViewModel.getProperties()
+        RoomViewModel.loadRooms()
+        BookingViewModel.fetchBookings()
+        NotificationViewModel.getNotifications()
+        DisputesListViewModel.getDisputes()
     }
 
-    ListModel {
-        id: disputesModelId
-        ListElement { subject: "Refund request · BK-1042"; propertyName: "Riverside Flats"; state: "Open" }
-        ListElement { subject: "Noise complaint · BK-1038"; propertyName: "Green Court Hostel"; state: "In review" }
+    // Re-evaluate the stat bindings after fresh data has arrived.
+    function refreshStats() {
+        root.refreshTick = root.refreshTick + 1
+    }
+
+    Component.onCompleted: {
+        root.refreshAll()
+    }
+
+    Connections {
+        target: DraftViewModel
+        function onDraftsChanged() { root.refreshAttention() }
+    }
+
+    Connections {
+        target: PropertyViewModel
+        function onIsLoadingChanged(loading) {
+            if (!loading)
+                root.refreshStats()
+        }
+    }
+
+    Connections {
+        target: RoomViewModel
+        function onIsLoadingChanged(loading) {
+            if (!loading)
+                root.refreshStats()
+        }
+    }
+
+    Connections {
+        target: PropertyViewModel.propertyListModel
+        function onModelReset() { root.refreshAttention(); root.refreshStats() }
+        function onRowsInserted(parent, first, last) { root.refreshAttention(); root.refreshStats() }
+        function onRowsRemoved(parent, first, last) { root.refreshAttention(); root.refreshStats() }
+    }
+
+    Connections {
+        target: BookingViewModel.bookingListModel
+        function onCountChanged(newCount) { root.refreshStats() }
+        function onModelReset() { root.refreshStats() }
+    }
+
+    Connections {
+        target: RoomViewModel.roomListModel
+        function onModelReset() { root.refreshStats() }
+        function onRowsInserted(parent, first, last) { root.refreshStats() }
+        function onRowsRemoved(parent, first, last) { root.refreshStats() }
     }
 }

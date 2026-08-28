@@ -5,29 +5,43 @@ Item {
 
     property string adminName: AppSettings.isLoggedIn() && AppSettings.userName().length > 0 ? AppSettings.userName() : "Admin"
 
-    // System overview
-    property int totalUsers: 1284
-    property int registeredAgents: 36
-    property int totalProperties: 214
-    property int pendingVerifications: 9
-    property int verifiedProperties: 168
-    property int openDisputes: 4
-    property int totalBookings: 512
-    property real totalBookingValue: 4820000
-    property real platformCommission: 241000
+    // Real stats sourced from the DashboardController (C++ -> API). Any value
+    // that has no backend counterpart yet falls back to zero — no fake data is
+    // ever shown on the cards. Each binding depends on refreshTick so the cards
+    // re-evaluate whenever refreshed data arrives.
+    property int refreshTick: 0
+    property int totalUsers: DashboardController.totalUsers + refreshTick - refreshTick
+    property int registeredAgents: DashboardController.totalAgents + refreshTick - refreshTick
+    property int totalProperties: DashboardController.totalProperties + refreshTick - refreshTick
+    property int pendingVerifications: DashboardController.pendingVerifications + refreshTick - refreshTick
+    property int verifiedProperties: 0 + refreshTick - refreshTick
+    property int openDisputes: 0 + refreshTick - refreshTick
+    property int totalBookings: DashboardController.totalBookings + refreshTick - refreshTick
+    property real totalBookingValue: DashboardController.totalBookingValue + refreshTick - refreshTick
+    property real platformCommission: 0 + refreshTick - refreshTick
 
     // Payment & commission oversight summary
-    property real paymentsCollected: 4579000
-    property int paymentsPendingSettlement: 6
-    property real agentCommissionsDue: 38400
-    property int ownerPayoutsPending: 3
+    property real paymentsCollected: 0 + refreshTick - refreshTick
+    property int paymentsPendingSettlement: 0 + refreshTick - refreshTick
+    property real agentCommissionsDue: 0 + refreshTick - refreshTick
+    property int ownerPayoutsPending: 0 + refreshTick - refreshTick
 
     readonly property alias pendingActivitiesModel: pendingActivitiesModelId
 
     ListModel {
         id: pendingActivitiesModelId
-        ListElement { title: "9 properties awaiting verification"; detail: "Oldest waiting since 19 Aug"; kind: "approvals" }
-        ListElement { title: "3 owner payouts pending"; detail: "MK 96,500 due for release"; kind: "payments" }
-        ListElement { title: "2 agent applications"; detail: "Chilumba M., Yankho N."; kind: "agents" }
+    }
+
+    function refreshStats() {
+        root.refreshTick = root.refreshTick + 1
+    }
+
+    Component.onCompleted: {
+        DashboardController.refreshStats()
+    }
+
+    Connections {
+        target: DashboardController
+        function onStatsUpdated() { root.refreshStats() }
     }
 }

@@ -9,6 +9,7 @@
 #include <QMap>
 #include "core/utils/appsettings.h"
 #include <QNetworkCookieJar>
+#include <QStringList>
 
 class APIClient : public QObject
 {
@@ -57,6 +58,17 @@ public:
         bool skipAuth = false
         );
 
+    // Multipart (form-data) upload for binary files (e.g. media → S3 at the API).
+    // `metadata` are sent as additional form fields; the file bytes are read from `filePath`.
+    void postMultipart(
+        const QString& endpoint,
+        const QString& filePath,
+        const QString& fileFieldName,
+        const QString& contentType,
+        const QJsonObject& metadata,
+        SuccessCallback callback
+        );
+
 signals:
 
     void networkError(const QString& message);
@@ -93,6 +105,7 @@ private:
         );
 
     void setupHeaders(QNetworkRequest& request, bool skipAuth = false);
+    void setupHeadersAllowMultipart(QNetworkRequest& request, bool skipAuth = false);
     static QString errorMessageFromBody(const QJsonObject& body);
 };
 

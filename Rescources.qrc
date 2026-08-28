@@ -21,5 +21,6 @@
         <file>ui/assets/save-icon.svg</file>
         <file>ui/assets/dashboard-icon.svg</file>
         <file>ui/assets/hamburger-icon.svg</file>
+        <file>ui/assets/disputes-icon.svg</file>
     </qresource>
 </RCC>

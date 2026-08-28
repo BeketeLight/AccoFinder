@@ -36,6 +36,9 @@ public:
     void setRooms(QList<QSharedPointer<Room>> newRooms);
     void apppendRoom(QSharedPointer<Room> room);
 
+    int availableCount() const;
+    int bookedCount() const;
+
 private:
     QVector<QSharedPointer<Room>> m_rooms;
 };

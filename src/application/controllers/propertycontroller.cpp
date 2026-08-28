@@ -48,25 +48,32 @@ void PropertyController::getPropertiesByStatus(const QString &status)
     m_propertyRepositoryImpl->getPropertiesByStatus(status);
 }
 
-void PropertyController::createProperty(const QString &title, const QString &description, double price, const QString &costCategory)
+void PropertyController::createProperty(const QString &title, const QString &description, double price,
+                                        const QString &propertyType, const QString &district, const QString &village,
+                                        const QStringList &amenities, const QString &landlord,
+                                        const QString &landlordPhone, const QString &verificationStatus,
+                                        bool isActive, const QJsonArray &rooms)
 {
     if (title.isEmpty()) {
         emit propertyError("title cannot be empty");
         return;
     }
-    if (price <= 0) {
-        emit propertyError("price must be greater than 0");
-        return;
-    }
     setLoading(true);
-    m_propertyRepositoryImpl->createProperty(title, description, price, costCategory);
+    m_propertyRepositoryImpl->createProperty(title, description, price, propertyType, district, village,
+                                             amenities, landlord, landlordPhone, verificationStatus, isActive, rooms);
 }
 
 void PropertyController::updateProperty(const QString& houseId,
                                         const QString& title,
                                         const QString& description,
                                         double price,
-                                        const QString& costCategory)
+                                        const QString& district,
+                                        const QString& village,
+                                        const QStringList& amenities,
+                                        const QString& landlord,
+                                        const QString& landlordPhone,
+                                        const QString& verificationStatus,
+                                        bool isActive)
 {
     if (houseId.isEmpty()) {
         emit propertyError("houseId cannot be empty");
@@ -76,12 +83,9 @@ void PropertyController::updateProperty(const QString& houseId,
         emit propertyError("title cannot be empty");
         return;
     }
-    if (price <= 0) {
-        emit propertyError("price must be greater than 0");
-        return;
-    }
     setLoading(true);
-    m_propertyRepositoryImpl->updateProperty(houseId, title, description, price, costCategory);
+    m_propertyRepositoryImpl->updateProperty(houseId, title, description, price, district, village,
+                                             amenities, landlord, landlordPhone, verificationStatus, isActive);
 }
 
 void PropertyController::deleteProperty(const QString &houseId)
@@ -92,4 +96,13 @@ void PropertyController::deleteProperty(const QString &houseId)
     }
     setLoading(true);
     m_propertyRepositoryImpl->deleteProperty(houseId);
+}
+
+void PropertyController::attachMedia(const QString &houseId, const QStringList &mediaIds)
+{
+    if (houseId.isEmpty()) {
+        emit propertyError("houseId cannot be empty");
+        return;
+    }
+    m_propertyRepositoryImpl->attachMedia(houseId, mediaIds);
 }

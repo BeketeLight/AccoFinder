@@ -2,6 +2,10 @@
 #define PROPERTYVIEWMODEL_H
 
 #include <QObject>
+#include <QStringList>
+#include <QJsonArray>
+#include <QVariantList>
+#include <QVariantMap>
 #include "application/controllers/propertycontroller.h"
 #include "presentation/models/propertylistmodel.h"
 
@@ -16,6 +20,9 @@ public:
     PropertyListModel* propertyListModel() const { return m_propertyListModel; }
     bool isLoading() const { return m_isLoading; }
 
+    Q_INVOKABLE QVariantList propertiesForView() const;
+    Q_INVOKABLE int pendingPropertiesCount() const;
+    Q_INVOKABLE int verifiedPropertiesCount() const;
     Q_INVOKABLE void getProperties();
     Q_INVOKABLE void getPropertyById(const QString& houseId);
     Q_INVOKABLE void updateProperty(int index,
@@ -23,12 +30,27 @@ public:
                                     const QString& title,
                                     const QString& description,
                                     double price,
-                                    const QString& costCategory);
+                                    const QString& district,
+                                    const QString& village,
+                                    const QStringList& amenities,
+                                    const QString& landlord,
+                                    const QString& landlordPhone,
+                                    const QString& verificationStatus,
+                                    bool isActive);
     Q_INVOKABLE void createProperty(const QString& title,
                                     const QString& description,
                                     double price,
-                                    const QString& costCategory);
+                                    const QString& propertyType,
+                                    const QString& district,
+                                    const QString& village,
+                                    const QStringList& amenities,
+                                    const QString& landlord,
+                                    const QString& landlordPhone,
+                                    const QString& verificationStatus,
+                                    bool isActive,
+                                    const QJsonArray& rooms = QJsonArray());
     Q_INVOKABLE void deleteProperty(const QString& houseId);
+    Q_INVOKABLE void attachMedia(const QString& houseId, const QStringList& mediaIds);
 
 private:
     int m_index = -1;
@@ -42,11 +64,13 @@ private slots:
     void onPropertiesLoaded(QList<Property*>& properties);
     void onGetPropertyById(Property* property);
     void onUpdateProperty(Property* property);
+    void onCreateProperty(Property* property);
     void onPropertyError(const QString& error);
 
 signals:
     void isLoadingChanged(bool isLoading);
     void propertyError(const QString& error);
+    void propertyCreatedSignal(const QString& id, const QString& title);
 };
 
 #endif // PROPERTYVIEWMODEL_H

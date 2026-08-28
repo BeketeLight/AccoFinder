@@ -35,6 +35,11 @@ void RoomViewModel::loadRoom(const QString &roomId)
     m_roomController->loadRoom(roomId);
 }
 
+void RoomViewModel::createRoom(const QString &propertyId, const QString &type, bool available)
+{
+    m_roomController->createRoom(propertyId, type, available);
+}
+
 void RoomViewModel::onRoomsLoaded(const QList<QSharedPointer<Room>> &rooms)
 {
     setLoading(false);
@@ -60,4 +65,14 @@ void RoomViewModel::onError(const QString &message)
 {
     setLoading(false);
     emit roomError(message);
+}
+
+int RoomViewModel::availableRoomsCount() const
+{
+    return m_roomListModel ? m_roomListModel->availableCount() : 0;
+}
+
+int RoomViewModel::bookedRoomsCount() const
+{
+    return m_roomListModel ? m_roomListModel->bookedCount() : 0;
 }

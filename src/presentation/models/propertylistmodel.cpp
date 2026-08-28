@@ -51,6 +51,9 @@ QVariant PropertyListModel::data(const QModelIndex &index, int role) const
             return property->getDescription();
         case StatusRole:
         {
+            QString status = property->getVerificationStatus();
+            if (!status.isEmpty())
+                return status;
             switch(property->getStatus())
             {
             case PropertyStatus::NotVerified:
@@ -65,6 +68,20 @@ QVariant PropertyListModel::data(const QModelIndex &index, int role) const
 
             return "Unknown";
         }
+        case DistrictRole:
+            return property->getDistrict();
+        case VillageRole:
+            return property->getVillage();
+        case AmenitiesRole:
+            return property->getAmenities();
+        case LandlordPhoneRole:
+            return property->getLandlordPhone();
+        case VerificationStatusRole:
+            return property->getVerificationStatus();
+        case IsActiveRole:
+            return property->isActive();
+        case PropertyTypeRole:
+            return property->getPropertyType();
 
     }
 
@@ -85,7 +102,14 @@ QHash<int, QByteArray> PropertyListModel::roleNames() const
         {LandlordIdRole, "landlordId"},
         {CreatedAtRole, "createdAt"},
         {DescriptionRole, "description"},
-        {StatusRole, "status"}
+        {StatusRole, "status"},
+        {DistrictRole, "district"},
+        {VillageRole, "village"},
+        {AmenitiesRole, "amenities"},
+        {LandlordPhoneRole, "landlordPhone"},
+        {VerificationStatusRole, "verificationStatus"},
+        {IsActiveRole, "isActive"},
+        {PropertyTypeRole, "propertyType"}
     };
     return mapping;
 }
@@ -97,13 +121,20 @@ void PropertyListModel::setProperties(QList<Property*>&  newProperties)
     m_properties = newProperties;
     endResetModel();
 }
+
+void PropertyListModel::appendProperty(Property* property)
+{
+    beginInsertRows(QModelIndex(), m_properties.size(), m_properties.size());
+    m_properties.append(property);
+    endInsertRows();
+}
+
 void PropertyListModel::updateProperty(int index, Property* property)
 {
     if (index < 0 || index >= m_properties.size())
         return;
 
     beginResetModel();
-
     m_properties[index] = property;
     endResetModel();
 }

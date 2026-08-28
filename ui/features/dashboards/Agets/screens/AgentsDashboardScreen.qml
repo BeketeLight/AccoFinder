@@ -12,7 +12,7 @@ Item {
 
     signal goBack()
     signal addPropertyRequested()
-    signal attentionClicked(var propertyTitle)
+    signal attentionClicked(var kind, var targetId)
     signal bookingClicked()
     signal notificationClicked()
     signal disputeClicked()
@@ -63,7 +63,7 @@ Item {
                 width: Math.min(flick.width - 24, 520)
 
                 onAddPropertyRequested: root.addPropertyRequested()
-                onAttentionClicked: (propertyTitle) => root.attentionClicked(propertyTitle)
+                onAttentionClicked: (kind, targetId) => root.attentionClicked(kind, targetId)
                 onBookingClicked: root.bookingClicked()
                 onNotificationClicked: root.notificationClicked()
                 onDisputeClicked: root.disputeClicked()

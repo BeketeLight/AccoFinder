@@ -9,10 +9,14 @@
 class BookingViewModel : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(BookingListModel *bookingListModel READ bookingListModel CONSTANT)
+    Q_PROPERTY(bool isLoading READ isLoading NOTIFY isLoadingChanged)
 
 public:
     bool isLoading() const;
     explicit BookingViewModel(QObject *parent = nullptr);
+
+    BookingListModel *bookingListModel() const { return m_bookingListModel.data(); }
 
     Q_INVOKABLE void createBooking(const QString& houseId,
                              const QDateTime& startDate,
@@ -25,8 +29,15 @@ public:
     Q_INVOKABLE void confirmBooking(const QString& id);
     Q_INVOKABLE void deleteBooking(const QString& id);
 
+    Q_INVOKABLE int pendingBookingsCount() const;
+    Q_INVOKABLE int confirmedBookingsCount() const;
+    Q_INVOKABLE int cancelledBookingsCount() const;
+    Q_INVOKABLE double totalBookingValue() const;
+    Q_INVOKABLE double commissionEarned() const;
+
 private slots:
         // void onBookingsLoaded(const QList<Booking*>& bookings);
+        void onBookingsLoaded(const QList<Booking*>& bookings);
         void onBookingCreated(Booking* booking);
         void onBookingLoaded(Booking* booking);
         void onBookingConfirmed(Booking* booking);

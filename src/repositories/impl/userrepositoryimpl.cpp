@@ -58,6 +58,11 @@ void UserRepositoryImpl::signIn(
                 AppSettings::instance().setPreferredLocation(residentialAddress);
                 AppSettings::instance().setFilterLocation(residentialAddress);
 
+                // Keep the APIClient singleton's cached token in sync so every
+                // authenticated endpoint (dashboard stats, rooms, bookings, …)
+                // carries the freshly issued token instead of a stale one.
+                APIClient::instance().setAuthToken(accessToken);
+
                 emit signInSucceded(user);
             }
             else{
@@ -170,6 +175,10 @@ void UserRepositoryImpl::logOut()
                 AppSettings::instance().setUserId("");
                 AppSettings::instance().setUserType("");
                 AppSettings::instance().setIsLoggedIn(false);
+
+                // Drop the cached token in the API client so no subsequent call
+                // carries a stale (now-invalid) session token.
+                APIClient::instance().setAuthToken("");
 
                 emit logOutSucceded();
             }

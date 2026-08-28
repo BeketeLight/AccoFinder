@@ -75,6 +75,9 @@ function navigateToProperties(){
 function navigateToAddProperty(){
     push("../features/properties/screens/AddPropertyScreen.qml")
 }
+function navigateToDrafts(){
+    push("../features/properties/screens/DraftsScreen.qml")
+}
 function navigateToPayments(){
     push("../features/payments/screens/PaymentsScreen.qml")
 }
@@ -169,6 +172,7 @@ var Navigation = {
     resetToProfile: resetToProfile,
     navigateToProperties: navigateToProperties,
     navigateToAddProperty: navigateToAddProperty,
+    navigateToDrafts: navigateToDrafts,
     navigateToBookings: navigateToBookings,
     navigateToPropertyDetails: navigateToPropertyDetails,
     navigateToPayments: navigateToPayments,

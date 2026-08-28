@@ -5,6 +5,11 @@
 #include <QJsonDocument>
 #include <QUrl>
 #include <QDebug>
+#include <QHttpMultiPart>
+#include <QHttpPart>
+#include <QFile>
+#include <QFileInfo>
+#include <QDateTime>
 
 APIClient::APIClient(QObject *parent)
     : QObject(parent),
@@ -125,6 +130,73 @@ void APIClient::del(
         );
 }
 
+void APIClient::postMultipart(
+    const QString &endpoint,
+    const QString &filePath,
+    const QString &fileFieldName,
+    const QString &contentType,
+    const QJsonObject &metadata,
+    SuccessCallback callback)
+{
+    QUrl url(m_baseUrl + endpoint);
+    QNetworkRequest request(url);
+    request.setAttribute(QNetworkRequest::HttpPipeliningAllowedAttribute, false);
+    request.setAttribute(QNetworkRequest::Http2AllowedAttribute, false);
+    setupHeadersAllowMultipart(request);
+
+    QFile *file = new QFile(filePath);
+    if (!file->open(QIODevice::ReadOnly)) {
+        // Build an error response for the callback and emit a network error.
+        QString err = QStringLiteral("Could not open file for upload: %1").arg(filePath);
+        qWarning() << err;
+        emit networkError(err);
+        if (callback)
+            callback(false, QJsonObject());
+        delete file;
+        return;
+    }
+
+    const QString boundary = "qtformboundary" + QString::number(QDateTime::currentMSecsSinceEpoch());
+    QHttpMultiPart *multiPart = new QHttpMultiPart(QHttpMultiPart::FormDataType);
+    multiPart->setBoundary(boundary.toUtf8());    // Metadata form fields
+    for (auto it = metadata.constBegin(); it != metadata.constEnd(); ++it) {
+        QHttpPart fieldPart;
+        fieldPart.setHeader(QNetworkRequest::ContentDispositionHeader,
+                            QStringLiteral("form-data; name=\"%1\"").arg(it.key()));
+        QVariant value = it.value().toVariant();
+        fieldPart.setBody(value.toString().toUtf8());
+        multiPart->append(fieldPart);
+    }
+
+    // File part
+    QHttpPart filePart;
+    const QString fileName = QFileInfo(filePath).fileName();
+    filePart.setHeader(
+        QNetworkRequest::ContentDispositionHeader,
+        QStringLiteral("form-data; name=\"%1\"; filename=\"%2\"").arg(fileFieldName).arg(fileName));
+    if (!contentType.isEmpty())
+        filePart.setHeader(QNetworkRequest::ContentTypeHeader, contentType);
+    file->setParent(multiPart);
+    filePart.setBodyDevice(file);
+    multiPart->append(filePart);
+
+    qDebug() << "=== Sending Multipart Request ===";
+    qDebug() << "Method: POST (multipart/form-data)";
+    qDebug() << "URL:" << url.toString();
+    qDebug() << "File:" << filePath;
+    qDebug() << "Metadata:" << QJsonDocument(metadata).toJson();
+
+    QNetworkReply *reply = m_networkManager->post(request, multiPart);
+    multiPart->setParent(reply);
+
+    if (reply) {
+        PendingRequest pending;
+        pending.callback = callback;
+        pending.skipAuth = false;
+        m_pendingRequests.insert(reply, pending);
+    }
+}
+
 void APIClient::sendRequest(
     const QString &method,
     const QString &endpoint,
@@ -224,14 +296,44 @@ void APIClient::setupHeaders(
     request.setRawHeader("Accept-Language", "en-US,en;q=0.9");
     request.setRawHeader("Cache-Control", "no-cache");
 
-    if(!skipAuth && !m_authToken.isEmpty())
+    if(!skipAuth)
     {
-        request.setRawHeader(
-            "Authorization",
-            QString("Bearer %1")
-                .arg(m_authToken)
-                .toUtf8()
-            );
+        // Always read the token live so protected (isAuth) endpoints carry the
+        // current agent/user session after login, even though APIClient is a
+        // long-lived singleton.
+        const QString token = m_authToken.isEmpty()
+            ? AppSettings::instance().token()
+            : m_authToken;
+        if(!token.isEmpty())
+        {
+            request.setRawHeader(
+                "Authorization",
+                QString("Bearer %1").arg(token).toUtf8());
+        }
+    }
+}
+
+void APIClient::setupHeadersAllowMultipart(
+    QNetworkRequest &request,
+    bool skipAuth)
+{
+    // Do NOT set a Content-Type here: QNetworkAccessManager::post(QHttpMultiPart*)
+    // sets the proper "multipart/form-data; boundary=..." header automatically.
+    request.setRawHeader("Accept", "application/json");
+    request.setRawHeader("Accept-Language", "en-US,en;q=0.9");
+    request.setRawHeader("Cache-Control", "no-cache");
+
+    if(!skipAuth)
+    {
+        const QString token = m_authToken.isEmpty()
+            ? AppSettings::instance().token()
+            : m_authToken;
+        if(!token.isEmpty())
+        {
+            request.setRawHeader(
+                "Authorization",
+                QString("Bearer %1").arg(token).toUtf8());
+        }
     }
 }
 

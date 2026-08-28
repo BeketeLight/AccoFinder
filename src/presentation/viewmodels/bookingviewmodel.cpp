@@ -10,6 +10,8 @@ BookingViewModel::BookingViewModel(QObject *parent)
     
     // connect(m_bookingController, &BookingController::bookingsLoaded,
     //      this,&BookingViewModel::onBookingsLoaded);
+    connect(m_bookingController.data(), &BookingController::bookingsLoaded,
+        this,&BookingViewModel::onBookingsLoaded);
     connect(m_bookingController.data(), &BookingController::bookingLoaded,
         this,&BookingViewModel::onBookingLoaded);
     connect(m_bookingController.data(), &BookingController::bookingCancelled,
@@ -65,6 +67,14 @@ void BookingViewModel::onBookingLoaded(Booking* booking)
     if(m_bookingListModel)
     m_bookingListModel->addBooking(booking);
 }
+void BookingViewModel::onBookingsLoaded(const QList<Booking*>& bookings)
+{
+    if (!m_bookingListModel)
+        return;
+    m_bookingListModel->clear();
+    for (Booking* b : bookings)
+        m_bookingListModel->addBooking(b);
+}
 void BookingViewModel::onBookingCreated(Booking* booking)
 {   
     if(m_bookingListModel)
@@ -96,4 +106,32 @@ bool BookingViewModel::isLoading() const
 void BookingViewModel::onBookingError(const QString& error)
 {
     emit errorOccurred(error);
+}
+
+int BookingViewModel::pendingBookingsCount() const
+{
+    return m_bookingListModel ? m_bookingListModel->countByStatus(BookingStatus::Pending) : 0;
+}
+
+int BookingViewModel::confirmedBookingsCount() const
+{
+    if (!m_bookingListModel)
+        return 0;
+    return m_bookingListModel->countByStatus(BookingStatus::Confirmed)
+         + m_bookingListModel->countByStatus(BookingStatus::Paid);
+}
+
+int BookingViewModel::cancelledBookingsCount() const
+{
+    return m_bookingListModel ? m_bookingListModel->countByStatus(BookingStatus::Cancelled) : 0;
+}
+
+double BookingViewModel::totalBookingValue() const
+{
+    return m_bookingListModel ? m_bookingListModel->sumAmount() : 0.0;
+}
+
+double BookingViewModel::commissionEarned() const
+{
+    return m_bookingListModel ? m_bookingListModel->sumCommission() : 0.0;
 }

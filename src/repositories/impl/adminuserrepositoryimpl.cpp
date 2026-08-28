@@ -11,7 +11,7 @@ AdminUserRepositoryImpl::AdminUserRepositoryImpl(QObject *parent)
 void AdminUserRepositoryImpl::getUsers()
 {
     APIClient::instance().get(
-        "api/users/",
+        "/users/",
         [this](bool success, const QJsonObject& response)
         {
             QList<User*> users;
@@ -25,14 +25,14 @@ void AdminUserRepositoryImpl::getUsers()
             } else {
                 emit userError(response.value("message").toString());
             }
-        }
+        }, false
     );
 }
 
 void AdminUserRepositoryImpl::getUserById(const QString &userId)
 {
     APIClient::instance().get(
-        "api/users/" + userId,
+        "/users/" + userId,
         [this](bool success, const QJsonObject& response)
         {
             if (success) {
@@ -41,7 +41,7 @@ void AdminUserRepositoryImpl::getUserById(const QString &userId)
             } else {
                 emit userError(response.value("message").toString());
             }
-        }
+        }, false
     );
 }
 
@@ -51,7 +51,7 @@ void AdminUserRepositoryImpl::updateUserRole(const QString &userId, const QStrin
     payload["role"] = role;
 
     APIClient::instance().patch(
-        "api/users/" + userId + "/role",
+        "/users/" + userId + "/role",
         payload,
         [this](bool success, const QJsonObject& response)
         {
@@ -61,7 +61,7 @@ void AdminUserRepositoryImpl::updateUserRole(const QString &userId, const QStrin
             } else {
                 emit userError(response.value("message").toString());
             }
-        }
+        }, false
     );
 }
 
@@ -71,7 +71,7 @@ void AdminUserRepositoryImpl::setAccountActive(const QString &userId, bool activ
     payload["isActive"] = active;
 
     APIClient::instance().patch(
-        "api/users/" + userId + "/status",
+        "/users/" + userId + "/status",
         payload,
         [this](bool success, const QJsonObject& response)
         {
@@ -81,6 +81,6 @@ void AdminUserRepositoryImpl::setAccountActive(const QString &userId, bool activ
             } else {
                 emit userError(response.value("message").toString());
             }
-        }
+        }, false
     );
 }
