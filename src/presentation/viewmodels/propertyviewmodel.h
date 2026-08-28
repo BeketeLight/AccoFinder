@@ -21,6 +21,8 @@ public:
     bool isLoading() const { return m_isLoading; }
 
     Q_INVOKABLE QVariantList propertiesForView() const;
+    Q_INVOKABLE int pendingPropertiesCount() const;
+    Q_INVOKABLE int verifiedPropertiesCount() const;
     Q_INVOKABLE void getProperties();
     Q_INVOKABLE void getPropertyById(const QString& houseId);
     Q_INVOKABLE void updateProperty(int index,

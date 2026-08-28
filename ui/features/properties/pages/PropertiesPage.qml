@@ -157,6 +157,7 @@ Page {
             return
         root.refreshing = true
         PropertyViewModel.getProperties()
+        RoomViewModel.loadRooms()
         // Also refresh the dashboard sections' data from their C++ view models.
         BookingViewModel.fetchBookings()
         NotificationViewModel.getNotifications()
@@ -178,6 +179,7 @@ Page {
                                  { label: "Pending" }, { label: "Draft" },
                                  { label: "Rejected" }])
         PropertyViewModel.getProperties()
+        RoomViewModel.loadRooms()
         root.refreshAll()
     }
 

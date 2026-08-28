@@ -107,3 +107,31 @@ void BookingViewModel::onBookingError(const QString& error)
 {
     emit errorOccurred(error);
 }
+
+int BookingViewModel::pendingBookingsCount() const
+{
+    return m_bookingListModel ? m_bookingListModel->countByStatus(BookingStatus::Pending) : 0;
+}
+
+int BookingViewModel::confirmedBookingsCount() const
+{
+    if (!m_bookingListModel)
+        return 0;
+    return m_bookingListModel->countByStatus(BookingStatus::Confirmed)
+         + m_bookingListModel->countByStatus(BookingStatus::Paid);
+}
+
+int BookingViewModel::cancelledBookingsCount() const
+{
+    return m_bookingListModel ? m_bookingListModel->countByStatus(BookingStatus::Cancelled) : 0;
+}
+
+double BookingViewModel::totalBookingValue() const
+{
+    return m_bookingListModel ? m_bookingListModel->sumAmount() : 0.0;
+}
+
+double BookingViewModel::commissionEarned() const
+{
+    return m_bookingListModel ? m_bookingListModel->sumCommission() : 0.0;
+}

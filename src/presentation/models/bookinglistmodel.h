@@ -21,7 +21,7 @@ public:
         BookingDateRole,
         AmountRole,
         CommissionAmountRole,
-
+        StatusRole,
     };
      explicit BookingListModel(QObject *parent = nullptr);
     ~BookingListModel();
@@ -43,6 +43,10 @@ public:
     Q_INVOKABLE void addBooking(Booking* booking);
     Q_INVOKABLE void removeBooking(int index);
     Q_INVOKABLE void clear();
+
+    int countByStatus(BookingStatus status) const;
+    double sumAmount() const;
+    double sumCommission() const;
     // Q_INVOKABLE void clear();
 
  signals:

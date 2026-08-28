@@ -25,6 +25,31 @@ void PropertyViewModel::setLoading(bool loading)
     }
 }
 
+int PropertyViewModel::pendingPropertiesCount() const
+{
+    int count = 0;
+    const QVariantList list = propertiesForView();
+    for (const QVariant& v : list) {
+        const QVariantMap row = v.toMap();
+        const QString status = row.value("verificationStatus").toString().toUpper();
+        if (status != "VERIFIED" && status != "REJECTED")
+            ++count;
+    }
+    return count;
+}
+
+int PropertyViewModel::verifiedPropertiesCount() const
+{
+    int count = 0;
+    const QVariantList list = propertiesForView();
+    for (const QVariant& v : list) {
+        const QVariantMap row = v.toMap();
+        if (row.value("verificationStatus").toString().toUpper() == "VERIFIED")
+            ++count;
+    }
+    return count;
+}
+
 void PropertyViewModel::getProperties()
 {
     setLoading(true);

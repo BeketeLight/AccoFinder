@@ -1,5 +1,16 @@
 #include "bookinglistmodel.h"
 
+static QString bookingStatusToString(BookingStatus status)
+{
+    switch (status) {
+    case BookingStatus::Pending:   return QStringLiteral("Pending");
+    case BookingStatus::Paid:      return QStringLiteral("Paid");
+    case BookingStatus::Confirmed: return QStringLiteral("Confirmed");
+    case BookingStatus::Cancelled: return QStringLiteral("Cancelled");
+    }
+    return QStringLiteral("Pending");
+}
+
 BookingListModel::BookingListModel(QObject *parent)
     : QAbstractListModel(parent)
 {}
@@ -24,6 +35,7 @@ QHash<int, QByteArray> BookingListModel::roleNames() const
         roles[BookingDateRole] = "bookingDate";
         roles[AmountRole] = "amount";
         roles[CommissionAmountRole] = "commissionAmount";
+        roles[StatusRole] = "status";
         return roles;
 }
 
@@ -58,6 +70,8 @@ QVariant BookingListModel::data(const QModelIndex &index, int role) const
         return booking->getAmount(); 
     case CommissionAmountRole:
         return booking->getCommissionAmount(); 
+    case StatusRole:
+        return bookingStatusToString(booking->getStatus());
     
     }
 
@@ -97,4 +111,34 @@ void BookingListModel::clear()
     m_bookings.clear();
     endResetModel();
     emit countChanged(0);
+}
+
+int BookingListModel::countByStatus(BookingStatus status) const
+{
+    int count = 0;
+    for (const auto& b : m_bookings) {
+        if (b && b->getStatus() == status)
+            ++count;
+    }
+    return count;
+}
+
+double BookingListModel::sumAmount() const
+{
+    double total = 0.0;
+    for (const auto& b : m_bookings) {
+        if (b)
+            total += b->getAmount();
+    }
+    return total;
+}
+
+double BookingListModel::sumCommission() const
+{
+    double total = 0.0;
+    for (const auto& b : m_bookings) {
+        if (b)
+            total += b->getCommissionAmount();
+    }
+    return total;
 }

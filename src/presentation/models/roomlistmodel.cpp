@@ -19,10 +19,11 @@ int RoomListModel::rowCount(const QModelIndex &parent) const
 
 QVariant RoomListModel::data(const QModelIndex &index, int role) const
 {
-    if (!index.isValid())
+    if (!index.isValid() || index.row() < 0 || index.row() >= m_rooms.size())
         return QVariant();
-    return QVariant();
     QSharedPointer<Room> room = m_rooms.at(index.row());
+    if (!room)
+        return QVariant();
 
     switch(role)
     {
@@ -60,24 +61,39 @@ QHash<int, QByteArray> RoomListModel::roleNames() const
 
 void RoomListModel::setRooms(QList<QSharedPointer<Room>> newRooms)
 {
-    beginInsertRows(
-        QModelIndex(),
-        rowCount(),
-        rowCount());
-
+    beginResetModel();
     m_rooms = newRooms;
-
-    endInsertRows();
+    endResetModel();
 }
 
 void RoomListModel::apppendRoom(QSharedPointer<Room> room)
 {
     beginInsertRows(
         QModelIndex(),
-        rowCount(),
-        rowCount());
+        m_rooms.size(),
+        m_rooms.size());
 
     m_rooms.append(room);
 
     endInsertRows();
+}
+
+int RoomListModel::availableCount() const
+{
+    int count = 0;
+    for (const auto& room : m_rooms) {
+        if (room && room->getAvailable())
+            ++count;
+    }
+    return count;
+}
+
+int RoomListModel::bookedCount() const
+{
+    int count = 0;
+    for (const auto& room : m_rooms) {
+        if (room && !room->getAvailable())
+            ++count;
+    }
+    return count;
 }

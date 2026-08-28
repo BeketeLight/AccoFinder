@@ -524,8 +524,13 @@ Item {
                                 }
 
                                 StatusChip {
-                                    textValue: qsTr("Pending")
-                                    variant: "warning"
+                                    textValue: String(model.status).length > 0 ? model.status : qsTr("Pending")
+                                    variant: {
+                                        var st = String(model.status).toLowerCase()
+                                        if (st === "confirmed" || st === "paid") return "success"
+                                        if (st === "cancelled") return "danger"
+                                        return "warning"
+                                    }
                                 }
                             }
 

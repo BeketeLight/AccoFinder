@@ -320,5 +320,53 @@ Item {
             }
         }
 
+        // Empty state: show a friendly message instead of leaving the section
+        // blank when there is nothing requiring the admin's attention.
+        ColumnLayout {
+            id: caughtUpState
+            visible: root.dashboardModel.pendingActivitiesModel.count === 0
+            Layout.fillWidth: true
+            Layout.topMargin: 2
+            spacing: 6
+
+            Rectangle {
+                Layout.alignment: Qt.AlignHCenter
+                Layout.preferredWidth: 40
+                Layout.preferredHeight: 40
+                radius: 20
+                color: root.softBlueColor
+                border.color: "#BFDBFE"
+                border.width: 1
+
+                Label {
+                    anchors.centerIn: parent
+                    text: "✓"
+                    color: root.primaryColor
+                    font.pixelSize: 18
+                    font.bold: true
+                }
+            }
+
+            Label {
+                Layout.fillWidth: true
+                text: qsTr("All caught up")
+                color: root.textColor
+                font.pixelSize: 13
+                font.bold: true
+                horizontalAlignment: Text.AlignHCenter
+            }
+
+            Label {
+                Layout.fillWidth: true
+                Layout.maximumWidth: 320
+                Layout.alignment: Qt.AlignHCenter
+                text: qsTr("No pending actions or recent activity right now.")
+                color: root.mutedColor
+                font.pixelSize: 11
+                horizontalAlignment: Text.AlignHCenter
+                wrapMode: Text.WordWrap
+            }
+        }
+
     }
 }

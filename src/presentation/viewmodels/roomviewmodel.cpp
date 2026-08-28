@@ -66,3 +66,13 @@ void RoomViewModel::onError(const QString &message)
     setLoading(false);
     emit roomError(message);
 }
+
+int RoomViewModel::availableRoomsCount() const
+{
+    return m_roomListModel ? m_roomListModel->availableCount() : 0;
+}
+
+int RoomViewModel::bookedRoomsCount() const
+{
+    return m_roomListModel ? m_roomListModel->bookedCount() : 0;
+}
