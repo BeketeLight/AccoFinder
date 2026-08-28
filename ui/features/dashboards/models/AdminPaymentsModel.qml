@@ -3,6 +3,9 @@ import QtQuick
 Item {
     id: root
 
+    // Delegate-facing API preserved. Backend payment/commission/payout admin
+    // endpoints do not exist yet, so the models stay empty and the pages show
+    // their empty-state messages until a backend source is wired in.
     readonly property alias paymentsModel: paymentsModelId
     readonly property alias commissionsModel: commissionsModelId
     readonly property alias payoutsModel: payoutsModelId
@@ -73,30 +76,14 @@ Item {
 
     ListModel {
         id: paymentsModelId
-
-        ListElement { paymentId: "BK-1042"; user: "Chikondi Banda"; kind: "Booking · Riverside Flats A1"; amount: 32000; method: "Mobile money"; date: "23 Aug 2026"; status: "Completed" }
-        ListElement { paymentId: "BK-1043"; user: "Memory Phiri"; kind: "Booking · Green Court Hostel 7"; amount: 12000; method: "Bank transfer"; date: "23 Aug 2026"; status: "Pending" }
-        ListElement { paymentId: "BK-1040"; user: "Blessings Nkhoma"; kind: "Booking · Palm Bungalow"; amount: 40000; method: "Mobile money"; date: "22 Aug 2026"; status: "Completed" }
-        ListElement { paymentId: "BK-1038"; user: "Faith Chirwa"; kind: "Booking · Sunview Apartments B2"; amount: 25000; method: "Card"; date: "21 Aug 2026"; status: "Disputed" }
-        ListElement { paymentId: "BK-1036"; user: "Tapiwa Gondwe"; kind: "Booking · Acacia Studio"; amount: 85000; method: "Bank transfer"; date: "20 Aug 2026"; status: "Refunded" }
-        ListElement { paymentId: "BK-1035"; user: "Yamikani Sibale"; kind: "Booking · Brookline Guest House"; amount: 55000; method: "Mobile money"; date: "19 Aug 2026"; status: "Completed" }
     }
 
     ListModel {
         id: commissionsModelId
-
-        ListElement { agent: "Yankho Mwale"; area: "Lilongwe"; bookings: 14; amount: 18600; rate: 10; status: "Due" }
-        ListElement { agent: "Fatsani Zimba"; area: "Mzuzu"; bookings: 9; amount: 9750; rate: 8; status: "Settled" }
-        ListElement { agent: "Dalitso Kachale"; area: "Zomba"; bookings: 11; amount: 12400; rate: 10; status: "Due" }
-        ListElement { agent: "Chilumba Chirwa"; area: "Blantyre"; bookings: 4; amount: 3100; rate: 12; status: "On hold" }
     }
 
     ListModel {
         id: payoutsModelId
-
-        ListElement { landlord: "Alinafe Buleya"; property: "Riverside Flats"; amount: 96500; period: "Aug 2026"; status: "Pending" }
-        ListElement { landlord: "Tapiwa Gondwe"; property: "Green Court Hostel"; amount: 54000; period: "Aug 2026"; status: "Paid" }
-        ListElement { landlord: "Grace Mvula"; property: "Sunview Apartments"; amount: 71200; period: "Jul 2026"; status: "Paid" }
     }
 
     Component.onCompleted: refresh()

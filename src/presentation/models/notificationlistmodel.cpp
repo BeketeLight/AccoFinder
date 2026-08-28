@@ -11,6 +11,17 @@ int NotificationListModel::rowCount(const QModelIndex &parent) const
     return m_notifications.size();
 }
 
+int NotificationListModel::unreadCount() const
+{
+    int count = 0;
+    for (const auto &n : m_notifications) {
+        const QString s = n->status().toUpper();
+        if (s != "READ" && s != "READY")
+            ++count;
+    }
+    return count;
+}
+
 QVariant NotificationListModel::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid() || index.row() < 0 || index.row() >= m_notifications.size())
@@ -53,4 +64,5 @@ void NotificationListModel::setNotifications(QList<Notification *> notifications
         m_notifications.append(QSharedPointer<Notification>(n));
     endResetModel();
     emit countChanged(m_notifications.size());
+    emit unreadCountChanged(unreadCount());
 }

@@ -95,6 +95,11 @@ QDateTime User::getCreatedAt() const
     return m_createdAt;
 }
 
+bool User::isActive() const
+{
+    return m_isActive;
+}
+
 // Setters
 void User::setId(const QString &newId)
 {
@@ -182,5 +187,13 @@ void User::setCreatedAt(const QDateTime &newCreatedAt)
     if (m_createdAt == newCreatedAt)
         return;
     m_createdAt = newCreatedAt;
+    emit profileUpdated();
+}
+
+void User::setIsActive(bool active)
+{
+    if (m_isActive == active)
+        return;
+    m_isActive = active;
     emit profileUpdated();
 }

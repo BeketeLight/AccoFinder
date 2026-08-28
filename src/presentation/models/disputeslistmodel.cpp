@@ -83,3 +83,16 @@ void DisputesListModel::updateDispute(int index, Dispute* newDispute)
     endResetModel();
     emit countChanged(m_disputes.size());
 }
+
+QVariantMap DisputesListModel::at(int index) const
+{
+    if (index < 0 || index >= m_disputes.size())
+        return QVariantMap();
+    const QModelIndex idx = this->index(index, 0);
+    QVariantMap row;
+    row["id"] = data(idx, IdRole);
+    row["bookingId"] = data(idx, BookingIdRole);
+    row["issue"] = data(idx, IssueRole);
+    row["status"] = data(idx, StatusRole);
+    return row;
+}

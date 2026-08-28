@@ -3,6 +3,8 @@ import QtQuick
 Item {
     id: root
 
+    // Delegate-facing API preserved. Real data sourced from the C++
+    // DisputesListViewModel (DisputeController -> /disputes/ API).
     readonly property alias disputesModel: disputesModelId
     readonly property alias viewModel: viewModelId
 
@@ -51,59 +53,57 @@ Item {
     }
 
     function setStatus(disputeId, status) {
-        for (var i = 0; i < disputesModelId.count; i++) {
-            var d = disputesModelId.get(i)
+        // Locally reflect the new status
+        for (var r = 0; r < disputesModelId.count; r++) {
+            var d = disputesModelId.get(r)
             if (d.disputeId === disputeId) {
                 d.status = status
-                disputesModelId.set(i, d)
+                disputesModelId.set(r, d)
                 break
             }
         }
         refresh()
     }
 
-    ListModel {
-        id: disputesModelId
-
-        ListElement {
-            disputeId: "DS-201"
-            subject: "Refund request · BK-1042"
-            property: "Riverside Flats"
-            client: "Chikondi Banda"
-            opened: "22 Aug 2026"
-            status: "Open"
-            detail: "Client reports the room was not cleaned and requests a full refund of MK 32,000. Landlord claims the room was handed over in good condition."
-        }
-        ListElement {
-            disputeId: "DS-202"
-            subject: "Noise complaint · BK-1038"
-            property: "Green Court Hostel"
-            client: "Faith Chirwa"
-            opened: "21 Aug 2026"
-            status: "In review"
-            detail: "Client complains about ongoing construction noise during booked dates. Requests partial refund of MK 6,000 for two disturbed nights."
-        }
-        ListElement {
-            disputeId: "DS-203"
-            subject: "Double charge · BK-1031"
-            property: "Palm Bungalow"
-            client: "Mary Zimba"
-            opened: "18 Aug 2026"
-            status: "Resolved"
-            detail: "Duplicate mobile money deduction confirmed by payment gateway. Refund of MK 40,000 processed on 20 Aug."
-        }
-        ListElement {
-            disputeId: "DS-204"
-            subject: "Amenities missing · BK-1027"
-            property: "Acacia Studio"
-            client: "Tapiwa Gondwe"
-            opened: "15 Aug 2026"
-            status: "Rejected"
-            detail: "Client claimed no water supply. Investigation showed the outage was a district-wide issue outside the landlord's control."
-        }
+    function mapStatus(raw) {
+        if (raw.toLowerCase() === "open") return "Open"
+        if (raw.toLowerCase() === "resolved") return "Resolved"
+        if (raw.toLowerCase() === "in review") return "In review"
+        if (raw.toLowerCase() === "rejected") return "Rejected"
+        return "Open"
     }
 
-    ListModel { id: viewModelId }
+    ListModel {
+        id: disputesModelId
+    }
 
-    Component.onCompleted: refresh()
+    ListModel {
+        id: viewModelId
+    }
+
+    function reload() {
+        disputesModelId.clear()
+        var m = DisputesListViewModel.disputesListModel
+        for (var i = 0; i < m.size; i++) {
+            var item = m.at(i)
+            disputesModelId.append({
+                disputeId: item.id, subject: item.issue,
+                property: item.bookingId.length > 0 ? "Booking " + item.bookingId : "",
+                client: "", opened: "", status: root.mapStatus(item.status),
+                detail: item.issue
+            })
+        }
+        root.refresh()
+    }
+
+    Connections {
+        target: DisputesListViewModel.disputesListModel
+        function onCountChanged() { root.reload() }
+        function onDataChanged() { root.reload() }
+        function onModelReset() { root.reload() }
+    }
+
+    Component.onCompleted: {
+        DisputesListViewModel.getDisputes()
+    }
 }

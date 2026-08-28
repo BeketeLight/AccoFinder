@@ -3,99 +3,16 @@ import QtQuick 2.15
 Item {
     id: root
 
+    // Delegate-facing API preserved. Real data is sourced from the C++
+    // PropertyViewModel (PropertyController -> /house-listing/ API). Filtering
+    // still happens in QML into a lightweight viewModel so delegates work.
     // status values mirror the backend enum: VERIFIED / PENDING / REJECTED
-    // plus local-only DRAFT for unsent wizard drafts
     property string statusFilter: "All"
     property string searchText: ""
     property int resultCount: 0
 
     readonly property alias propertiesModel: propertiesModelId
     readonly property alias filterChipsModel: filterChipsModelId
-
-    // Fields mirror the backend Property schema:
-    // title / description / physicalAddress{district,village} / verificationStatus /
-    // amenities[] / isActive — plus client extras (price/landlord) and room/media refs.
-    Component.onCompleted: {
-        propertiesModelId.append([
-            {
-                propertyId: "P-001", title: "Sunview Apartments",
-                district: "Lilongwe", village: "Area 47",
-                price: 25000, status: "VERIFIED", rooms: 6, matches: true,
-                amenities: "WATER,ELECTRICITY,SECURITY",
-                landlord: "James Banda", landlordPhone: "+265 991 100 200",
-                description: "Six self-contained rooms with tiled floors, borehole water and a perimeter fence. Walking distance to Area 47 shops.",
-                roomsData: [
-                    { roomId: 1, roomType: "Self-contained", price: 25000, available: true },
-                    { roomId: 2, roomType: "Self-contained", price: 25000, available: false },
-                    { roomId: 3, roomType: "Single room", price: 18000, available: true }
-                ],
-                photosData: []
-            },
-            {
-                propertyId: "P-002", title: "Green Court Hostel",
-                district: "Blantyre", village: "Chichiri",
-                price: 12000, status: "VERIFIED", rooms: 12, matches: true,
-                amenities: "WIFI,WATER,ELECTRICITY",
-                landlord: "Esnath Phiri", landlordPhone: "+265 888 456 789",
-                description: "Student hostel near Chichiri trading centre. Shared kitchen and yard, water tank backup.",
-                roomsData: [
-                    { roomId: 4, roomType: "Single room", price: 12000, available: true },
-                    { roomId: 5, roomType: "Self-contained", price: 20000, available: true }
-                ],
-                photosData: []
-            },
-            {
-                propertyId: "P-003", title: "Palm Bungalow",
-                district: "Blantyre", village: "Namiwawa",
-                price: 40000, status: "PENDING", rooms: 4, matches: true,
-                amenities: "PARKING,FURNISHED,WATER",
-                landlord: "Chikondi Mwale", landlordPhone: "+265 999 777 888",
-                description: "Four-bedroom bungalow in a quiet Namiwawa street with a garden and private parking.",
-                roomsData: [
-                    { roomId: 6, roomType: "Master bedroom", price: 40000, available: true },
-                    { roomId: 7, roomType: "Bedroom", price: 30000, available: true }
-                ],
-                photosData: []
-            },
-            {
-                propertyId: "P-004", title: "Riverside Flats",
-                district: "Lilongwe", village: "Area 49",
-                price: 32000, status: "PENDING", rooms: 5, matches: true,
-                amenities: "ELECTRICITY,WATER",
-                landlord: "Grace Chirwa", landlordPhone: "+265 881 234 567",
-                description: "Modern flats along the Area 49 riverside road, each unit self-contained with prepaid ESCOM meters.",
-                roomsData: [
-                    { roomId: 8, roomType: "Self-contained", price: 32000, available: false },
-                    { roomId: 9, roomType: "Single room", price: 22000, available: true }
-                ],
-                photosData: []
-            },
-            {
-                propertyId: "P-005", title: "Acacia Studio",
-                district: "Lilongwe", village: "Area 15",
-                price: 18000, status: "DRAFT", rooms: 2, matches: true,
-                amenities: "",
-                landlord: "Yamikani Nkhoma", landlordPhone: "+265 995 654 321",
-                description: "",
-                roomsData: [],
-                photosData: []
-            },
-            {
-                propertyId: "P-006", title: "Brookline Guest House",
-                district: "Blantyre", village: "Nyambadwe",
-                price: 55000, status: "REJECTED", rooms: 8, matches: true,
-                amenities: "WIFI,PARKING,SECURITY,AC",
-                landlord: "Peter Zimba", landlordPhone: "+265 884 111 222",
-                description: "Eight-room guest house facing Nyambadwe stream, popular with business travellers.",
-                roomsData: [
-                    { roomId: 10, roomType: "Self-contained", price: 55000, available: true },
-                    { roomId: 11, roomType: "Single room", price: 35000, available: true }
-                ],
-                photosData: []
-            }
-        ])
-        root.applyFilters()
-    }
 
     ListModel {
         id: propertiesModelId
@@ -195,5 +112,36 @@ Item {
             rooms: modelToArray(it.roomsData),
             photos: modelToArray(it.photosData)
         }
+    }
+
+    function reload() {
+        propertiesModelId.clear()
+        var m = PropertyViewModel.propertyListModel
+        for (var i = 0; i < m.size; i++) {
+            var item = m.at(i)
+            propertiesModelId.append({
+                propertyId: item.propertyId, title: item.title,
+                district: item.district, village: item.village,
+                price: item.price, status: item.status,
+                rooms: item.roomCount, matches: true,
+                amenities: String(item.amenities || ""),
+                landlord: item.landlord || item.landlordPhone || "",
+                landlordPhone: item.landlordPhone || "",
+                description: item.description || "",
+                roomsData: [], photosData: []
+            })
+        }
+        root.applyFilters()
+    }
+
+    Connections {
+        target: PropertyViewModel.propertyListModel
+        function onCountChanged() { root.reload() }
+        function onDataChanged() { root.reload() }
+        function onModelReset() { root.reload() }
+    }
+
+    Component.onCompleted: {
+        PropertyViewModel.getProperties()
     }
 }

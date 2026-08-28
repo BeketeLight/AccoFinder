@@ -59,7 +59,31 @@ Item {
                 icon.height: 24
                 icon.width: 24
                 icon.source: "qrc:/ui/assets/notification.svg"
-                onClicked: NavUtils.push("../features/dashboards/admins/screens/SystemNotificationsScreen.qml")
+                onClicked: NavUtils.push(Qt.resolvedUrl("../../../notifications/screens/NotificationsScreen.qml"))
+            }
+
+            // Unread badge: a small circle in the top-right corner showing the
+            // number of unread notifications for the logged-in admin.
+            Rectangle {
+                visible: NotificationViewModel.notificationListModel.unreadCount > 0
+                width: 16
+                height: 16
+                radius: 8
+                anchors.top: parent.top
+                anchors.right: parent.right
+                color: "#DC2626"
+                border.color: "#FFFFFF"
+                border.width: 1
+
+                Label {
+                    anchors.centerIn: parent
+                    text: NotificationViewModel.notificationListModel.unreadCount > 99
+                          ? "99+"
+                          : String(NotificationViewModel.notificationListModel.unreadCount)
+                    color: "#FFFFFF"
+                    font.pixelSize: 9
+                    font.bold: true
+                }
             }
         }
     }

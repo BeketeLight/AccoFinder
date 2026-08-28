@@ -5,6 +5,7 @@
 #include <QVector>
 #include<QHash>
 #include<QByteArray>
+#include <QVariantMap>
 #include "models/property.h"
 
 class PropertyListModel : public QAbstractListModel
@@ -30,7 +31,8 @@ public:
         LandlordPhoneRole,
         VerificationStatusRole,
         IsActiveRole,
-        PropertyTypeRole
+        PropertyTypeRole,
+        RoomCountRole
     };
     explicit PropertyListModel(QObject *parent = nullptr);
 
@@ -51,6 +53,12 @@ public:
     void updateProperty(int index,Property* property);
     void getPropertyById(Property* property);
     void clear();
+
+    Q_INVOKABLE int size() const { return m_properties.size(); }
+    Q_INVOKABLE QVariantMap at(int index) const;
+
+signals:
+    void countChanged(int newCount);
 
 private:
     QVector<Property*> m_properties;

@@ -3,6 +3,8 @@ import QtQuick
 Item {
     id: root
 
+    // Delegate-facing API preserved. Real data sourced from the C++
+    // AgentViewModel (AgentController -> /agents/ API).
     readonly property alias agentsModel: agentsModelId
 
     property int activeAgents: 0
@@ -25,50 +27,52 @@ Item {
     }
 
     function addAgent(payload) {
-        agentsModelId.append({
-            agentId: payload.agentId,
-            name: payload.name,
-            email: payload.email,
-            phone: payload.phone,
-            area: payload.area,
-            commissionRate: payload.commissionRate,
-            active: true
-        })
-        refresh()
+        AgentViewModel.addAgent(payload.firstName || payload.name || "",
+                                payload.lastName || "",
+                                payload.email || "",
+                                payload.phone || "",
+                                payload.area || "",
+                                payload.commissionRate || 0)
     }
 
     function updateAgent(agentId, updates) {
-        for (var i = 0; i < agentsModelId.count; i++) {
-            if (agentsModelId.get(i).agentId === agentId) {
-                var a = agentsModelId.get(i)
-                if (updates.area !== undefined) a.area = updates.area
-                if (updates.commissionRate !== undefined) a.commissionRate = updates.commissionRate
-                if (updates.active !== undefined) a.active = updates.active
-                agentsModelId.set(i, a)
-                break
-            }
+        if (updates.active !== undefined) {
+            AgentViewModel.setActive(agentId, updates.active)
+        } else {
+            AgentViewModel.updateAgent(agentId, updates.area || "", updates.commissionRate || 0)
         }
-        refresh()
     }
 
     function findAgent(agentId) {
-        for (var i = 0; i < agentsModelId.count; i++) {
-            var a = agentsModelId.get(i)
-            if (a.agentId === agentId)
-                return { agentId: a.agentId, name: a.name, email: a.email, phone: a.phone,
-                         area: a.area, commissionRate: a.commissionRate, active: a.active }
-        }
-        return null
+        return AgentViewModel.findAgentById(agentId)
     }
 
     ListModel {
         id: agentsModelId
-
-        ListElement { agentId: "AG-101"; name: "Yankho Mwale"; email: "yankho.mwale@gmail.com"; phone: "+265 995 444 010"; area: "Lilongwe"; commissionRate: 10; active: true }
-        ListElement { agentId: "AG-102"; name: "Chilumba Chirwa"; email: "chilumba.c@gmail.com"; phone: "+265 993 771 220"; area: "Blantyre"; commissionRate: 12; active: false }
-        ListElement { agentId: "AG-103"; name: "Fatsani Zimba"; email: "fatsani.z@gmail.com"; phone: "+265 997 310 845"; area: "Mzuzu"; commissionRate: 8; active: true }
-        ListElement { agentId: "AG-104"; name: "Dalitso Kachale"; email: "dalitso.k@gmail.com"; phone: "+265 882 645 091"; area: "Zomba"; commissionRate: 10; active: true }
     }
 
-    Component.onCompleted: refresh()
+    function reload() {
+        agentsModelId.clear()
+        var m = AgentViewModel.agentListModel
+        for (var i = 0; i < m.size; i++) {
+            var item = m.at(i)
+            agentsModelId.append({
+                agentId: item.agentId, name: item.name, email: item.email,
+                phone: item.phone, area: item.area,
+                commissionRate: item.commissionRate, active: item.active
+            })
+        }
+        root.refresh()
+    }
+
+    Connections {
+        target: AgentViewModel.agentListModel
+        function onCountChanged() { root.reload() }
+        function onDataChanged() { root.reload() }
+        function onModelReset() { root.reload() }
+    }
+
+    Component.onCompleted: {
+        AgentViewModel.getAgents()
+    }
 }

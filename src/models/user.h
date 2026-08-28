@@ -17,6 +17,7 @@ class User : public QObject
     Q_PROPERTY(QString residentialAddress READ getResidentialAddress WRITE setResidentialAddress NOTIFY profileUpdated)
     Q_PROPERTY(QString role READ getRole WRITE setRole NOTIFY profileUpdated)
     Q_PROPERTY(QDateTime createdAt READ getCreatedAt WRITE setCreatedAt NOTIFY profileUpdated)
+    Q_PROPERTY(bool isActive READ isActive WRITE setIsActive NOTIFY profileUpdated)
 
 public:
     explicit User(QObject *parent = nullptr);
@@ -48,6 +49,7 @@ public:
     QString getResidentialAddress() const;
     QString getRole() const;
     QDateTime getCreatedAt() const;
+    bool isActive() const;
 
     // Setters
     void setId(const QString &newId);
@@ -58,6 +60,7 @@ public:
     void setResidentialAddress(const QString &newResidentialAddress);
     void setRole(const QString &newRole);
     void setCreatedAt(const QDateTime &newCreatedAt);
+    void setIsActive(bool active);
 
     // Convenience method to set full name (splits into first and last)
     void setFullName(const QString &fullName);
@@ -75,6 +78,7 @@ private:
     QString m_residentialAddress;
     QString m_role;
     QDateTime m_createdAt;
+    bool m_isActive = true;
 };
 
 #endif // USER_H

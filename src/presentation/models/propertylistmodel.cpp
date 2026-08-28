@@ -83,6 +83,9 @@ QVariant PropertyListModel::data(const QModelIndex &index, int role) const
         case PropertyTypeRole:
             return property->getPropertyType();
 
+        case RoomCountRole:
+            return property->getRoomCount();
+
     }
 
     // FIXME: Implement me!
@@ -109,7 +112,8 @@ QHash<int, QByteArray> PropertyListModel::roleNames() const
         {LandlordPhoneRole, "landlordPhone"},
         {VerificationStatusRole, "verificationStatus"},
         {IsActiveRole, "isActive"},
-        {PropertyTypeRole, "propertyType"}
+        {PropertyTypeRole, "propertyType"},
+        {RoomCountRole, "roomCount"}
     };
     return mapping;
 }
@@ -120,6 +124,7 @@ void PropertyListModel::setProperties(QList<Property*>&  newProperties)
     qDeleteAll(m_properties);
     m_properties = newProperties;
     endResetModel();
+    emit countChanged(m_properties.size());
 }
 
 void PropertyListModel::appendProperty(Property* property)
@@ -127,6 +132,7 @@ void PropertyListModel::appendProperty(Property* property)
     beginInsertRows(QModelIndex(), m_properties.size(), m_properties.size());
     m_properties.append(property);
     endInsertRows();
+    emit countChanged(m_properties.size());
 }
 
 void PropertyListModel::updateProperty(int index, Property* property)
@@ -153,4 +159,28 @@ void PropertyListModel::clear()
     m_properties.clear();
 
     endResetModel();
+    emit countChanged(0);
+}
+
+QVariantMap PropertyListModel::at(int index) const
+{
+    if (index < 0 || index >= m_properties.size())
+        return QVariantMap();
+    const QModelIndex idx = this->index(index, 0);
+    QVariantMap row;
+    row["propertyId"] = data(idx, IdRole);
+    row["title"] = data(idx, TitleRole);
+    row["district"] = data(idx, DistrictRole);
+    row["village"] = data(idx, VillageRole);
+    row["price"] = data(idx, PriceRole);
+    row["status"] = data(idx, VerificationStatusRole);
+    row["verificationStatus"] = data(idx, VerificationStatusRole);
+    row["amenities"] = data(idx, AmenitiesRole);
+    row["landlord"] = data(idx, LandlordIdRole);
+    row["landlordPhone"] = data(idx, LandlordPhoneRole);
+    row["description"] = data(idx, DescriptionRole);
+    row["propertyType"] = data(idx, PropertyTypeRole);
+    row["active"] = data(idx, IsActiveRole);
+    row["roomCount"] = data(idx, RoomCountRole);
+    return row;
 }

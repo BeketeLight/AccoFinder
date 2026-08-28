@@ -201,6 +201,7 @@ Property* PropertyDto::toDomainModel() const
     property->setPropertyType(propertyType);
     property->setVerificationStatus(verificationStatus);
     property->setActive(isActive);
+    property->setRoomCount(rooms.size());
 
     return property;
 }
