@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Effects
+import "../../../utils/NavigationUtils.js" as NavUtils
 
 Item {
     id: root
@@ -20,6 +21,10 @@ Item {
 
     width: 180
     height: 265
+
+    function navigateTopropertyDetails() {
+        NavUtils.push(Qt.resolvedUrl("./PropertyDelegateDetails.qml"));
+    }
 
     // Card background
     Rectangle {
@@ -223,7 +228,10 @@ Item {
     // Click area
     MouseArea {
         anchors.fill: parent
-        onClicked: root.clicked()
+        onClicked: {
+            root.navigateTopropertyDetails();
+            root.clicked();
+        }
         cursorShape: Qt.PointingHandCursor
     }
 }
