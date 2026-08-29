@@ -73,6 +73,7 @@ qt_add_qml_module(appAccoFinder
         ui/features/home/components/FooterComponent.qml
         ui/features/home/delegates/PropertyCardDelegate.qml
         ui/features/home/delegates/PropertyListDelegate.qml
+        ui/features/home/delegates/PropertyDelegateDetails.qml
         ui/features/home/models/PropertyCategoryModel.qml
         ui/features/home/models/PropertyListModel.qml
         ui/features/home/pages/AddPropertyPage.qml
