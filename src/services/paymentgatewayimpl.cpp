@@ -18,7 +18,7 @@ void  PaymentGatewayImpl::createPayment(const QString& id,
     PaymentDto dto(id,bookingId,amount,method,status,transactionRef,payoutStatus,payoutDate);
 
     APIClient::instance().post(
-        "api/payment/init" + bookingId,
+        "/payments/process/" + bookingId,
         dto.toJson(),
         [this] (bool success, const QJsonObject& response)
         {
@@ -40,7 +40,7 @@ void PaymentGatewayImpl::verifyPayment(const QString& id,
     //PaymentDto dto(id,bookingId,amount,status,transactionRef,payoutStatus,payoutDate);
 
     APIClient::instance().get(
-        "api/payment/verify",
+        "/payments/verify/" + id,
         [this] (bool success, const QJsonObject& response)
         {
             if(success){
@@ -61,7 +61,7 @@ void PaymentGatewayImpl::verifyPayment(const QString& id,
 void PaymentGatewayImpl::getPaymentById(const QString& id)
 {
     APIClient::instance().get(
-        "api/payments/user/:" + id,
+        "/payments/user/" + id,
         [this] (bool success, const QJsonObject& response)
         {
             if(success){
@@ -87,7 +87,7 @@ void PaymentGatewayImpl::getPaymentById(const QString& id)
     PaymentDto dto(id,bookingId,amount,method,status, transactionRef,payoutStatus,payoutDate);
 
     APIClient::instance().post(
-        "api/payments/cancel",
+        "/payments/cancel",
         dto.toJson(),
         [this] (bool success, const QJsonObject& response)
         {

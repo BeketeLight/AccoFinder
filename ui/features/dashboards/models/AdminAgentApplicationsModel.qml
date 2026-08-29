@@ -53,7 +53,8 @@ Item {
     function reload() {
         applicationsModelId.clear()
         var m = AgentApplicationViewModel.applicationListModel
-        for (var i = 0; i < m.size; i++) {
+        var cppSize = m ? m.size() : 0
+        for (var i = 0; i < cppSize; i++) {
             var item = m.at(i)
             applicationsModelId.append({
                 applicationId: item.agentId, name: item.name, email: item.email,

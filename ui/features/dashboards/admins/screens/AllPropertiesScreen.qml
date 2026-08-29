@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import "../pages"
 import "../../../../utils/NavigationUtils.js" as NavUtils
+import "../../../../components/indicators"
 
 Item {
     id: root
@@ -37,10 +38,21 @@ Item {
                 onPropertyClicked: function(propertyId) {
                     var payload = allPropsPage.propertiesModel.registrationPayloadFor(propertyId, "propertyId")
                     if (payload)
-                        NavUtils.push(Qt.resolvedUrl("../features/properties/screens/PropertyDetailScreen.qml"),
+                        NavUtils.push(Qt.resolvedUrl("../../../properties/screens/PropertyDetailScreen.qml"),
                                       { initialPayload: payload })
                 }
             }
+        }
+
+        // Non-blocking spinner while the property list is being fetched.
+        AppSpinner {
+            visible: PropertyViewModel.isLoading
+            anchors.centerIn: parent
+            z: 20
+            size: 32
+            lineWidth: 3
+            color: "#2563EB"
+            running: PropertyViewModel.isLoading
         }
     }
 }

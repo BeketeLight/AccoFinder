@@ -30,7 +30,7 @@ void BookingRepositoryImpl::createBooking(
     }
 
     APIClient::instance().post(
-        "/house-booking/",
+        "/bookings/",
         payload,
         [this](bool success,
             const QJsonObject& response)
@@ -55,7 +55,7 @@ void BookingRepositoryImpl::createBooking(
 void BookingRepositoryImpl::getBooking()
 {
     APIClient::instance().get(
-        "/house-booking/",
+        "/bookings/",
         [this] (bool success, 
             const QJsonObject& response)
            {
@@ -83,7 +83,7 @@ void BookingRepositoryImpl::getBooking()
 void BookingRepositoryImpl::getBookingById(const QString& id)
 {
     APIClient::instance().get(
-        "/house-booking/:" + id,
+        "/bookings/" + id,
         [this] (bool success, const QJsonObject& response)
         {
         if(success){
@@ -110,7 +110,7 @@ void BookingRepositoryImpl::cancelBooking(const QString& id)
     payload["id"] = id;
 
     APIClient::instance().patch(
-        "/house-booking/cancel/:" + id + "/cancel",
+        "/bookings/" + id + "/cancel",
         payload,
         [this] (bool success, const QJsonObject& response)
         {
@@ -135,7 +135,7 @@ void BookingRepositoryImpl::cancelBooking(const QString& id)
 void BookingRepositoryImpl::deleteBooking(const QString& id)
 {
     APIClient::instance().del(
-        "/house-booking/:" + id,
+        "/bookings/" + id,
         [this,id] (bool success, const QJsonObject& response)
         {
             if(success){
@@ -153,7 +153,7 @@ void BookingRepositoryImpl::confirmBooking(const QString& id)
     payload["id"] = id;
 
     APIClient::instance().patch(
-        "/house-booking/:" + id + "/confirm",
+        "/bookings/" + id + "/confirm",
         payload,
         [this] (bool success, const QJsonObject& response)
         {   

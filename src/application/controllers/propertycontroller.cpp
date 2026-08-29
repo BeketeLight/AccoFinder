@@ -26,10 +26,10 @@ void PropertyController::setLoading(bool loading)
     }
 }
 
-void PropertyController::getProperties()
+void PropertyController::getProperties(const QString &owner)
 {
     setLoading(true);
-    m_propertyRepositoryImpl->getProperties();
+    m_propertyRepositoryImpl->getProperties(owner);
 }
 
 void PropertyController::getPropertyById(const QString& houseId)

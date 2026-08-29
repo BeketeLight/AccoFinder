@@ -97,6 +97,7 @@ Item {
         if (!it)
             return null
         return {
+            propertyId: it.propertyId,
             title: it.title,
             description: it.description,
             physicalAddress: {
@@ -104,7 +105,7 @@ Item {
                 village: it.village
             },
             verificationStatus: String(it.status),
-            amenities: String(it.amenities).length > 0 ? String(it.amenities).split(",") : [],
+            amenities: it.propertyId ? PropertyViewModel.propertyListModel.amenitiesFor(it.propertyId) : [],
             isActive: true,
             price: it.price,
             landlord: it.landlord,
@@ -117,18 +118,20 @@ Item {
     function reload() {
         propertiesModelId.clear()
         var m = PropertyViewModel.propertyListModel
-        for (var i = 0; i < m.size; i++) {
+        var cppSize = m ? m.size() : 0
+        for (var i = 0; i < cppSize; i++) {
             var item = m.at(i)
+            var pid = item.propertyId
             propertiesModelId.append({
-                propertyId: item.propertyId, title: item.title,
+                propertyId: pid, title: item.title,
                 district: item.district, village: item.village,
                 price: item.price, status: item.status,
                 rooms: item.roomCount, matches: true,
-                amenities: String(item.amenities || ""),
+                amenities: m.amenitiesFor(pid),
                 landlord: item.landlord || item.landlordPhone || "",
                 landlordPhone: item.landlordPhone || "",
                 description: item.description || "",
-                roomsData: [], photosData: []
+                roomsData: pid ? RoomViewModel.roomsForProperty(pid) : [], photosData: []
             })
         }
         root.applyFilters()
@@ -141,7 +144,21 @@ Item {
         function onModelReset() { root.reload() }
     }
 
+    Connections {
+        target: RoomViewModel.roomListModel
+        function onCountChanged() { root.reload() }
+        function onModelReset() { root.reload() }
+    }
+
     Component.onCompleted: {
+        // Sync immediately from whatever is already cached in the shared C++
+        // model, then trigger a fresh fetch. This prevents the page from
+        // showing null if the initial network call fails or is slow.
+        root.reload()
         PropertyViewModel.getProperties()
+        // Rooms are stored in a separate /rooms/ collection (not embedded in
+        // the property document), so fetch them to hydrate per-property counts
+        // and the detail page's room list.
+        RoomViewModel.loadRooms()
     }
 }

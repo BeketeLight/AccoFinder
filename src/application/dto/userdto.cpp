@@ -29,12 +29,16 @@ UserDto UserDto::fromJson(
     UserDto dto;
 
     dto.id =
-        json["id"].toString();
+        json["_id"].toString();
+    if (dto.id.isEmpty())
+        dto.id = json["id"].toString();
 
     dto.m_firstName =
         json["firstName"].toString();
     dto.m_lastName =
         json["lastName"].toString();
+    if (dto.m_lastName.isEmpty())
+        dto.m_lastName = json["surname"].toString();
 
     dto.email =
         json["email"].toString();

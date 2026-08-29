@@ -6,6 +6,7 @@
 #include<QHash>
 #include<QByteArray>
 #include <QVariantMap>
+#include <QVariantList>
 #include "models/property.h"
 
 class PropertyListModel : public QAbstractListModel
@@ -56,6 +57,10 @@ public:
 
     Q_INVOKABLE int size() const { return m_properties.size(); }
     Q_INVOKABLE QVariantMap at(int index) const;
+    // Returns the property's amenities as a genuine list. Used by the detail
+    // pages (which only know the propertyId) to avoid the fragility of passing
+    // arrays through a QML ListModel and re-detecting them with Array.isArray.
+    Q_INVOKABLE QVariantList amenitiesFor(const QString& propertyId) const;
 
 signals:
     void countChanged(int newCount);

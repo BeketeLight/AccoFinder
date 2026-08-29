@@ -84,7 +84,8 @@ Item {
     function reload() {
         disputesModelId.clear()
         var m = DisputesListViewModel.disputesListModel
-        for (var i = 0; i < m.size; i++) {
+        var cppSize = m ? m.size() : 0
+        for (var i = 0; i < cppSize; i++) {
             var item = m.at(i)
             disputesModelId.append({
                 disputeId: item.id, subject: item.issue,

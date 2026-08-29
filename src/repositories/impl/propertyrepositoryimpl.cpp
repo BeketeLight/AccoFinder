@@ -10,10 +10,17 @@ PropertyRepositoryImpl::PropertyRepositoryImpl(QObject *parent)
 
 }
 
-void PropertyRepositoryImpl::getProperties()
+void PropertyRepositoryImpl::getProperties(const QString &owner)
 {
+    QString url = "/house-listing/";
+    // When an owner id is supplied, only fetch listings that belong to that
+    // user (used by the agent dashboard's "My properties" view). Omitting it
+    // returns every listing (admin "All properties" view).
+    if (!owner.isEmpty())
+        url += "?owner=" + owner;
+
     APIClient::instance().get(
-        "/house-listing/",
+        url.toUtf8(),
         [this] (bool success, const QJsonObject& response )
         {
             if (!success) {
@@ -24,14 +31,24 @@ void PropertyRepositoryImpl::getProperties()
             }
             QList<Property*> properties;
             if(response.contains("data")){
-                QJsonArray dataArray = response["data"].toArray();
+                // Backend wraps the list in "data.properties" (with pagination);
+                // fall back to "data" being a plain array if the shape ever changes.
+                QJsonArray dataArray;
+                const QJsonValue dataValue = response.value("data");
+                if (dataValue.isObject())
+                    dataArray = dataValue.toObject().value("properties").toArray();
+                else
+                    dataArray = dataValue.toArray();
+
                 for(const QJsonValue& value: std::as_const(dataArray)){
                     PropertyDto dto = PropertyDto::fromJson(value.toObject());
                     properties.append(dto.toDomainModel());
                 }
                 emit propertiesLoaded(properties);
             } else {
-                emit propertiesLoaded(properties);
+                // No "data" key: emit an error instead of an empty list so the
+                // shared PropertyViewModel is not wiped out on a malformed reply.
+                emit propertyError(QStringLiteral("Failed to load properties"));
             }
         }
     );
@@ -72,7 +89,7 @@ void PropertyRepositoryImpl::updateProperty(const QString& houseId, const QStrin
                     landlord, landlordPhone, verificationStatus, isActive);
 
     APIClient::instance().put(
-        "/house-listing/:" + houseId, 
+        "/house-listing/" + houseId, 
          dto.toUpdateJson(),
         [this] (bool success, const QJsonObject& response)
         {
@@ -95,7 +112,12 @@ void PropertyRepositoryImpl::getPropertiesByStatus(const QString &status)
         {
             QList<Property*> properties;
             if(success && response.contains("data")){
-                QJsonArray dataArray = response["data"].toArray();
+                QJsonArray dataArray;
+                const QJsonValue dataValue = response.value("data");
+                if (dataValue.isObject())
+                    dataArray = dataValue.toObject().value("properties").toArray();
+                else
+                    dataArray = dataValue.toArray();
                 for(const QJsonValue& value: std::as_const(dataArray)){
                     PropertyDto dto = PropertyDto::fromJson(value.toObject());
                     properties.append(dto.toDomainModel());

@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import "../../../components/indicators"
 import "../../../utils" as UtilsModule
 
 Page {
@@ -62,6 +63,11 @@ Page {
     signal registrationFinished(var payload)
 
     property var lastPayload: null
+
+    // True while a property submission POST is in flight against the backend.
+    // Drives the busy overlay so the user sees that the network call is running
+    // instead of an apparent hang (submission is asynchronous).
+    property bool submitting: false
 
     property string pageTitle: qsTr("Add Property")
     property bool showBack: true
@@ -360,6 +366,115 @@ Page {
         }
     }
 
+    Rectangle {
+        id: busyOverlay
+        visible: false
+        anchors.fill: parent
+        color: Qt.rgba(1, 1, 1, 0.96)
+        z: 100
+
+        ColumnLayout {
+            anchors.centerIn: parent
+            spacing: 16
+
+            AppSpinner {
+                Layout.alignment: Qt.AlignHCenter
+                size: 42
+                lineWidth: 4
+                color: root.primaryColor
+                running: root.busyOverlay.visible
+            }
+
+            Label {
+                Layout.alignment: Qt.AlignHCenter
+                text: qsTr("Submitting property…")
+                color: root.textColor
+                font.pixelSize: 16
+                font.bold: true
+            }
+
+            Label {
+                Layout.alignment: Qt.AlignHCenter
+                Layout.maximumWidth: 280
+                text: qsTr("Please wait while your property is sent to the verification team.")
+                color: root.mutedColor
+                font.pixelSize: 13
+                horizontalAlignment: Text.AlignHCenter
+                wrapMode: Text.WordWrap
+            }
+        }
+    }
+
+    Rectangle {
+        id: errorOverlay
+        visible: false
+        anchors.fill: parent
+        color: Qt.rgba(1, 1, 1, 0.96)
+        z: 100
+
+        ColumnLayout {
+            anchors.centerIn: parent
+            spacing: 14
+
+            Rectangle {
+                Layout.alignment: Qt.AlignHCenter
+                Layout.preferredWidth: 72
+                Layout.preferredHeight: 72
+                radius: 36
+                color: "#DC2626"
+
+                Label {
+                    anchors.centerIn: parent
+                    text: "!"
+                    color: "#FFFFFF"
+                    font.pixelSize: 34
+                    font.bold: true
+                }
+            }
+
+            Label {
+                Layout.alignment: Qt.AlignHCenter
+                text: qsTr("Submission failed")
+                color: root.textColor
+                font.pixelSize: 18
+                font.bold: true
+            }
+
+            Label {
+                id: errorLabel
+                Layout.alignment: Qt.AlignHCenter
+                Layout.maximumWidth: 280
+                text: ""
+                color: root.mutedColor
+                font.pixelSize: 13
+                horizontalAlignment: Text.AlignHCenter
+                wrapMode: Text.WordWrap
+            }
+
+            Button {
+                Layout.alignment: Qt.AlignHCenter
+                Layout.preferredHeight: 40
+                text: qsTr("OK")
+
+                contentItem: Label {
+                    text: parent.text
+                    color: "#FFFFFF"
+                    font.pixelSize: 14
+                    font.bold: true
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                }
+
+                background: Rectangle {
+                    radius: 20
+                    color: root.primaryColor
+                }
+
+                onClicked: root.errorOverlay.visible = false
+            }
+        }
+    }
+
     // Payload mirrors the backend Property schema:
     // title, description, physicalAddress{district,village}, verificationStatus,
     // amenities[], isActive — plus client extras (price/landlord) and room/media refs.
@@ -397,23 +512,52 @@ Page {
     function submitProperty() {
         var payload = root.buildPayload("Pending", "PENDING")
         root.lastPayload = payload
+        // Kick off the async createProperty POST and show the busy overlay
+        // while it runs. The success/error overlay is driven by the
+        // PropertyViewModel signals below once the request settles.
+        root.submitting = true
+        root.busyOverlay.visible = true
         root.propertySubmitted(payload)
-        showSuccess(qsTr("Submitted for verification"),
-                    qsTr("The verification team has been notified. You can track progress from your properties list."))
     }
 
     function saveDraft() {
         var payload = root.buildPayload("Draft", "")
         root.lastPayload = payload
+        // Drafts are saved locally, so the success becomes effective immediately.
         root.draftSaved(payload)
         showSuccess(qsTr("Draft saved"),
                     qsTr("You can complete this property anytime from Properties requiring attention."))
     }
 
     function showSuccess(title, message) {
+        root.submitting = false
+        root.busyOverlay.visible = false
         successTitleLabel.text = title
         successMessageLabel.text = message
         successOverlay.visible = true
         successTimer.restart()
+    }
+
+    function showError(message) {
+        root.submitting = false
+        root.busyOverlay.visible = false
+        errorLabel.text = message
+        errorOverlay.visible = true
+    }
+
+    Connections {
+        target: PropertyViewModel
+        function onPropertyCreatedSignal(id, title) {
+            // The createProperty POST completed successfully; only then show the
+            // success state (rooms/media may still be wanted by AddPropertyScreen,
+            // but the listing itself is submitted).
+            if (root.submitting)
+                showSuccess(qsTr("Submitted for verification"),
+                            qsTr("The verification team has been notified. You can track progress from your properties list."))
+        }
+        function onPropertyError(error) {
+            if (root.submitting)
+                showError(qsTr("Could not submit the property: %1").arg(error))
+        }
     }
 }

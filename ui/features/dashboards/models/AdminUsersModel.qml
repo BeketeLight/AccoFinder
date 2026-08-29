@@ -14,6 +14,12 @@ Item {
     property int activeCount: 0
     property int suspendedCount: 0
 
+    // userId of the card currently waiting on a role-change backend call. The
+    // card shows an inline loader while it is set; it is cleared when the C++
+    // UserViewModel finishes loading (success or error), so only the affected
+    // row shows progress instead of the whole page.
+    property string busyUserId: ""
+
     function refresh() {
         var active = 0
         var suspended = 0
@@ -51,6 +57,7 @@ Item {
     }
 
     function setUserRole(userId, newRole) {
+        root.busyUserId = userId
         UserViewModel.updateRole(userId, newRole)
     }
 
@@ -82,10 +89,26 @@ Item {
         function onModelReset() { root.reload() }
     }
 
+    Connections {
+        target: UserViewModel
+        function onUserError() {
+            root.busyUserId = ""
+        }
+        // Clearing on isLoading dropping is deterministic: every role-change
+        // call (and the initial list fetch) toggles isLoading true then false
+        // on completion, so the loader always turns off even when the update
+        // doesn't actually change the model data.
+        function onIsLoadingChanged(loading) {
+            if (!loading)
+                root.busyUserId = ""
+        }
+    }
+
     function reload() {
         usersModelId.clear()
         var m = UserViewModel.userListModel
-        for (var i = 0; i < m.size; i++) {
+        var cppSize = m ? m.size() : 0
+        for (var i = 0; i < cppSize; i++) {
             var item = m.at(i)
             usersModelId.append({
                 userId: item.userId, name: item.name, email: item.email,
@@ -97,6 +120,10 @@ Item {
     }
 
     Component.onCompleted: {
+        // Sync immediately from whatever is already cached in the shared C++
+        // model, then trigger a fresh fetch. This prevents the page from
+        // showing null if the initial network call fails or is slow.
+        root.reload()
         UserViewModel.getUsers()
     }
 }

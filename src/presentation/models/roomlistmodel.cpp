@@ -36,6 +36,9 @@ QVariant RoomListModel::data(const QModelIndex &index, int role) const
     case AvailableRole:
         return room->getAvailable();
 
+    case PriceRole:
+        return room->getPrice();
+
     }
 
     // FIXME: Implement me!
@@ -53,7 +56,8 @@ QHash<int, QByteArray> RoomListModel::roleNames() const
         {AvailableRole,"available"},
         {TitleRole,"title"},
         {LocationRole,"location"},
-        {CreatedAtRole,"createdAt"}
+        {CreatedAtRole,"createdAt"},
+        {PriceRole,"price"}
     };
 
     return mapping;
@@ -96,4 +100,21 @@ int RoomListModel::bookedCount() const
             ++count;
     }
     return count;
+}
+
+QVariantList RoomListModel::roomsForProperty(const QString &propertyId) const
+{
+    QVariantList result;
+    for (const auto& room : std::as_const(m_rooms)) {
+        if (!room)
+            continue;
+        if (room->getPropertyId() != propertyId)
+            continue;
+        QVariantMap m;
+        m["roomType"] = room->getType();
+        m["price"] = room->getPrice();
+        m["available"] = room->getAvailable();
+        result.append(m);
+    }
+    return result;
 }

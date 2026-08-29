@@ -21,7 +21,7 @@ void VerificationRepositoryImpl::createVerification(const QString& id,
     VerificationDto dto(id,agentId,propertyId,notes,verifiedAt,status);
 
     APIClient::instance().post(
-        "/property/:" + id,
+        "/property/" + id,
         dto.toJson(),
         [this] (bool success, const QJsonObject& response)
         {
@@ -68,7 +68,7 @@ void VerificationRepositoryImpl::approveProperty(const QString& id,
     VerificationDto dto(id,agentId,propertyId,notes,verifiedAt,status);
 
     APIClient::instance().patch(
-        "/property/:" + propertyId,
+        "/property/" + propertyId,
         dto.toJson(),
         [this] (bool success, const QJsonObject& response)
         {
@@ -94,7 +94,7 @@ void VerificationRepositoryImpl::rejectProperty(const QString& id,
     VerificationDto dto(id,agentId,propertyId,notes,verifiedAt,status);
 
     APIClient::instance().patch(
-        "/property:" + propertyId,
+        "/property/" + propertyId,
         dto.toJson(),
         [this] (bool success,const QJsonObject& response)
         {

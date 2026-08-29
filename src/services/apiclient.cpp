@@ -202,7 +202,8 @@ void APIClient::sendRequest(
     const QString &endpoint,
     const QJsonObject &data,
     SuccessCallback callback,
-    bool skipAuth
+    bool skipAuth,
+    bool retried
     )
 {
     QUrl url(m_baseUrl + endpoint);
@@ -274,6 +275,10 @@ void APIClient::sendRequest(
         PendingRequest pending;
         pending.callback = callback;
         pending.skipAuth = skipAuth;
+        pending.method = method;
+        pending.endpoint = endpoint;
+        pending.data = data;
+        pending.retried = retried;
 
         m_pendingRequests.insert(
             reply,
@@ -407,7 +412,15 @@ void APIClient::onReplyFinished(
         emit networkError(message);
 
         // A failed login/register also returns 401. That is not a
-        // session expiry, so only signal it for authenticated calls.
+        // session expiry, so only attempt a token refresh for
+        // authenticated calls that have not already been retried.
+        if(statusCode == 401 && !pending.skipAuth && !pending.retried)
+        {
+            reply->deleteLater();
+            maybeRefreshAndRetry(pending, body);
+            return;
+        }
+
         if(statusCode == 401 && !pending.skipAuth)
         {
             emit authenticationRequired();
@@ -441,4 +454,89 @@ void APIClient::onReplyFinished(
     }
 
     reply->deleteLater();
+}
+
+void APIClient::maybeRefreshAndRetry(
+    PendingRequest pending,
+    const QJsonObject &originalBody)
+{
+    // A refresh is already running: queue this request so it is retried
+    // once the fresh access token arrives instead of failing immediately.
+    if (m_refreshing)
+    {
+        m_waitingRefresh.push_back(pending);
+        return;
+    }
+
+    m_refreshing = true;
+    startRefresh(pending, originalBody);
+}
+
+void APIClient::startRefresh(
+    PendingRequest pending,
+    const QJsonObject &originalBody)
+{
+    const QString refreshToken = AppSettings::instance().refreshToken();
+    if (refreshToken.isEmpty())
+    {
+        m_refreshing = false;
+        emit authenticationRequired();
+        if (pending.callback)
+            pending.callback(false, originalBody);
+        finishRefreshWaiters(false);
+        return;
+    }
+
+    QJsonObject payload;
+    payload["refreshToken"] = refreshToken;
+
+    // skipAuth = true: the refresh call itself never sends an Authorization
+    // header (it uses the refresh token) and must not recurse on a 401.
+    sendRequest("POST", "/auth/refresh", payload,
+        [this, pending, originalBody](bool ok, const QJsonObject &resp)
+        {
+            m_refreshing = false;
+
+            const QJsonObject data = resp.value("data").toObject();
+            const QString newAccessToken = data.value("accessToken").toString();
+
+            if (!ok || newAccessToken.isEmpty())
+            {
+                emit authenticationRequired();
+                if (pending.callback)
+                    pending.callback(false, originalBody);
+                finishRefreshWaiters(false);
+                return;
+            }
+
+            AppSettings::instance().setToken(newAccessToken);
+            m_authToken = newAccessToken;
+
+            // Re-issue the original request that hit the 401 with the
+            // fresh token (retried = true prevents endless refresh loops).
+            sendRequest(pending.method, pending.endpoint, pending.data,
+                        pending.callback, pending.skipAuth, true);
+
+            finishRefreshWaiters(true);
+        },
+        true);
+}
+
+void APIClient::finishRefreshWaiters(bool retry)
+{
+    const QVector<PendingRequest> waiters = m_waitingRefresh;
+    m_waitingRefresh.clear();
+
+    for (const PendingRequest &waiter : waiters)
+    {
+        if (retry)
+        {
+            sendRequest(waiter.method, waiter.endpoint, waiter.data,
+                        waiter.callback, waiter.skipAuth, true);
+        }
+        else if (waiter.callback)
+        {
+            waiter.callback(false, QJsonObject());
+        }
+    }
 }

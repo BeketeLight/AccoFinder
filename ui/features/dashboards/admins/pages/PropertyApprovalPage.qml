@@ -11,6 +11,7 @@ Item {
     property MyPropertiesModel listingsModel: MyPropertiesModel {}
 
     signal decisionMade(var propertyId, var title, var approved)
+    signal reviewRequested(var propertyId)
 
     implicitWidth: 400
     implicitHeight: contentColumn.implicitHeight
@@ -23,7 +24,7 @@ Item {
         queueModel.clear()
         for (var i = 0; i < root.listingsModel.propertiesModel.count; i++) {
             var p = root.listingsModel.propertiesModel.get(i)
-            if (p.status !== "PENDING")
+            if (String(p.status || "").toUpperCase() !== "PENDING")
                 continue
             queueModel.append({
                 propertyId: p.propertyId,
@@ -38,6 +39,14 @@ Item {
     }
 
     ListModel { id: queueModel }
+
+    // The shared property model is populated asynchronously after the network
+    // fetch resolves. Rebuild the queue whenever it changes so newly fetched
+    // PENDING listings actually appear (instead of only at Component.onCompleted).
+    Connections {
+        target: root.listingsModel.propertiesModel
+        function onCountChanged() { root.refreshQueue() }
+    }
 
     Component.onCompleted: refreshQueue()
 
@@ -119,6 +128,31 @@ Item {
                         color: "#6B7280"
                         font.pixelSize: 11
                         elide: Text.ElideRight
+                    }
+
+                    Button {
+                        id: reviewButton
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: 38
+                        text: qsTr("Review & decide")
+
+                        contentItem: Label {
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                            text: reviewButton.text
+                            color: "#2563EB"
+                            font.pixelSize: 12
+                            font.bold: true
+                        }
+
+                        background: Rectangle {
+                            radius: 19
+                            color: reviewButton.down ? "#DBEAFE" : "#EFF6FF"
+                            border.color: "#BFDBFE"
+                            border.width: 1
+                        }
+
+                        onClicked: root.reviewRequested(approvalRow.model.propertyId)
                     }
 
                     RowLayout {

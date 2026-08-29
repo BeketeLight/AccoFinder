@@ -8,12 +8,14 @@ Room::Room()
 Room::Room(const QString &id,
            const QString &propertyId,
            const QString &type,
+           double price,
            bool available,
            QObject *parent)
     :m_id(id)
     ,QObject(parent)
     ,m_propertyId(propertyId)
     ,m_type(type)
+    ,m_price(price)
     ,m_available(available)
 {
     emit newRoomCreated();
@@ -39,6 +41,16 @@ QString Room::getType() const
 void Room::setType(const QString &type)
 {
     m_type = type;
+}
+
+double Room::getPrice() const
+{
+    return m_price;
+}
+
+void Room::setPrice(double price)
+{
+    m_price = price;
 }
 
 bool Room::getAvailable() const

@@ -28,7 +28,7 @@ void NotificationServiceImpl::createNotification(QString id,QString message,QStr
 void NotificationServiceImpl::getNotification(const QString& id)
 {
     APIClient::instance().get(
-        "/notifications/:"+ id,
+        "/notifications/" + id,
         [this](bool success,
                const QJsonObject& response)
         {
@@ -46,7 +46,7 @@ void NotificationServiceImpl::markReadNotification(const QString &id, QString& s
 {
     NotificationDto dto(status);
     APIClient::instance().patch(
-        "/notification/: "+ id+"/read",
+        "/notifications/" + id + "/read",
         dto.toUpdateJson(),
         [this](bool success,
                     const QJsonObject& response)
@@ -65,7 +65,7 @@ void NotificationServiceImpl::markAllReadNotification(QString& status)
 {
     NotificationDto dto(status);
     APIClient::instance().patch(
-        "/notification/read/all",
+        "/notifications/read/all",
         dto.toUpdateJson(),
         [this](bool success,
                const QJsonObject& response)

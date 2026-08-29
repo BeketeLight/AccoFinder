@@ -76,3 +76,8 @@ int RoomViewModel::bookedRoomsCount() const
 {
     return m_roomListModel ? m_roomListModel->bookedCount() : 0;
 }
+
+QVariantList RoomViewModel::roomsForProperty(const QString &propertyId) const
+{
+    return m_roomListModel ? m_roomListModel->roomsForProperty(propertyId) : QVariantList();
+}

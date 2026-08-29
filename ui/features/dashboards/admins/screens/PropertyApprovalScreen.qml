@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import "../pages"
 import "../../../../utils/NavigationUtils.js" as NavUtils
+import "../../../../components/indicators"
 
 Item {
     id: root
@@ -38,7 +39,26 @@ Item {
                 width: flick.width > 48 ? Math.min(flick.width - 24, 520) : implicitWidth
 
                 onDecisionMade: (propertyId, title, approved) => root.decisionMade(propertyId, title, approved)
+                onReviewRequested: (propertyId) => {
+                    var payload = approvalsPage.listingsModel.registrationPayloadFor(propertyId, "propertyId")
+                    NavUtils.push(Qt.resolvedUrl("PropertyApprovalDetailScreen.qml"), {
+                        propertyPayload: payload,
+                        propertyId: propertyId,
+                        listingsModel: approvalsPage.listingsModel
+                    })
+                }
             }
+        }
+
+        // Non-blocking spinner while the pending properties are being fetched.
+        AppSpinner {
+            visible: PropertyViewModel.isLoading
+            anchors.centerIn: parent
+            z: 20
+            size: 32
+            lineWidth: 3
+            color: "#2563EB"
+            running: PropertyViewModel.isLoading
         }
     }
 }

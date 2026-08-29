@@ -11,6 +11,9 @@ Item {
         Component.onCompleted: {
             if (initialPayload)
                 detailPage.applyPayload(initialPayload)
+            // Rooms are stored in the separate /rooms/ collection, so fetch
+            // them up front; the page rebuilds its room list once they arrive.
+            RoomViewModel.loadRooms()
         }
     }
 }

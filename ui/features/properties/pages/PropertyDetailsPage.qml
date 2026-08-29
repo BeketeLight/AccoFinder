@@ -35,6 +35,10 @@ Page {
     property string landlordName: qsTr("Bryan Phiri")
     property string landlordPhone: qsTr("+265 999 123 456")
 
+    // Backend id used to match this property's rooms in the separate /rooms/
+    // collection (the property document does not embed its rooms).
+    property string propertyId: ""
+
     property var amenitiesList: []
     property var roomsList: []
     property var photosList: []
@@ -93,12 +97,48 @@ Page {
         if (p.landlord) root.landlordName = p.landlord
         if (p.landlordPhone) root.landlordPhone = p.landlordPhone
         if (p.amenities) root.amenitiesList = p.amenities
+        if (p.propertyId) root.propertyId = String(p.propertyId)
         root.roomsList = p.rooms ? p.rooms : []
         root.photosList = p.photos ? p.photos : []
         if (p.verificationStatus !== undefined)
             root.verificationStatus = String(p.verificationStatus)
         if (p.draftKey !== undefined)
             root.draftKey = String(p.draftKey)
+        root.loadRooms()
+        root.loadAmenities()
+    }
+
+    // Rooms live in the separate /rooms/ collection, keyed by propertyId. The
+    // property document does not embed them, so pull the matching rooms from
+    // RoomViewModel (via C++) and shape them for display. Drafts are local
+    // (not in /rooms/), so keep the rooms their payload already supplied.
+    function loadRooms() {
+        if (root.isDraftItem)
+            return
+        root.roomsList = root.propertyId ? RoomViewModel.roomsForProperty(root.propertyId) : []
+    }
+
+    // Amenities come from the property document (via C++). Fetching them here
+    // keeps them authoritative and avoids any QML ListModel/Array.isArray
+    // round-trip fragility. Drafts are local (not in the server property model),
+    // so keep whatever amenities the draft payload already supplied.
+    function loadAmenities() {
+        if (root.isDraftItem)
+            return
+        root.amenitiesList = root.propertyId ? PropertyViewModel.propertyListModel.amenitiesFor(root.propertyId) : []
+    }
+
+    Connections {
+        target: RoomViewModel.roomListModel
+        function onCountChanged() { root.loadRooms() }
+        function onModelReset() { root.loadRooms() }
+    }
+
+    Connections {
+        target: PropertyViewModel.propertyListModel
+        function onCountChanged() { root.loadAmenities() }
+        function onModelReset() { root.loadAmenities() }
+        function onDataChanged() { root.loadAmenities() }
     }
 
     function startEditing() {

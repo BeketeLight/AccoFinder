@@ -91,10 +91,21 @@ Item {
     function refreshAll() {
         allPropertiesModel.clear()
 
+        // "My properties" must show only the current user's own listings. The
+        // backend is asked for owner-scoped rows (?owner=userId), but as a
+        // second layer of defence we also filter here by the parsed
+        // owner/agentId — the shared C++ PropertyViewModel can be refreshed by
+        // other screens (admin, etc.) and must not leak another user's listings
+        // into this view. Drafts are local and always belong to this device.
+        var myId = AppSettings.userId()
         var server = PropertyViewModel.propertiesForView() || []
-        root.serverCount = server.length
+        root.serverCount = 0
         for (var s = 0; s < server.length; s++) {
             var sp = server[s]
+            var ownerId = String(sp.agentId || "")
+            if (ownerId.length > 0 && ownerId !== String(myId))
+                continue
+            root.serverCount++
             allPropertiesModel.append({
                 propertyId: sp.id || "",
                 title: sp.title || "Untitled property",
@@ -130,24 +141,33 @@ Item {
         if (root.refreshing)
             return
         root.refreshing = true
-        PropertyViewModel.getProperties()
+        // Fetch only the current user's listings.
+        PropertyViewModel.getProperties(AppSettings.userId())
         BookingViewModel.fetchBookings()
         NotificationViewModel.getNotifications()
         DisputesListViewModel.getDisputes()
     }
 
+    property bool pullArmed: false
+
+    function armIfPulled() {
+        if (flick.dragging && flick.contentY <= -56)
+            root.pullArmed = true
+    }
+
     function handlePullRelease() {
-        if (flick.contentY <= -56 && !root.refreshing) {
+        if (root.pullArmed && !root.refreshing) {
             root.refresh()
             flick.returnToBounds()
         }
+        root.pullArmed = false
     }
 
     Component.onCompleted: {
         filterChipsModel.append([{ label: "All" }, { label: "Verified" },
                                  { label: "Pending" }, { label: "Draft" },
                                  { label: "Rejected" }])
-        PropertyViewModel.getProperties()
+        PropertyViewModel.getProperties(AppSettings.userId())
         root.refreshAll()
     }
 
@@ -181,7 +201,8 @@ Item {
 
         ScrollBar.vertical: ScrollBar { }
 
-        onMovementEnded: root.handlePullRelease()
+        onContentYChanged: root.armIfPulled()
+        onDragEnded: root.handlePullRelease()
 
         ColumnLayout {
             id: pullIndicator
@@ -286,7 +307,7 @@ Item {
             }
 
             ColumnLayout {
-                visible: root.loading && root.serverCount === 0
+                visible: root.loading || root.refreshing
                 Layout.fillWidth: true
                 Layout.topMargin: 4
                 spacing: 4
@@ -296,12 +317,12 @@ Item {
                     size: 28
                     lineWidth: 3
                     color: root.primaryColor
-                    running: root.loading && root.serverCount === 0
+                    running: root.loading || root.refreshing
                 }
 
                 Label {
                     Layout.fillWidth: true
-                    text: qsTr("Loading properties…")
+                    text: root.refreshing ? qsTr("Refreshing properties…") : qsTr("Loading properties…")
                     color: root.mutedColor
                     font.pixelSize: 12
                     horizontalAlignment: Text.AlignHCenter
