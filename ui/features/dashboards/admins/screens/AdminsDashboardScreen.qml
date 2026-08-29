@@ -27,6 +27,10 @@ Item {
 
     property bool refreshing: false
 
+    // True while any of the dashboard's backing requests are in flight, so a
+    // loading indicator is shown instead of a blank screen.
+    readonly property bool loading: DashboardController.isLoading || PropertyViewModel.isLoading
+
     // Re-fetch dashboard data from the C++ view models so the cards reflect
     // the latest API state. Result flows back through the view-model signals.
     function refresh() {
@@ -41,11 +45,19 @@ Item {
         DisputesListViewModel.getDisputes()
     }
 
+    property bool pullArmed: false
+
+    function armIfPulled() {
+        if (flick.dragging && flick.contentY <= -56)
+            root.pullArmed = true
+    }
+
     function handlePullRelease() {
-        if (flick.contentY <= -56 && !root.refreshing) {
+        if (root.pullArmed && !root.refreshing) {
             root.refresh()
             flick.returnToBounds()
         }
+        root.pullArmed = false
     }
 
     property Component rightComponentAction: Component {
@@ -102,7 +114,8 @@ Item {
 
             ScrollBar.vertical: ScrollBar { }
 
-            onMovementEnded: root.handlePullRelease()
+            onContentYChanged: root.armIfPulled()
+            onDragEnded: root.handlePullRelease()
 
             // Pull-to-refresh indicator: a small strip shown at the top while
             // the content is dragged down (or while a refresh is running).
@@ -149,12 +162,36 @@ Item {
                 onActivityTriggered: (kind) => root.activityTriggered(kind)
             }
         }
+
+        // Loading indicator: a small, non-blocking spinner centered on the page
+        // so the user knows a request is in flight without blocking navigation.
+        AppSpinner {
+            visible: root.loading
+            anchors.centerIn: parent
+            z: 20
+            size: 32
+            lineWidth: 3
+            color: "#2563EB"
+            running: root.loading
+        }
+    }
+
+    Component.onCompleted: {
+        root.refresh()
     }
 
     Connections {
         target: DashboardController
         function onStatsUpdated() {
             root.refreshing = false
+        }
+    }
+
+    Connections {
+        target: PropertyViewModel
+        function onIsLoadingChanged(loading) {
+            if (!loading)
+                root.refreshing = false
         }
     }
 }

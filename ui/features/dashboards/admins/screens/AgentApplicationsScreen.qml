@@ -4,6 +4,7 @@ import QtQuick.Layouts
 import "../pages"
 import "../../models"
 import "../../../../utils/NavigationUtils.js" as NavUtils
+import "../../../../components/indicators"
 
 Item {
     id: root
@@ -50,6 +51,17 @@ Item {
                     })
                 }
             }
+        }
+
+        // Non-blocking spinner while the agent applications are being fetched.
+        AppSpinner {
+            visible: AgentApplicationViewModel.isLoading
+            anchors.centerIn: parent
+            z: 20
+            size: 32
+            lineWidth: 3
+            color: "#2563EB"
+            running: AgentApplicationViewModel.isLoading
         }
     }
 }

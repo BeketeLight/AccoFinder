@@ -2,6 +2,7 @@
 #define ROOMVIEWMODEL_H
 
 #include <QObject>
+#include <QVariantList>
 #include "presentation/models/roomlistmodel.h"
 #include "application/controllers/roomcontroller.h"
 
@@ -22,6 +23,11 @@ public:
 
     Q_INVOKABLE int availableRoomsCount() const;
     Q_INVOKABLE int bookedRoomsCount() const;
+
+    // Returns the rooms that belong to the given property id as a list of
+    // {roomType, price, available} maps. The QML detail pages use this because
+    // the property document does not embed its rooms (they live in /rooms/).
+    Q_INVOKABLE QVariantList roomsForProperty(const QString& propertyId) const;
 
 private:
     bool m_isLoading = false;

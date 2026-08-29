@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import "../../../utils/NavigationUtils.js" as NavUtils
+import "../../../components/indicators"
 
 Item {
     id: root
@@ -25,12 +26,68 @@ Item {
 
     readonly property var notificationsModel: NotificationViewModel.notificationListModel
 
+    property bool refreshing: false
+    property bool loading: false
+    property double _refreshStart: 0
+    property int _minVisible: 600
+
+    readonly property bool busy: NotificationViewModel.isLoading
+
+    Timer {
+        id: hideLoaderTimer
+        interval: root._minVisible
+        repeat: false
+        onTriggered: root.loading = false
+    }
+
+    function refresh() {
+        if (root.refreshing || root.loading)
+            return
+        root._refreshStart = Date.now()
+        root.refreshing = true
+        root.loading = true
+        NotificationViewModel.getNotifications()
+    }
+
+    function onRequestsSettled() {
+        if (root.busy)
+            return
+        root.refreshing = false
+        var elapsed = Date.now() - root._refreshStart
+        var remain = root._minVisible - elapsed
+        if (remain > 0) {
+            hideLoaderTimer.interval = remain
+            hideLoaderTimer.restart()
+        } else {
+            hideLoaderTimer.stop()
+            root.loading = false
+        }
+    }
+
+    property bool pullArmed: false
+
+    function armIfPulled() {
+        if (flick.dragging && flick.contentY <= -56)
+            root.pullArmed = true
+    }
+
+    function handlePullRelease() {
+        if (root.pullArmed && !root.refreshing && !root.loading) {
+            root.refresh()
+            flick.returnToBounds()
+        }
+        root.pullArmed = false
+    }
+
     function goBack() {
         NavUtils.pop()
     }
 
-    Component.onCompleted: {
-        NotificationViewModel.getNotifications()
+    Component.onCompleted: root.refresh()
+
+    Connections {
+        target: NotificationViewModel
+        function onIsLoadingChanged(loading) { root.onRequestsSettled() }
     }
 
     Rectangle {
@@ -43,6 +100,10 @@ Item {
             contentWidth: width
             contentHeight: contentColumn.implicitHeight + 48
             clip: true
+            boundsBehavior: Flickable.DragAndOvershootBounds
+
+            onContentYChanged: root.armIfPulled()
+            onDragEnded: root.handlePullRelease()
 
             ScrollBar.vertical: ScrollBar { }
 
@@ -172,6 +233,18 @@ Item {
                     }
                 }
             }
+        }
+
+        // Non-blocking spinner centered on the page, shown on first load and
+        // whenever a pull-to-refresh triggers a backend call.
+        AppSpinner {
+            visible: root.loading || root.refreshing
+            anchors.centerIn: parent
+            z: 20
+            size: 32
+            lineWidth: 3
+            color: root.primaryColor
+            running: root.loading || root.refreshing
         }
     }
 }

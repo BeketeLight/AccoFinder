@@ -44,6 +44,7 @@ Page {
     // True while a pull-to-refresh is in flight. Set when the user drags the
     // list down past the top and lets it snap back; cleared when the fetch ends.
     property bool refreshing: false
+    property bool pullArmed: false
 
     // Server-backed properties (VERIFIED/PENDING/REJECTED) merged with local
     // DRAFT rows in a single QML model, so the same filtering code serves both.
@@ -112,11 +113,22 @@ Page {
     function refreshAll() {
         allPropertiesModel.clear()
 
-        // Server-backed properties (from the C++ model / backend).
+        // The agent dashboard is the "My properties" view, so we only ever show
+        // listings owned by the currently logged-in user. The backend is asked
+        // for the owner's listings (?owner=userId), but as a second layer of
+        // defence we also filter here by the parsed owner/agentId — the shared
+        // C++ PropertyViewModel can be refreshed by other screens (My
+        // Properties, admin, etc.) and must not leak another user's listings
+        // into this view. Drafts are local and always belong to this device.
+        var myId = AppSettings.userId()
         var server = PropertyViewModel.propertiesForView() || []
-        root.serverCount = server.length
+        root.serverCount = 0
         for (var s = 0; s < server.length; s++) {
             var sp = server[s]
+            var ownerId = String(sp.agentId || "")
+            if (ownerId.length > 0 && ownerId !== String(myId))
+                continue
+            root.serverCount++
             allPropertiesModel.append({
                 propertyId: sp.id || "",
                 title: sp.title || "Untitled property",
@@ -156,7 +168,8 @@ Page {
         if (root.refreshing)
             return
         root.refreshing = true
-        PropertyViewModel.getProperties()
+        // Fetch only the current user's listings on the agent dashboard.
+        PropertyViewModel.getProperties(AppSettings.userId())
         RoomViewModel.loadRooms()
         // Also refresh the dashboard sections' data from their C++ view models.
         BookingViewModel.fetchBookings()
@@ -164,21 +177,29 @@ Page {
         DisputesListViewModel.getDisputes()
     }
 
+    function armIfPulled() {
+        // Arm the refresh while the finger is still dragging the list past the
+        // top (contentY is only negative during the drag; it springs back
+        // to 0 on release, so we must latch the trigger before that).
+        if (flick.dragging && flick.contentY <= -56)
+            root.pullArmed = true
+    }
+
     function handlePullRelease() {
-        // Only refresh when the list was actually dragged down past the top
-        // (contentY < 0 while overscrolling, springs back to 0 on release).
-        if (flick.contentY <= -56 && !root.refreshing) {
+        if (root.pullArmed && !root.refreshing) {
             root.refresh()
             // Snap the list back to the top so the header isn't left hanging.
             flick.returnToBounds()
         }
+        root.pullArmed = false
     }
 
     Component.onCompleted: {
         filterChipsModel.append([{ label: "All" }, { label: "Verified" },
                                  { label: "Pending" }, { label: "Draft" },
                                  { label: "Rejected" }])
-        PropertyViewModel.getProperties()
+        // Fetch only the current user's listings on the agent dashboard.
+        PropertyViewModel.getProperties(AppSettings.userId())
         RoomViewModel.loadRooms()
         root.refreshAll()
     }
@@ -215,7 +236,8 @@ Page {
 
         ScrollBar.vertical: ScrollBar { }
 
-        onMovementEnded: root.handlePullRelease()
+        onContentYChanged: root.armIfPulled()
+        onDragEnded: root.handlePullRelease()
 
         // Pull-to-refresh indicator: a small strip shown at the top while the
         // content is dragged down (or while a refresh is running).
@@ -347,10 +369,10 @@ Page {
                 }
             }
 
-            // Inline loading state shown while the server list is fetching for
-            // the first time (drafts still render instantly below the dashboard).
+            // Inline loading state shown while the server list is fetching, on
+            // first load and during pull-to-refresh (drafts still render under).
             ColumnLayout {
-                visible: root.loading && root.serverCount === 0
+                visible: root.loading || root.refreshing
                 Layout.fillWidth: true
                 Layout.topMargin: 4
                 spacing: 4
@@ -360,12 +382,12 @@ Page {
                     size: 28
                     lineWidth: 3
                     color: root.primaryColor
-                    running: root.loading && root.serverCount === 0
+                    running: root.loading || root.refreshing
                 }
 
                 Label {
                     Layout.fillWidth: true
-                    text: qsTr("Loading properties…")
+                    text: root.refreshing ? qsTr("Refreshing properties…") : qsTr("Loading properties…")
                     color: root.mutedColor
                     font.pixelSize: 12
                     horizontalAlignment: Text.AlignHCenter

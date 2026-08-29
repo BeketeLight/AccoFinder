@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import "../pages"
 import "../../../../utils/NavigationUtils.js" as NavUtils
+import "../../../../components/indicators"
 
 Item {
     id: root
@@ -41,6 +42,17 @@ Item {
                 onDisputeResolved: (disputeId) => root.disputeResolved(disputeId)
                 onDisputeRejected: (disputeId) => root.disputeRejected(disputeId)
             }
+        }
+
+        // Non-blocking spinner while the disputes are being fetched.
+        AppSpinner {
+            visible: DisputesListViewModel.isLoading
+            anchors.centerIn: parent
+            z: 20
+            size: 32
+            lineWidth: 3
+            color: "#2563EB"
+            running: DisputesListViewModel.isLoading
         }
     }
 }

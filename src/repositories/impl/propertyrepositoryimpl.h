@@ -12,7 +12,7 @@ class PropertyRepositoryImpl : public IPropertyRepository
     Q_OBJECT
 public:
     explicit PropertyRepositoryImpl(QObject *parent = nullptr);
-    void getProperties() override;
+    void getProperties(const QString& owner = QString()) override;
     void getPropertyById(const QString& houseId) override;
     void getPropertiesByStatus(const QString& status) override;
     void createProperty(const QString& title, const QString& description,

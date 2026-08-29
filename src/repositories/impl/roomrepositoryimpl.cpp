@@ -11,9 +11,9 @@ void RoomRepositoryImpl::createRoom(const QString &id,
                                     const QString &type,
                                     bool available)
 {
-    RoomDto dto(id,propertyId,type,available);
+    RoomDto dto(id,propertyId,type,0,available);
     APIClient::instance().post(
-        "/room/create",
+        "/rooms/",
         dto.toJson(),
         [this](bool success,
                const QJsonObject& response)
@@ -32,12 +32,16 @@ void RoomRepositoryImpl::createRoom(const QString &id,
 void RoomRepositoryImpl::getRooms()
 {
     APIClient::instance().get(
-        "/room/",
+        "/rooms/",
         [this](bool success,
                const QJsonObject& response)
         {
             if(success)
             {
+                // Fresh fetch, so always replace (not append) the cached rooms.
+                // Without this, every getRooms() call re-appends the full list and
+                // the count grows on each dashboard refresh (e.g. 6 -> 12).
+                m_rooms.clear();
                 QJsonArray roomsArray = response["data"].toArray();
                 for(const QJsonValue& value: std::as_const(roomsArray))
                 {
@@ -53,7 +57,7 @@ void RoomRepositoryImpl::getRooms()
 void RoomRepositoryImpl::getRoomById(const QString &id)
 {
     APIClient::instance().get(
-        "/room/:" + id,
+        "/rooms/" + id,
         [this](bool success,
                const QJsonObject& response)
         {
@@ -72,7 +76,7 @@ void RoomRepositoryImpl::getRoomById(const QString &id)
 void RoomRepositoryImpl::updateRoom(Room *room)
 {
     // APIClient::instance().patch(
-    //     "/room/:" + id,
+    //     "/rooms/" + id,
     //     [this](bool success,
     //            const QJsonObject& response)
     //     {
@@ -92,7 +96,7 @@ void RoomRepositoryImpl::updateRoom(Room *room)
 void RoomRepositoryImpl::deleteRoom(const QString &id)
 {
     APIClient::instance().del(
-        "/room/:" + id,
+        "/rooms/" + id,
         [this](bool success,
                const QJsonObject& response)
         {

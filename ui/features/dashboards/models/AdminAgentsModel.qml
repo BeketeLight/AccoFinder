@@ -54,7 +54,8 @@ Item {
     function reload() {
         agentsModelId.clear()
         var m = AgentViewModel.agentListModel
-        for (var i = 0; i < m.size; i++) {
+        var cppSize = m ? m.size() : 0
+        for (var i = 0; i < cppSize; i++) {
             var item = m.at(i)
             agentsModelId.append({
                 agentId: item.agentId, name: item.name, email: item.email,

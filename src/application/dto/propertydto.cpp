@@ -84,6 +84,8 @@ PropertyDto PropertyDto::fromJson(
 
     dto.id =
         json["id"].toString();
+    if (dto.id.isEmpty())
+        dto.id = json["_id"].toString();
     dto.firstname =
         json["firstName"].toString();
     dto.secondName =
@@ -105,6 +107,17 @@ PropertyDto PropertyDto::fromJson(
 
     dto.agentId =
         json["agentId"].toString();
+
+    // The backend records the listing owner as `owner` (set from the
+    // authenticated user's id on create, and populated as an object when
+    // fetched). Fall back to it so we can tell which agent listed a property.
+    if (dto.agentId.isEmpty()) {
+        const QJsonValue owner = json["owner"];
+        if (owner.isObject())
+            dto.agentId = owner.toObject()["_id"].toString();
+        else if (owner.isString())
+            dto.agentId = owner.toString();
+    }
 
     dto.landlordId =
         json["landlordId"].toString();
@@ -278,7 +291,10 @@ QJsonObject PropertyDto::toCreateJson() const
     json["landlordPhone"] = landlordPhone;
     json["verificationStatus"] = verificationStatus;
     json["isActive"] = isActive;
-    json["costCategory"] = costCategory.isNull() ? QString() : costCategory;
+
+    // Note: costCategory is intentionally not sent — the backend's
+    // createPropertySchema (/house-listing) rejects unknown keys, so a
+    // costCategory field would fail validation with 400.
 
     // Inline rooms create the rooms atomically with the property
     if (!rooms.isEmpty())

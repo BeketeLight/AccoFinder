@@ -50,10 +50,10 @@ int PropertyViewModel::verifiedPropertiesCount() const
     return count;
 }
 
-void PropertyViewModel::getProperties()
+void PropertyViewModel::getProperties(const QString &owner)
 {
     setLoading(true);
-    m_propertyController->getProperties();
+    m_propertyController->getProperties(owner);
 }
 
 QVariantList PropertyViewModel::propertiesForView() const
@@ -70,6 +70,7 @@ QVariantList PropertyViewModel::propertiesForView() const
         row["price"] = m_propertyListModel->data(idx, PropertyListModel::PriceRole);
         row["verificationStatus"] = m_propertyListModel->data(idx, PropertyListModel::VerificationStatusRole);
         row["propertyType"] = m_propertyListModel->data(idx, PropertyListModel::PropertyTypeRole);
+        row["agentId"] = m_propertyListModel->data(idx, PropertyListModel::AgentIdRole);
         list.append(row);
     }
     return list;

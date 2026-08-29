@@ -6,6 +6,7 @@
 #include <QSharedPointer>
 #include <QHash>
 #include <QVector>
+#include <QVariantList>
 #include "models/room.h"
 
 class RoomListModel : public QAbstractListModel
@@ -23,6 +24,7 @@ public:
         TitleRole,
         LocationRole,
         CreatedAtRole,
+        PriceRole,
     };
     explicit RoomListModel(QObject *parent = nullptr);
 
@@ -38,6 +40,10 @@ public:
 
     int availableCount() const;
     int bookedCount() const;
+
+    // Rooms belonging to the given property id, shaped for QML display as
+    // {roomType, price, available} maps.
+    QVariantList roomsForProperty(const QString& propertyId) const;
 
 private:
     QVector<QSharedPointer<Room>> m_rooms;

@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import "../pages"
 import "../../../../utils/NavigationUtils.js" as NavUtils
+import "../../../../components/indicators"
 
 Item {
     id: root
@@ -41,6 +42,17 @@ Item {
                 onCreateAgentRequested: NavUtils.push(Qt.resolvedUrl("RegisterAgentScreen.qml"))
                 onAgentUpdated: (agentId) => root.agentUpdated(agentId)
             }
+        }
+
+        // Non-blocking spinner while the agent list is being fetched.
+        AppSpinner {
+            visible: AgentViewModel.isLoading
+            anchors.centerIn: parent
+            z: 20
+            size: 32
+            lineWidth: 3
+            color: "#2563EB"
+            running: AgentViewModel.isLoading
         }
     }
 }

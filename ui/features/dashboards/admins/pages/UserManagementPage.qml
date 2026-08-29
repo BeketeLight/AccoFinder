@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import "../../models"
 import "../../../../components/inputs"
+import "../../../../components/indicators"
 
 Item {
     id: root
@@ -238,11 +239,46 @@ Item {
                             color: "#F3F4F6"
                             border.color: roleCombo.activeFocus ? "#2563EB" : "#E5E7EB"
 
+                            // Inline per-card loader shown while the role-change
+                            // PATCH is in flight, so the user sees progress on the
+                            // affected row without a page-wide overlay.
+                            AppSpinner {
+                                id: roleBusy
+                                // Show the per-card loader only while a genuine
+                                // role-change request is in flight: the card is
+                                // flagged busy AND the C++ UserViewModel is
+                                // actively loading. On page load, loading is
+                                // false by the time data renders, so the loader
+                                // can never appear spuriously.
+                                visible: root.usersModel.busyUserId === userCard.model.userId
+                                         && UserViewModel.isLoading
+                                anchors.centerIn: parent
+                                size: 16
+                                lineWidth: 2
+                                color: "#2563EB"
+                                running: visible
+
+                                // Safety net: never let the loader spin forever.
+                                // If busyUserId isn't cleared (a request that
+                                // hangs or errors without a signal), force-clear
+                                // it shortly after it appears.
+                                Timer {
+                                    interval: 6000
+                                    running: roleBusy.visible
+                                    onTriggered: {
+                                        if (root.usersModel.busyUserId === userCard.model.userId)
+                                            root.usersModel.busyUserId = ""
+                                    }
+                                }
+                            }
+
                             ComboBox {
                                 id: roleCombo
                                 anchors.centerIn: parent
+                                visible: !roleBusy.visible
                                 width: 86
                                 height: 20
+                                enabled: !roleBusy.visible
                                 font.pixelSize: 10
                                 model: ["CLIENT", "AGENT"]
                                 currentIndex: {
@@ -250,8 +286,14 @@ Item {
                                     if (r === "AGENT") return 1
                                     return 0
                                 }
-                                onCurrentIndexChanged: {
-                                    var newRole = model[currentIndex]
+                                // Use onActivated (fires only on real user selection)
+                                // rather than onCurrentIndexChanged, which also fires
+                                // when the currentIndex binding initialises a card and
+                                // would otherwise fire a spurious role-change PATCH.
+                                onActivated: function (index) {
+                                    var newRole = roleCombo.currentText
+                                    console.log("ADMIN promote attempt:", userCard.model.userId,
+                                                "from", userCard.model.role, "to", newRole)
                                     if (newRole !== userCard.model.role) {
                                         root.usersModel.setUserRole(userCard.model.userId, newRole)
                                         root.userRoleChanged(userCard.model.userId, userCard.model.name, newRole)
@@ -272,11 +314,35 @@ Item {
                                 }
 
                                 popup: Popup {
-                                    y: roleCombo.height + 4
+                                    id: rolePopup
                                     width: 108
                                     padding: 4
                                     modal: true
                                     focus: true
+
+                                    // popup.x / popup.y are relative to the combo, so
+                                    // opening below means y = combo.height + 4 (the
+                                    // original behaviour). For the row that sits at the
+                                    // very bottom of the screen we flip the list to open
+                                    // above the combo so it never extends past the window
+                                    // edge into the Android system bottom nav bar. The
+                                    // flip decision is made in window coordinates.
+                                    function openHeight() {
+                                        var h = 8 // padding top + bottom
+                                        var m = roleCombo.delegateModel
+                                        var rows = (m && m.count) ? m.count : 2
+                                        return h + rows * 30
+                                    }
+                                    function place() {
+                                        var win = roleCombo.Window.contentItem
+                                        var bottom = roleCombo.mapToItem(win, 0, roleCombo.height)
+                                        if (win && bottom.y + 4 + rolePopup.openHeight() > win.height - 4) {
+                                            rolePopup.y = -rolePopup.openHeight() - 4
+                                        } else {
+                                            rolePopup.y = roleCombo.height + 4
+                                        }
+                                    }
+                                    onAboutToShow: rolePopup.place()
 
                                     contentItem: ListView {
                                         clip: true

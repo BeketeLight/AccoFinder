@@ -10,6 +10,7 @@
 #include "core/utils/appsettings.h"
 #include <QNetworkCookieJar>
 #include <QStringList>
+#include <QVector>
 
 class APIClient : public QObject
 {
@@ -87,12 +88,19 @@ private:
     {
         SuccessCallback callback;
         bool skipAuth = false;
+        QString method;
+        QString endpoint;
+        QJsonObject data;
+        bool retried = false;
     };
 
     QNetworkAccessManager* m_networkManager;
 
     QString m_baseUrl;
     QString m_authToken;
+
+    bool m_refreshing = false;
+    QVector<PendingRequest> m_waitingRefresh;
 
     QMap<QNetworkReply*, PendingRequest> m_pendingRequests;
 
@@ -101,8 +109,19 @@ private:
         const QString& endpoint,
         const QJsonObject& data,
         SuccessCallback callback,
-        bool skipAuth = false
+        bool skipAuth = false,
+        bool retried = false
         );
+
+    void maybeRefreshAndRetry(
+        PendingRequest pending,
+        const QJsonObject& originalBody);
+
+    void startRefresh(
+        PendingRequest pending,
+        const QJsonObject& originalBody);
+
+    void finishRefreshWaiters(bool retry);
 
     void setupHeaders(QNetworkRequest& request, bool skipAuth = false);
     void setupHeadersAllowMultipart(QNetworkRequest& request, bool skipAuth = false);

@@ -51,7 +51,7 @@ void AdminUserRepositoryImpl::updateUserRole(const QString &userId, const QStrin
     payload["role"] = role;
 
     APIClient::instance().patch(
-        "/users/" + userId + "/role",
+        "/users/" + userId + "/promote",
         payload,
         [this](bool success, const QJsonObject& response)
         {

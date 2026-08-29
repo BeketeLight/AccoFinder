@@ -184,3 +184,20 @@ QVariantMap PropertyListModel::at(int index) const
     row["roomCount"] = data(idx, RoomCountRole);
     return row;
 }
+
+QVariantList PropertyListModel::amenitiesFor(const QString &propertyId) const
+{
+    for (Property* property : std::as_const(m_properties)) {
+        if (!property)
+            continue;
+        if (property->getId() != propertyId)
+            continue;
+        const QStringList list = property->getAmenities();
+        QVariantList out;
+        out.reserve(list.size());
+        for (const QString& a : list)
+            out.append(a);
+        return out;
+    }
+    return QVariantList();
+}

@@ -99,6 +99,7 @@ qt_add_qml_module(appAccoFinder
 
         #========FEATURE-DASHBOARD-AGENT-ADMIN--CLIENT========
         ui/features/dashboards/admins/pages/PropertyApprovalPage.qml
+        ui/features/dashboards/admins/pages/PropertyApprovalDetailPage.qml
         ui/features/dashboards/admins/pages/RegisterAgentPage.qml
         ui/features/dashboards/admins/pages/UserManagementPage.qml
         ui/features/dashboards/admins/screens/AdminsDashboardScreen.qml
@@ -111,6 +112,7 @@ qt_add_qml_module(appAccoFinder
         ui/features/dashboards/admins/screens/RegisterAgentScreen.qml
         ui/features/dashboards/admins/screens/AgentManagementScreen.qml
         ui/features/dashboards/admins/screens/PropertyApprovalScreen.qml
+        ui/features/dashboards/admins/screens/PropertyApprovalDetailScreen.qml
         ui/features/dashboards/admins/screens/PaymentsOversightScreen.qml
         ui/features/dashboards/admins/screens/DisputesScreen.qml
         ui/features/dashboards/admins/screens/SystemNotificationsScreen.qml

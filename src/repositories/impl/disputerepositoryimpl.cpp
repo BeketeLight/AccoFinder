@@ -75,7 +75,7 @@ void DisputeRepositoryImpl::resolveDispute(const QString& disputeId)
     QJsonObject payload;
 
     APIClient::instance().patch(
-        "/disputes/:" + disputeId + "/resolve",
+        "/disputes/" + disputeId + "/resolve",
         payload,
         [this](bool success,
         const QJsonObject& response)
