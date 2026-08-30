@@ -110,24 +110,26 @@ Page {
                 }
 
                 // Status badge
-                Rectangle {
-                    anchors.right: parent.right
-                    anchors.top: parent.top
-                    anchors.margins: 12
-                    height: 26
-                    radius: 8
-                    color: root.status === "Available" ? "#DCFCE7" : root.status === "Booked" ? "#FEE2E2" : "#FEF3C7"
+                // Rectangle {
+                //     // anchors.right: parent.right
+                //     // anchors.top: parent.top
+                //     // anchors.margins: 12
+                //     anchors.centerIn: parent
+                //     height: 26
+                //     radius: 8
+                //     color: "red"
+                //     //color: root.status === "Available" ? "#DCFCE7" : root.status === "Booked" ? "#FEE2E2" : "#FEF3C7"
 
-                    Label {
-                        anchors.centerIn: parent
-                        leftPadding: 10
-                        rightPadding: 10
-                        text: root.status
-                        font.pixelSize: 12
-                        font.bold: true
-                        color: root.status === "Available" ? "#16A34A" : root.status === "Booked" ? "#DC2626" : "#D97706"
-                    }
-                }
+                //     Label {
+                //         anchors.centerIn: parent
+                //         leftPadding: 10
+                //         rightPadding: 10
+                //         text: root.status
+                //         font.pixelSize: 12
+                //         font.bold: true
+                //         color: root.status === "Available" ? "#16A34A" : root.status === "Booked" ? "#DC2626" : "#D97706"
+                //     }
+                // }
             }
 
             // ========== MAIN INFO ==========
