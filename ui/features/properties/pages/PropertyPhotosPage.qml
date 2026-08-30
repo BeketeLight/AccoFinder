@@ -150,8 +150,11 @@ Item {
                                 anchors.fill: parent
                                 anchors.margins: 2
                                 source: photoAssignCard.model.path
+                                sourceSize.width: 180
+                                sourceSize.height: 180
                                 fillMode: Image.PreserveAspectCrop
                                 asynchronous: true
+                                smooth: true
                             }
                         }
 
@@ -203,9 +206,12 @@ Item {
                             anchors.fill: parent
                             anchors.margins: 3
                             source: model.path
+                            sourceSize.width: 240
+                            sourceSize.height: 240
                             fillMode: Image.PreserveAspectCrop
                             clip: true
                             asynchronous: true
+                            smooth: true
                         }
 
                         Rectangle {

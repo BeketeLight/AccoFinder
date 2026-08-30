@@ -154,6 +154,13 @@ bool DraftViewModel::resendDraft(const QString &key)
     // upload succeeds. On failure it stays in storage for a later retry.
     m_resendingKey = key;
 
+    // Drafts are local, un-submitted listings and therefore carry no
+    // verificationStatus. The backend only accepts PENDING/VERIFIED/REJECTED/
+    // DRAFT and rejects an empty string, so default unsent drafts to PENDING.
+    QString verificationStatus = draft.value("verificationStatus").toString();
+    if (verificationStatus.isEmpty())
+        verificationStatus = QStringLiteral("PENDING");
+
     m_propertyViewModel->createProperty(
         draft.value("title").toString(),
         draft.value("description").toString(),
@@ -164,7 +171,7 @@ bool DraftViewModel::resendDraft(const QString &key)
         amens,
         draft.value("landlord").toString(),
         draft.value("landlordPhone").toString(),
-        draft.value("verificationStatus").toString(),
+        verificationStatus,
         draft.value("isActive").toBool(true),
         rooms);
 

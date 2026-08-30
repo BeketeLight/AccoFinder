@@ -98,6 +98,16 @@ void Property::setAgentId(const QString &agentId)
     m_agentId = agentId;
 }
 
+QString Property::agentPhone() const
+{
+    return m_agentPhone;
+}
+
+void Property::setAgentPhone(const QString &phone)
+{
+    m_agentPhone = phone;
+}
+
 
 
 QString Property::getLandlordId() const

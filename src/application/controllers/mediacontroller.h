@@ -17,10 +17,14 @@ public:
                                  bool isPrimary,
                                  const QString& roomId);
     Q_INVOKABLE void getMediaByProperty(const QString& propertyId);
+    Q_INVOKABLE void deleteMedia(const QString& mediaId);
+    Q_INVOKABLE void updateMediaPrimary(const QString& mediaId, bool isPrimary);
 
 signals:
     void mediaCreated(const QSharedPointer<Media>& media);
     void mediaLoaded(const QList<QSharedPointer<Media>>& media);
+    void mediaDeleted(const QString& mediaId);
+    void mediaUpdated(const QSharedPointer<Media>& media);
     void onError(const QString& message);
 
 private:

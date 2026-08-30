@@ -8,6 +8,10 @@ MediaController::MediaController(QObject *parent)
             this, &MediaController::mediaCreated);
     connect(m_mediaRepositoryImpl, &MediaRepositoryImpl::mediaLoaded,
             this, &MediaController::mediaLoaded);
+    connect(m_mediaRepositoryImpl, &MediaRepositoryImpl::mediaDeleted,
+            this, &MediaController::mediaDeleted);
+    connect(m_mediaRepositoryImpl, &MediaRepositoryImpl::mediaUpdated,
+            this, &MediaController::mediaUpdated);
     connect(m_mediaRepositoryImpl, &MediaRepositoryImpl::error,
             this, &MediaController::onError);
 }
@@ -36,4 +40,22 @@ void MediaController::getMediaByProperty(const QString &propertyId)
         return;
     }
     m_mediaRepositoryImpl->getMediaByProperty(propertyId);
+}
+
+void MediaController::deleteMedia(const QString &mediaId)
+{
+    if (mediaId.isEmpty()) {
+        emit onError("mediaId cannot be empty");
+        return;
+    }
+    m_mediaRepositoryImpl->deleteMedia(mediaId);
+}
+
+void MediaController::updateMediaPrimary(const QString &mediaId, bool isPrimary)
+{
+    if (mediaId.isEmpty()) {
+        emit onError("mediaId cannot be empty");
+        return;
+    }
+    m_mediaRepositoryImpl->updateMedia(mediaId, isPrimary);
 }

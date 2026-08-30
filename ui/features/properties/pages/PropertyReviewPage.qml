@@ -250,8 +250,11 @@ Item {
                                     anchors.fill: parent
                                     anchors.margins: 2
                                     source: model.path
+                                    sourceSize.width: 180
+                                    sourceSize.height: 180
                                     fillMode: Image.PreserveAspectCrop
                                     asynchronous: true
+                                    smooth: true
                                 }
                             }
 

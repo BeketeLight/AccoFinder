@@ -22,12 +22,16 @@ public:
                      bool isPrimary,
                      const QString& roomId) override;
     void getMediaByProperty(const QString& propertyId) override;
+    void deleteMedia(const QString& mediaId) override;
+    void updateMedia(const QString& mediaId, bool isPrimary) override;
 
 private:
     QList<QSharedPointer<Media>> m_media;
 signals:
     void mediaCreated(const QSharedPointer<Media>& media);
     void mediaLoaded(const QList<QSharedPointer<Media>>& media);
+    void mediaDeleted(const QString& mediaId);
+    void mediaUpdated(const QSharedPointer<Media>& media);
     void error(const QString& message);
 };
 

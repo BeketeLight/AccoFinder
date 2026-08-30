@@ -17,6 +17,7 @@ Item {
     implicitHeight: contentColumn.implicitHeight
 
     function roleColor(role) {
+        if (role === "ADMIN") return "#7C3AED"
         if (role === "AGENT") return "#2563EB"
         return "#16A34A"
     }
@@ -57,7 +58,8 @@ Item {
                 model: [
                     { key: "ALL", label: qsTr("All") },
                     { key: "CLIENT", label: qsTr("Clients") },
-                    { key: "AGENT", label: qsTr("Agents") }
+                    { key: "AGENT", label: qsTr("Agents") },
+                    { key: "ADMIN", label: qsTr("Admins") }
                 ]
 
                 delegate: Button {
@@ -171,6 +173,7 @@ Item {
                 required property var model
                 required property int index
                 readonly property string roleTint: root.roleColor(model.role)
+                readonly property bool isSelfAccount: String(model.userId) === String(AppSettings.userId())
                 Layout.fillWidth: true
                 implicitHeight: cardColumn.implicitHeight + 20
                 radius: 12
@@ -276,14 +279,19 @@ Item {
                                 id: roleCombo
                                 anchors.centerIn: parent
                                 visible: !roleBusy.visible
-                                width: 86
+                                width: 96
                                 height: 20
-                                enabled: !roleBusy.visible
+                                // The signed-in admin must not edit their own
+                                // role (avoids demoting yourself out of the
+                                // dashboard). Everyone else can be set to any
+                                // role, including promoted to ADMIN.
+                                enabled: !roleBusy.visible && !isSelfAccount
                                 font.pixelSize: 10
-                                model: ["CLIENT", "AGENT"]
+                                model: ["CLIENT", "AGENT", "ADMIN"]
                                 currentIndex: {
                                     var r = userCard.model.role
                                     if (r === "AGENT") return 1
+                                    if (r === "ADMIN") return 2
                                     return 0
                                 }
                                 // Use onActivated (fires only on real user selection)

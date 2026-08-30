@@ -7,7 +7,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Quick Core)
+find_package(Qt6 REQUIRED COMPONENTS Quick Core Network Gui)
 find_package(Qt6 REQUIRED COMPONENTS QuickControls2)
 
 qt_standard_project_setup(REQUIRES 6.10)
@@ -34,7 +34,10 @@ qt_add_qml_module(appAccoFinder
         ui/components/inputs/AppTextInput.qml
         ui/components/indicators/AppStatusIndicator.qml
         ui/components/indicators/AppSpinner.qml
+        ui/components/cards/ContactCard.qml
         ui/components/navigations/AppBottomNavBar.qml
+        ui/components/navigations/AdminDrawer.qml
+        ui/components/navigations/AgentDrawer.qml
 
         #========UTILS============
         ui/utils/Utils.js
@@ -195,159 +198,125 @@ qt_add_qml_module(appAccoFinder
         ui/features/properties/screens/DraftsScreen.qml
         ui/features/properties/screens/MyPropertiesScreen.qml
 
-    SOURCES
-        src/models/user.h src/models/user.cpp
-        src/models/agent.h src/models/agent.cpp
-        src/models/landlord.h src/models/landlord.cpp
-        src/models/property.h src/models/property.cpp
-        src/models/room.h src/models/room.cpp
-        src/models/media.h src/models/media.cpp
-        src/models/booking.h src/models/booking.cpp
-        src/models/payment.h src/models/payment.cpp
-        src/models/review.h src/models/review.cpp
-        src/models/verification.h src/models/verification.cpp
-        src/models/dispute.h src/models/dispute.cpp
-        src/application/controllers/bookingcontroller.h
-        src/application/controllers/bookingcontroller.cpp
-        src/application/controllers/propertycontroller.h
-        src/application/controllers/propertycontroller.cpp
-        src/application/controllers/paymentcontroller.h
-        src/application/controllers/paymentcontroller.cpp
-        src/application/controllers/authcontroller.h
-        src/application/controllers/authcontroller.cpp
-        src/application/dto/bookingdto.h
-        src/application/dto/bookingdto.cpp
-        src/application/dto/propertydto.h
-        src/application/dto/propertydto.cpp
-        src/application/dto/paymentdto.h
-        src/application/dto/paymentdto.cpp
-        src/application/dto/userdto.h
-        src/application/dto/userdto.cpp
-        src/services/apiclient.h
-        src/services/apiclient.cpp
-        src/services/paymentgatewayimpl.h
-        src/services/paymentgatewayimpl.cpp
-        src/services/notificationserviceimpl.h
-        src/services/notificationserviceimpl.cpp
-        src/services/emailservice.h
-        src/services/emailservice.cpp
-        src/repositories/interfaces/IBookingRepository.h
-        src/repositories/interfaces/IPropertyRepository.h
-        src/repositories/interfaces/IUserRepository.h
-        src/repositories/interfaces/IPaymentGateway.h
-        src/repositories/interfaces/IDisputeRepository.h
-        src/repositories/interfaces/IRoomRepository.h
-        src/repositories/interfaces/IMediaRepository.h
-        src/repositories/impl/bookingrepositoryimpl.h
-        src/repositories/impl/bookingrepositoryimpl.cpp
-        src/repositories/impl/propertyrepositoryimpl.h
-        src/repositories/impl/propertyrepositoryimpl.cpp
-        src/repositories/impl/userrepositoryimpl.h
-        src/repositories/impl/userrepositoryimpl.cpp
-        src/repositories/impl/disputerepositoryimpl.h
-        src/repositories/impl/disputerepositoryimpl.cpp
-        src/core/utils/EPropertyStatus.h
-        src/core/utils/EBookingStatus.h
-        src/core/utils/EPaymentStatus.h
-        src/core/utils/EVerificationStatus.h
-        src/core/utils/EDisputeStatus.h
-        src/core/utils/ERegistrationPurpose.h
-        src/core/utils/ERegistrationPurpose.h
-        src/presentation/models/propertylistmodel.h
-        src/presentation/models/propertylistmodel.cpp
-        src/presentation/models/roomlistmodel.h
-        src/presentation/models/roomlistmodel.cpp
-        src/presentation/models/medialistmodel.h
-        src/presentation/models/medialistmodel.cpp
-        src/presentation/models/bookinglistmodel.h
-        src/presentation/models/bookinglistmodel.cpp
-        src/presentation/models/reviewlistmodel.h
-        src/presentation/models/reviewlistmodel.cpp
-        src/presentation/viewmodels/bookingviewmodel.h
-        src/presentation/viewmodels/bookingviewmodel.cpp
-        src/presentation/viewmodels/propertyviewmodel.h
-        src/presentation/viewmodels/propertyviewmodel.cpp
-        src/presentation/viewmodels/reviewviewmodel.h
-        src/presentation/viewmodels/reviewviewmodel.cpp
-        src/presentation/viewmodels/roomviewmodel.h
-        src/presentation/viewmodels/roomviewmodel.cpp
-        src/presentation/viewmodels/mediaviewmodel.h
-        src/presentation/viewmodels/mediaviewmodel.cpp
-        src/presentation/viewmodels/draftviewmodel.h
-        src/presentation/viewmodels/draftviewmodel.cpp
-        src/models/client.h src/models/client.cpp
-        src/models/notification.h
-        src/models/notification.cpp
-        src/repositories/interfaces/INotification.h
-        src/core/utils/appsettings.h
-        src/core/utils/appsettings.cpp
-        src/repositories/interfaces/IVerificationRepository.h
-        src/repositories/impl/verificationrepositoryimpl.h
-        src/repositories/impl/verificationrepositoryimpl.cpp
-        src/application/dto/verificationdto.h
-        src/application/dto/verificationdto.cpp
-        src/application/controllers/disputecontroller.h
-        src/application/controllers/disputecontroller.cpp
-        src/application/dto/notificationdto.h
-        src/application/dto/notificationdto.cpp
-        src/application/dto/disputedto.h
-        src/application/dto/disputedto.cpp
-        src/application/dto/roomdto.h
-        src/application/dto/roomdto.cpp
-        src/application/dto/mediadto.h
-        src/application/dto/mediadto.cpp
-        src/presentation/models/disputeslistmodel.h
-        src/presentation/models/disputeslistmodel.cpp
-        src/presentation/viewmodels/disputeslistviewmodel.h
-        src/presentation/viewmodels/disputeslistviewmodel.cpp
-        src/presentation/models/notificationlistmodel.h
-        src/presentation/models/notificationlistmodel.cpp
-        src/presentation/viewmodels/notificationviewmodel.h
-        src/presentation/viewmodels/notificationviewmodel.cpp
-        src/application/controllers/roomcontroller.h
-        src/application/controllers/roomcontroller.cpp
-        src/application/controllers/mediacontroller.h
-        src/application/controllers/mediacontroller.cpp
-        src/repositories/impl/roomrepositoryimpl.h
-        src/repositories/impl/roomrepositoryimpl.cpp
-        src/repositories/impl/mediarepositoryimpl.h
-        src/repositories/impl/mediarepositoryimpl.cpp
-        src/application/controllers/usercontroller.h
-        src/application/controllers/usercontroller.cpp
-        src/application/controllers/agentcontroller.h
-        src/application/controllers/agentcontroller.cpp
-        src/application/controllers/dashboardcontroller.h
-        src/application/controllers/dashboardcontroller.cpp
-        src/repositories/interfaces/IAdminUserRepository.h
-        src/repositories/interfaces/IAgentRepository.h
-        src/repositories/impl/adminuserrepositoryimpl.h
-        src/repositories/impl/adminuserrepositoryimpl.cpp
-        src/repositories/impl/agentrepositoryimpl.h
-        src/repositories/impl/agentrepositoryimpl.cpp
-        src/presentation/models/userlistmodel.h
-        src/presentation/models/userlistmodel.cpp
-        src/presentation/viewmodels/userviewmodel.h
-        src/presentation/viewmodels/userviewmodel.cpp
-        src/presentation/models/agentlistmodel.h
-        src/presentation/models/agentlistmodel.cpp
-        src/presentation/viewmodels/agentviewmodel.h
-        src/presentation/viewmodels/agentviewmodel.cpp
-        src/presentation/viewmodels/agentapplicationviewmodel.h
-        src/presentation/viewmodels/agentapplicationviewmodel.cpp
-
-
-    RESOURCES
-        android/src/com/accofinder/SplashActivity.java
-        android/src/com/accofinder/SplashActivity.java
-        RESOURCES Rescources.qrc
+        # Additional QML files registered at module level
         QML_FILES ui/features/auth/pages/Profile.qml
-        SOURCES src/core/utils/apppermission.h src/core/utils/apppermission.cpp
-        QML_FILES ui/features/auth/pages/Profile.qml
-        SOURCES src/core/utils/apppermission.h src/core/utils/apppermission.cpp
         QML_FILES ui/components/navigations/AppHeader.qml
         QML_FILES ui/features/dashboards/Agets/pages/AgentsDashboardPage.qml
         QML_FILES ui/features/dashboards/Agets/screens/AgentsDashboardScreen.qml
 
+    RESOURCES
+        Rescources.qrc
+)
+
+# ─────────────────────────────────────────────────────────────
+# AccoFinderLogic - static library for all C++ sources
+# ─────────────────────────────────────────────────────────────
+set(ACCOFINDER_LOGIC_SOURCES
+    src/models/user.h src/models/user.cpp
+    src/models/agent.h src/models/agent.cpp
+    src/models/landlord.h src/models/landlord.cpp
+    src/models/property.h src/models/property.cpp
+    src/models/room.h src/models/room.cpp
+    src/models/media.h src/models/media.cpp
+    src/models/booking.h src/models/booking.cpp
+    src/models/payment.h src/models/payment.cpp
+    src/models/review.h src/models/review.cpp
+    src/models/verification.h src/models/verification.cpp
+    src/models/dispute.h src/models/dispute.cpp
+    src/models/client.h src/models/client.cpp
+    src/models/notification.h src/models/notification.cpp
+    src/application/controllers/bookingcontroller.h
+    src/application/controllers/bookingcontroller.cpp
+    src/application/controllers/propertycontroller.h
+    src/application/controllers/propertycontroller.cpp
+    src/application/controllers/paymentcontroller.h
+    src/application/controllers/paymentcontroller.cpp
+    src/application/controllers/authcontroller.h
+    src/application/controllers/authcontroller.cpp
+    src/application/controllers/disputecontroller.h
+    src/application/controllers/disputecontroller.cpp
+    src/application/controllers/roomcontroller.h
+    src/application/controllers/roomcontroller.cpp
+    src/application/controllers/mediacontroller.h
+    src/application/controllers/mediacontroller.cpp
+    src/application/controllers/usercontroller.h
+    src/application/controllers/usercontroller.cpp
+    src/application/controllers/agentcontroller.h
+    src/application/controllers/agentcontroller.cpp
+    src/application/controllers/dashboardcontroller.h
+    src/application/controllers/dashboardcontroller.cpp
+    src/application/dto/bookingdto.h src/application/dto/bookingdto.cpp
+    src/application/dto/propertydto.h src/application/dto/propertydto.cpp
+    src/application/dto/paymentdto.h src/application/dto/paymentdto.cpp
+    src/application/dto/userdto.h src/application/dto/userdto.cpp
+    src/application/dto/verificationdto.h src/application/dto/verificationdto.cpp
+    src/application/dto/notificationdto.h src/application/dto/notificationdto.cpp
+    src/application/dto/disputedto.h src/application/dto/disputedto.cpp
+    src/application/dto/roomdto.h src/application/dto/roomdto.cpp
+    src/application/dto/mediadto.h src/application/dto/mediadto.cpp
+    src/services/apiclient.h src/services/apiclient.cpp
+    src/services/paymentgatewayimpl.h src/services/paymentgatewayimpl.cpp
+    src/services/notificationserviceimpl.h src/services/notificationserviceimpl.cpp
+    src/services/emailservice.h src/services/emailservice.cpp
+    src/repositories/interfaces/IBookingRepository.h
+    src/repositories/interfaces/IPropertyRepository.h
+    src/repositories/interfaces/IUserRepository.h
+    src/repositories/interfaces/IPaymentGateway.h
+    src/repositories/interfaces/IDisputeRepository.h
+    src/repositories/interfaces/IRoomRepository.h
+    src/repositories/interfaces/IMediaRepository.h
+    src/repositories/interfaces/INotification.h
+    src/repositories/interfaces/IVerificationRepository.h
+    src/repositories/interfaces/IAdminUserRepository.h
+    src/repositories/interfaces/IAgentRepository.h
+    src/repositories/impl/bookingrepositoryimpl.h src/repositories/impl/bookingrepositoryimpl.cpp
+    src/repositories/impl/propertyrepositoryimpl.h src/repositories/impl/propertyrepositoryimpl.cpp
+    src/repositories/impl/userrepositoryimpl.h src/repositories/impl/userrepositoryimpl.cpp
+    src/repositories/impl/disputerepositoryimpl.h src/repositories/impl/disputerepositoryimpl.cpp
+    src/repositories/impl/verificationrepositoryimpl.h src/repositories/impl/verificationrepositoryimpl.cpp
+    src/repositories/impl/roomrepositoryimpl.h src/repositories/impl/roomrepositoryimpl.cpp
+    src/repositories/impl/mediarepositoryimpl.h src/repositories/impl/mediarepositoryimpl.cpp
+    src/repositories/impl/adminuserrepositoryimpl.h src/repositories/impl/adminuserrepositoryimpl.cpp
+    src/repositories/impl/agentrepositoryimpl.h src/repositories/impl/agentrepositoryimpl.cpp
+    src/core/utils/EPropertyStatus.h
+    src/core/utils/EBookingStatus.h
+    src/core/utils/EPaymentStatus.h
+    src/core/utils/EVerificationStatus.h
+    src/core/utils/EDisputeStatus.h
+    src/core/utils/ERegistrationPurpose.h
+    src/core/utils/appsettings.h src/core/utils/appsettings.cpp
+    src/core/utils/apppermission.h src/core/utils/apppermission.cpp
+    src/presentation/models/propertylistmodel.h src/presentation/models/propertylistmodel.cpp
+    src/presentation/models/roomlistmodel.h src/presentation/models/roomlistmodel.cpp
+    src/presentation/models/medialistmodel.h src/presentation/models/medialistmodel.cpp
+    src/presentation/models/bookinglistmodel.h src/presentation/models/bookinglistmodel.cpp
+    src/presentation/models/reviewlistmodel.h src/presentation/models/reviewlistmodel.cpp
+    src/presentation/models/disputeslistmodel.h src/presentation/models/disputeslistmodel.cpp
+    src/presentation/models/notificationlistmodel.h src/presentation/models/notificationlistmodel.cpp
+    src/presentation/models/userlistmodel.h src/presentation/models/userlistmodel.cpp
+    src/presentation/models/agentlistmodel.h src/presentation/models/agentlistmodel.cpp
+    src/presentation/viewmodels/bookingviewmodel.h src/presentation/viewmodels/bookingviewmodel.cpp
+    src/presentation/viewmodels/propertyviewmodel.h src/presentation/viewmodels/propertyviewmodel.cpp
+    src/presentation/viewmodels/reviewviewmodel.h src/presentation/viewmodels/reviewviewmodel.cpp
+    src/presentation/viewmodels/roomviewmodel.h src/presentation/viewmodels/roomviewmodel.cpp
+    src/presentation/viewmodels/mediaviewmodel.h src/presentation/viewmodels/mediaviewmodel.cpp
+    src/presentation/viewmodels/draftviewmodel.h src/presentation/viewmodels/draftviewmodel.cpp
+    src/presentation/viewmodels/disputeslistviewmodel.h src/presentation/viewmodels/disputeslistviewmodel.cpp
+    src/presentation/viewmodels/notificationviewmodel.h src/presentation/viewmodels/notificationviewmodel.cpp
+    src/presentation/viewmodels/userviewmodel.h src/presentation/viewmodels/userviewmodel.cpp
+    src/presentation/viewmodels/agentviewmodel.h src/presentation/viewmodels/agentviewmodel.cpp
+    src/presentation/viewmodels/agentapplicationviewmodel.h src/presentation/viewmodels/agentapplicationviewmodel.cpp
+)
+
+add_library(AccoFinderLogic STATIC ${ACCOFINDER_LOGIC_SOURCES})
+
+target_include_directories(AccoFinderLogic
+    PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/src
+)
+
+target_link_libraries(AccoFinderLogic
+    PUBLIC Qt6::Core Qt6::Network Qt6::Gui
 )
 
 # ─────────────────────────────────────────────────────────────
@@ -560,6 +529,7 @@ set_target_properties(appAccoFinder PROPERTIES
 target_link_libraries(appAccoFinder
     PRIVATE Qt6::Quick Qt6::Core
     PRIVATE Qt6::QuickControls2
+    PRIVATE AccoFinderLogic
 )
 
 target_include_directories(appAccoFinder PRIVATE

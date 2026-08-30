@@ -138,7 +138,9 @@ void APIClient::postMultipart(
     const QJsonObject &metadata,
     SuccessCallback callback)
 {
-    QUrl url(m_baseUrl + endpoint);
+    QUrl url = endpoint.startsWith("http://") || endpoint.startsWith("https://")
+        ? QUrl(endpoint)
+        : QUrl(m_baseUrl + endpoint);
     QNetworkRequest request(url);
     request.setAttribute(QNetworkRequest::HttpPipeliningAllowedAttribute, false);
     request.setAttribute(QNetworkRequest::Http2AllowedAttribute, false);
@@ -206,7 +208,9 @@ void APIClient::sendRequest(
     bool retried
     )
 {
-    QUrl url(m_baseUrl + endpoint);
+    QUrl url = endpoint.startsWith("http://") || endpoint.startsWith("https://")
+        ? QUrl(endpoint)
+        : QUrl(m_baseUrl + endpoint);
 
     QNetworkRequest request(url);
 

@@ -15,6 +15,8 @@ public:
                              bool isPrimary,
                              const QString& roomId) = 0;
     virtual void getMediaByProperty(const QString& propertyId) = 0;
+    virtual void deleteMedia(const QString& mediaId) = 0;
+    virtual void updateMedia(const QString& mediaId, bool isPrimary) = 0;
 
     virtual ~IMediaRepository() {}
 };

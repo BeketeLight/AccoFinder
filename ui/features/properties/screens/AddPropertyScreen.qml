@@ -12,6 +12,7 @@ Item {
     property var pendingMediaIds: []
     property int pendingMediaTotal: 0
     property string pendingPropertyId: ""
+    property var deferredPayload: null
 
     function goBack() {
         addPropertyPage.goBack()
@@ -41,6 +42,15 @@ Item {
         }
     }
 
+    // The payload built by the wizard lacks the backend property id (it is only
+    // known after createProperty returns), so stamp it in before the detail
+    // screen opens — this lets it fetch rooms and photos for that property.
+    function payloadWithPropertyId(payload) {
+        if (payload && pendingPropertyId.length > 0 && !payload.propertyId)
+            payload.propertyId = pendingPropertyId
+        return payload
+    }
+
     function onMediaUploaded(mediaId) {
         if (!mediaId || mediaId.length === 0)
             return
@@ -50,7 +60,50 @@ Item {
             pendingMediaIds = []
             pendingMediaTotal = 0
             pendingPropertyId = ""
+            // Property + every photo are now uploaded/attached. Tell the wizard
+            // to stop the spinner and show the success state — its success
+            // timer will emit registrationFinished, which performs the
+            // (deferred) navigation. This keeps the loader visible during the
+            // whole background upload instead of showing success prematurely.
+            addPropertyPage.completeSubmission()
         }
+    }
+
+    // An upload errored out. Reset the pending media state so the fallback
+    // timer doesn't also fire, then surface the error instead of an infinite
+    // spinner. The property itself was already created on the backend, so the
+    // user is not blocked from proceeding.
+    function onMediaFailure(error) {
+        navigationFallbackTimer.stop()
+        pendingMediaIds = []
+        pendingMediaTotal = 0
+        pendingPropertyId = ""
+        addPropertyPage.showError(qsTr("Some photos could not be uploaded: %1").arg(error))
+    }
+
+    // Moving on only once media have finished uploading and being attached.
+    // This keeps the Connections below (and the pending media state) alive until
+    // every photo is attached — otherwise the screen would be replaced before
+    // the async uploads complete and the media would never be linked.
+    function finishNavigation() {
+        if (deferredPayload) {
+            var payload = payloadWithPropertyId(deferredPayload)
+            deferredPayload = null
+            navigationFallbackTimer.stop()
+            // Safety-net navigation (e.g. a failed upload) — hide the wizard's
+            // busy overlay so it doesn't linger over the next screen.
+            addPropertyPage.hideBusy()
+            NavUtils.replace("../features/properties/screens/PropertyDetailScreen.qml",
+                             { initialPayload: payload })
+        }
+    }
+    // Safety net: if any upload fails (so onMediaUploaded never reaches the
+    // total) still leave the wizard after a grace period instead of hanging.
+    Timer {
+        id: navigationFallbackTimer
+        interval: 15000
+        repeat: false
+        onTriggered: addItemdId.finishNavigation()
     }
 
     Connections {
@@ -64,6 +117,13 @@ Item {
         target: MediaViewModel
         function onMediaCreatedSignal(mediaId) {
             addItemdId.onMediaUploaded(mediaId)
+        }
+        function onMediaError(error) {
+            // A photo upload failed (e.g. backend S3 error). Releasing the
+            // spinner and showing the error beats leaving the user stuck on an
+            // indefinite loader. The created property still exists on the
+            // backend (minus the failed photo) and can be revisited.
+            addItemdId.onMediaFailure(error)
         }
     }
 
@@ -123,8 +183,18 @@ Item {
         }
 
         onRegistrationFinished: function (payload) {
-            NavUtils.replace("../features/properties/screens/PropertyDetailScreen.qml",
-                             { initialPayload: payload })
+            // If there are photos, hold navigation until they are all uploaded
+            // and attached (see finishNavigation) so the media is persisted.
+            if (addItemdId.pendingMediaTotal > 0) {
+                addItemdId.deferredPayload = payload
+                navigationFallbackTimer.restart()
+                console.log("Delaying navigation while", addItemdId.pendingMediaTotal,
+                            "photos are still uploading")
+            } else {
+                addItemdId.deferredPayload = null
+                NavUtils.replace("../features/properties/screens/PropertyDetailScreen.qml",
+                                 { initialPayload: addItemdId.payloadWithPropertyId(payload) })
+            }
         }
     }
 }

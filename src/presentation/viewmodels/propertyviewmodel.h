@@ -25,6 +25,9 @@ public:
     Q_INVOKABLE int verifiedPropertiesCount() const;
     Q_INVOKABLE void getProperties(const QString& owner = QString());
     Q_INVOKABLE void getPropertyById(const QString& houseId);
+    // Row index of the property with the given backend id in the list model
+    // (-1 when the property is not currently in the model).
+    Q_INVOKABLE int indexOfProperty(const QString& houseId) const;
     Q_INVOKABLE void updateProperty(int index,
                                     const QString& houseId,
                                     const QString& title,
@@ -71,6 +74,7 @@ signals:
     void isLoadingChanged(bool isLoading);
     void propertyError(const QString& error);
     void propertyCreatedSignal(const QString& id, const QString& title);
+    void propertyUpdatedSignal(const QString& id);
 };
 
 #endif // PROPERTYVIEWMODEL_H

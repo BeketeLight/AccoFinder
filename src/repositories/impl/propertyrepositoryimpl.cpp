@@ -134,8 +134,14 @@ void PropertyRepositoryImpl::createProperty(const QString &title, const QString 
                                             const QString &landlordPhone, const QString &verificationStatus,
                                             bool isActive, const QJsonArray &rooms)
 {
+    // The backend only accepts PENDING/VERIFIED/REJECTED/DRAFT and rejects an
+    // empty string, so default an unset verificationStatus to PENDING.
+    QString effectiveStatus = verificationStatus;
+    if (effectiveStatus.trimmed().isEmpty())
+        effectiveStatus = QStringLiteral("PENDING");
+
     PropertyDto dto(title, description, price, propertyType, district, village, amenities,
-                    landlord, landlordPhone, verificationStatus, isActive, rooms);
+                    landlord, landlordPhone, effectiveStatus, isActive, rooms);
 
     APIClient::instance().post(
         "/house-listing/",

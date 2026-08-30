@@ -22,6 +22,7 @@ public:
         LocationRole,
         PriceRole,
         AgentIdRole,
+        AgentPhoneRole,
         LandlordIdRole,
         CreatedAtRole,
         DescriptionRole,

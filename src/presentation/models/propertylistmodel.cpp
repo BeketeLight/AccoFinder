@@ -43,6 +43,8 @@ QVariant PropertyListModel::data(const QModelIndex &index, int role) const
             return property->getPrice();
         case AgentIdRole:
             return property->getAgentId();
+        case AgentPhoneRole:
+            return property->agentPhone();
         case LandlordIdRole:
             return property->getLandlordId();
         case CreatedAtRole:
@@ -102,6 +104,7 @@ QHash<int, QByteArray> PropertyListModel::roleNames() const
         {LocationRole, "location"},
         {PriceRole, "price"},
         {AgentIdRole, "agentId"},
+        {AgentPhoneRole, "agentPhone"},
         {LandlordIdRole, "landlordId"},
         {CreatedAtRole, "createdAt"},
         {DescriptionRole, "description"},
@@ -178,6 +181,15 @@ QVariantMap PropertyListModel::at(int index) const
     row["amenities"] = data(idx, AmenitiesRole);
     row["landlord"] = data(idx, LandlordIdRole);
     row["landlordPhone"] = data(idx, LandlordPhoneRole);
+    {
+        QString first = data(idx, FirstNameRole).toString().trimmed();
+        QString second = data(idx, SecondNameRole).toString().trimmed();
+        QStringList parts;
+        if (!first.isEmpty()) parts << first;
+        if (!second.isEmpty()) parts << second;
+        row["ownerName"] = parts.join(' ');
+        row["ownerPhone"] = data(idx, AgentPhoneRole).toString();
+    }
     row["description"] = data(idx, DescriptionRole);
     row["propertyType"] = data(idx, PropertyTypeRole);
     row["active"] = data(idx, IsActiveRole);

@@ -70,6 +70,7 @@ public:
     QString description;
     QString status;
     QString agentId;
+    QString agentPhone;
     QString landlordId;
     QString landlordPhone;
     QString propertyType;

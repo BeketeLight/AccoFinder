@@ -163,7 +163,7 @@ Item {
 
                         Label {
                             Layout.fillWidth: true
-                            text: propCard.model.district + " \u00B7 " + propCard.model.village + " \u00B7 " + propCard.model.roomsData.length + qsTr(" rooms") + " \u00B7 MK " + Number(propCard.model.price).toLocaleString() + qsTr("/mo")
+                            text: propCard.model.district + " \u00B7 " + propCard.model.village
                             color: root.mutedColor
                             font.pixelSize: 11
                             elide: Text.ElideRight

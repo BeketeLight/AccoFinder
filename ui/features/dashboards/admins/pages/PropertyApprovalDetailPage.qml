@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import "../../../properties/components"
 import "../../../properties/models"
+import "../../../../components/cards"
 import "../../../../utils/Utils.js" as Utils
 
 // Dedicated review screen for a single property awaiting admin verification.
@@ -39,6 +40,8 @@ Item {
     property real propPrice: propertyPayload && propertyPayload.price ? Number(propertyPayload.price) : 0
     property string propLandlord: propertyPayload ? (propertyPayload.landlord || "") : ""
     property string propLandlordPhone: propertyPayload ? (propertyPayload.landlordPhone || "") : ""
+    property string propOwner: propertyPayload ? (propertyPayload.ownerName || "") : ""
+    property string propOwnerPhone: propertyPayload ? (propertyPayload.ownerPhone || "") : ""
     property var propAmenities: []
     property var propRooms: []
     property var propPhotos: propertyPayload ? (propertyPayload.photos || []) : []
@@ -248,8 +251,11 @@ Item {
                                     anchors.fill: parent
                                     anchors.margins: 2
                                     source: photoSource
+                                    sourceSize.width: 280
+                                    sourceSize.height: 280
                                     fillMode: Image.PreserveAspectCrop
                                     asynchronous: true
+                                    smooth: true
                                 }
 
                                 Rectangle {
@@ -472,58 +478,26 @@ Item {
 
             SectionHeader {
                 Layout.fillWidth: true
-                title: qsTr("Landlord / agent")
+                title: qsTr("Contacts")
             }
 
-            Rectangle {
-                Layout.fillWidth: true
-                implicitHeight: ownerRow.implicitHeight + 24
-                radius: 12
-                color: root.surfaceColor
-                border.color: root.borderColor
-                border.width: 1
+            ContactCard {
+                title: qsTr("Listed by")
+                name: root.propOwner
+                phone: root.propOwnerPhone
+                accentColor: root.primaryColor
+                onCallRequested: function (number) {
+                    console.log("Call listed-by contact:", number)
+                }
+            }
 
-                RowLayout {
-                    id: ownerRow
-                    anchors.fill: parent
-                    anchors.margins: 12
-                    spacing: 12
-
-                    Rectangle {
-                        Layout.preferredWidth: 42
-                        Layout.preferredHeight: 42
-                        radius: 21
-                        color: root.softBlueColor
-
-                        Label {
-                            anchors.centerIn: parent
-                            text: root.propLandlord.length > 0 ? root.propLandlord.charAt(0).toUpperCase() : "?"
-                            color: root.primaryColor
-                            font.pixelSize: 18
-                            font.bold: true
-                        }
-                    }
-
-                    ColumnLayout {
-                        Layout.fillWidth: true
-                        spacing: 2
-
-                        Label {
-                            Layout.fillWidth: true
-                            text: root.propLandlord.length > 0 ? root.propLandlord : qsTr("Unknown landlord")
-                            color: root.textColor
-                            font.pixelSize: 13
-                            font.bold: true
-                            elide: Text.ElideRight
-                        }
-
-                        Label {
-                            Layout.fillWidth: true
-                            text: root.propLandlordPhone.length > 0 ? root.propLandlordPhone : qsTr("No phone provided")
-                            color: root.mutedColor
-                            font.pixelSize: 12
-                        }
-                    }
+            ContactCard {
+                title: qsTr("Landlord")
+                name: root.propLandlord
+                phone: root.propLandlordPhone
+                accentColor: root.successColor
+                onCallRequested: function (number) {
+                    console.log("Call landlord:", number)
                 }
             }
 

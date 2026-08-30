@@ -92,22 +92,52 @@ Page {
     }
 
     function payloadForId(propertyId) {
+        var row = null
         for (var i = 0; i < allPropertiesModel.count; i++) {
             var r = allPropertiesModel.get(i)
             if (r.source === "draft")
                 continue
             if (String(r.propertyId) === String(propertyId)) {
-                return {
-                    title: r.title,
-                    district: r.district,
-                    village: r.village,
-                    price: r.price,
-                    verificationStatus: r.verificationStatus,
-                    propertyId: r.propertyId
-                }
+                row = r
+                break
             }
         }
-        return null
+        if (!row)
+            return null
+
+        // The local rows above only carry what the cards need (id, title, area,
+        // price, status). Pull the full owner + landlord details straight from
+        // the shared C++ model row so the detail page renders real database data
+        // instead of its placeholders.
+        var full = null
+        var m = PropertyViewModel.propertyListModel
+        for (var k = 0; m && k < m.size(); k++) {
+            var cand = m.at(k)
+            if (String(cand.propertyId) === String(propertyId)) {
+                full = cand
+                break
+            }
+        }
+
+        return {
+            title: row.title,
+            description: full ? (full.description || "") : "",
+            physicalAddress: {
+                district: row.district || (full ? full.district : ""),
+                village: row.village || (full ? full.village : "")
+            },
+            price: row.price,
+            verificationStatus: row.verificationStatus,
+            propertyId: String(row.propertyId),
+            isActive: true,
+            amenities: m ? m.amenitiesFor(String(row.propertyId)) : [],
+            landlord: full ? (full.landlord || "") : "",
+            landlordPhone: full ? (full.landlordPhone || "") : "",
+            ownerName: full ? (full.ownerName || "") : "",
+            ownerPhone: full ? (full.ownerPhone || "") : "",
+            rooms: full && full.propertyId ? RoomViewModel.roomsForProperty(full.propertyId) : [],
+            photos: []
+        }
     }
 
     function refreshAll() {
