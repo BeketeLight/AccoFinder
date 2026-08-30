@@ -110,6 +110,8 @@ Item {
             price: it.price,
             landlord: it.landlord,
             landlordPhone: it.landlordPhone,
+            ownerName: it.ownerName || "",
+            ownerPhone: it.ownerPhone || "",
             rooms: modelToArray(it.roomsData),
             photos: modelToArray(it.photosData)
         }
@@ -130,6 +132,8 @@ Item {
                 amenities: m.amenitiesFor(pid),
                 landlord: item.landlord || item.landlordPhone || "",
                 landlordPhone: item.landlordPhone || "",
+                ownerName: item.ownerName || "",
+                ownerPhone: item.ownerPhone || "",
                 description: item.description || "",
                 roomsData: pid ? RoomViewModel.roomsForProperty(pid) : [], photosData: []
             })

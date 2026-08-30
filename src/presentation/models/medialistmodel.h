@@ -5,6 +5,7 @@
 #include <QByteArray>
 #include <QSharedPointer>
 #include <QHash>
+#include <QVariantList>
 #include <QVector>
 #include "models/media.h"
 
@@ -32,7 +33,11 @@ public:
 
     void setMedia(const QList<QSharedPointer<Media>>& newMedia);
     void appendMedia(const QSharedPointer<Media>& media);
+    void removeMedia(const QString& mediaId);
+    void setMediaPrimary(const QString& mediaId, bool isPrimary);
     void clearMedia();
+
+    QVariantList mediaForProperty(const QString& propertyId) const;
 
 private:
     QVector<QSharedPointer<Media>> m_media;

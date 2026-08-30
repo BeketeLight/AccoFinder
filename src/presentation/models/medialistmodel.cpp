@@ -66,9 +66,76 @@ void MediaListModel::appendMedia(const QSharedPointer<Media>& media)
     endInsertRows();
 }
 
+void MediaListModel::removeMedia(const QString &mediaId)
+{
+    for (int i = 0; i < m_media.size(); ++i) {
+        if (m_media.at(i)->getId() != mediaId)
+            continue;
+        beginRemoveRows(QModelIndex(), i, i);
+        m_media.removeAt(i);
+        endRemoveRows();
+        return;
+    }
+}
+
+void MediaListModel::setMediaPrimary(const QString &mediaId, bool isPrimary)
+{
+    // A property owns at most one cover photo: demote every media belonging to
+    // the same property before promoting the requested one.
+    QString propertyId;
+    int targetIndex = -1;
+    for (int i = 0; i < m_media.size(); ++i) {
+        const QSharedPointer<Media>& media = m_media.at(i);
+        if (media->getId() == mediaId) {
+            targetIndex = i;
+            propertyId = media->getPropertyId();
+        }
+    }
+    if (targetIndex >= 0 && !propertyId.isEmpty() && isPrimary) {
+        for (int i = 0; i < m_media.size(); ++i) {
+            if (i == targetIndex)
+                continue;
+            const QSharedPointer<Media>& media = m_media.at(i);
+            if (media->getPropertyId() != propertyId || !media->getIsPrimary())
+                continue;
+            media->setIsPrimary(false);
+            const QModelIndex idx = index(i, 0);
+            emit dataChanged(idx, idx, {IsPrimaryRole});
+        }
+    }
+    if (targetIndex >= 0) {
+        const QSharedPointer<Media>& target = m_media.at(targetIndex);
+        if (target->getIsPrimary() != isPrimary) {
+            target->setIsPrimary(isPrimary);
+            const QModelIndex idx = index(targetIndex, 0);
+            emit dataChanged(idx, idx, {IsPrimaryRole});
+        }
+    }
+}
+
 void MediaListModel::clearMedia()
 {
     beginResetModel();
     m_media.clear();
     endResetModel();
+}
+
+QVariantList MediaListModel::mediaForProperty(const QString &propertyId) const
+{
+    QVariantList result;
+    for (const auto& media : std::as_const(m_media)) {
+        if (!media)
+            continue;
+        if (media->getPropertyId() != propertyId)
+            continue;
+        QVariantMap m;
+        m["mediaId"] = media->getId();
+        m["path"] = media->getUrl();
+        m["url"] = media->getUrl();
+        m["isPrimary"] = media->getIsPrimary();
+        m["roomId"] = media->getRoomId();
+        m["mediaType"] = media->getType();
+        result.append(m);
+    }
+    return result;
 }

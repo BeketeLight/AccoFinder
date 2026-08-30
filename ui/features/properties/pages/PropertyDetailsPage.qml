@@ -1,8 +1,11 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import QtQuick.Dialogs
 import "../components"
 import "../../../components/inputs"
+import "../../../components/indicators"
+import "../../../components/cards"
 import "../../../utils" as UtilsModule
 
 Page {
@@ -34,6 +37,11 @@ Page {
     property string descriptionTextValue: qsTr("Modern three-bedroom house with spacious rooms, tiled floors and a perimeter fence. Close to shops and public transport.")
     property string landlordName: qsTr("Bryan Phiri")
     property string landlordPhone: qsTr("+265 999 123 456")
+
+    // Person who submitted/owns the listing. Populated from the property's
+    // `owner` object (populated by the backend) via applyPayload.
+    property string ownerName: ""
+    property string ownerPhone: ""
 
     // Backend id used to match this property's rooms in the separate /rooms/
     // collection (the property document does not embed its rooms).
@@ -77,6 +85,55 @@ Page {
     signal propertyUpdated(var data)
     signal propertyDeleted()
 
+    // True while a server-backed property's edits are being submitted (PUT).
+    // Keeps the page in edit mode with a "Saving..." button until the backend
+    // confirms so the agent is not misled into thinking the save stuck.
+    property bool savingInProgress: false
+    // Last message explaining why a save/photo operation could not complete.
+    property string saveErrorText: ""
+    // Payload of the in-flight server save; surfaced once the backend confirms.
+    property var lastSavedPayload: null
+    // Photo upload bookkeeping (server-backed properties). File paths queue up
+    // here until every selected photo uploads, then they are attached in one
+    // PUT so the property's media array and the /media/ collection stay linked.
+    property var pendingMediaIds: []
+    property int pendingMediaTotal: 0
+    property string photoOpError: ""
+
+    FileDialog {
+        id: photoPickerDialog
+        title: qsTr("Select photos")
+        nameFilters: [qsTr("Image files (*.png *.jpg *.jpeg *.webp)")]
+        fileMode: FileDialog.OpenFiles
+
+        onAccepted: {
+            var urls = selectedFiles
+            if (root.pendingMediaTotal === 0)
+                root.pendingMediaIds = []
+            root.pendingMediaTotal += urls.length
+            root.photoOpError = ""
+            for (var i = 0; i < urls.length; i++) {
+                var path = urls[i].toString()
+                if (root.isDraftItem) {
+                    // Drafts keep photos locally (payload paths) until resend.
+                    var arr = root.photosList.slice()
+                    arr.push({ path: path,
+                               isPrimary: root.photosList.length === 0 && arr.length === 1,
+                               roomId: -1 })
+                    root.photosList = arr
+                } else if (root.propertyId.length > 0) {
+                    root.pendingMediaIds.push(path)
+                    MediaViewModel.createMedia(root.propertyId,
+                                               path,
+                                               "image",
+                                               root.photosList.length === 0
+                                                   && root.pendingMediaIds.length === 1,
+                                               "-1")
+                }
+            }
+        }
+    }
+
     function resendProperty() {
         if (root.draftKey.length === 0)
             return
@@ -92,10 +149,17 @@ Page {
         if (p.physicalAddress) {
             if (p.physicalAddress.district) root.propertyDistrictValue = p.physicalAddress.district
             if (p.physicalAddress.village) root.propertyVillageValue = p.physicalAddress.village
+        } else {
+            // Some callers pass district/village at the top level; still apply
+            // them so the hero never falls back to the placeholder location.
+            if (p.district) root.propertyDistrictValue = String(p.district)
+            if (p.village) root.propertyVillageValue = String(p.village)
         }
         if (p.price !== undefined && Number(p.price) > 0) root.monthlyPrice = Number(p.price)
         if (p.landlord) root.landlordName = p.landlord
         if (p.landlordPhone) root.landlordPhone = p.landlordPhone
+        if (p.ownerName) root.ownerName = p.ownerName
+        if (p.ownerPhone) root.ownerPhone = p.ownerPhone
         if (p.amenities) root.amenitiesList = p.amenities
         if (p.propertyId) root.propertyId = String(p.propertyId)
         root.roomsList = p.rooms ? p.rooms : []
@@ -141,6 +205,37 @@ Page {
         function onDataChanged() { root.loadAmenities() }
     }
 
+    // Submit Edits -> backend: the page stays in edit mode until the backend
+    // confirms the PUT, so an error keeps the entered values available.
+    Connections {
+        target: PropertyViewModel
+        function onPropertyUpdatedSignal(id) {
+            if (root.savingInProgress && String(id) === String(root.propertyId)) {
+                root.savingInProgress = false
+                root.applyEditedValues()
+                root.editMode = false
+                if (root.lastSavedPayload)
+                    root.propertyUpdated(root.lastSavedPayload)
+            }
+        }
+        function onPropertyError(error) {
+            if (root.savingInProgress) {
+                root.savingInProgress = false
+                root.saveErrorText = qsTr("Your changes could not be saved. %1").arg(String(error))
+            }
+        }
+    }
+
+    // Photo management (delete / set cover / add) round-trips through the
+    // shared media model; refresh the grid once the viewmodel confirms.
+    Connections {
+        target: MediaViewModel
+        function onMediaCreatedSignal(mediaId) { root.onMediaUploaded(mediaId) }
+        function onMediaDeletedSignal(mediaId) { root.syncPhotosFromServer() }
+        function onMediaUpdatedSignal(mediaId) { root.syncPhotosFromServer() }
+        function onMediaError(error) { root.onMediaFailure(error) }
+    }
+
     function startEditing() {
         root.editNameValue = root.propertyTitleName
         root.editDistrictValue = root.propertyDistrictValue
@@ -149,6 +244,8 @@ Page {
         root.editDescriptionValue = root.descriptionTextValue
         root.editLandlordNameValue = root.landlordName
         root.editLandlordPhoneValue = root.landlordPhone
+        root.saveErrorText = ""
+        root.photoOpError = ""
         root.editMode = true
     }
 
@@ -156,8 +253,9 @@ Page {
         root.editMode = false
     }
 
-    function saveChanges() {
-        if (root.editNameValue.trim().length === 0) return
+    // Push the current edit fields into the read-only display values. Used
+    // after a successful server save (and for local drafts).
+    function applyEditedValues() {
         root.propertyTitleName = root.editNameValue.trim()
         if (root.editDistrictValue.trim().length > 0)
             root.propertyDistrictValue = root.editDistrictValue.trim()
@@ -172,41 +270,199 @@ Page {
             root.landlordName = root.editLandlordNameValue.trim()
         if (root.editLandlordPhoneValue.trim().length > 0)
             root.landlordPhone = root.editLandlordPhoneValue.trim()
-        root.editMode = false
-        // Same shape the backend Property model expects
+    }
+
+    // The details the backend review expects before a listing is considered
+    // complete. The agent is shown this list while editing and is blocked from
+    // submitting a server-backed save until every item is satisfied.
+    function missingRequiredFields() {
+        var missing = []
+        if (root.editNameValue.trim().length === 0)
+            missing.push(qsTr("A property name / title"))
+        if (root.editDescriptionValue.trim().length < 10)
+            missing.push(qsTr("A description (at least 10 characters)"))
+        var priceOk = Number(root.editMonthlyPriceValue.replace(/[^0-9.]/g, "")) > 0
+        if (!priceOk) {
+            var anyRoomPrice = false
+            for (var r = 0; r < root.roomsList.length; r++)
+                if (Number(root.roomsList[r].price) > 0) { anyRoomPrice = true; break }
+            if (!anyRoomPrice)
+                missing.push(qsTr("A monthly rent (whole property or per room)"))
+        }
+        if (root.editLandlordNameValue.trim().length === 0)
+            missing.push(qsTr("The landlord's name"))
+        if (root.editLandlordPhoneValue.trim().length === 0)
+            missing.push(qsTr("The landlord's phone number"))
+        if (root.photosList.length === 0)
+            missing.push(qsTr("At least one photo"))
+        return missing
+    }
+
+    function deletePhoto(mediaId) {
+        if (root.isDraftItem)
+            return
+        root.photoOpError = ""
+        if (mediaId)
+            MediaViewModel.deleteMedia(mediaId)
+    }
+
+    // Delete for a local draft photo (no backend record behind it).
+    function removeDraftPhoto(index) {
+        if (index < 0 || index >= root.photosList.length)
+            return
+        var arr = []
+        for (var i = 0; i < root.photosList.length; i++)
+            if (i !== index)
+                arr.push(root.photosList[i])
+        // Keep a single cover photo when the deleted one was it.
+        var hasPrimary = false
+        for (var k = 0; k < arr.length; k++)
+            if (arr[k].isPrimary) { hasPrimary = true; break }
+        if (!hasPrimary && arr.length > 0)
+            arr[0].isPrimary = true
+        root.photosList = arr
+        root.photoOpError = ""
+    }
+
+    function setPhotoCover(mediaId) {
+        if (root.isDraftItem)
+            return
+        root.photoOpError = ""
+        if (mediaId)
+            MediaViewModel.updateMediaPrimary(mediaId, true)
+    }
+
+    // Draft photos are local only: promote the tapped photo in place.
+    function setDraftPhotoCover(index) {
+        if (index < 0 || index >= root.photosList.length)
+            return
+        var arr = root.photosList.slice()
+        for (var i = 0; i < arr.length; i++)
+            arr[i].isPrimary = (i === index)
+        root.photosList = arr
+        root.photoOpError = ""
+    }
+
+    // Refresh the photos grid straight from the shared media model after a
+    // delete / cover change / upload lands there.
+    function syncPhotosFromServer() {
+        if (root.isDraftItem || root.propertyId.length === 0)
+            return
+        var serverPhotos = MediaViewModel.mediaForProperty(root.propertyId)
+        if (serverPhotos && serverPhotos.length > 0)
+            root.photosList = serverPhotos
+        else
+            MediaViewModel.getMediaByProperty(root.propertyId)
+    }
+
+    // One selected photo finished uploading. When the whole batch is done,
+    // attach every uploaded id to the property so the media stay linked.
+    function onMediaUploaded(mediaId) {
+        if (root.pendingMediaTotal <= 0)
+            return
+        root.pendingMediaTotal--
+        if (root.pendingMediaTotal === 0 && root.propertyId.length > 0) {
+            if (root.pendingMediaIds.length > 0)
+                PropertyViewModel.attachMedia(root.propertyId, root.pendingMediaIds)
+            root.pendingMediaIds = []
+            root.syncPhotosFromServer()
+        }
+    }
+
+    function onMediaFailure(error) {
+        root.photoOpError = qsTr("A photo could not be processed: %1").arg(error)
+        root.pendingMediaIds = []
+        root.pendingMediaTotal = 0
+    }
+
+    function saveChanges() {
+        if (root.savingInProgress)
+            return
+        root.saveErrorText = ""
+        if (root.editNameValue.trim().length === 0) {
+            root.saveErrorText = qsTr("A property name is required.")
+            return
+        }
+
+        var parsedPrice = Number(root.editMonthlyPriceValue.replace(/[^0-9.]/g, ""))
+        if (isNaN(parsedPrice))
+            parsedPrice = 0
+
         var updated = {
-            title: root.propertyTitleName,
-            description: root.descriptionTextValue,
+            title: root.editNameValue.trim(),
+            description: root.editDescriptionValue.trim(),
             physicalAddress: {
-                district: root.propertyDistrictValue,
-                village: root.propertyVillageValue
+                district: root.editDistrictValue.trim(),
+                village: root.editVillageValue.trim()
             },
             verificationStatus: root.verificationStatus,
             isActive: true,
-            price: root.monthlyPrice,
-            landlord: root.landlordName,
-            landlordPhone: root.landlordPhone
+            price: parsedPrice,
+            landlord: root.editLandlordNameValue.trim(),
+            landlordPhone: root.editLandlordPhoneValue.trim()
         }
 
         // A draft is local: persist the edits back into the draft store so the
         // changes survive until the agent resends it.
-        if (root.isDraftItem && root.draftKey.length > 0) {
-            var stored = DraftViewModel.getDraft(root.draftKey) || {}
-            var merged = {}
-            var k
-            for (k in stored) merged[k] = stored[k]
-            merged.title = updated.title
-            merged.description = updated.description
-            merged.physicalAddress = updated.physicalAddress
-            merged.verificationStatus = updated.verificationStatus
-            merged.isActive = updated.isActive
-            if (updated.price > 0)
-                merged.price = updated.price
-            merged.landlord = updated.landlord
-            merged.landlordPhone = updated.landlordPhone
-            DraftViewModel.updateDraft(root.draftKey, merged)
+        if (root.isDraftItem) {
+            if (root.draftKey.length > 0) {
+                var stored = DraftViewModel.getDraft(root.draftKey) || {}
+                var merged = {}
+                var k
+                for (k in stored) merged[k] = stored[k]
+                merged.title = updated.title
+                merged.description = updated.description
+                merged.physicalAddress = updated.physicalAddress
+                merged.verificationStatus = updated.verificationStatus
+                merged.isActive = updated.isActive
+                if (updated.price > 0)
+                    merged.price = updated.price
+                merged.landlord = updated.landlord
+                merged.landlordPhone = updated.landlordPhone
+                DraftViewModel.updateDraft(root.draftKey, merged)
+            }
+            root.applyEditedValues()
+            root.editMode = false
+            root.propertyUpdated(updated)
+            return
         }
 
+        // Server-backed property: the agent is required to provide the missing
+        // details before the edited listing may be submitted.
+        var missing = root.missingRequiredFields()
+        if (missing.length > 0) {
+            root.saveErrorText = qsTr("Required to provide: ") + missing.join("; ")
+            return
+        }
+
+        // Submit the edits to the backend. Stay in edit mode with a "Saving..."
+        // button; the update finishes when PropertyViewModel confirms.
+        if (root.propertyId.length > 0) {
+            var idx = PropertyViewModel.indexOfProperty(root.propertyId)
+            var amens = []
+            if (root.amenitiesList) {
+                for (var a = 0; a < root.amenitiesList.length; a++)
+                    amens.push(String(root.amenitiesList[a]))
+            }
+            root.lastSavedPayload = updated
+            root.savingInProgress = true
+            PropertyViewModel.updateProperty(idx < 0 ? -1 : idx,
+                                             root.propertyId,
+                                             updated.title,
+                                             updated.description,
+                                             updated.price,
+                                             updated.physicalAddress.district,
+                                             updated.physicalAddress.village,
+                                             amens,
+                                             updated.landlord,
+                                             updated.landlordPhone,
+                                             updated.verificationStatus,
+                                             updated.isActive)
+            return
+        }
+
+        root.applyEditedValues()
+        root.editMode = false
         root.propertyUpdated(updated)
     }
 
@@ -470,7 +726,7 @@ Page {
                             AppTextInput {
                                 visible: root.editMode
                                 Layout.preferredWidth: 150
-                                fieldHeight: 40
+                                fieldHeight: 44
                                 label: ""
                                 placeholder: qsTr("Rent / month")
                                 text: root.editMonthlyPriceValue
@@ -494,6 +750,76 @@ Page {
                             }
                         }
                     }
+                }
+            }
+
+            // Edit-mode helper: lists every detail the agent is required to
+            // provide before the edited listing may be submitted, plus the most
+            // recent save/upload error.
+            ColumnLayout {
+                visible: root.editMode
+                Layout.fillWidth: true
+                spacing: 10
+
+                Rectangle {
+                    visible: root.missingRequiredFields().length > 0
+                    Layout.fillWidth: true
+                    implicitHeight: missingColumn.implicitHeight + 20
+                    radius: 12
+                    color: "#FFFBEB"
+                    border.color: "#FDE68A"
+                    border.width: 1
+
+                    ColumnLayout {
+                        id: missingColumn
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.top: parent.top
+                        anchors.margins: 13
+                        spacing: 6
+
+                        Label {
+                            text: qsTr("Required to provide")
+                            color: root.warningColor
+                            font.pixelSize: 13
+                            font.bold: true
+                        }
+
+                        Repeater {
+                            model: root.missingRequiredFields()
+
+                            delegate: RowLayout {
+                                required property string modelData
+                                Layout.fillWidth: true
+                                spacing: 6
+
+                                Rectangle {
+                                    Layout.preferredWidth: 5
+                                    Layout.preferredHeight: 5
+                                    radius: 2.5
+                                    color: root.warningColor
+                                    Layout.alignment: Qt.AlignVCenter
+                                }
+
+                                Label {
+                                    Layout.fillWidth: true
+                                    text: modelData
+                                    color: root.textColor
+                                    font.pixelSize: 11
+                                    wrapMode: Text.WordWrap
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Label {
+                    visible: root.saveErrorText.length > 0
+                    Layout.fillWidth: true
+                    text: root.saveErrorText
+                    color: root.dangerColor
+                    font.pixelSize: 11
+                    wrapMode: Text.WordWrap
                 }
             }
 
@@ -562,9 +888,36 @@ Page {
 
                     Label {
                         Layout.alignment: Qt.AlignHCenter
-                        text: root.agentMode ? qsTr("Manage photos from Add Property") : qsTr("No photos uploaded yet")
+                        text: root.editMode ? qsTr("No photos attached yet") : qsTr("No photos uploaded yet")
                         color: root.primaryDarkColor
                         font.pixelSize: 12
+                    }
+
+                    Button {
+                        id: addFirstPhotoButton
+                        visible: root.editMode
+                        Layout.alignment: Qt.AlignHCenter
+                        Layout.preferredHeight: 36
+                        Layout.preferredWidth: 140
+                        text: qsTr("Add photos")
+
+                        contentItem: Label {
+                            text: addFirstPhotoButton.text
+                            color: root.primaryColor
+                            font.pixelSize: 12
+                            font.bold: true
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                        }
+
+                        background: Rectangle {
+                            radius: 18
+                            color: addFirstPhotoButton.down ? "#DBEAFE" : "#EFF6FF"
+                            border.color: "#BFDBFE"
+                            border.width: 1
+                        }
+
+                        onClicked: photoPickerDialog.open()
                     }
                 }
             }
@@ -603,11 +956,39 @@ Page {
                                 border.width: modelData.isPrimary ? 2 : 1
 
                                 Image {
+                                    id: photoCardImage
                                     anchors.fill: parent
                                     anchors.margins: 2
                                     source: modelData.path
+                                    // Downscale the decoded image: without
+                                    // sourceSize, full-resolution phone photos
+                                    // exceed the Android GPU texture limit and
+                                    // render as blank/white in small thumbnails.
+                                    sourceSize.width: 280
+                                    sourceSize.height: 280
                                     fillMode: Image.PreserveAspectCrop
                                     asynchronous: true
+                                    smooth: true
+                                }
+
+                                // Show a subtle spinner while the remote photo is
+                                // loading so the card never looks blank, and a
+                                // fallback glyph if the load fails.
+                                AppSpinner {
+                                    anchors.centerIn: parent
+                                    size: 16
+                                    lineWidth: 2
+                                    color: root.mutedColor
+                                    running: photoCardImage.status === Image.Loading
+                                    visible: running
+                                }
+
+                                Label {
+                                    visible: photoCardImage.status === Image.Error
+                                    anchors.centerIn: parent
+                                    text: qsTr("No preview")
+                                    color: root.mutedColor
+                                    font.pixelSize: 8
                                 }
 
                                 Rectangle {
@@ -640,9 +1021,129 @@ Page {
                                 elide: Text.ElideRight
                                 horizontalAlignment: Text.AlignHCenter
                             }
+
+                            // Edit-mode controls: delete a photo, or promote it
+                            // to the cover. Server photos carry a mediaId and are
+                            // managed via the backend; drafts edit the local list.
+                            Rectangle {
+                                visible: root.editMode
+                                anchors.top: parent.top
+                                anchors.right: parent.right
+                                anchors.topMargin: -6
+                                anchors.rightMargin: -6
+                                width: 22
+                                height: 22
+                                radius: 11
+                                color: deletePhotoArea.containsMouse ? "#B91C1C" : "#EF4444"
+
+                                Rectangle {
+                                    anchors.centerIn: parent
+                                    width: 10
+                                    height: 2
+                                    radius: 1
+                                    color: "#FFFFFF"
+                                }
+
+                                MouseArea {
+                                    id: deletePhotoArea
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: {
+                                        if (root.isDraftItem)
+                                            root.removeDraftPhoto(index)
+                                        else
+                                            root.deletePhoto(modelData.mediaId)
+                                    }
+                                }
+                            }
+
+                            Rectangle {
+                                visible: root.editMode && !modelData.isPrimary
+                                anchors.left: parent.left
+                                anchors.top: parent.top
+                                anchors.topMargin: 62
+                                anchors.leftMargin: 6
+                                height: 20
+                                width: makeCoverLabel.implicitWidth + 16
+                                radius: 10
+                                color: root.surfaceColor
+                                border.color: root.primaryColor
+                                border.width: 1
+
+                                Label {
+                                    id: makeCoverLabel
+                                    anchors.centerIn: parent
+                                    text: qsTr("Make cover")
+                                    color: root.primaryColor
+                                    font.pixelSize: 9
+                                    font.bold: true
+                                }
+
+                                MouseArea {
+                                    id: makeCoverArea
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: {
+                                        if (root.isDraftItem)
+                                            root.setDraftPhotoCover(index)
+                                        else
+                                            root.setPhotoCover(modelData.mediaId)
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // Add-photo tile, shown only while editing.
+                    Item {
+                        visible: root.editMode
+                        width: 88
+                        height: 108
+
+                        Rectangle {
+                            width: 88
+                            height: 88
+                            radius: 10
+                            color: "transparent"
+                            border.color: root.primaryColor
+                            border.width: 1.4
+
+                            Label {
+                                anchors.centerIn: parent
+                                text: "+"
+                                color: root.primaryColor
+                                font.pixelSize: 28
+                            }
+
+                            Label {
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                anchors.bottom: parent.bottom
+                                anchors.bottomMargin: 8
+                                text: qsTr("Add photo")
+                                color: root.primaryColor
+                                font.pixelSize: 9
+                                font.bold: true
+                            }
+
+                            MouseArea {
+                                anchors.fill: parent
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: photoPickerDialog.open()
+                            }
                         }
                     }
                 }
+            }
+
+            Label {
+                visible: root.editMode && root.photoOpError.length > 0
+                Layout.fillWidth: true
+                text: root.photoOpError
+                color: root.dangerColor
+                font.pixelSize: 11
+                wrapMode: Text.WordWrap
             }
 
             ColumnLayout {
@@ -691,6 +1192,12 @@ Page {
                     delegate: Rectangle {
                         required property var modelData
                         required property int index
+                        readonly property string roomTypeLabel: {
+                            var t = modelData.roomType !== undefined ? String(modelData.roomType) : ""
+                            if (t.length === 0 && modelData.type !== undefined)
+                                t = String(modelData.type)
+                            return t.length > 0 ? t : qsTr("Room")
+                        }
                         Layout.fillWidth: true
                         implicitHeight: roomRow.implicitHeight + 24
                         radius: 12
@@ -725,7 +1232,7 @@ Page {
 
                                 Label {
                                     Layout.fillWidth: true
-                                    text: qsTr("Room %1 · %2").arg(index + 1).arg(modelData.roomType)
+                                    text: qsTr("Room %1 · %2").arg(index + 1).arg(roomTypeLabel)
                                     color: root.textColor
                                     font.pixelSize: 13
                                     font.bold: true
@@ -912,129 +1419,87 @@ Page {
                 }
             }
 
-            SectionHeader {
+            ColumnLayout {
                 Layout.fillWidth: true
-                title: qsTr(root.editMode ? "Landlord details" : "Listed by")
-            }
+                spacing: 10
 
-            Rectangle {
-                Layout.fillWidth: true
-                implicitHeight: root.editMode ? landlordEditColumn.implicitHeight + 26 : ownerRow.implicitHeight + 26
-                radius: 12
-                color: root.surfaceColor
-                border.color: root.borderColor
-                border.width: 1
+                SectionHeader {
+                    Layout.fillWidth: true
+                    title: qsTr(root.editMode ? "Landlord details" : "Contacts")
+                }
 
-                RowLayout {
-                    id: ownerRow
+                ContactCard {
                     visible: !root.editMode
-                    anchors.fill: parent
-                    anchors.margins: 13
-                    spacing: 12
-
-                    Rectangle {
-                        Layout.preferredWidth: 44
-                        Layout.preferredHeight: 44
-                        radius: 22
-                        color: root.softBlueColor
-
-                        Label {
-                            anchors.centerIn: parent
-                            text: root.landlordName.charAt(0)
-                            color: root.primaryColor
-                            font.pixelSize: 18
-                            font.bold: true
-                        }
-                    }
-
-                    ColumnLayout {
-                        Layout.fillWidth: true
-                        spacing: 2
-
-                        Label {
-                            Layout.fillWidth: true
-                            text: root.landlordName
-                            color: root.textColor
-                            font.pixelSize: 14
-                            font.bold: true
-                            elide: Text.ElideRight
-                        }
-
-                        Label {
-                            Layout.fillWidth: true
-                            text: root.landlordPhone
-                            color: root.mutedColor
-                            font.pixelSize: 12
-                        }
-                    }
-
-                    Button {
-                        id: callButton
-                        Layout.preferredHeight: 36
-                        Layout.preferredWidth: 78
-                        text: qsTr("Call")
-
-                        contentItem: Label {
-                            text: callButton.text
-                            color: root.primaryColor
-                            font.pixelSize: 12
-                            font.bold: true
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
-                        }
-
-                        background: Rectangle {
-                            radius: 18
-                            color: callButton.down ? root.softBlueColor : "transparent"
-                            border.color: root.primaryColor
-                            border.width: 1
-                        }
-
-                        onClicked: console.log("Call landlord:", root.landlordPhone)
+                    title: qsTr("Listed by")
+                    name: root.ownerName
+                    phone: root.ownerPhone
+                    accentColor: root.primaryColor
+                    onCallRequested: function (number) {
+                        console.log("Call listed-by contact:", number)
                     }
                 }
 
-                ColumnLayout {
-                    id: landlordEditColumn
-                    visible: root.editMode
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.top: parent.top
-                    anchors.margins: 13
-                    spacing: 10
-
-                    AppTextInput {
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: 66
-                        label: qsTr("Landlord name")
-                        placeholder: qsTr("e.g. Bryan Phiri")
-                        fieldHeight: 44
-                        text: root.editLandlordNameValue
-                        onTextEdited: root.editLandlordNameValue = text
-                        backgroundColor: root.pageColor
-                        textColor: root.textColor
-                        labelColor: root.textColor
-                        placeholderColor: root.mutedColor
-                        borderColor: root.borderColor
-                        focusColor: root.primaryColor
-                        errorColor: root.dangerColor
+                ContactCard {
+                    visible: !root.editMode
+                    title: qsTr("Landlord")
+                    name: root.landlordName
+                    phone: root.landlordPhone
+                    accentColor: root.secondaryColor
+                    onCallRequested: function (number) {
+                        console.log("Call landlord:", number)
                     }
+                }
 
-                    AppTextInput {
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: 66
-                        label: qsTr("Landlord phone")
-                        placeholder: qsTr("+265 999 123 456")
-                        fieldHeight: 44
-                        text: root.editLandlordPhoneValue
-                        onTextEdited: root.editLandlordPhoneValue = text
-                        backgroundColor: root.pageColor
-                        textColor: root.textColor
-                        labelColor: root.textColor
-                        placeholderColor: root.mutedColor
-                        borderColor: root.borderColor
-                        focusColor: root.primaryColor
-                        errorColor: root.dangerColor
+                Rectangle {
+                    visible: root.editMode
+                    Layout.fillWidth: true
+                    implicitHeight: landlordEditColumn.implicitHeight + 26
+                    radius: 12
+                    color: root.surfaceColor
+                    border.color: root.borderColor
+                    border.width: 1
+
+                    ColumnLayout {
+                        id: landlordEditColumn
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.top: parent.top
+                        anchors.margins: 13
+                        spacing: 10
+
+                        AppTextInput {
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: 66
+                            label: qsTr("Landlord name")
+                            placeholder: qsTr("e.g. John Banda")
+                            fieldHeight: 44
+                            text: root.editLandlordNameValue
+                            onTextEdited: root.editLandlordNameValue = text
+                            backgroundColor: root.pageColor
+                            textColor: root.textColor
+                            labelColor: root.textColor
+                            placeholderColor: root.mutedColor
+                            borderColor: root.borderColor
+                            focusColor: root.primaryColor
+                            errorColor: root.dangerColor
+                        }
+
+                        AppTextInput {
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: 66
+                            label: qsTr("Landlord phone")
+                            placeholder: qsTr("+265 999 123 456")
+                            fieldHeight: 44
+                            text: root.editLandlordPhoneValue
+                            onTextEdited: root.editLandlordPhoneValue = text
+                            backgroundColor: root.pageColor
+                            textColor: root.textColor
+                            labelColor: root.textColor
+                            placeholderColor: root.mutedColor
+                            borderColor: root.borderColor
+                            focusColor: root.primaryColor
+                            errorColor: root.dangerColor
+                        }
                     }
                 }
             }
@@ -1245,7 +1710,7 @@ Page {
                 Layout.preferredWidth: 170
                 Layout.preferredHeight: 48
                 text: root.editMode
-                      ? qsTr("Save changes")
+                      ? (root.savingInProgress ? qsTr("Saving...") : qsTr("Save changes"))
                       : (root.isDraftItem ? qsTr("Resend draft") : qsTr("Edit property"))
 
                 contentItem: Label {

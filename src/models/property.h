@@ -42,6 +42,8 @@ public:
     void setFirstName(const QString &newFirstName);
     QString secondName() const;
     void setSecondName(const QString &newSecondName);
+    QString agentPhone() const;
+    void setAgentPhone(const QString &phone);
 
     // Extended property schema (mirrors the Add-Property wizard)
     QString getDistrict() const;
@@ -75,6 +77,7 @@ private:
     QString m_description;
     PropertyStatus m_status;
     QString m_agentId;
+    QString m_agentPhone;
     QString m_landlordId;
     QString m_landlordPhone;
     QString m_propertyType;

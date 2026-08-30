@@ -109,15 +109,25 @@ PropertyDto PropertyDto::fromJson(
         json["agentId"].toString();
 
     // The backend records the listing owner as `owner` (set from the
-    // authenticated user's id on create, and populated as an object when
-    // fetched). Fall back to it so we can tell which agent listed a property.
-    if (dto.agentId.isEmpty()) {
-        const QJsonValue owner = json["owner"];
-        if (owner.isObject())
-            dto.agentId = owner.toObject()["_id"].toString();
-        else if (owner.isString())
-            dto.agentId = owner.toString();
+    // authenticated user's id on create, and populated as an object with
+    // firstName/lastName/email/phone when fetched). Fall back to it so we can
+    // tell which agent listed a property and show their name/phone.
+    const QJsonValue owner = json["owner"];
+    if (owner.isObject()) {
+        const QJsonObject ownerObj = owner.toObject();
+        dto.agentId = ownerObj["_id"].toString();
+        dto.firstname = ownerObj["firstName"].toString();
+        dto.secondName = ownerObj["lastName"].toString();
+        dto.agentPhone = ownerObj["phone"].toString();
+    } else if (owner.isString()) {
+        dto.agentId = owner.toString();
     }
+    // A property created in this session may carry the owner name/phone at the
+    // top level (the Add flow sends `ownerName`/`ownerPhone`).
+    if (dto.firstname.isEmpty())
+        dto.firstname = json["ownerName"].toString();
+    if (dto.agentPhone.isEmpty())
+        dto.agentPhone = json["ownerPhone"].toString();
 
     dto.landlordId =
         json["landlordId"].toString();
@@ -203,6 +213,7 @@ Property* PropertyDto::toDomainModel() const
     // property->setStatus(...);
 
     property->setAgentId(agentId);
+    property->setAgentPhone(agentPhone);
     property->setLandlordId(landlordId);
     property->setCreatedAt(createdAt);
 

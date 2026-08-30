@@ -82,6 +82,18 @@ void PropertyViewModel::getPropertyById(const QString &houseId)
     m_propertyController->getPropertyById(houseId);
 }
 
+int PropertyViewModel::indexOfProperty(const QString &houseId) const
+{
+    const int count = m_propertyListModel->rowCount();
+    for (int i = 0; i < count; ++i) {
+        const QModelIndex idx = m_propertyListModel->index(i, 0);
+        const QString id = m_propertyListModel->data(idx, PropertyListModel::IdRole).toString();
+        if (id == houseId)
+            return i;
+    }
+    return -1;
+}
+
 void PropertyViewModel::updateProperty(int index, const QString &houseId, const QString &title, const QString &description, double price, const QString &district, const QString &village, const QStringList &amenities, const QString &landlord, const QString &landlordPhone, const QString &verificationStatus, bool isActive)
 {
     m_index = index;
@@ -123,6 +135,8 @@ void PropertyViewModel::onUpdateProperty(Property *property)
     setLoading(false);
     if (m_index >= 0)
         m_propertyListModel->updateProperty(m_index, property);
+    if (property)
+        emit propertyUpdatedSignal(property->getId());
 }
 
 void PropertyViewModel::onCreateProperty(Property *property)

@@ -382,7 +382,7 @@ Page {
                 size: 42
                 lineWidth: 4
                 color: root.primaryColor
-                running: root.busyOverlay.visible
+                running: busyOverlay.visible
             }
 
             Label {
@@ -396,7 +396,7 @@ Page {
             Label {
                 Layout.alignment: Qt.AlignHCenter
                 Layout.maximumWidth: 280
-                text: qsTr("Please wait while your property is sent to the verification team.")
+                text: qsTr("Please wait while your property and photos are uploaded to the verification team.")
                 color: root.mutedColor
                 font.pixelSize: 13
                 horizontalAlignment: Text.AlignHCenter
@@ -470,7 +470,7 @@ Page {
                     color: root.primaryColor
                 }
 
-                onClicked: root.errorOverlay.visible = false
+                onClicked: errorOverlay.visible = false
             }
         }
     }
@@ -493,6 +493,8 @@ Page {
             title: infoStep.titleValue,
             description: infoStep.descriptionValue,
             owner: AppSettings.isLoggedIn() ? AppSettings.userName() : "",
+            ownerName: AppSettings.isLoggedIn() ? AppSettings.userName() : "",
+            ownerPhone: AppSettings.isLoggedIn() ? AppSettings.phone() : "",
             propertyType: infoStep.propertyTypeValue,
             physicalAddress: {
                 district: infoStep.districtValue,
@@ -516,7 +518,7 @@ Page {
         // while it runs. The success/error overlay is driven by the
         // PropertyViewModel signals below once the request settles.
         root.submitting = true
-        root.busyOverlay.visible = true
+        busyOverlay.visible = true
         root.propertySubmitted(payload)
     }
 
@@ -531,16 +533,33 @@ Page {
 
     function showSuccess(title, message) {
         root.submitting = false
-        root.busyOverlay.visible = false
+        busyOverlay.visible = false
         successTitleLabel.text = title
         successMessageLabel.text = message
         successOverlay.visible = true
         successTimer.restart()
     }
 
+    // Called by AddPropertyScreen once the property AND every photo have been
+    // uploaded and attached. Until then the busy overlay keeps spinning so the
+    // user gets continuous feedback during the background image uploads.
+    function completeSubmission() {
+        if (!root.submitting)
+            return
+        showSuccess(qsTr("Submitted for verification"),
+                    qsTr("The verification team has been notified. You can track progress from your properties list."))
+    }
+
+    // Safety-net helper: hide the busy overlay only when navigation occurs via
+    // the fallback path (success overlay is managed by showSuccess).
+    function hideBusy() {
+        root.submitting = false
+        busyOverlay.visible = false
+    }
+
     function showError(message) {
         root.submitting = false
-        root.busyOverlay.visible = false
+        busyOverlay.visible = false
         errorLabel.text = message
         errorOverlay.visible = true
     }
@@ -548,12 +567,21 @@ Page {
     Connections {
         target: PropertyViewModel
         function onPropertyCreatedSignal(id, title) {
-            // The createProperty POST completed successfully; only then show the
-            // success state (rooms/media may still be wanted by AddPropertyScreen,
-            // but the listing itself is submitted).
-            if (root.submitting)
+            // The createProperty POST completed, but if photos are being
+            // uploaded asynchronously (handled by AddPropertyScreen) we keep
+            // the spinner up until every photo is uploaded and attached, so
+            // the user always sees progress. Success only appears once the
+            // parent calls completeSubmission().
+            if (root.submitting) {
+                if (root.lastPayload
+                        && root.lastPayload.photos
+                        && root.lastPayload.photos.length > 0) {
+                    busyOverlay.visible = true
+                    return
+                }
                 showSuccess(qsTr("Submitted for verification"),
                             qsTr("The verification team has been notified. You can track progress from your properties list."))
+            }
         }
         function onPropertyError(error) {
             if (root.submitting)

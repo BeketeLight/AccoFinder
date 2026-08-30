@@ -31,8 +31,13 @@ void RoomRepositoryImpl::createRoom(const QString &id,
 
 void RoomRepositoryImpl::getRooms()
 {
+    // The backend /rooms/ endpoint paginates with a server default of 10 rows
+    // (limit=10), so without an explicit limit only the newest handful of
+    // rooms would ever be cached. Per-property room counts (roomsForProperty)
+    // then read as 0 for every property whose rooms fall outside that page.
+    // Request the whole catalogue so the counts are accurate for all cards.
     APIClient::instance().get(
-        "/rooms/",
+        "/rooms/?limit=10000",
         [this](bool success,
                const QJsonObject& response)
         {

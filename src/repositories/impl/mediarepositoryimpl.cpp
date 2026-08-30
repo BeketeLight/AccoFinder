@@ -22,7 +22,7 @@ void MediaRepositoryImpl::createMedia(const QString &propertyId,
     metadata["roomId"] = roomId;
 
     APIClient::instance().postMultipart(
-        "/media/upload",
+        "https://accofinder-trsm.onrender.com/media/upload",
         url,
         "file",
         "image/jpeg",
@@ -43,7 +43,7 @@ void MediaRepositoryImpl::createMedia(const QString &propertyId,
 void MediaRepositoryImpl::getMediaByProperty(const QString &propertyId)
 {
     APIClient::instance().get(
-        "/media/property/" + propertyId,
+        "https://accofinder-trsm.onrender.com/media/property/" + propertyId,
         [this](bool success, const QJsonObject& response)
         {
             if (success && response.contains("data")) {
@@ -55,5 +55,42 @@ void MediaRepositoryImpl::getMediaByProperty(const QString &propertyId)
                 emit mediaLoaded(mediaList);
             }
         }, false
+    );
+}
+
+void MediaRepositoryImpl::deleteMedia(const QString &mediaId)
+{
+    APIClient::instance().del(
+        "https://accofinder-trsm.onrender.com/media/" + mediaId,
+        [this, mediaId](bool success, const QJsonObject& response)
+        {
+            if (success)
+                emit mediaDeleted(mediaId);
+            else
+                emit error(response.value("message").toString());
+        }
+    );
+}
+
+void MediaRepositoryImpl::updateMedia(const QString &mediaId, bool isPrimary)
+{
+    QJsonObject data;
+    data["isPrimary"] = isPrimary;
+
+    APIClient::instance().patch(
+        "https://accofinder-trsm.onrender.com/media/" + mediaId,
+        data,
+        [this](bool success, const QJsonObject& response)
+        {
+            if (success) {
+                const QJsonObject mediaObj = response["data"].toObject();
+                if (!mediaObj.isEmpty()) {
+                    MediaDto dto = MediaDto::fromJson(mediaObj);
+                    emit mediaUpdated(dto.toDomainModel());
+                    return;
+                }
+            }
+            emit error(response.value("message").toString());
+        }
     );
 }

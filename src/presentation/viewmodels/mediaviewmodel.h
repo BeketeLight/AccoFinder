@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QString>
+#include <QVariantList>
 #include "presentation/models/medialistmodel.h"
 #include "application/controllers/mediacontroller.h"
 
@@ -23,6 +24,12 @@ public:
                                  bool isPrimary,
                                  const QString& roomId);
     Q_INVOKABLE void getMediaByProperty(const QString& propertyId);
+    Q_INVOKABLE void deleteMedia(const QString& mediaId);
+    Q_INVOKABLE void updateMediaPrimary(const QString& mediaId, bool isPrimary);
+
+    // Media belonging to the given property id, shaped for QML display as
+    // {mediaId, path, url, isPrimary, roomId, mediaType} maps.
+    Q_INVOKABLE QVariantList mediaForProperty(const QString& propertyId) const;
 
 private:
     bool m_isLoading = false;
@@ -34,12 +41,16 @@ private:
 private slots:
     void onMediaCreated(const QSharedPointer<Media>& media);
     void onMediaLoaded(const QList<QSharedPointer<Media>>& media);
+    void onMediaDeleted(const QString& mediaId);
+    void onMediaUpdated(const QSharedPointer<Media>& media);
     void onError(const QString& message);
 
 signals:
     void isLoadingChanged(bool isLoading);
     void mediaError(const QString& error);
     void mediaCreatedSignal(const QString& mediaId);
+    void mediaDeletedSignal(const QString& mediaId);
+    void mediaUpdatedSignal(const QString& mediaId);
 };
 
 #endif // MEDIAVIEWMODEL_H

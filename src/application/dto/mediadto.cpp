@@ -24,7 +24,9 @@ MediaDto MediaDto::fromJson(const QJsonObject &json)
 {
     MediaDto dto;
 
-    dto.m_id = json["id"].toString();
+    // The backend returns the media id under "_id" (Mongoose/Mongo ObjectId),
+    // matching the convention used by the other DTOs in this codebase.
+    dto.m_id = json["_id"].toString();
     dto.m_propertyId = json["propertyId"].toString();
 
     // url mirrors the UI "path" of an uploaded photo
