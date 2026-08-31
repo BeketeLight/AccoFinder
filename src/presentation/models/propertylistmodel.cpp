@@ -148,6 +148,20 @@ void PropertyListModel::updateProperty(int index, Property* property)
     endResetModel();
 }
 
+void PropertyListModel::removeProperty(const QString& propertyId)
+{
+    for (int i = 0; i < m_properties.size(); ++i) {
+        const QString id = m_properties.at(i)->getId();
+        if (id == propertyId) {
+            beginRemoveRows(QModelIndex(), i, i);
+            delete m_properties.takeAt(i);
+            endRemoveRows();
+            emit countChanged(m_properties.size());
+            return;
+        }
+    }
+}
+
 void PropertyListModel::getPropertyById(Property* property)
 {
     clear();

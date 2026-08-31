@@ -93,12 +93,19 @@ Page {
     property string saveErrorText: ""
     // Payload of the in-flight server save; surfaced once the backend confirms.
     property var lastSavedPayload: null
-    // Photo upload bookkeeping (server-backed properties). File paths queue up
-    // here until every selected photo uploads, then they are attached in one
-    // PUT so the property's media array and the /media/ collection stay linked.
+    // Photo upload bookkeeping (server-backed properties). Newly picked photos
+    // are staged locally (path only, no aws upload) while editing and only
+    // uploaded to S3 when the agent actually saves. See submitServerSave().
     property var pendingMediaIds: []
     property int pendingMediaTotal: 0
     property string photoOpError: ""
+    // Number of new (staged) photos waiting to be uploaded during a save.
+    property int pendingStageTotal: 0
+    // Server media ids produced while uploading the staged batch during a save.
+    property var pendingStageIds: []
+    // Snapshot of the server photos taken when editing starts, so cancel can
+    // restore the grid to exactly the committed state (discarding staged picks).
+    property var savedPhotosList: []
 
     FileDialog {
         id: photoPickerDialog
@@ -108,27 +115,27 @@ Page {
 
         onAccepted: {
             var urls = selectedFiles
-            if (root.pendingMediaTotal === 0)
-                root.pendingMediaIds = []
-            root.pendingMediaTotal += urls.length
             root.photoOpError = ""
             for (var i = 0; i < urls.length; i++) {
                 var path = urls[i].toString()
+                var firstOverall = root.photosList.length === 0 && i === 0
                 if (root.isDraftItem) {
                     // Drafts keep photos locally (payload paths) until resend.
                     var arr = root.photosList.slice()
                     arr.push({ path: path,
-                               isPrimary: root.photosList.length === 0 && arr.length === 1,
+                               isPrimary: firstOverall,
                                roomId: -1 })
                     root.photosList = arr
-                } else if (root.propertyId.length > 0) {
-                    root.pendingMediaIds.push(path)
-                    MediaViewModel.createMedia(root.propertyId,
-                                               path,
-                                               "image",
-                                               root.photosList.length === 0
-                                                   && root.pendingMediaIds.length === 1,
-                                               "-1")
+                } else {
+                    // Server-backed property, edit mode: STAGE the photo locally
+                    // (path only). Nothing reaches AWS until the agent presses
+                    // Save (see submitServerSave), so cancelling the edit never
+                    // leaves orphaned uploads behind.
+                    var staged = root.photosList.slice()
+                    staged.push({ path: path,
+                                  mediaId: "",
+                                  isPrimary: firstOverall })
+                    root.photosList = staged
                 }
             }
         }
@@ -246,10 +253,22 @@ Page {
         root.editLandlordPhoneValue = root.landlordPhone
         root.saveErrorText = ""
         root.photoOpError = ""
+        // Snapshot the committed photos so cancel can drop any newly staged
+        // (not-yet-uploaded) picks and restore the grid to this exact state.
+        root.savedPhotosList = root.photosList.slice()
         root.editMode = true
     }
 
     function cancelEditing() {
+        // Never discard edits / staged photos while a save is in-flight: the
+        // uploads and the property PUT are already committed or underway, so
+        // cancelling now would tear the grid out from under a saving save.
+        if (root.savingInProgress)
+            return
+        // Discard any photos staged during this edit (they hit AWS only on
+        // save, so nothing to roll back there) and restore the committed set.
+        root.photosList = root.savedPhotosList.slice()
+        root.photoOpError = ""
         root.editMode = false
     }
 
@@ -302,8 +321,25 @@ Page {
         if (root.isDraftItem)
             return
         root.photoOpError = ""
-        if (mediaId)
+        if (mediaId) {
+            // Invalidate the removed media's cached image (it's deleted on the
+            // server) so a stale copy is not served later from the local cache.
+            // Guarded: cache invalidation must never block the deleteMedia call
+            // below if the helper is missing/unavailable on this build.
+            try {
+                if (UtilsModule && typeof UtilsModule.invalidateImages === "function") {
+                    var cacheTargets = []
+                    for (var p = 0; p < root.photosList.length; p++)
+                        if (String(root.photosList[p].mediaId) === String(mediaId)
+                            || String(root.photosList[p].id) === String(mediaId))
+                            cacheTargets.push(root.photosList[p])
+                    UtilsModule.invalidateImages(cacheTargets)
+                }
+            } catch (err) {
+                console.log("PropertyDetailsPage: cache invalidation skipped:", err)
+            }
             MediaViewModel.deleteMedia(mediaId)
+        }
     }
 
     // Delete for a local draft photo (no backend record behind it).
@@ -332,9 +368,47 @@ Page {
             MediaViewModel.updateMediaPrimary(mediaId, true)
     }
 
+    // Remove a photo that was staged (picked) during this edit but not yet
+    // uploaded. It exists only in the local grid, so drop it there without any
+    // network call — it never reached AWS.
+    function removeStagedPhoto(index) {
+        if (index < 0 || index >= root.photosList.length)
+            return
+        var arr = root.photosList.slice()
+        // Remove only staged entries (empty mediaId) at that index; if it's
+        // actually a committed server row, fall back to the server delete path.
+        if (String(arr[index].mediaId || "").length > 0) {
+            root.deletePhoto(arr[index].mediaId)
+            return
+        }
+        arr.splice(index, 1)
+        // Ensure a cover still exists when the removed photo was the cover.
+        var hasPrimary = false
+        for (var k = 0; k < arr.length; k++)
+            if (arr[k].isPrimary) { hasPrimary = true; break }
+        if (!hasPrimary && arr.length > 0)
+            arr[0].isPrimary = true
+        root.photosList = arr
+        root.photoOpError = ""
+    }
+
     // Draft photos are local only: promote the tapped photo in place.
     function setDraftPhotoCover(index) {
         if (index < 0 || index >= root.photosList.length)
+            return
+        var arr = root.photosList.slice()
+        for (var i = 0; i < arr.length; i++)
+            arr[i].isPrimary = (i === index)
+        root.photosList = arr
+        root.photoOpError = ""
+    }
+
+    // Promote a staged (not yet uploaded) photo to the cover in the local grid.
+    // The definitive cover is set server-side after upload via updateMedia.
+    function setStagedPhotoCover(index) {
+        if (index < 0 || index >= root.photosList.length)
+            return
+        if (String(root.photosList[index].mediaId || "").length > 0)
             return
         var arr = root.photosList.slice()
         for (var i = 0; i < arr.length; i++)
@@ -355,24 +429,41 @@ Page {
             MediaViewModel.getMediaByProperty(root.propertyId)
     }
 
-    // One selected photo finished uploading. When the whole batch is done,
-    // attach every uploaded id to the property so the media stay linked.
+    // A photo finished uploading during a server save. Collect each server
+    // media id; when the whole staged batch is done, attach the ids to the
+    // property and continue the save (property text PUT).
     function onMediaUploaded(mediaId) {
-        if (root.pendingMediaTotal <= 0)
+        if (!root.savingInProgress)
             return
-        root.pendingMediaTotal--
-        if (root.pendingMediaTotal === 0 && root.propertyId.length > 0) {
-            if (root.pendingMediaIds.length > 0)
-                PropertyViewModel.attachMedia(root.propertyId, root.pendingMediaIds)
-            root.pendingMediaIds = []
+        if (mediaId && mediaId.length > 0)
+            root.pendingStageIds.push(String(mediaId))
+        root.pendingStageTotal--
+        if (root.pendingStageTotal <= 0) {
+            var ids = root.pendingStageIds.slice()
+            root.pendingStageTotal = 0
+            root.pendingStageIds = []
+            root.pendingMediaIds = ids
+            if (ids.length > 0)
+                PropertyViewModel.attachMedia(root.propertyId, ids)
             root.syncPhotosFromServer()
+            root.confirmServerUpdate(ids)
         }
     }
 
     function onMediaFailure(error) {
         root.photoOpError = qsTr("A photo could not be processed: %1").arg(error)
-        root.pendingMediaIds = []
-        root.pendingMediaTotal = 0
+        if (root.savingInProgress) {
+            // A staged photo failed to upload: abort the save so the agent can
+            // retry/fix rather than committing a broken listing. Keep the
+            // staged photos in the grid so nothing is silently lost.
+            root.savingInProgress = false
+            root.pendingStageTotal = 0
+            root.pendingStageIds = []
+            root.pendingMediaIds = []
+        } else {
+            root.pendingMediaIds = []
+            root.pendingMediaTotal = 0
+        }
     }
 
     function saveChanges() {
@@ -435,35 +526,83 @@ Page {
             return
         }
 
-        // Submit the edits to the backend. Stay in edit mode with a "Saving..."
-        // button; the update finishes when PropertyViewModel confirms.
-        if (root.propertyId.length > 0) {
-            var idx = PropertyViewModel.indexOfProperty(root.propertyId)
-            var amens = []
-            if (root.amenitiesList) {
-                for (var a = 0; a < root.amenitiesList.length; a++)
-                    amens.push(String(root.amenitiesList[a]))
-            }
-            root.lastSavedPayload = updated
-            root.savingInProgress = true
-            PropertyViewModel.updateProperty(idx < 0 ? -1 : idx,
-                                             root.propertyId,
-                                             updated.title,
-                                             updated.description,
-                                             updated.price,
-                                             updated.physicalAddress.district,
-                                             updated.physicalAddress.village,
-                                             amens,
-                                             updated.landlord,
-                                             updated.landlordPhone,
-                                             updated.verificationStatus,
-                                             updated.isActive)
+        // Submit the edits to the backend. This is the transactional commit:
+        // any photos staged during the edit are uploaded to AWS first, then
+        // attached, then the text fields are PUT. Stay in edit mode with a
+        // "Saving..." button until PropertyViewModel confirms.
+        root.submitServerSave(updated)
+        return
+    }
+
+    // Transactional commit for a server-backed property edit: upload every
+    // staged (not-yet-uploaded) photo to AWS, then PUT the text changes. If
+    // the save is cancelled before this runs, the staged photos never reached
+    // AWS at all and are simply discarded by cancelEditing().
+    function submitServerSave(updated) {
+        if (root.savingInProgress)
+            return
+        root.lastSavedPayload = updated
+        root.savingInProgress = true
+
+        // Collect the staged photos: server photos carry a mediaId; new picks
+        // added during this edit have an empty mediaId and must be uploaded.
+        var staged = []
+        for (var p = 0; p < root.photosList.length; p++) {
+            var it = root.photosList[p]
+            if (!it) continue
+            if (!String(it.mediaId || "").length)
+                staged.push(root.photosList[p])
+        }
+
+        if (staged.length === 0) {
+            // Nothing new to upload; go straight to the property text PUT.
+            root.confirmServerUpdate([])
             return
         }
 
-        root.applyEditedValues()
-        root.editMode = false
-        root.propertyUpdated(updated)
+        var firstIsPrimary = false
+        for (var s = 0; s < root.photosList.length; s++)
+            if (root.photosList[s].isPrimary) { firstIsPrimary = true; break }
+
+        root.pendingStageTotal = staged.length
+        root.pendingStageIds = []
+
+        // Pre-upload: each staged photo's isPrimary flag is unknown until it
+        // becomes a real server record, so send the provisional cover state
+        // only for the first staged item (matches the pick-time logic) and the
+        // backend updateMedia path refines the true cover afterwards.
+        for (var i = 0; i < staged.length; i++) {
+            MediaViewModel.createMedia(root.propertyId,
+                                       staged[i].path,
+                                       "image",
+                                       i === 0 && firstIsPrimary,
+                                       "-1")
+        }
+    }
+
+    // Called after every staged photo has been uploaded. Any staged entries in
+    // the grid are replaced by their committed server rows (syncPhotosFromServer
+    // already ran), then the text update is submitted.
+    function confirmServerUpdate(mediaIds) {
+        var idx = PropertyViewModel.indexOfProperty(root.propertyId)
+        var amens = []
+        if (root.amenitiesList) {
+            for (var a = 0; a < root.amenitiesList.length; a++)
+                amens.push(String(root.amenitiesList[a]))
+        }
+        var payload = root.lastSavedPayload || {}
+        PropertyViewModel.updateProperty(idx < 0 ? -1 : idx,
+                                         root.propertyId,
+                                         payload.title,
+                                         payload.description,
+                                         payload.price,
+                                         payload.physicalAddress ? payload.physicalAddress.district : "",
+                                         payload.physicalAddress ? payload.physicalAddress.village : "",
+                                         amens,
+                                         payload.landlord,
+                                         payload.landlordPhone,
+                                         payload.verificationStatus,
+                                         payload.isActive)
     }
 
     background: Rectangle { color: root.pageColor }
@@ -1052,8 +1191,12 @@ Page {
                                     onClicked: {
                                         if (root.isDraftItem)
                                             root.removeDraftPhoto(index)
-                                        else
+                                        else if (modelData.mediaId)
                                             root.deletePhoto(modelData.mediaId)
+                                        else
+                                            // Staged (not yet uploaded) photo:
+                                            // remove it from the local grid only.
+                                            root.removeStagedPhoto(index)
                                     }
                                 }
                             }
@@ -1088,8 +1231,12 @@ Page {
                                     onClicked: {
                                         if (root.isDraftItem)
                                             root.setDraftPhotoCover(index)
-                                        else
+                                        else if (modelData.mediaId)
                                             root.setPhotoCover(modelData.mediaId)
+                                        else
+                                            // Staged (not yet uploaded) photo:
+                                            // promote it as the cover locally.
+                                            root.setStagedPhotoCover(index)
                                     }
                                 }
                             }

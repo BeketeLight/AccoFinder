@@ -13,6 +13,8 @@ PropertyViewModel::PropertyViewModel(QObject *parent)
             this, &PropertyViewModel::onUpdateProperty);
     connect(m_propertyController, &PropertyController::propertyCreated,
             this, &PropertyViewModel::onCreateProperty);
+    connect(m_propertyController, &PropertyController::propertyDeleted,
+            this, &PropertyViewModel::onPropertyDeleted);
     connect(m_propertyController, &PropertyController::propertyError,
             this, &PropertyViewModel::onPropertyError);
 }
@@ -146,6 +148,13 @@ void PropertyViewModel::onCreateProperty(Property *property)
         m_propertyListModel->appendProperty(property);
         emit propertyCreatedSignal(property->getId(), property->getTitle());
     }
+}
+
+void PropertyViewModel::onPropertyDeleted(const QString &houseId)
+{
+    setLoading(false);
+    m_propertyListModel->removeProperty(houseId);
+    emit propertyDeletedSignal(houseId);
 }
 
 void PropertyViewModel::onPropertyError(const QString &error)

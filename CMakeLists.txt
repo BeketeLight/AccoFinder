@@ -26,6 +26,7 @@ qt_add_qml_module(appAccoFinder
         ui/components/dialogs/AppAlertDialog.qml
         ui/components/dialogs/AppLoadingDialog.qml
         ui/components/dialogs/AppConfirmationDialog.qml
+        ui/components/dialogs/AppImageLightbox.qml
         ui/components/buttons/AppIconButton.qml
         ui/components/buttons/AppPrimaryButton.qml
         ui/components/buttons/AppSecondaryButton.qml
@@ -255,6 +256,7 @@ set(ACCOFINDER_LOGIC_SOURCES
     src/application/dto/roomdto.h src/application/dto/roomdto.cpp
     src/application/dto/mediadto.h src/application/dto/mediadto.cpp
     src/services/apiclient.h src/services/apiclient.cpp
+    src/services/cachedimageprovider.h src/services/cachedimageprovider.cpp
     src/services/paymentgatewayimpl.h src/services/paymentgatewayimpl.cpp
     src/services/notificationserviceimpl.h src/services/notificationserviceimpl.cpp
     src/services/emailservice.h src/services/emailservice.cpp
@@ -316,7 +318,7 @@ target_include_directories(AccoFinderLogic
 )
 
 target_link_libraries(AccoFinderLogic
-    PUBLIC Qt6::Core Qt6::Network Qt6::Gui
+    PUBLIC Qt6::Core Qt6::Network Qt6::Gui Qt6::Quick
 )
 
 # ─────────────────────────────────────────────────────────────

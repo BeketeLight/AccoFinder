@@ -23,6 +23,7 @@
 #include "src/presentation/viewmodels/userviewmodel.h"
 #include "src/presentation/viewmodels/agentviewmodel.h"
 #include "src/presentation/viewmodels/agentapplicationviewmodel.h"
+#include "src/services/cachedimageprovider.h"
 #include <QQmlContext>
 #include <QTimer>
 int main(int argc, char *argv[])
@@ -48,6 +49,15 @@ int main(int argc, char *argv[])
     }
 
     QQmlApplicationEngine engine;
+    // Register an async image provider that caches decoded images in memory
+    // (and raw bytes on disk). Both thumbnails and the lightbox load through
+    // "image://cached/" so they share already-decoded pixels instead of making
+    // repeated network requests.
+    CachedImageProvider *cachedImageProvider = new CachedImageProvider(&engine);
+    engine.addImageProvider("cached", cachedImageProvider);
+    // Expose the provider to QML so delete flows can invalidate a removed
+    // image's cache entry via ImageCache.invalidateUrl(url).
+    engine.rootContext()->setContextProperty("ImageCache", cachedImageProvider);
     //Appsettings
     AppSettings& appSettings = AppSettings::instance();
     //AppPermission
