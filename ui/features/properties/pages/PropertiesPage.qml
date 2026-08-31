@@ -253,6 +253,7 @@ Page {
         target: PropertyViewModel.propertyListModel
         function onModelReset() { root.refreshAll() }
         function onRowsInserted(parent, first, last) { root.refreshAll() }
+        function onRowsRemoved(parent, first, last) { root.refreshAll() }
     }
 
     background: Rectangle { color: root.pageColor }

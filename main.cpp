@@ -55,6 +55,9 @@ int main(int argc, char *argv[])
     // repeated network requests.
     CachedImageProvider *cachedImageProvider = new CachedImageProvider(&engine);
     engine.addImageProvider("cached", cachedImageProvider);
+    // Expose the provider to QML so delete flows can invalidate a removed
+    // image's cache entry via ImageCache.invalidateUrl(url).
+    engine.rootContext()->setContextProperty("ImageCache", cachedImageProvider);
     //Appsettings
     AppSettings& appSettings = AppSettings::instance();
     //AppPermission

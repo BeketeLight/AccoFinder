@@ -102,9 +102,11 @@ QQuickImageResponse *CachedImageProvider::requestImageResponse(
         request.setTransferTimeout(30000);
 
         QNetworkReply *reply = m_networkManager->get(request);
+        m_inflightReply.insert(url, reply);
         connect(reply, &QNetworkReply::finished, this, [this, url, reply]() {
             reply->deleteLater();
             m_inflight.remove(url);
+            m_inflightReply.remove(url);
 
             QString error;
             QImage image;
@@ -147,4 +149,50 @@ QQuickImageResponse *CachedImageProvider::requestImageResponse(
     }, Qt::QueuedConnection);
 
     return resp;
+}
+
+void CachedImageProvider::invalidateUrl(const QString &url)
+{
+    if (url.isEmpty())
+        return;
+
+    // All network/disk-cache access and in-flight bookkeeping must happen on
+    // the main thread (see requestImageResponse). The in-memory decoded cache
+    // is additionally mutex-guarded for reader-thread reads.
+    QMetaObject::invokeMethod(this, [this, url]() {
+        m_mutex.lock();
+        m_images.remove(url);
+        m_mutex.unlock();
+
+        if (m_networkManager && m_networkManager->cache())
+            m_networkManager->cache()->remove(QUrl(url));
+
+        // Abort any in-flight download so we never fall back to a stale copy,
+        // and fail the responses that were waiting on it.
+        auto it = m_inflightReply.find(url);
+        if (it != m_inflightReply.end()) {
+            it.value()->abort();
+            m_inflightReply.erase(it);
+        }
+        m_inflight.remove(url);
+
+        const auto waiters = m_waiters.take(url);
+        for (CachedImageResponse *w : waiters) {
+            w->setImage(QImage());
+            QMetaObject::invokeMethod(w, "finished", Qt::QueuedConnection);
+        }
+    }, Qt::QueuedConnection);
+}
+
+void CachedImageProvider::clearCache()
+{
+    // Entirely main-thread bound: clear the decoded cache and the disk cache.
+    QMetaObject::invokeMethod(this, [this]() {
+        m_mutex.lock();
+        m_images.clear();
+        m_mutex.unlock();
+
+        if (m_networkManager && m_networkManager->cache())
+            m_networkManager->cache()->clear();
+    }, Qt::QueuedConnection);
 }

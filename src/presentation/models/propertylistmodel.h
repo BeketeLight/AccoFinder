@@ -53,6 +53,7 @@ public:
     void setProperties( QList<Property*>& newProperty);
     void appendProperty(Property* property);
     void updateProperty(int index,Property* property);
+    void removeProperty(const QString& propertyId);
     void getPropertyById(Property* property);
     void clear();
 

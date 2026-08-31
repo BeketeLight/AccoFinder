@@ -1,4 +1,5 @@
 import QtQuick 2.15
+import "../../../utils/Utils.js" as UtilsModule
 import "../pages"
 Item {
     id:propertiesdetailsId
@@ -21,6 +22,16 @@ Item {
         }
 
         onPropertyDeleted: {
+            // Drop the property's images from the local image cache so a
+            // removed property can't later be shown from a stale cached copy.
+            // Guarded: cache invalidation must never block the actual delete
+            // below if the helper is missing/unavailable on this build.
+            try {
+                if (UtilsModule && typeof UtilsModule.invalidateImages === "function")
+                    UtilsModule.invalidateImages(detailPage.photosList)
+            } catch (err) {
+                console.log("PropertyDetailScreen: cache invalidation skipped:", err)
+            }
             // Fire the backend delete for a server-backed property. Draft items
             // (no propertyId) are removed locally via DraftViewModel in the page.
             if (detailPage.propertyId && detailPage.propertyId.length > 0)

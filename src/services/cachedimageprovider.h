@@ -37,6 +37,16 @@ public:
     QQuickImageResponse *requestImageResponse(const QString &id,
                                               const QSize &requestedSize) override;
 
+    // Forget a specific remote URL: drops it from the in-memory decoded cache,
+    // the disk cache, and (if still downloading) cancels the in-flight request
+    // and fails any waiting responses. Safe to call from any thread. Used after
+    // a property/media is deleted server-side so a removed image is not served
+    // from a stale cached copy.
+    Q_INVOKABLE void invalidateUrl(const QString &url);
+
+    // Clear every cached image (memory + disk).
+    Q_INVOKABLE void clearCache();
+
 private:
     struct CachedImage
     {
@@ -53,6 +63,9 @@ private:
 
     // URLs for which a download is already in flight (main-thread only).
     QSet<QString> m_inflight;
+
+    // The live reply for each in-flight download, so invalidateUrl can abort it.
+    QHash<QString, QNetworkReply *> m_inflightReply;
 
     // Responses waiting on an in-flight download, keyed by URL (main-thread).
     QMap<QString, QList<CachedImageResponse *>> m_waiters;

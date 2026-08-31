@@ -68,6 +68,7 @@ private slots:
     void onGetPropertyById(Property* property);
     void onUpdateProperty(Property* property);
     void onCreateProperty(Property* property);
+    void onPropertyDeleted(const QString& houseId);
     void onPropertyError(const QString& error);
 
 signals:
@@ -75,6 +76,7 @@ signals:
     void propertyError(const QString& error);
     void propertyCreatedSignal(const QString& id, const QString& title);
     void propertyUpdatedSignal(const QString& id);
+    void propertyDeletedSignal(const QString& id);
 };
 
 #endif // PROPERTYVIEWMODEL_H
