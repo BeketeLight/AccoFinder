@@ -103,6 +103,13 @@ void PropertyViewModel::updateProperty(int index, const QString &houseId, const 
     m_propertyController->updateProperty(houseId, title, description, price, district, village, amenities, landlord, landlordPhone, verificationStatus, isActive);
 }
 
+void PropertyViewModel::updatePropertyStatus(const QString &houseId, const QString &status)
+{
+    m_index = indexOfProperty(houseId);
+    setLoading(true);
+    m_propertyController->updatePropertyStatus(houseId, status);
+}
+
 void PropertyViewModel::createProperty(const QString &title, const QString &description, double price, const QString &propertyType, const QString &district, const QString &village, const QStringList &amenities, const QString &landlord, const QString &landlordPhone, const QString &verificationStatus, bool isActive, const QJsonArray &rooms)
 {
     setLoading(true);

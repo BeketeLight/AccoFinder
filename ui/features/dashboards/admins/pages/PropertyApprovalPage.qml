@@ -181,6 +181,9 @@ Item {
 
                             onClicked: {
                                 root.listingsModel.setPropertyStatus(approvalRow.model.propertyId, "VERIFIED")
+                                // Persist the decision on the backend so it survives a
+                                // refresh. setPropertyStatus only edits the local list.
+                                PropertyViewModel.updatePropertyStatus(approvalRow.model.propertyId, "VERIFIED")
                                 console.log("Approval:", approvalRow.model.propertyId, "-> VERIFIED")
                                 root.decisionMade(approvalRow.model.propertyId, approvalRow.model.title, true)
                                 root.refreshQueue()
@@ -211,6 +214,9 @@ Item {
 
                             onClicked: {
                                 root.listingsModel.setPropertyStatus(approvalRow.model.propertyId, "REJECTED")
+                                // Persist the decision on the backend so it survives a
+                                // refresh. setPropertyStatus only edits the local list.
+                                PropertyViewModel.updatePropertyStatus(approvalRow.model.propertyId, "REJECTED")
                                 console.log("Approval:", approvalRow.model.propertyId, "-> REJECTED")
                                 root.decisionMade(approvalRow.model.propertyId, approvalRow.model.title, false)
                                 root.refreshQueue()

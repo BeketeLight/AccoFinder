@@ -26,6 +26,7 @@ public:
                         const QStringList& amenities, const QString& landlord,
                         const QString& landlordPhone, const QString& verificationStatus,
                         bool isActive) override;
+    void updatePropertyStatus(const QString& houseId, const QString& status) override;
     void deleteProperty(const QString& houseId) override;
     void attachMedia(const QString& houseId, const QStringList& mediaIds) override;
 

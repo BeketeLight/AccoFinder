@@ -429,13 +429,45 @@ Item {
                 }
             }
         }
+        ColumnLayout {
+            visible: root.dashboardModel.recentBookingsModel.count === 0
+            Layout.alignment: Qt.AlignHCenter
+            Layout.topMargin: 2
+            spacing: 6
 
-        Label {
-            visible: root.dashboardModel.attentionModel.count === 0
-            Layout.fillWidth: true
-            text: qsTr("All properties are in good standing.")
-            color: root.mutedColor
-            font.pixelSize: 12
+            Rectangle {
+                Layout.alignment: Qt.AlignHCenter
+                Layout.preferredWidth: 40
+                Layout.preferredHeight: 40
+                radius: 20
+                color: root.softBlueColor
+                border.color: "#BFDBFE"
+                border.width: 1
+
+                Image {
+                    anchors.centerIn: parent
+                    source: "qrc:/ui/assets/bookings-icon.svg"
+                    sourceSize.width: 20
+                    sourceSize.height: 20
+                }
+            }
+
+            Label {
+                Layout.alignment: Qt.AlignHCenter
+                text: qsTr("Nothing yet")
+                color: root.textColor
+                font.pixelSize: 13
+                font.bold: true
+            }
+
+            Label {
+                Layout.alignment: Qt.AlignHCenter
+                text: qsTr("All properties are in good standing.")
+                color: root.mutedColor
+                font.pixelSize: 11
+                horizontalAlignment: Text.AlignHCenter
+                wrapMode: Text.WordWrap
+            }
         }
 
         SectionHeader {

@@ -16,6 +16,15 @@ Page {
 
     readonly property bool hasRoomsStep: infoStep.needsRooms
 
+    // Advance to the next logical step, always bounded by the current total.
+    // Navigation must be relative (never hardcoded absolute numbers) so the
+    // reported "stuck on the last stage yet still showing Continue" can never
+    // recur: whatever the property type / step count, you always land on the
+    // Review page (which has Submit, not Continue) at the final step.
+    function advanceStep() {
+        currentStep = Math.min(currentStep + 1, totalSteps() - 1)
+    }
+
     function stepTitleFor(i) {
         if (infoStep.needsRooms)
             return [qsTr("Information"), qsTr("Rooms"), qsTr("Photos"), qsTr("Review")][i]
@@ -83,6 +92,21 @@ Page {
     }
 
     anchors.fill: parent
+
+    // If the listing type changes (which toggles needsRooms and therefore the
+    // number of steps) while the user is already deep in the flow, clamp
+    // currentStep back so it can't point past the now-shorter sequence. Keeping
+    // currentStep valid guarantees the visible page always matches the header's
+    // step count — and that a "Continue" button can never be shown on a stage
+    // the header labels as the last one.
+    Connections {
+        target: infoStep
+        function onNeedsRoomsChanged() {
+            var last = root.totalSteps() - 1
+            if (root.currentStep > last)
+                root.currentStep = last
+        }
+    }
 
     background: Rectangle {
         color: root.pageColor
@@ -228,7 +252,7 @@ Page {
                         borderColor: root.borderColor
                         errorColor: "#EF4444"
                         Layout.fillWidth: true
-                        onNextRequested: root.currentStep = 1
+                        onNextRequested: root.advanceStep()
                     }
 
                     PropertyRoomsPage {
@@ -241,7 +265,7 @@ Page {
                         borderColor: root.borderColor
                         errorColor: "#EF4444"
                         Layout.fillWidth: true
-                        onNextRequested: root.currentStep = 2
+                        onNextRequested: root.advanceStep()
                     }
 
                     PropertyPhotosPage {
@@ -255,7 +279,7 @@ Page {
                         borderColor: root.borderColor
                         errorColor: "#EF4444"
                         Layout.fillWidth: true
-                        onNextRequested: root.currentStep = infoStep.needsRooms ? 3 : 2
+                        onNextRequested: root.advanceStep()
                     }
 
                     PropertyReviewPage {

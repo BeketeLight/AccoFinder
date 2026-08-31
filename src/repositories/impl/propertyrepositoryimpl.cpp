@@ -104,6 +104,41 @@ void PropertyRepositoryImpl::updateProperty(const QString& houseId, const QStrin
 
 }
 
+void PropertyRepositoryImpl::updatePropertyStatus(const QString &houseId, const QString &status)
+{
+    if (houseId.isEmpty()) {
+        emit propertyError(QStringLiteral("houseId cannot be empty"));
+        return;
+    }
+    QString normalized = status.trimmed().toUpper();
+    if (normalized != QStringLiteral("PENDING")
+            && normalized != QStringLiteral("VERIFIED")
+            && normalized != QStringLiteral("REJECTED")
+            && normalized != QStringLiteral("DRAFT")) {
+        emit propertyError(QStringLiteral("Invalid verification status"));
+        return;
+    }
+
+    QJsonObject payload;
+    payload["verificationStatus"] = normalized;
+
+    APIClient::instance().put(
+        "/house-listing/" + houseId,
+        payload,
+        [this] (bool success, const QJsonObject& response)
+        {
+            if (success) {
+                PropertyDto updatedDto = PropertyDto::fromJson(response["data"].toObject());
+                Property* property = updatedDto.toDomainModel();
+                emit propertyUpdated(property);
+            } else {
+                emit propertyError(response.value("message").toString(
+                                       QStringLiteral("Failed to update property status")));
+            }
+        }, false
+    );
+}
+
 void PropertyRepositoryImpl::getPropertiesByStatus(const QString &status)
 {
     APIClient::instance().get(

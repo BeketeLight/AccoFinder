@@ -88,6 +88,16 @@ void PropertyController::updateProperty(const QString& houseId,
                                              amenities, landlord, landlordPhone, verificationStatus, isActive);
 }
 
+void PropertyController::updatePropertyStatus(const QString &houseId, const QString &status)
+{
+    if (houseId.isEmpty()) {
+        emit propertyError("houseId cannot be empty");
+        return;
+    }
+    setLoading(true);
+    m_propertyRepositoryImpl->updatePropertyStatus(houseId, status);
+}
+
 void PropertyController::deleteProperty(const QString &houseId)
 {
     if (houseId.isEmpty()) {
