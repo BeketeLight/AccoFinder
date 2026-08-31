@@ -4,6 +4,8 @@ import QtQuick.Layouts
 import "../../../properties/components"
 import "../../../properties/models"
 import "../../../../components/cards"
+import "../../../../components/dialogs"
+import "../../../../components/indicators"
 import "../../../../utils/Utils.js" as Utils
 
 // Dedicated review screen for a single property awaiting admin verification.
@@ -44,7 +46,7 @@ Item {
     property string propOwnerPhone: propertyPayload ? (propertyPayload.ownerPhone || "") : ""
     property var propAmenities: []
     property var propRooms: []
-    property var propPhotos: propertyPayload ? (propertyPayload.photos || []) : []
+    property var propPhotos: []
     property string propStatus: propertyPayload ? String(propertyPayload.verificationStatus || "").toUpperCase() : "PENDING"
 
     readonly property bool hasPrice: root.propPrice > 0
@@ -62,9 +64,21 @@ Item {
         root.propAmenities = root.propertyId ? PropertyViewModel.propertyListModel.amenitiesFor(root.propertyId) : []
     }
 
+    function loadMedia() {
+        if (!root.propertyId || root.propertyId.length === 0)
+            return
+        var serverPhotos = MediaViewModel.mediaForProperty(root.propertyId)
+        if (serverPhotos && serverPhotos.length > 0) {
+            root.propPhotos = serverPhotos
+        } else {
+            MediaViewModel.getMediaByProperty(root.propertyId)
+        }
+    }
+
     Component.onCompleted: {
         root.syncRooms()
         root.syncAmenities()
+        root.loadMedia()
         RoomViewModel.loadRooms()
     }
 
@@ -79,6 +93,12 @@ Item {
         function onCountChanged() { root.syncAmenities() }
         function onModelReset() { root.syncAmenities() }
         function onDataChanged() { root.syncAmenities() }
+    }
+
+    Connections {
+        target: MediaViewModel.mediaListModel
+        function onCountChanged() { root.loadMedia() }
+        function onModelReset() { root.loadMedia() }
     }
 
     Flickable {
@@ -230,8 +250,9 @@ Item {
                             required property var modelData
                             required property int index
                             readonly property string photoSource: {
-                                if (typeof modelData === "string") return modelData
-                                return modelData.path || modelData.url || ""
+                                if (typeof modelData === "string")
+                                    return Utils.cachedImage(modelData)
+                                return Utils.cachedImage(modelData.path || modelData.url || "")
                             }
                             readonly property bool isPrimary: typeof modelData === "object" && !!modelData.isPrimary
 
@@ -248,6 +269,7 @@ Item {
                                 border.width: isPrimary ? 2 : 1
 
                                 Image {
+                                    id: thumbImage
                                     anchors.fill: parent
                                     anchors.margins: 2
                                     source: photoSource
@@ -256,6 +278,23 @@ Item {
                                     fillMode: Image.PreserveAspectCrop
                                     asynchronous: true
                                     smooth: true
+                                }
+
+                                AppSpinner {
+                                    anchors.centerIn: parent
+                                    size: 16
+                                    lineWidth: 2
+                                    color: root.mutedColor
+                                    running: thumbImage.status === Image.Loading
+                                    visible: running
+                                }
+
+                                Label {
+                                    visible: thumbImage.status === Image.Error
+                                    anchors.centerIn: parent
+                                    text: qsTr("No preview")
+                                    color: root.mutedColor
+                                    font.pixelSize: 8
                                 }
 
                                 Rectangle {
@@ -276,6 +315,12 @@ Item {
                                         font.pixelSize: 9
                                         font.bold: true
                                     }
+                                }
+
+                                MouseArea {
+                                    anchors.fill: parent
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: photoViewer.openWithImages(root.propPhotos, index)
                                 }
                             }
 
@@ -566,5 +611,12 @@ Item {
                 }
             }
         }
+    }
+
+    AppImageLightbox {
+        id: photoViewer
+        anchors.fill: parent
+        title: root.propTitle
+        onClosed: { }
     }
 }
