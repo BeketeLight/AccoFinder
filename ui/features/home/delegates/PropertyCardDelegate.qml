@@ -13,7 +13,8 @@ Item {
     property string location: ""
     property real price: 0
     property string imageUrl: ""
-    property string status: "Available"      // Available, Booked, Pending
+    property string imageUrls: ""
+    property string status: "PENDING"      // Available, Booked, Pending
     property bool isVerified: false
 
     signal clicked
@@ -21,10 +22,6 @@ Item {
 
     width: 180
     height: 265
-
-    function navigateTopropertyDetails() {
-        NavUtils.push(Qt.resolvedUrl("./PropertyDelegateDetails.qml"));
-    }
 
     // Card background
     Rectangle {
@@ -99,15 +96,16 @@ Item {
                     anchors.topMargin: 5
                     height: 22
                     radius: 6
-
                     color: {
-                        switch (root.status.toLowerCase()) {
-                        case "available":
-                            return "#DCFCE7";   // light green
-                        case "booked":
-                            return "#FEE2E2";   // light red
-                        case "pending":
-                            return "#FEF3C7";   // light orange
+                        switch (root.status.toLocaleLowerCase()) {
+                        case "VERIFIED":
+                            return "#DCFCE7";
+                        case "PENDING":
+                            return "#FEF3C7";
+                        case "REJECTED":
+                            return "#FEE2E2";
+                        case "DRAFT":
+                            return "#F3F4F6";
                         default:
                             return "#F3F4F6";
                         }
@@ -115,19 +113,19 @@ Item {
 
                     Label {
                         anchors.centerIn: parent
-                        text: root.status
                         font.pixelSize: 11
                         font.bold: true
                         leftPadding: 8
                         rightPadding: 8
+                        text: root.status === "VERIFIED" ? "Verified" : root.status === "PENDING" ? "Pending" : root.status === "REJECTED" ? "Rejected" : "Draft"
                         color: {
-                            switch (root.status.toLowerCase()) {
-                            case "available":
-                                return "#16A34A";   // Success green
-                            case "booked":
-                                return "#DC2626";   // Error red
-                            case "pending":
-                                return "#D97706";   // Warning orange
+                            switch (root.status.toLocaleLowerCase()) {
+                            case "VERIFIED":
+                                return "#16A34A";
+                            case "PENDING":
+                                return "#D97706";
+                            case "REJECTED":
+                                return "#DC2626";
                             default:
                                 return "#6B7280";
                             }
@@ -229,9 +227,18 @@ Item {
     MouseArea {
         anchors.fill: parent
         onClicked: {
-            root.navigateTopropertyDetails();
+            NavUtils.push(Qt.resolvedUrl("./PropertyDelegateDetails.qml"), {
+                propertyId: root.propertyId,
+                propertyTitle: root.title,
+                location: root.location,
+                price: root.price,
+                status: root.status,
+                isVerified: root.isVerified,
+                imageUrl: root.imageUrl,
+                imageUrls: root.imageUrls
+                // add more later (description, agentName, etc.)
+            });
             root.clicked();
         }
-        cursorShape: Qt.PointingHandCursor
     }
 }

@@ -38,6 +38,11 @@ Page {
     property string size: "85 m²"
     property string agentName: "John Banda"
     property string agentPhone: "+265 999 123 456"
+    property string imageUrl: ""
+    property string imageUrls: ""
+    property var imageList: root.imageUrls ? root.imageUrls.split(",") : []
+
+    // etc.
 
     // Signals
     signal backRequested
@@ -76,15 +81,28 @@ Page {
 
                     // Example images (replace with real model later)
                     Repeater {
-                        model: 4
-                        Rectangle {
-                            color: "#F5F5F5"
-                            Label {
-                                anchors.centerIn: parent
-                                text: "🏠\nPhoto " + (index + 1)
-                                font.pixelSize: 28
-                                horizontalAlignment: Text.AlignHCenter
-                                color: "#9CA3AF"
+                        model: root.imageList          // list of image urls
+
+                        Image {
+                            required property string modelData   // each url
+                            // or required property var model if using objects
+
+                            source: modelData
+                            fillMode: Image.PreserveAspectCrop
+                            asynchronous: true
+
+                            // Optional placeholder while loading
+                            Rectangle {
+                                anchors.fill: parent
+                                color: "#F5F5F5"
+                                visible: parent.status !== Image.Ready
+
+                                Label {
+                                    anchors.centerIn: parent
+                                    text: "🏠"
+                                    font.pixelSize: 40
+                                    opacity: 0.3
+                                }
                             }
                         }
                     }
@@ -292,7 +310,7 @@ Page {
                         flat: true
                         onClicked: {
                             if (root.agentPhone.length > 0)
-                                Qt.openUrlExternally("tel:" + root.agentPhone)
+                                Qt.openUrlExternally("tel:" + root.agentPhone);
                         }
 
                         background: Rectangle {
@@ -359,7 +377,7 @@ Page {
                 }
                 onClicked: {
                     if (root.agentPhone.length > 0)
-                        Qt.openUrlExternally("tel:" + root.agentPhone)
+                        Qt.openUrlExternally("tel:" + root.agentPhone);
                 }
             }
 

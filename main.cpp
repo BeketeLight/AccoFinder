@@ -25,6 +25,7 @@
 #include "src/presentation/viewmodels/agentapplicationviewmodel.h"
 #include "src/presentation/viewmodels/paymentsoverviewviewmodel.h"
 #include "src/presentation/viewmodels/adminnotificationsviewmodel.h"
+#include "src/presentation/models/propertylistmodel.h"
 #include "src/services/cachedimageprovider.h"
 #include "src/services/socketioclient.h"
 #include <QQmlContext>
@@ -88,6 +89,7 @@ int main(int argc, char *argv[])
     PaymentsOverviewViewModel paymentsOverviewViewModel;
     AdminNotificationsViewModel adminNotificationsViewModel;
     SocketIOClient socketIOClient;
+    PropertyListModel propertyListModel;
     //ContextProperty
     engine.rootContext()->setContextProperty("AppSettings", &appSettings);
     engine.rootContext()->setContextProperty("AppPermission", &appPermission);
@@ -113,6 +115,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("PaymentsOverviewViewModel", &paymentsOverviewViewModel);
     engine.rootContext()->setContextProperty("AdminNotificationsViewModel", &adminNotificationsViewModel);
     engine.rootContext()->setContextProperty("SocketIO", &socketIOClient);
+    engine.rootContext()->setContextProperty("PropertyListModel", &propertyListModel);
 
     // Realtime notifications: start the Socket.IO stream once signed in, stop it
     // on logout, and refresh the notification model immediately when a

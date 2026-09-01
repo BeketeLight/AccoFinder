@@ -206,6 +206,7 @@ qt_add_qml_module(appAccoFinder
 
     RESOURCES
         Rescources.qrc
+        QML_FILES ui/features/home/models/PropertyListModel.qml
 )
 
 # ─────────────────────────────────────────────────────────────

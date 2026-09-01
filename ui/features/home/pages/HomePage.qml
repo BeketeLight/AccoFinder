@@ -61,40 +61,53 @@ Page {
             }
         }
 
-        // 2. Property Grid
-        GridView {
-            id: propertyGrid
+        Item {
             Layout.fillWidth: true
-            Layout.fillHeight: true          // ← THIS IS THE KEY
-            Layout.leftMargin: 12
-            Layout.rightMargin: 12
+            Layout.fillHeight: true
+            // 2. Property Grid
+            GridView {
+                id: propertyGrid
+                anchors.fill: parent         // ← Important!
+                anchors.leftMargin: 12
+                anchors.rightMargin: 12
+                anchors.topMargin: 8
 
-            cellWidth: (width - 12) / 2
-            cellHeight: 280
-            clip: true
+                cellWidth: (width - 12) / 2
+                cellHeight: 280
+                clip: true
+                visible: count > 0
 
-            model: PropertyListModel {}     // your dummy model
+                model: PropertyListModel {}     // your dummy model
 
-            delegate: Item {
-                width: propertyGrid.cellWidth
-                height: propertyGrid.cellHeight
+                delegate: Item {
+                    width: propertyGrid.cellWidth
+                    height: propertyGrid.cellHeight
 
-                PropertyCardDelegate {
-                    anchors.centerIn: parent
-                    width: parent.width - 8
-                    height: parent.height - 12
+                    PropertyCardDelegate {
+                        anchors.centerIn: parent
+                        width: parent.width - 8
+                        height: parent.height - 12
 
-                    propertyId: model.propertyId
-                    title: model.title
-                    location: model.location
-                    price: model.price
-                    imageUrl: model.imageUrl
-                    status: model.status
-                    isVerified: model.isVerified
+                        propertyId: model.propertyId
+                        title: model.title
+                        location: model.location
+                        price: model.price
+                        imageUrl: model.imageUrl
+                        imageUrls: model.imageUrls
+                        status: model.status
+                        isVerified: model.isVerified
 
-                    onClicked: console.log("Clicked:", model.propertyId)
-                    onFavoriteClicked: console.log("Favorite:", model.propertyId)
+                        onClicked: console.log("Clicked:", model.propertyId)
+                        onFavoriteClicked: console.log("Favorite:", model.propertyId)
+                    }
                 }
+            }
+            // Empty state
+            Label {
+                anchors.centerIn: parent
+                text: "No Properties Found"
+                visible: propertyGrid.count === 0
+                font.pixelSize: 18
             }
         }
     }
