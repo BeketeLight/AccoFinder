@@ -152,6 +152,7 @@ PropertyDto PropertyDto::fromJson(
     dto.landlordPhone = json["landlordPhone"].toString();
     dto.propertyType = json["propertyType"].toString();
     dto.verificationStatus = json["verificationStatus"].toString();
+    dto.verificationReason = json["verificationReason"].toString();
     dto.isActive = json["isActive"].toBool(true);
     dto.rooms = json["rooms"].toArray();
 
@@ -189,6 +190,7 @@ QJsonObject PropertyDto::toJson() const
     json["landlordPhone"] = landlordPhone;
     json["propertyType"] = propertyType;
     json["verificationStatus"] = verificationStatus;
+    json["verificationReason"] = verificationReason;
     json["isActive"] = isActive;
 
     if (!rooms.isEmpty())
@@ -224,6 +226,7 @@ Property* PropertyDto::toDomainModel() const
     property->setLandlordPhone(landlordPhone);
     property->setPropertyType(propertyType);
     property->setVerificationStatus(verificationStatus);
+    property->setVerificationReason(verificationReason);
     property->setActive(isActive);
     property->setRoomCount(rooms.size());
 
@@ -273,6 +276,8 @@ QJsonObject PropertyDto::toUpdateJson() const
         json["landlordPhone"] = landlordPhone;
     if(!verificationStatus.isEmpty())
         json["verificationStatus"] = verificationStatus;
+    if(!verificationReason.isEmpty())
+        json["verificationReason"] = verificationReason;
     json["isActive"] = isActive;
 
     return json;

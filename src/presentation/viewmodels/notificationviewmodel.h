@@ -5,13 +5,13 @@
 #include <QList>
 #include "presentation/models/notificationlistmodel.h"
 #include "models/notification.h"
+#include "services/notificationserviceimpl.h"
 
 // NotificationViewModel exposes a QML-facing NotificationListModel.
 //
-// The fetch/data-layer wiring (repository -> controller) is intentionally left
-// thin here: getNotifications() currently completes with an empty model so the
-// UI renders its empty state. Implement the underlying fetch (GEFEND of
-// repository / controller) and populate the model via setNotifications().
+// The fetch/data-layer wiring is handled here: getNotifications() asks the
+// NotificationServiceImpl for this user's notifications and populates the model
+// via setNotifications().
 class NotificationViewModel : public QObject
 {
     Q_OBJECT
@@ -24,12 +24,15 @@ public:
     bool isLoading() const { return m_isLoading; }
 
     Q_INVOKABLE void getNotifications();
+    Q_INVOKABLE void markAllRead();
+    Q_INVOKABLE void markRead(const QString& id);
 
 private:
     void setLoading(bool loading);
 
     bool m_isLoading = false;
     NotificationListModel *m_listModel = nullptr;
+    NotificationServiceImpl *m_service = nullptr;
 
 signals:
     void isLoadingChanged(bool isLoading);

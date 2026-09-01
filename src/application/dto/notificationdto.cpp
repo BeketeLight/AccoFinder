@@ -23,14 +23,24 @@ NotificationDto NotificationDto::fromJson(const QJsonObject &json)
     NotificationDto dto;
 
     dto.m_id =
-        json["id"].toString();
+        json["_id"].toString();
+    if (dto.m_id.isEmpty())
+        dto.m_id = json["id"].toString();
 
     dto.m_message =
         json["message"].toString();
 
+    // The backend notification carries a human-readable `title` and a `kind`
+    // (ADMIN|CLIENT|AGENT|SYSTEM). The model's `type` doubles as the display
+    // title, so prefer `title` and fall back to `kind`.
     dto.m_type =
-        json["type"].toString();
+        json["title"].toString();
+    if (dto.m_type.isEmpty())
+        dto.m_type = json["kind"].toString();
 
+    // The backend flags read state with `isRead` (bool); fold it into the
+    // model's `status` so NotificationListModel::unreadCount() stays correct.
+    dto.m_status = json["isRead"].toBool() ? "READ" : "UNREAD";
 
     return dto;
 
@@ -64,6 +74,7 @@ Notification *NotificationDto::toDomainModel() const
     notification->setId(m_id);
     notification->setMessage(m_message);
     notification->setType(m_type);
+    notification->setStatus(m_status);
 
     return notification;
 }

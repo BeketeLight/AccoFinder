@@ -280,6 +280,7 @@ set(ACCOFINDER_LOGIC_SOURCES
     src/repositories/impl/agentrepositoryimpl.h src/repositories/impl/agentrepositoryimpl.cpp
     src/repositories/interfaces/IDashboardRepository.h src/repositories/impl/dashboardrepositoryimpl.h src/repositories/impl/dashboardrepositoryimpl.cpp
     src/repositories/interfaces/IPaymentsOverviewRepository.h src/repositories/impl/paymentsoverviewrepositoryimpl.h src/repositories/impl/paymentsoverviewrepositoryimpl.cpp
+    src/repositories/interfaces/IAdminNotificationsRepository.h src/repositories/impl/adminnotificationsrepositoryimpl.h src/repositories/impl/adminnotificationsrepositoryimpl.cpp
     src/core/utils/EPropertyStatus.h
     src/core/utils/EBookingStatus.h
     src/core/utils/EPaymentStatus.h
@@ -310,6 +311,7 @@ set(ACCOFINDER_LOGIC_SOURCES
     src/presentation/viewmodels/agentviewmodel.h src/presentation/viewmodels/agentviewmodel.cpp
     src/presentation/viewmodels/agentapplicationviewmodel.h src/presentation/viewmodels/agentapplicationviewmodel.cpp
     src/presentation/viewmodels/paymentsoverviewviewmodel.h src/presentation/viewmodels/paymentsoverviewviewmodel.cpp
+    src/presentation/viewmodels/adminnotificationsviewmodel.h src/presentation/viewmodels/adminnotificationsviewmodel.cpp
 )
 
 add_library(AccoFinderLogic STATIC ${ACCOFINDER_LOGIC_SOURCES})

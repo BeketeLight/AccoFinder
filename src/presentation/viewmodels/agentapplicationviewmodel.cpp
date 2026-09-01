@@ -37,10 +37,10 @@ void AgentApplicationViewModel::approve(const QString &applicationId)
     m_agentController->approveApplication(applicationId);
 }
 
-void AgentApplicationViewModel::reject(const QString &applicationId)
+void AgentApplicationViewModel::reject(const QString &applicationId, const QString &reason)
 {
     setLoading(true);
-    m_agentController->rejectApplication(applicationId);
+    m_agentController->rejectApplication(applicationId, reason);
 }
 
 void AgentApplicationViewModel::updateNotes(const QString &applicationId, const QString &notes)

@@ -1,8 +1,9 @@
 #include "notificationserviceimpl.h"
+#include <QJsonArray>
 
-NotificationServiceImpl::NotificationServiceImpl()
+NotificationServiceImpl::NotificationServiceImpl(QObject *parent)
+    : INotificationRepository(parent)
 {
-
 }
 
 void NotificationServiceImpl::createNotification(QString id,QString message,QString type, QString status)
@@ -42,6 +43,26 @@ void NotificationServiceImpl::getNotification(const QString& id)
 
 }
 
+void NotificationServiceImpl::getUserNotifications()
+{
+    APIClient::instance().get(
+        "/notifications",
+        [this](bool success,
+               const QJsonObject& response)
+        {
+            QList<Notification*> notifications;
+            if (success && response.contains("data")) {
+                const QJsonArray data = response["data"].toArray();
+                for (const QJsonValue& value : data) {
+                    NotificationDto dto = NotificationDto::fromJson(value.toObject());
+                    notifications.append(dto.toDomainModel());
+                }
+            }
+            emit notificationsRetrieved(notifications);
+        }, false
+    );
+}
+
 void NotificationServiceImpl::markReadNotification(const QString &id, QString& status)
 {
     NotificationDto dto(status);
@@ -61,21 +82,21 @@ void NotificationServiceImpl::markReadNotification(const QString &id, QString& s
 
 }
 
-void NotificationServiceImpl::markAllReadNotification(QString& status)
+void NotificationServiceImpl::markAllReadNotification()
 {
-    NotificationDto dto(status);
     APIClient::instance().patch(
         "/notifications/read/all",
-        dto.toUpdateJson(),
+        QJsonObject(),
         [this](bool success,
                const QJsonObject& response)
         {
+            Q_UNUSED(response);
             if(success)
             {
                 emit allNotificationsMarkedRead();
             }
 
-        }
+        }, false
         );
 
 }

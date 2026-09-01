@@ -22,7 +22,7 @@ public:
     Q_INVOKABLE void setAllAgentsCommission(double commissionRate);
     Q_INVOKABLE void getAgentApplications();
     Q_INVOKABLE void approveApplication(const QString& applicationId);
-    Q_INVOKABLE void rejectApplication(const QString& applicationId);
+    Q_INVOKABLE void rejectApplication(const QString& applicationId, const QString& reason = QString());
     Q_INVOKABLE void updateApplicationNotes(const QString& applicationId, const QString& notes);
 
 signals:

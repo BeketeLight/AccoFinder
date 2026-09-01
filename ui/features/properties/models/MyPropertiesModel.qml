@@ -64,11 +64,13 @@ Item {
         return null
     }
 
-    function setPropertyStatus(propertyId, status) {
+    function setPropertyStatus(propertyId, status, reason = "") {
         for (var i = 0; i < propertiesModelId.count; i++) {
             var it = propertiesModelId.get(i)
             if (it.propertyId === propertyId) {
                 it.status = status
+                if (reason && String(reason).length > 0)
+                    it.rejectionReason = reason
                 propertiesModelId.set(i, it)
                 break
             }
@@ -105,6 +107,7 @@ Item {
                 village: it.village
             },
             verificationStatus: String(it.status),
+            rejectionReason: it.rejectionReason || "",
             amenities: it.propertyId ? PropertyViewModel.propertyListModel.amenitiesFor(it.propertyId) : [],
             isActive: true,
             price: it.price,
@@ -129,6 +132,7 @@ Item {
                 district: item.district, village: item.village,
                 price: item.price, status: item.status,
                 rooms: item.roomCount, matches: true,
+                rejectionReason: item.rejectionReason || "",
                 amenities: m.amenitiesFor(pid),
                 landlord: item.landlord || item.landlordPhone || "",
                 landlordPhone: item.landlordPhone || "",

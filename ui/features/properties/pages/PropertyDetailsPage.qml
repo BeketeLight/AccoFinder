@@ -34,6 +34,7 @@ Page {
     readonly property bool hasMonthlyPrice: root.monthlyPrice > 0
     // verificationStatus mirrors the backend enum: PENDING / VERIFIED / REJECTED ("" = local draft)
     property string verificationStatus: "PENDING"
+    property string rejectionReason: ""
     property string descriptionTextValue: qsTr("Modern three-bedroom house with spacious rooms, tiled floors and a perimeter fence. Close to shops and public transport.")
     property string landlordName: qsTr("Bryan Phiri")
     property string landlordPhone: qsTr("+265 999 123 456")
@@ -173,6 +174,8 @@ Page {
         root.photosList = p.photos ? p.photos : []
         if (p.verificationStatus !== undefined)
             root.verificationStatus = String(p.verificationStatus)
+        if (p.rejectionReason !== undefined)
+            root.rejectionReason = String(p.rejectionReason)
         if (p.draftKey !== undefined)
             root.draftKey = String(p.draftKey)
         root.loadRooms()
@@ -1525,6 +1528,42 @@ Page {
                                 font.bold: true
                             }
                         }
+                    }
+                }
+            }
+
+            Rectangle {
+                visible: !root.editMode && String(root.verificationStatus).toUpperCase() === "REJECTED"
+                       && root.rejectionReason.length > 0
+                Layout.fillWidth: true
+                implicitHeight: rejectionReasonColumn.implicitHeight + 28
+                radius: 12
+                color: root.softRedColor
+                border.color: "#FECACA"
+                border.width: 1
+
+                ColumnLayout {
+                    id: rejectionReasonColumn
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.top: parent.top
+                    anchors.margins: 12
+                    spacing: 4
+
+                    Label {
+                        text: qsTr("Rejection reason")
+                        font.pixelSize: 11
+                        font.bold: true
+                        color: "#B91C1C"
+                    }
+
+                    Label {
+                        id: rejectedReasonLabel
+                        Layout.fillWidth: true
+                        text: root.rejectionReason
+                        color: "#7F1D1D"
+                        font.pixelSize: 13
+                        wrapMode: Text.WordWrap
                     }
                 }
             }

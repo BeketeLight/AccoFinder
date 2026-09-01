@@ -104,7 +104,7 @@ void PropertyRepositoryImpl::updateProperty(const QString& houseId, const QStrin
 
 }
 
-void PropertyRepositoryImpl::updatePropertyStatus(const QString &houseId, const QString &status)
+void PropertyRepositoryImpl::updatePropertyStatus(const QString &houseId, const QString &status, const QString &reason)
 {
     if (houseId.isEmpty()) {
         emit propertyError(QStringLiteral("houseId cannot be empty"));
@@ -121,6 +121,8 @@ void PropertyRepositoryImpl::updatePropertyStatus(const QString &houseId, const 
 
     QJsonObject payload;
     payload["verificationStatus"] = normalized;
+    if (normalized == QStringLiteral("REJECTED"))
+        payload["verificationReason"] = reason.trimmed();
 
     APIClient::instance().put(
         "/house-listing/" + houseId,

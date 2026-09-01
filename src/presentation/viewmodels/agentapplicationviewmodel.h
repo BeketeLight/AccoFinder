@@ -21,7 +21,7 @@ public:
 
     Q_INVOKABLE void getApplications();
     Q_INVOKABLE void approve(const QString& applicationId);
-    Q_INVOKABLE void reject(const QString& applicationId);
+    Q_INVOKABLE void reject(const QString& applicationId, const QString& reason = QString());
     Q_INVOKABLE void updateNotes(const QString& applicationId, const QString& notes);
     Q_INVOKABLE QVariantMap findApplication(const QString& applicationId) const;
 

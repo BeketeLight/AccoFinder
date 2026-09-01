@@ -88,14 +88,14 @@ void AgentController::approveApplication(const QString &applicationId)
     m_repository->approveApplication(applicationId);
 }
 
-void AgentController::rejectApplication(const QString &applicationId)
+void AgentController::rejectApplication(const QString &applicationId, const QString &reason)
 {
     if (applicationId.isEmpty()) {
         emit agentError("applicationId cannot be empty");
         return;
     }
     setLoading(true);
-    m_repository->rejectApplication(applicationId);
+    m_repository->rejectApplication(applicationId, reason);
 }
 
 void AgentController::updateApplicationNotes(const QString &applicationId, const QString &notes)

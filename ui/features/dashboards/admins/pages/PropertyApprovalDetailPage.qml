@@ -58,6 +58,30 @@ Item {
         root.propRooms = root.propertyId ? RoomViewModel.roomsForProperty(root.propertyId) : []
     }
 
+    function confirmReject() {
+        rejectReasonField.text = ""
+        rejectError.visible = false
+        rejectDialog.open()
+    }
+
+    function doReject() {
+        var reason = rejectReasonField.text.trim()
+        if (reason.length < 5) {
+            rejectError.visible = true
+            return
+        }
+        rejectError.visible = false
+        if (root.listingsModel)
+            root.listingsModel.setPropertyStatus(root.propertyId, "REJECTED", reason)
+        // Persist the decision (with the reason) on the backend so it survives a
+        // refresh. setPropertyStatus only edits the local list.
+        PropertyViewModel.updatePropertyStatus(root.propertyId, "REJECTED", reason)
+        console.log("Approval:", root.propertyId, "-> REJECTED")
+        root.decisionMade(root.propertyId, root.propTitle, false)
+        root.goBackRequested()
+        rejectDialog.close()
+    }
+
     // Amenities come from the property document (via C++). Fetching them here
     // keeps them authoritative and avoids QML ListModel/Array.isArray fragility.
     function syncAmenities() {
@@ -574,17 +598,8 @@ Item {
                         border.width: 1
                     }
 
-                    onClicked: {
-                        if (root.listingsModel)
-                            root.listingsModel.setPropertyStatus(root.propertyId, "REJECTED")
-                        // Persist the decision on the backend so it survives a
-                        // refresh. setPropertyStatus only edits the local list.
-                        PropertyViewModel.updatePropertyStatus(root.propertyId, "REJECTED")
-                        console.log("Approval:", root.propertyId, "-> REJECTED")
-                        root.decisionMade(root.propertyId, root.propTitle, false)
-                        root.goBackRequested()
+                    onClicked: root.confirmReject()
                     }
-                }
 
                 Button {
                     id: approveButton
@@ -626,5 +641,113 @@ Item {
         anchors.fill: parent
         title: root.propTitle
         onClosed: { }
+    }
+
+    Dialog {
+        id: rejectDialog
+        modal: true
+        width: Math.min(parent ? parent.width - 40 : 320, 360)
+        anchors.centerIn: parent
+        padding: 18
+        title: qsTr("Reject property")
+
+        contentItem: ColumnLayout {
+            spacing: 12
+
+            Label {
+                Layout.fillWidth: true
+                text: qsTr("Tell the agent what to fix so they can resubmit.")
+                wrapMode: Text.WordWrap
+                font.pixelSize: 12
+                color: "#374151"
+            }
+
+            Rectangle {
+                Layout.fillWidth: true
+                implicitHeight: rejectReasonField.implicitHeight + 20
+                radius: 8
+                color: "#FFFFFF"
+                border.color: rejectReasonField.activeFocus || rejectError.visible ? root.primaryColor
+                                      : root.borderColor
+                border.width: rejectReasonField.activeFocus || rejectError.visible ? 2 : 1
+
+                TextArea {
+                    id: rejectReasonField
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.top: parent.top
+                    anchors.margins: 10
+                    placeholderText: qsTr("Reason for rejection...")
+                    wrapMode: TextArea.Wrap
+                    font.pixelSize: 12
+                    color: root.textColor
+                    background: Item {}
+                    onTextChanged: {
+                        rejectError.visible = false
+                    }
+                }
+            }
+
+            Label {
+                id: rejectError
+                visible: false
+                Layout.fillWidth: true
+                text: qsTr("Add a reason (at least a few words) so the agent can fix it.")
+                color: root.dangerColor
+                font.pixelSize: 11
+            }
+
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: 10
+
+                Button {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 42
+                    text: qsTr("Cancel")
+
+                    contentItem: Label {
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        text: qsTr("Cancel")
+                        color: root.textColor
+                        font.pixelSize: 13
+                    }
+
+                    background: Rectangle {
+                        radius: 8
+                        color: root.surfaceColor
+                        border.color: root.borderColor
+                        border.width: 1
+                    }
+
+                    onClicked: rejectDialog.reject()
+                }
+
+                Button {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 42
+                    text: qsTr("Reject")
+
+                    contentItem: Label {
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        text: qsTr("Reject")
+                        color: "#B91C1C"
+                        font.pixelSize: 13
+                        font.bold: true
+                    }
+
+                    background: Rectangle {
+                        radius: 8
+                        color: root.softRedColor
+                        border.color: "#FECACA"
+                        border.width: 1
+                    }
+
+                    onClicked: root.doReject()
+                }
+            }
+        }
     }
 }

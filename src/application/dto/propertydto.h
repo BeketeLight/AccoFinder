@@ -75,6 +75,7 @@ public:
     QString landlordPhone;
     QString propertyType;
     QString verificationStatus;
+    QString verificationReason;
     QJsonArray rooms;
     bool isActive = false;
     const QString costCategory;

@@ -3,7 +3,15 @@
 NotificationViewModel::NotificationViewModel(QObject *parent)
     : QObject(parent)
     , m_listModel(new NotificationListModel(this))
-{}
+    , m_service(new NotificationServiceImpl(this))
+{
+    connect(m_service, &NotificationServiceImpl::notificationsRetrieved,
+            this, [this](QList<Notification*> notifications) {
+        m_listModel->setNotifications(notifications);
+        setLoading(false);
+        emit notificationsLoaded();
+    });
+}
 
 void NotificationViewModel::setLoading(bool loading)
 {
@@ -16,10 +24,16 @@ void NotificationViewModel::setLoading(bool loading)
 void NotificationViewModel::getNotifications()
 {
     setLoading(true);
+    m_service->getUserNotifications();
+}
 
-    // Data-layer wiring TODO (yours): fetch notifications from the backend and
-    // populate the model via m_listModel->setNotifications(...). Until then this
-    // completes immediately with an empty model so the UI shows its empty state.
-    setLoading(false);
-    emit notificationsLoaded();
+void NotificationViewModel::markAllRead()
+{
+    m_service->markAllReadNotification();
+}
+
+void NotificationViewModel::markRead(const QString& id)
+{
+    QString status = "READ";
+    m_service->markReadNotification(id, status);
 }

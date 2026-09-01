@@ -35,11 +35,12 @@ Item {
         return AgentApplicationViewModel.findApplication(applicationId)
     }
 
-    function setStatus(applicationId, status) {
+    function setStatus(applicationId, status, reason) {
+        reason = reason || ""
         if (status === "Approved")
             AgentApplicationViewModel.approve(applicationId)
         else if (status === "Rejected")
-            AgentApplicationViewModel.reject(applicationId)
+            AgentApplicationViewModel.reject(applicationId, reason)
     }
 
     function updateNotes(applicationId, notes) {

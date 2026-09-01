@@ -88,6 +88,9 @@ QVariant PropertyListModel::data(const QModelIndex &index, int role) const
         case RoomCountRole:
             return property->getRoomCount();
 
+        case RejectionReasonRole:
+            return property->getVerificationReason();
+
     }
 
     // FIXME: Implement me!
@@ -116,7 +119,8 @@ QHash<int, QByteArray> PropertyListModel::roleNames() const
         {VerificationStatusRole, "verificationStatus"},
         {IsActiveRole, "isActive"},
         {PropertyTypeRole, "propertyType"},
-        {RoomCountRole, "roomCount"}
+        {RoomCountRole, "roomCount"},
+        {RejectionReasonRole, "rejectionReason"}
     };
     return mapping;
 }
@@ -208,6 +212,7 @@ QVariantMap PropertyListModel::at(int index) const
     row["propertyType"] = data(idx, PropertyTypeRole);
     row["active"] = data(idx, IsActiveRole);
     row["roomCount"] = data(idx, RoomCountRole);
+    row["rejectionReason"] = data(idx, RejectionReasonRole);
     return row;
 }
 

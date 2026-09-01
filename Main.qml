@@ -77,6 +77,19 @@ ApplicationWindow {
         }
     }
 
+    // Lightweight REST polling for the notification bell badge: refresh the
+    // logged-in user's notifications periodically so the unread count stays
+    // current without requiring a manual pull-to-refresh.
+    Timer {
+        interval: 30000
+        repeat: true
+        running: true
+        onTriggered: {
+            if (AppSettings.isLoggedIn())
+                NotificationViewModel.getNotifications()
+        }
+    }
+
     ColumnLayout{
         anchors.fill: parent
         spacing: 0

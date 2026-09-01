@@ -130,6 +130,36 @@ Item {
                         anchors.top: parent.top
                         spacing: 0
 
+                        Button {
+                            visible: root.notificationsModel.unreadCount > 0
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: 36
+                            text: qsTr("Mark all as read")
+                            flat: true
+
+                            contentItem: Label {
+                                horizontalAlignment: Text.AlignHCenter
+                                verticalAlignment: Text.AlignVCenter
+                                text: qsTr("Mark all as read")
+                                color: root.primaryColor
+                                font.pixelSize: 12
+                                font.bold: true
+                            }
+
+                            background: Rectangle {
+                                color: root.softBlueColor
+                            }
+
+                            onClicked: {
+                                NotificationViewModel.markAllRead()
+                                // Give the backend a beat to persist, then pull
+                                // the fresh list so the badge and rows update.
+                                Qt.callLater(function() {
+                                    NotificationViewModel.getNotifications()
+                                })
+                            }
+                        }
+
                         Repeater {
                             model: root.notificationsModel
 
@@ -143,6 +173,19 @@ Item {
                                     Layout.fillWidth: true
                                     implicitHeight: notifRow.implicitHeight + 20
                                     color: model.unread ? root.softBlueColor : "transparent"
+
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: {
+                                            if (model.unread) {
+                                                NotificationViewModel.markRead(model.id)
+                                                Qt.callLater(function() {
+                                                    NotificationViewModel.getNotifications()
+                                                })
+                                            }
+                                        }
+                                    }
 
                                     RowLayout {
                                         id: notifRow

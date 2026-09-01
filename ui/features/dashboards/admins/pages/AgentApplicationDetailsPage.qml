@@ -17,6 +17,7 @@ Item {
     property string preferredArea: ""
     property string appliedDate: ""
     property string adminNotes: ""
+    property string rejectReason: ""
     property string status: "Pending"
 
     signal applicationApproved(var applicationId)
@@ -47,6 +48,7 @@ Item {
         root.preferredArea = app.area
         root.appliedDate = app.appliedDate
         root.adminNotes = app.notes || ""
+        root.rejectReason = app.reason || ""
         root.status = app.status
         notesField.text = root.adminNotes
         root.notesSaved = true
@@ -57,6 +59,21 @@ Item {
         root.notesSaved = false
         notesHint.text = qsTr("Saving...")
         notesHint.visible = true
+    }
+
+    function confirmReject() {
+        var reason = rejectReasonField.text.trim()
+        if (reason.length < 5) {
+            rejectError.visible = true
+            return
+        }
+        rejectError.visible = false
+        root.applicationsListModel.setStatus(root.applicationId, "Rejected", reason)
+        root.status = "Rejected"
+        root.rejectReason = reason
+        console.log("Agent application rejected:", root.applicationId)
+        root.applicationRejected(root.applicationId)
+        rejectDialog.close()
     }
 
     Connections {
@@ -197,6 +214,40 @@ Item {
                             color: "#B91C1C"
                             font.pixelSize: 11
                             font.bold: true
+                        }
+                    }
+
+                    Rectangle {
+                        visible: root.status === "Rejected" && root.rejectReason.length > 0
+                        Layout.fillWidth: true
+                        implicitHeight: reasonLabel.contentHeight + 24
+                        radius: 10
+                        color: "#FEF2F2"
+                        border.color: "#FECACA"
+                        border.width: 1
+
+                        ColumnLayout {
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            anchors.top: parent.top
+                            anchors.margins: 12
+                            spacing: 4
+
+                            Label {
+                                text: qsTr("Rejection reason")
+                                font.pixelSize: 11
+                                font.bold: true
+                                color: "#B91C1C"
+                            }
+
+                            Label {
+                                id: reasonLabel
+                                Layout.fillWidth: true
+                                text: root.rejectReason
+                                color: "#7F1D1D"
+                                font.pixelSize: 12
+                                wrapMode: Text.WordWrap
+                            }
                         }
                     }
                 }
@@ -381,10 +432,9 @@ Item {
                     }
 
                     onClicked: {
-                        root.applicationsListModel.setStatus(root.applicationId, "Rejected")
-                        root.status = "Rejected"
-                        console.log("Agent application rejected:", root.applicationId)
-                        root.applicationRejected(root.applicationId)
+                        rejectReasonField.text = ""
+                        rejectError.visible = false
+                        rejectDialog.open()
                     }
                 }
 
@@ -416,6 +466,114 @@ Item {
                         console.log("Agent application approved:", root.applicationId)
                         root.applicationApproved(root.applicationId)
                     }
+                }
+            }
+        }
+    }
+
+    Dialog {
+        id: rejectDialog
+        modal: true
+        width: Math.min(parent ? parent.width - 40 : 320, 360)
+        anchors.centerIn: parent
+        padding: 18
+        title: qsTr("Reject application")
+
+        contentItem: ColumnLayout {
+            spacing: 12
+
+            Label {
+                Layout.fillWidth: true
+                text: qsTr("Tell the agent what to fix so they can resubmit.")
+                wrapMode: Text.WordWrap
+                font.pixelSize: 12
+                color: "#374151"
+            }
+
+            Rectangle {
+                Layout.fillWidth: true
+                implicitHeight: rejectReasonField.implicitHeight + 20
+                radius: 8
+                color: "#FFFFFF"
+                border.color: rejectReasonField.activeFocus || rejectError.visible ? root.primaryColor
+                                      : root.borderColor
+                border.width: rejectReasonField.activeFocus || rejectError.visible ? 2 : 1
+
+                TextArea {
+                    id: rejectReasonField
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.top: parent.top
+                    anchors.margins: 10
+                    placeholderText: qsTr("Reason for rejection...")
+                    wrapMode: TextArea.Wrap
+                    font.pixelSize: 12
+                    color: root.textColor
+                    background: Item {}
+                    onTextChanged: {
+                        rejectError.visible = false
+                    }
+                }
+            }
+
+            Label {
+                id: rejectError
+                visible: false
+                Layout.fillWidth: true
+                text: qsTr("Add a reason (at least a few words) so the agent can fix it.")
+                color: root.dangerColor
+                font.pixelSize: 11
+            }
+
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: 10
+
+                Button {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 42
+                    text: qsTr("Cancel")
+
+                    contentItem: Label {
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        text: qsTr("Cancel")
+                        color: root.textColor
+                        font.pixelSize: 13
+                    }
+
+                    background: Rectangle {
+                        radius: 8
+                        color: root.surfaceColor
+                        border.color: root.borderColor
+                        border.width: 1
+                    }
+
+                    onClicked: rejectDialog.reject()
+                }
+
+                Button {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 42
+                    text: qsTr("Reject")
+
+                    contentItem: Label {
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        text: qsTr("Reject")
+                        color: "#B91C1C"
+                        font.pixelSize: 13
+                        font.bold: true
+                    }
+
+                    background: Rectangle {
+                        radius: 8
+                        color: "#FEF2F2"
+                        border.color: "#FECACA"
+                        border.width: 1
+                    }
+
+                    onClicked: root.confirmReject()
                 }
             }
         }

@@ -17,7 +17,7 @@ public:
     void setAllAgentsCommission(double commissionRate) override;
     void getAgentApplications() override;
     void approveApplication(const QString& applicationId) override;
-    void rejectApplication(const QString& applicationId) override;
+    void rejectApplication(const QString& applicationId, const QString& reason = QString()) override;
     void updateApplicationNotes(const QString& applicationId, const QString& notes) override;
 
 signals:

@@ -17,7 +17,7 @@ public:
     virtual void setAllAgentsCommission(double commissionRate) = 0;
     virtual void getAgentApplications() = 0;
     virtual void approveApplication(const QString& applicationId) = 0;
-    virtual void rejectApplication(const QString& applicationId) = 0;
+    virtual void rejectApplication(const QString& applicationId, const QString& reason = QString()) = 0;
     virtual void updateApplicationNotes(const QString& applicationId, const QString& notes) = 0;
     virtual ~IAgentRepository() {}
 };

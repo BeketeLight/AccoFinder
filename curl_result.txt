@@ -1,0 +1,6 @@
+announce-admin:        000
+history-admin:         000
+client-list:           000
+client-announce(403?): 000
+client-count:          000
+no-auth-count(401?):   000

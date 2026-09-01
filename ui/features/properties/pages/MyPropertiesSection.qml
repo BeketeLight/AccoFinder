@@ -106,6 +106,7 @@ Item {
             },
             price: row.price,
             verificationStatus: row.verificationStatus,
+            rejectionReason: row.rejectionReason || "",
             propertyId: String(row.propertyId),
             isActive: true,
             amenities: m ? m.amenitiesFor(String(row.propertyId)) : [],
@@ -143,6 +144,7 @@ Item {
                 village: sp.village || "",
                 price: sp.price !== undefined ? sp.price : 0,
                 verificationStatus: sp.verificationStatus || "PENDING",
+                rejectionReason: sp.rejectionReason || "",
                 source: "server",
                 matches: true
             })
@@ -432,6 +434,16 @@ Item {
                                     if (s === "REJECTED") return "danger"
                                     return "neutral"
                                 }
+                            }
+
+                            Label {
+                                visible: String(model.verificationStatus || "").toUpperCase() === "REJECTED"
+                                       && model.rejectionReason && String(model.rejectionReason).length > 0
+                                Layout.fillWidth: true
+                                text: qsTr("Reason: %1").arg(model.rejectionReason)
+                                color: "#B91C1C"
+                                font.pixelSize: 11
+                                elide: Text.ElideRight
                             }
 
                             Item {

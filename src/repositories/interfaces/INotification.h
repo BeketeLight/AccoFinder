@@ -13,8 +13,9 @@ public:
         : QObject(parent) {}
     virtual void createNotification(QString id,QString message,QString type, QString status) = 0;
     virtual void getNotification(const QString& id) =0;
+    virtual void getUserNotifications() =0;
     virtual void markReadNotification( const QString& id,QString& status) =0;
-    virtual void markAllReadNotification(QString& status) =0;
+    virtual void markAllReadNotification() =0;
 
     virtual ~INotificationRepository() {}
 };

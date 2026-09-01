@@ -42,7 +42,7 @@ public:
                                     bool isActive);
     // Minimal status update used by the admin approve/reject flow. Persists the
     // new verificationStatus on the backend (not just the local list).
-    Q_INVOKABLE void updatePropertyStatus(const QString& houseId, const QString& status);
+    Q_INVOKABLE void updatePropertyStatus(const QString& houseId, const QString& status, const QString& reason = QString());
     Q_INVOKABLE void createProperty(const QString& title,
                                     const QString& description,
                                     double price,

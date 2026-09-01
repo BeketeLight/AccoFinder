@@ -24,6 +24,7 @@
 #include "src/presentation/viewmodels/agentviewmodel.h"
 #include "src/presentation/viewmodels/agentapplicationviewmodel.h"
 #include "src/presentation/viewmodels/paymentsoverviewviewmodel.h"
+#include "src/presentation/viewmodels/adminnotificationsviewmodel.h"
 #include "src/services/cachedimageprovider.h"
 #include <QQmlContext>
 #include <QTimer>
@@ -84,6 +85,7 @@ int main(int argc, char *argv[])
     AgentViewModel agentViewModel;
     AgentApplicationViewModel agentApplicationViewModel;
     PaymentsOverviewViewModel paymentsOverviewViewModel;
+    AdminNotificationsViewModel adminNotificationsViewModel;
     //ContextProperty
     engine.rootContext()->setContextProperty("AppSettings", &appSettings);
     engine.rootContext()->setContextProperty("AppPermission", &appPermission);
@@ -107,6 +109,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("AgentViewModel", &agentViewModel);
     engine.rootContext()->setContextProperty("AgentApplicationViewModel", &agentApplicationViewModel);
     engine.rootContext()->setContextProperty("PaymentsOverviewViewModel", &paymentsOverviewViewModel);
+    engine.rootContext()->setContextProperty("AdminNotificationsViewModel", &adminNotificationsViewModel);
     QObject::connect(
         &engine,
         &QQmlApplicationEngine::objectCreationFailed,

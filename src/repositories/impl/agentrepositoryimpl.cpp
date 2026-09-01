@@ -206,10 +206,11 @@ void AgentRepositoryImpl::approveApplication(const QString &applicationId)
     );
 }
 
-void AgentRepositoryImpl::rejectApplication(const QString &applicationId)
+void AgentRepositoryImpl::rejectApplication(const QString &applicationId, const QString &reason)
 {
     QJsonObject payload;
     payload["status"] = "Rejected";
+    payload["reason"] = reason;
 
     APIClient::instance().patch(
         "/agent-applications/" + applicationId + "/reject",

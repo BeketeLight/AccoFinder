@@ -20,6 +20,9 @@ Item {
     readonly property color successColor: "#16A34A"
     readonly property color dangerColor: "#DC2626"
 
+    property var pendingRejectId: ""
+    property var pendingRejectTitle: ""
+
     function refreshQueue() {
         queueModel.clear()
         for (var i = 0; i < root.listingsModel.propertiesModel.count; i++) {
@@ -36,6 +39,31 @@ Item {
             })
         }
         emptyState.visible = queueModel.count === 0
+    }
+
+    function confirmReject(propertyId, title) {
+        pendingRejectId = propertyId
+        pendingRejectTitle = title
+        rejectReasonField.text = ""
+        rejectError.visible = false
+        rejectDialog.open()
+    }
+
+    function doReject() {
+        var reason = rejectReasonField.text.trim()
+        if (reason.length < 5) {
+            rejectError.visible = true
+            return
+        }
+        rejectError.visible = false
+        root.listingsModel.setPropertyStatus(pendingRejectId, "REJECTED", reason)
+        // Persist the decision (with the reason) on the backend so it survives a
+        // refresh. setPropertyStatus only edits the local list.
+        PropertyViewModel.updatePropertyStatus(pendingRejectId, "REJECTED", reason)
+        console.log("Approval:", pendingRejectId, "-> REJECTED")
+        root.decisionMade(pendingRejectId, pendingRejectTitle, false)
+        root.refreshQueue()
+        rejectDialog.close()
     }
 
     ListModel { id: queueModel }
@@ -212,15 +240,7 @@ Item {
                                 border.width: 1
                             }
 
-                            onClicked: {
-                                root.listingsModel.setPropertyStatus(approvalRow.model.propertyId, "REJECTED")
-                                // Persist the decision on the backend so it survives a
-                                // refresh. setPropertyStatus only edits the local list.
-                                PropertyViewModel.updatePropertyStatus(approvalRow.model.propertyId, "REJECTED")
-                                console.log("Approval:", approvalRow.model.propertyId, "-> REJECTED")
-                                root.decisionMade(approvalRow.model.propertyId, approvalRow.model.title, false)
-                                root.refreshQueue()
-                            }
+                            onClicked: root.confirmReject(approvalRow.model.propertyId, approvalRow.model.title)
                         }
                     }
                 }
@@ -233,9 +253,116 @@ Item {
             Layout.fillWidth: true
             horizontalAlignment: Text.AlignHCenter
             text: qsTr("No properties waiting for verification.")
-            color: "#6B7280"
             font.pixelSize: 12
             topPadding: 10
+        }
+    }
+
+    Dialog {
+        id: rejectDialog
+        modal: true
+        width: Math.min(parent ? parent.width - 40 : 320, 360)
+        anchors.centerIn: parent
+        padding: 18
+        title: qsTr("Reject property")
+
+        contentItem: ColumnLayout {
+            spacing: 12
+
+            Label {
+                Layout.fillWidth: true
+                text: qsTr("Tell the agent what to fix so they can resubmit.")
+                wrapMode: Text.WordWrap
+                font.pixelSize: 12
+                color: "#374151"
+            }
+
+            Rectangle {
+                Layout.fillWidth: true
+                implicitHeight: rejectReasonField.implicitHeight + 20
+                radius: 8
+                color: "#FFFFFF"
+                border.color: rejectReasonField.activeFocus || rejectError.visible ? root.primaryColor
+                                      : "#E5E7EB"
+                border.width: rejectReasonField.activeFocus || rejectError.visible ? 2 : 1
+
+                TextArea {
+                    id: rejectReasonField
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.top: parent.top
+                    anchors.margins: 10
+                    placeholderText: qsTr("Reason for rejection...")
+                    wrapMode: TextArea.Wrap
+                    font.pixelSize: 12
+                    color: "#111827"
+                    background: Item {}
+                    onTextChanged: {
+                        rejectError.visible = false
+                    }
+                }
+            }
+
+            Label {
+                id: rejectError
+                visible: false
+                Layout.fillWidth: true
+                text: qsTr("Add a reason (at least a few words) so the agent can fix it.")
+                color: root.dangerColor
+                font.pixelSize: 11
+            }
+
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: 10
+
+                Button {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 42
+                    text: qsTr("Cancel")
+
+                    contentItem: Label {
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        text: qsTr("Cancel")
+                        color: "#111827"
+                        font.pixelSize: 13
+                    }
+
+                    background: Rectangle {
+                        radius: 8
+                        color: "#FFFFFF"
+                        border.color: "#E5E7EB"
+                        border.width: 1
+                    }
+
+                    onClicked: rejectDialog.reject()
+                }
+
+                Button {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 42
+                    text: qsTr("Reject")
+
+                    contentItem: Label {
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        text: qsTr("Reject")
+                        color: "#B91C1C"
+                        font.pixelSize: 13
+                        font.bold: true
+                    }
+
+                    background: Rectangle {
+                        radius: 8
+                        color: "#FEF2F2"
+                        border.color: "#FECACA"
+                        border.width: 1
+                    }
+
+                    onClicked: root.doReject()
+                }
+            }
         }
     }
 }

@@ -34,7 +34,8 @@ public:
         VerificationStatusRole,
         IsActiveRole,
         PropertyTypeRole,
-        RoomCountRole
+        RoomCountRole,
+        RejectionReasonRole
     };
     explicit PropertyListModel(QObject *parent = nullptr);
 

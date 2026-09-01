@@ -201,6 +201,16 @@ void Property::setVerificationStatus(const QString &status)
     m_verificationStatus = status;
 }
 
+QString Property::getVerificationReason() const
+{
+    return m_verificationReason;
+}
+
+void Property::setVerificationReason(const QString &reason)
+{
+    m_verificationReason = reason;
+}
+
 int Property::getRoomCount() const
 {
     return m_roomCount;

@@ -26,7 +26,7 @@ public:
                                 const QStringList& amenities, const QString& landlord,
                                 const QString& landlordPhone, const QString& verificationStatus,
                                 bool isActive) = 0;
-    virtual void updatePropertyStatus(const QString& houseId, const QString& status) = 0;
+    virtual void updatePropertyStatus(const QString& houseId, const QString& status, const QString& reason = QString()) = 0;
     virtual void deleteProperty(const QString& houseId) = 0;
     virtual void attachMedia(const QString& houseId, const QStringList& mediaIds) = 0;
 
