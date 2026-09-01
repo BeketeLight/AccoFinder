@@ -15,6 +15,7 @@ public:
     virtual void updateAgent(const QString& agentId, const QString& area, double commissionRate) = 0;
     virtual void setAgentActive(const QString& agentId, bool active) = 0;
     virtual void setAllAgentsCommission(double commissionRate) = 0;
+    virtual void getMyCommission() = 0;
     virtual void getAgentApplications() = 0;
     virtual void approveApplication(const QString& applicationId) = 0;
     virtual void rejectApplication(const QString& applicationId, const QString& reason = QString()) = 0;

@@ -26,6 +26,7 @@
 #include "src/presentation/viewmodels/paymentsoverviewviewmodel.h"
 #include "src/presentation/viewmodels/adminnotificationsviewmodel.h"
 #include "src/services/cachedimageprovider.h"
+#include "src/services/socketioclient.h"
 #include <QQmlContext>
 #include <QTimer>
 int main(int argc, char *argv[])
@@ -86,6 +87,7 @@ int main(int argc, char *argv[])
     AgentApplicationViewModel agentApplicationViewModel;
     PaymentsOverviewViewModel paymentsOverviewViewModel;
     AdminNotificationsViewModel adminNotificationsViewModel;
+    SocketIOClient socketIOClient;
     //ContextProperty
     engine.rootContext()->setContextProperty("AppSettings", &appSettings);
     engine.rootContext()->setContextProperty("AppPermission", &appPermission);
@@ -110,6 +112,27 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("AgentApplicationViewModel", &agentApplicationViewModel);
     engine.rootContext()->setContextProperty("PaymentsOverviewViewModel", &paymentsOverviewViewModel);
     engine.rootContext()->setContextProperty("AdminNotificationsViewModel", &adminNotificationsViewModel);
+    engine.rootContext()->setContextProperty("SocketIO", &socketIOClient);
+
+    // Realtime notifications: start the Socket.IO stream once signed in, stop it
+    // on logout, and refresh the notification model immediately when a
+    // "notification" event arrives (instead of waiting for the 30s poll).
+    auto startSocketForCurrentUser = [&socketIOClient]() {
+        const AppSettings& s = AppSettings::instance();
+        if (s.isLoggedIn() && !s.userId().isEmpty())
+            socketIOClient.start(s.userId(), s.userType(), s.token());
+    };
+    startSocketForCurrentUser();
+    QObject::connect(&authController, &AuthController::signInSucceded, &app,
+                     startSocketForCurrentUser);
+    QObject::connect(&authController, &AuthController::userLoggedOut,
+                     &socketIOClient, [&socketIOClient]() {
+        socketIOClient.stop();
+    });
+    QObject::connect(&socketIOClient, &SocketIOClient::notificationReceived,
+                     &notificationViewModel, &NotificationViewModel::getNotifications);
+    QObject::connect(&appSettings, &AppSettings::userSessionChanged,
+                     &app, startSocketForCurrentUser);
     QObject::connect(
         &engine,
         &QQmlApplicationEngine::objectCreationFailed,

@@ -47,6 +47,7 @@ Item {
         root.refreshing = true
         root.loading = true
         dashPage.dashboardModel.refreshAll()
+        AgentViewModel.getMyCommission()
     }
 
     // Called from each view model's onIsLoadingChanged once nothing is in

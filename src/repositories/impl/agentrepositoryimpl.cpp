@@ -1,5 +1,6 @@
 #include "agentrepositoryimpl.h"
 #include "services/apiclient.h"
+#include "core/utils/appsettings.h"
 #include <QJsonObject>
 #include <QJsonArray>
 
@@ -130,6 +131,40 @@ void AgentRepositoryImpl::setAgentActive(const QString &agentId, bool active)
             } else {
                 emit agentError(response.value("message").toString());
             }
+        }, false
+    );
+}
+
+void AgentRepositoryImpl::getMyCommission()
+{
+    // Fetch the signed-in user's own profile so the commission rate, phone and
+    // residential area always reflect the record stored in the backend (the
+    // values may have changed mid-session, and phone/area are never persisted
+    // at login). The profile page and dashboard hero read from AppSettings.
+    APIClient::instance().get(
+        "/users/me/profile",
+        [this](bool success, const QJsonObject& response)
+        {
+            double rate = 0.0;
+            if (success) {
+                const QJsonObject obj = response.value("data").toObject();
+                if (obj.value("commissionRate").isDouble()
+                    || obj.value("commissionRate").isString()) {
+                    rate = obj.value("commissionRate").toDouble();
+                }
+
+                const QString phone = obj.value("phone").toString();
+                if (!phone.isEmpty())
+                    AppSettings::instance().setPhone(phone);
+
+                // The area an agent provides at signup lives in
+                // residentialAddress (we never assign an area to an agent).
+                const QString area = obj.value("residentialAddress").toString();
+                if (!area.isEmpty())
+                    AppSettings::instance().setPreferredLocation(area);
+            }
+            AppSettings::instance().setCommissionRate(rate);
+            emit myCommissionUpdated(rate);
         }, false
     );
 }

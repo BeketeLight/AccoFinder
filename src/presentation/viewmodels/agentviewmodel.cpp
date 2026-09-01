@@ -11,6 +11,8 @@ AgentViewModel::AgentViewModel(QObject *parent)
             this, &AgentViewModel::onAgentUpdated);
     connect(m_agentController, &AgentController::agentError,
             this, &AgentViewModel::onAgentError);
+    connect(m_agentController, &AgentController::myCommissionUpdated,
+            this, &AgentViewModel::myCommissionUpdated);
 }
 
 void AgentViewModel::setLoading(bool loading)
@@ -43,6 +45,11 @@ void AgentViewModel::setAllAgentsCommission(double commissionRate)
 {
     setLoading(true);
     m_agentController->setAllAgentsCommission(commissionRate);
+}
+
+void AgentViewModel::getMyCommission()
+{
+    m_agentController->getMyCommission();
 }
 
 void AgentViewModel::addAgent(const QString &firstName, const QString &lastName,

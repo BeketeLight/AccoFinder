@@ -9,6 +9,7 @@ set(CMAKE_AUTOUIC ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Quick Core Network Gui)
 find_package(Qt6 REQUIRED COMPONENTS QuickControls2)
+find_package(Qt6 REQUIRED COMPONENTS WebSockets)
 
 qt_standard_project_setup(REQUIRES 6.10)
 
@@ -257,6 +258,7 @@ set(ACCOFINDER_LOGIC_SOURCES
     src/services/cachedimageprovider.h src/services/cachedimageprovider.cpp
     src/services/paymentgatewayimpl.h src/services/paymentgatewayimpl.cpp
     src/services/notificationserviceimpl.h src/services/notificationserviceimpl.cpp
+    src/services/socketioclient.h src/services/socketioclient.cpp
     src/services/emailservice.h src/services/emailservice.cpp
     src/repositories/interfaces/IBookingRepository.h
     src/repositories/interfaces/IPropertyRepository.h
@@ -322,7 +324,7 @@ target_include_directories(AccoFinderLogic
 )
 
 target_link_libraries(AccoFinderLogic
-    PUBLIC Qt6::Core Qt6::Network Qt6::Gui Qt6::Quick
+    PUBLIC Qt6::Core Qt6::Network Qt6::Gui Qt6::Quick Qt6::WebSockets
 )
 
 # ─────────────────────────────────────────────────────────────

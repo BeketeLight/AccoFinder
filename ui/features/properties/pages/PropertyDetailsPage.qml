@@ -6,6 +6,7 @@ import "../components"
 import "../../../components/inputs"
 import "../../../components/indicators"
 import "../../../components/cards"
+import "../../../components/dialogs"
 import "../../../utils" as UtilsModule
 
 Page {
@@ -1152,6 +1153,12 @@ Page {
                                         font.bold: true
                                     }
                                 }
+
+                                MouseArea {
+                                    anchors.fill: parent
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: photoViewer.openWithImages(root.photosList, index)
+                                }
                             }
 
                             Label {
@@ -1950,5 +1957,12 @@ Page {
                 onClicked: UtilsModule.NavigationUtils.navigateToPayments()
             }
         }
+    }
+
+    AppImageLightbox {
+        id: photoViewer
+        anchors.fill: parent
+        title: root.propertyTitleName
+        onClosed: { }
     }
 }

@@ -30,8 +30,11 @@ void UserRepositoryImpl::signIn(
                 QString userId = data["_id"].toString();
                 QString fullName = data["firstName"].toString() + " " + data["surname"].toString();
                 QString userEmail = data["email"].toString();
+                QString userPhone = data["phone"].toString();
                 QString residentialAddress = data["residentialAddress"].toString();
                 QString role = data["role"].toString();
+                double commissionRate = data["commissionRate"].isDouble()
+                    ? data["commissionRate"].toDouble() : 0.0;
 
                 // Parse tokens
                 QString accessToken = data["accessToken"].toString();
@@ -55,8 +58,10 @@ void UserRepositoryImpl::signIn(
                 AppSettings::instance().setIsLoggedIn(true);
                 AppSettings::instance().setUserName(fullName);
                 AppSettings::instance().setEmail(userEmail);
+                AppSettings::instance().setPhone(userPhone);
                 AppSettings::instance().setPreferredLocation(residentialAddress);
                 AppSettings::instance().setFilterLocation(residentialAddress);
+                AppSettings::instance().setCommissionRate(commissionRate);
 
                 // Keep the APIClient singleton's cached token in sync so every
                 // authenticated endpoint (dashboard stats, rooms, bookings, …)

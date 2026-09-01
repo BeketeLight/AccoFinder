@@ -280,12 +280,12 @@ Item {
                             }
                             readonly property bool isPrimary: typeof modelData === "object" && !!modelData.isPrimary
 
-                            width: 110
-                            height: 130
+                            width: 88
+                            height: 108
 
                             Rectangle {
-                                width: 110
-                                height: 110
+                                width: 88
+                                height: 88
                                 radius: 10
                                 color: root.softBlueColor
                                 clip: true
@@ -349,7 +349,7 @@ Item {
                             }
 
                             Label {
-                                y: 114
+                                y: 92
                                 width: parent.width
                                 text: isPrimary ? qsTr("Cover") : qsTr("Photo %1").arg(index + 1)
                                 color: root.mutedColor

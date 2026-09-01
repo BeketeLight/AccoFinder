@@ -28,6 +28,7 @@ Page {
     property string profileBank: ""
     property string profileAccount: ""
     property string profilePaymentMethod: "Mobile money"
+    property string profileCommission: ""
     property bool passwordChangeMode: false
     property string currentPassword: ""
     property string newPassword: ""
@@ -51,7 +52,15 @@ Page {
             return;
         }
 
+        // Keep the agent's own commission rate in sync with the backend so the
+        // profile shows the value actually stored in the user's record.
+        AgentViewModel.getMyCommission();
         loadProfile();
+    }
+
+    Connections {
+        target: AgentViewModel
+        function onMyCommissionUpdated() { root.refreshCommission() }
     }
 
     Flickable {
@@ -291,6 +300,28 @@ Page {
                     placeholder: "Add account number"
                     editable: root.editMode
                     onEdited: function(value) { root.profileAccount = value }
+                }
+            }
+
+            ProfileSection {
+                title: "Commission"
+                visible: {
+                    var role = String(AppSettings.userType()).toUpperCase()
+                    return role === "AGENT" || role === "ADMIN" || role === "SUPER_ADMIN"
+                }
+
+                FieldRow {
+                    label: "Commission rate"
+                    value: root.profileCommission
+                    placeholder: "Set by admin"
+                }
+
+                Label {
+                    Layout.fillWidth: true
+                    text: qsTr("Commission is set platform-wide by the admin and defaults to 10%.")
+                    color: root.mutedColor
+                    font.pixelSize: 12
+                    wrapMode: Text.WordWrap
                 }
             }
 
@@ -806,6 +837,11 @@ Page {
         }
     }
 
+    function refreshCommission() {
+        var rate = Number(AppSettings.commissionRate());
+        root.profileCommission = rate > 0 ? String(rate) + "%" : "10%";
+    }
+
     function loadProfile() {
         root.profileName = AppSettings.userName();
         root.profileEmail = AppSettings.email();
@@ -814,6 +850,7 @@ Page {
         root.profileBank = AppSettings.bankName();
         root.profileAccount = AppSettings.bankAccountNumber();
         root.profilePaymentMethod = AppSettings.paymentMethod();
+        root.refreshCommission();
     }
 
     function saveProfile() {

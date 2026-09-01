@@ -23,6 +23,7 @@ public:
     Q_INVOKABLE void updateAgent(const QString& agentId, const QString& area, double commissionRate);
     Q_INVOKABLE void setActive(const QString& agentId, bool active);
     Q_INVOKABLE void setAllAgentsCommission(double commissionRate);
+    Q_INVOKABLE void getMyCommission();
     Q_INVOKABLE void addAgent(const QString& firstName,
                               const QString& lastName,
                               const QString& email,
@@ -50,6 +51,7 @@ signals:
     void isLoadingChanged(bool isLoading);
     void agentError(const QString& error);
     void agentUpdatedSignal(const QString& agentId);
+    void myCommissionUpdated(double commissionRate);
 };
 
 #endif // AGENTVIEWMODEL_H

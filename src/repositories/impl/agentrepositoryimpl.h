@@ -15,6 +15,7 @@ public:
     void updateAgent(const QString& agentId, const QString& area, double commissionRate) override;
     void setAgentActive(const QString& agentId, bool active) override;
     void setAllAgentsCommission(double commissionRate) override;
+    void getMyCommission() override;
     void getAgentApplications() override;
     void approveApplication(const QString& applicationId) override;
     void rejectApplication(const QString& applicationId, const QString& reason = QString()) override;
@@ -29,6 +30,7 @@ signals:
     void applicationApproved(const QString& applicationId);
     void applicationRejected(const QString& applicationId);
     void applicationNotesUpdated(const QString& applicationId, const QString& notes);
+    void myCommissionUpdated(double commissionRate);
 };
 
 #endif // AGENTREPOSITORYIMPL_H

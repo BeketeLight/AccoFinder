@@ -20,6 +20,8 @@ AgentController::AgentController(QObject *parent)
             this, &AgentController::applicationRejected);
     connect(m_repository, &AgentRepositoryImpl::applicationNotesUpdated,
             this, &AgentController::applicationNotesUpdated);
+    connect(m_repository, &AgentRepositoryImpl::myCommissionUpdated,
+            this, &AgentController::myCommissionUpdated);
 }
 
 void AgentController::setLoading(bool loading)
@@ -70,6 +72,11 @@ void AgentController::setAllAgentsCommission(double commissionRate)
 {
     setLoading(true);
     m_repository->setAllAgentsCommission(commissionRate);
+}
+
+void AgentController::getMyCommission()
+{
+    m_repository->getMyCommission();
 }
 
 void AgentController::getAgentApplications()

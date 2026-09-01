@@ -112,8 +112,10 @@ Item {
             StatCard {
                 Layout.fillWidth: true
                 lableFontSize: 18
-                label: qsTr("Average commission")
-                valueText: Number(root.agentsModel.averageCommission).toFixed(1) + "%"
+                label: qsTr("Platform commission")
+                valueText: (root.agentsModel.averageCommission > 0
+                            ? Number(root.agentsModel.averageCommission).toFixed(1)
+                            : "10") + "%"
                 accentColor: root.warningColor
             }
         }

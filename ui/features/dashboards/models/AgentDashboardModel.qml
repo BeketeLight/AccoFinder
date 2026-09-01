@@ -4,7 +4,14 @@ Item {
     id: root
 
     property string agentName: AppSettings.isLoggedIn() && AppSettings.userName().length > 0 ? AppSettings.userName() : "Agent"
-    property double commissionRate: AppSettings.commissionRate()
+    // Commission rate defaults to 10% for agents when the backend hasn't set a
+    // value yet, so the hero never shows a confusing 0%. refreshTick makes the
+    // binding re-read AppSettings when the rate is fetched/updated mid-session.
+    property double commissionRate: (AppSettings.commissionRate() > 0 ? AppSettings.commissionRate() : 10) + refreshTick - refreshTick
+    // The agent's work area is the location they provided at signup (we never
+    // assign an area to an agent), stored in residentialAddress. refreshTick
+    // makes this re-read AppSettings after the profile fetch completes.
+    property string agentArea: (AppSettings.preferredLocation() || AppSettings.assignedArea() || "") + (refreshTick - refreshTick === 0 ? "" : "")
 
     // Real stats computed from the live C++ view models. When there is no data
     // yet these fall back to zero — no fake numbers are ever shown on cards.
@@ -290,6 +297,11 @@ Item {
     // Data is fetched by the owning screen (AgentsDashboardScreen drives
     // refreshAll() on entry and on pull-to-refresh), so we don't auto-load here
     // to avoid a redundant duplicate backend call on every screen entry.
+
+    Connections {
+        target: AgentViewModel
+        function onMyCommissionUpdated() { root.refreshStats() }
+    }
 
     Connections {
         target: DraftViewModel

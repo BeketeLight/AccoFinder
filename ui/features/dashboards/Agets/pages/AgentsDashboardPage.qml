@@ -129,7 +129,7 @@ Item {
                         Label {
                             id: areaLabel
                             anchors.centerIn: parent
-                            text: qsTr("Area: %1").arg(AppSettings.assignedArea() || "Not assigned")
+                            text: qsTr("Area: %1").arg(root.dashboardModel.agentArea || "Not assigned")
                             color: "#FFFFFF"
                             font.pixelSize: 11
                             font.bold: true
