@@ -532,7 +532,8 @@ Item {
                 phone: root.propOwnerPhone
                 accentColor: root.primaryColor
                 onCallRequested: function (number) {
-                    console.log("Call listed-by contact:", number)
+                    if (number && number.length > 0)
+                        Qt.openUrlExternally("tel:" + number)
                 }
             }
 
@@ -542,7 +543,8 @@ Item {
                 phone: root.propLandlordPhone
                 accentColor: root.successColor
                 onCallRequested: function (number) {
-                    console.log("Call landlord:", number)
+                    if (number && number.length > 0)
+                        Qt.openUrlExternally("tel:" + number)
                 }
             }
 

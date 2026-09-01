@@ -42,6 +42,10 @@ Item {
             AgentApplicationViewModel.reject(applicationId)
     }
 
+    function updateNotes(applicationId, notes) {
+        AgentApplicationViewModel.updateNotes(applicationId, notes)
+    }
+
     ListModel {
         id: applicationsModelId
     }

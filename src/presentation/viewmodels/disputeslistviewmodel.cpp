@@ -28,11 +28,11 @@ void DisputesListViewModel::raiseDispute(int index, const QString &raisedBy, con
     m_disputeController->raiseDispute(raisedBy, title, status, description);
 }
 
-void DisputesListViewModel::resolveDispute(int index, const QString &disputeId)
+void DisputesListViewModel::resolveDispute(int index, const QString &disputeId, const QString &status)
 {
     m_index = index;
     setLoading(true);
-    m_disputeController->resolveDispute(disputeId);
+    m_disputeController->resolveDispute(disputeId, status);
 }
 
 void DisputesListViewModel::getDisputes()

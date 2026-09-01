@@ -43,6 +43,10 @@ Item {
         }
     }
 
+    function setAllCommission(commissionRate) {
+        AgentViewModel.setAllAgentsCommission(commissionRate)
+    }
+
     function findAgent(agentId) {
         return AgentViewModel.findAgentById(agentId)
     }

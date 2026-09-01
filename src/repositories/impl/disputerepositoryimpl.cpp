@@ -70,9 +70,10 @@ void DisputeRepositoryImpl::raiseDispute(const QString& raisedBy,
 //     });
 //}
 
-void DisputeRepositoryImpl::resolveDispute(const QString& disputeId)
+void DisputeRepositoryImpl::resolveDispute(const QString& disputeId, const QString& status)
 {
     QJsonObject payload;
+    payload["status"] = status.isEmpty() ? "Resolved" : status;
 
     APIClient::instance().patch(
         "/disputes/" + disputeId + "/resolve",

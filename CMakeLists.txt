@@ -104,7 +104,6 @@ qt_add_qml_module(appAccoFinder
         #========FEATURE-DASHBOARD-AGENT-ADMIN--CLIENT========
         ui/features/dashboards/admins/pages/PropertyApprovalPage.qml
         ui/features/dashboards/admins/pages/PropertyApprovalDetailPage.qml
-        ui/features/dashboards/admins/pages/RegisterAgentPage.qml
         ui/features/dashboards/admins/pages/UserManagementPage.qml
         ui/features/dashboards/admins/screens/AdminsDashboardScreen.qml
         ui/features/dashboards/admins/pages/AdminsDashboardPage.qml
@@ -113,7 +112,6 @@ qt_add_qml_module(appAccoFinder
         ui/features/dashboards/admins/pages/DisputesManagementPage.qml
         ui/features/dashboards/admins/pages/SystemNotificationsPage.qml
         ui/features/dashboards/admins/screens/UserManagementScreen.qml
-        ui/features/dashboards/admins/screens/RegisterAgentScreen.qml
         ui/features/dashboards/admins/screens/AgentManagementScreen.qml
         ui/features/dashboards/admins/screens/PropertyApprovalScreen.qml
         ui/features/dashboards/admins/screens/PropertyApprovalDetailScreen.qml
@@ -280,6 +278,8 @@ set(ACCOFINDER_LOGIC_SOURCES
     src/repositories/impl/mediarepositoryimpl.h src/repositories/impl/mediarepositoryimpl.cpp
     src/repositories/impl/adminuserrepositoryimpl.h src/repositories/impl/adminuserrepositoryimpl.cpp
     src/repositories/impl/agentrepositoryimpl.h src/repositories/impl/agentrepositoryimpl.cpp
+    src/repositories/interfaces/IDashboardRepository.h src/repositories/impl/dashboardrepositoryimpl.h src/repositories/impl/dashboardrepositoryimpl.cpp
+    src/repositories/interfaces/IPaymentsOverviewRepository.h src/repositories/impl/paymentsoverviewrepositoryimpl.h src/repositories/impl/paymentsoverviewrepositoryimpl.cpp
     src/core/utils/EPropertyStatus.h
     src/core/utils/EBookingStatus.h
     src/core/utils/EPaymentStatus.h
@@ -297,6 +297,7 @@ set(ACCOFINDER_LOGIC_SOURCES
     src/presentation/models/notificationlistmodel.h src/presentation/models/notificationlistmodel.cpp
     src/presentation/models/userlistmodel.h src/presentation/models/userlistmodel.cpp
     src/presentation/models/agentlistmodel.h src/presentation/models/agentlistmodel.cpp
+    src/presentation/models/paymentslistmodel.h src/presentation/models/paymentslistmodel.cpp
     src/presentation/viewmodels/bookingviewmodel.h src/presentation/viewmodels/bookingviewmodel.cpp
     src/presentation/viewmodels/propertyviewmodel.h src/presentation/viewmodels/propertyviewmodel.cpp
     src/presentation/viewmodels/reviewviewmodel.h src/presentation/viewmodels/reviewviewmodel.cpp
@@ -308,6 +309,7 @@ set(ACCOFINDER_LOGIC_SOURCES
     src/presentation/viewmodels/userviewmodel.h src/presentation/viewmodels/userviewmodel.cpp
     src/presentation/viewmodels/agentviewmodel.h src/presentation/viewmodels/agentviewmodel.cpp
     src/presentation/viewmodels/agentapplicationviewmodel.h src/presentation/viewmodels/agentapplicationviewmodel.cpp
+    src/presentation/viewmodels/paymentsoverviewviewmodel.h src/presentation/viewmodels/paymentsoverviewviewmodel.cpp
 )
 
 add_library(AccoFinderLogic STATIC ${ACCOFINDER_LOGIC_SOURCES})

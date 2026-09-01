@@ -2,29 +2,19 @@
 
 DashboardController::DashboardController(QObject *parent)
     : QObject(parent),
-      m_userRepo(new AdminUserRepositoryImpl(this)),
-      m_agentRepo(new AgentRepositoryImpl(this)),
-      m_propertyRepo(new PropertyRepositoryImpl(this))
+      m_repository(new DashboardRepositoryImpl(this))
 {
-    connect(m_userRepo, &AdminUserRepositoryImpl::usersLoaded,
-            this, [this](QList<User*>& users) {
-        m_totalUsers = users.size();
-        qDeleteAll(users);
-        tryEmitStats();
+    connect(m_repository, &DashboardRepositoryImpl::statsFetched,
+            this, [this](const QJsonObject& stats) {
+        applyStats(stats);
+        setLoading(false);
+        emit statsUpdated();
     });
 
-    connect(m_agentRepo, &AgentRepositoryImpl::agentsLoaded,
-            this, [this](QList<Agent*>& agents) {
-        m_totalAgents = agents.size();
-        qDeleteAll(agents);
-        tryEmitStats();
-    });
-
-    connect(m_propertyRepo, &PropertyRepositoryImpl::propertiesLoaded,
-            this, [this](QList<Property*>& properties) {
-        m_totalProperties = properties.size();
-        qDeleteAll(properties);
-        tryEmitStats();
+    connect(m_repository, &DashboardRepositoryImpl::fetchError,
+            this, [this](const QString& error) {
+        setLoading(false);
+        emit dashboardError(error);
     });
 }
 
@@ -36,21 +26,20 @@ void DashboardController::setLoading(bool loading)
     }
 }
 
-void DashboardController::tryEmitStats()
+void DashboardController::applyStats(const QJsonObject& stats)
 {
-    m_pendingCount--;
-    if (m_pendingCount <= 0) {
-        setLoading(false);
-        emit statsUpdated();
-    }
+    m_totalUsers = stats.value("totalUsers").toInt();
+    m_totalAgents = stats.value("totalAgents").toInt();
+    m_totalProperties = stats.value("totalProperties").toInt();
+    m_pendingVerifications = stats.value("pendingVerifications").toInt();
+    m_totalBookings = stats.value("totalBookings").toInt();
+    m_totalBookingValue = stats.value("totalBookingValue").toDouble();
+    m_platformCommission = stats.value("platformCommission").toDouble();
+    m_openDisputes = stats.value("openDisputes").toInt();
 }
 
 void DashboardController::refreshStats()
 {
     setLoading(true);
-    m_pendingCount = 3;
-
-    m_userRepo->getUsers();
-    m_agentRepo->getAgents();
-    m_propertyRepo->getProperties();
+    m_repository->fetchStats();
 }

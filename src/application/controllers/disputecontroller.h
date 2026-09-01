@@ -16,7 +16,7 @@ public:
                                   const QString& title,
                                   const QString& status,
                                   const QString& description);
-    Q_INVOKABLE void resolveDispute(const QString& disputeId);
+    Q_INVOKABLE void resolveDispute(const QString& disputeId, const QString& status);
     Q_INVOKABLE void getDisputes();
 
 private:

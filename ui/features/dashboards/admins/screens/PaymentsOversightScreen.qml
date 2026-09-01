@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import "../pages"
+import "../../../../components/indicators"
 import "../../../../utils/NavigationUtils.js" as NavUtils
 
 Item {
@@ -14,6 +15,10 @@ Item {
     function goBack() { NavUtils.pop() }
 
     signal paymentAction(var action, var reference)
+
+    function refresh() {
+        PaymentsOverviewViewModel.refresh()
+    }
 
     Page {
         anchors.fill: parent
@@ -40,5 +45,18 @@ Item {
                 onPaymentAction: (action, reference) => root.paymentAction(action, reference)
             }
         }
+
+        // Non-blocking spinner while the payments overview is being fetched.
+        AppSpinner {
+            visible: PaymentsOverviewViewModel.isLoading
+            anchors.centerIn: parent
+            z: 20
+            size: 32
+            lineWidth: 3
+            color: "#2563EB"
+            running: PaymentsOverviewViewModel.isLoading
+        }
     }
+
+    Component.onCompleted: root.refresh()
 }

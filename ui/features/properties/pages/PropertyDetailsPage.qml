@@ -1582,7 +1582,8 @@ Page {
                     phone: root.ownerPhone
                     accentColor: root.primaryColor
                     onCallRequested: function (number) {
-                        console.log("Call listed-by contact:", number)
+                        if (number && number.length > 0)
+                            Qt.openUrlExternally("tel:" + number)
                     }
                 }
 
@@ -1593,7 +1594,8 @@ Page {
                     phone: root.landlordPhone
                     accentColor: root.secondaryColor
                     onCallRequested: function (number) {
-                        console.log("Call landlord:", number)
+                        if (number && number.length > 0)
+                            Qt.openUrlExternally("tel:" + number)
                     }
                 }
 

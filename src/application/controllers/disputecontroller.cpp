@@ -20,9 +20,9 @@ void DisputeController::raiseDispute(const QString& raisedBy,
     m_disputeRepository->raiseDispute(raisedBy,title,status,description);
 }
 
-void DisputeController::resolveDispute(const QString& disputeId)
+void DisputeController::resolveDispute(const QString& disputeId, const QString& status)
 {
-    m_disputeRepository->resolveDispute(disputeId);
+    m_disputeRepository->resolveDispute(disputeId, status);
 }
 
 void DisputeController::getDisputes()

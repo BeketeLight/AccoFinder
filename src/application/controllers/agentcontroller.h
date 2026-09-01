@@ -19,9 +19,11 @@ public:
     Q_INVOKABLE void getAgentById(const QString& agentId);
     Q_INVOKABLE void updateAgent(const QString& agentId, const QString& area, double commissionRate);
     Q_INVOKABLE void setAgentActive(const QString& agentId, bool active);
+    Q_INVOKABLE void setAllAgentsCommission(double commissionRate);
     Q_INVOKABLE void getAgentApplications();
     Q_INVOKABLE void approveApplication(const QString& applicationId);
     Q_INVOKABLE void rejectApplication(const QString& applicationId);
+    Q_INVOKABLE void updateApplicationNotes(const QString& applicationId, const QString& notes);
 
 signals:
     void agentsLoaded(QList<Agent*>& agents);
@@ -31,6 +33,7 @@ signals:
     void agentApplicationsLoaded(QList<Agent*>& applications);
     void applicationApproved(const QString& applicationId);
     void applicationRejected(const QString& applicationId);
+    void applicationNotesUpdated(const QString& applicationId, const QString& notes);
     void isLoadingChanged(bool isLoading);
 
 private:

@@ -176,7 +176,7 @@ ApplicationWindow {
                 else if (actionTitle === qsTr("User management"))
                     NavUtils.push(Qt.resolvedUrl("./ui/features/dashboards/admins/screens/UserManagementScreen.qml"))
                 else if (actionTitle === qsTr("Register agent"))
-                    NavUtils.push(Qt.resolvedUrl("./ui/features/dashboards/admins/screens/RegisterAgentScreen.qml"))
+                    NavUtils.push(Qt.resolvedUrl("./ui/features/dashboards/admins/screens/UserManagementScreen.qml"))
                 else if (actionTitle === qsTr("Dispute resolution"))
                     NavUtils.push(Qt.resolvedUrl("./ui/features/dashboards/admins/screens/DisputesScreen.qml"))
                 else if (actionTitle === qsTr("Payments oversight"))

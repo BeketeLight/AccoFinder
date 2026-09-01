@@ -18,6 +18,8 @@ AgentController::AgentController(QObject *parent)
             this, &AgentController::applicationApproved);
     connect(m_repository, &AgentRepositoryImpl::applicationRejected,
             this, &AgentController::applicationRejected);
+    connect(m_repository, &AgentRepositoryImpl::applicationNotesUpdated,
+            this, &AgentController::applicationNotesUpdated);
 }
 
 void AgentController::setLoading(bool loading)
@@ -64,6 +66,12 @@ void AgentController::setAgentActive(const QString &agentId, bool active)
     m_repository->setAgentActive(agentId, active);
 }
 
+void AgentController::setAllAgentsCommission(double commissionRate)
+{
+    setLoading(true);
+    m_repository->setAllAgentsCommission(commissionRate);
+}
+
 void AgentController::getAgentApplications()
 {
     setLoading(true);
@@ -88,4 +96,14 @@ void AgentController::rejectApplication(const QString &applicationId)
     }
     setLoading(true);
     m_repository->rejectApplication(applicationId);
+}
+
+void AgentController::updateApplicationNotes(const QString &applicationId, const QString &notes)
+{
+    if (applicationId.isEmpty()) {
+        emit agentError("applicationId cannot be empty");
+        return;
+    }
+    setLoading(true);
+    m_repository->updateApplicationNotes(applicationId, notes);
 }

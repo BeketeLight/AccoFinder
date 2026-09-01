@@ -14,8 +14,6 @@ Item {
     property bool showBack: true
 
     property AdminAgentApplicationsModel applicationsListModel: AdminAgentApplicationsModel {}
-    property AdminUsersModel usersModel: AdminUsersModel {}
-    property AdminAgentsModel agentsModel: AdminAgentsModel {}
 
     function goBack() { NavUtils.pop() }
 
@@ -45,9 +43,7 @@ Item {
                 onViewApplicationRequested: (applicationId) => {
                     NavUtils.push(Qt.resolvedUrl("AgentApplicationDetailsScreen.qml"), {
                         applicationId: applicationId,
-                        applicationsListModel: root.applicationsListModel,
-                        usersModel: root.usersModel,
-                        agentsModel: root.agentsModel
+                        applicationsListModel: root.applicationsListModel
                     })
                 }
             }

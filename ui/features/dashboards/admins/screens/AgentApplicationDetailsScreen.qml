@@ -14,8 +14,6 @@ Item {
 
     property string applicationId: ""
     property AdminAgentApplicationsModel applicationsListModel: AdminAgentApplicationsModel {}
-    property AdminUsersModel usersModel: AdminUsersModel {}
-    property AdminAgentsModel agentsModel: AdminAgentsModel {}
 
     function goBack() { NavUtils.pop() }
 
@@ -42,8 +40,6 @@ Item {
 
                 applicationId: root.applicationId
                 applicationsListModel: root.applicationsListModel
-                usersModel: root.usersModel
-                agentsModel: root.agentsModel
 
                 onApplicationApproved: NavUtils.pop()
                 onApplicationRejected: NavUtils.pop()

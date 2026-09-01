@@ -9,8 +9,6 @@ Item {
 
     property string pageTitle: qsTr("Application Details")
     property AdminAgentApplicationsModel applicationsListModel: AdminAgentApplicationsModel {}
-    property var usersModel: null
-    property var agentsModel: null
     property string applicationId: ""
 
     property string applicantName: ""
@@ -18,16 +16,13 @@ Item {
     property string applicantPhone: ""
     property string preferredArea: ""
     property string appliedDate: ""
-    property string nationalId: ""
-    property string licenseType: ""
-    property string experience: ""
-    property string motivation: ""
-    property string references: ""
-    property var documents: []
+    property string adminNotes: ""
     property string status: "Pending"
 
     signal applicationApproved(var applicationId)
     signal applicationRejected(var applicationId)
+
+    property bool notesSaved: false
 
     implicitWidth: 400
     implicitHeight: contentColumn.implicitHeight
@@ -51,33 +46,28 @@ Item {
         root.applicantPhone = app.phone
         root.preferredArea = app.area
         root.appliedDate = app.appliedDate
-        root.nationalId = app.nationalId
-        root.licenseType = app.licenseType
-        root.experience = app.experience
-        root.motivation = app.motivation
-        root.references = app.references
-        root.documents = app.documents
+        root.adminNotes = app.notes || ""
         root.status = app.status
+        notesField.text = root.adminNotes
+        root.notesSaved = true
     }
 
-    function docIcon(docType) {
-        if (docType.indexOf("ID") >= 0) return "\uD83E\uDEAA"
-        if (docType.indexOf("License") >= 0) return "\uD83D\uDCCB"
-        if (docType.indexOf("Proof") >= 0 || docType.indexOf("Address") >= 0) return "\uD83C\uDFE0"
-        if (docType.indexOf("Photo") >= 0) return "\uD83D\uDCF7"
-        return "\uD83D\uDCC4"
+    function saveNotes() {
+        root.applicationsListModel.updateNotes(root.applicationId, notesField.text)
+        root.notesSaved = false
+        notesHint.text = qsTr("Saving...")
+        notesHint.visible = true
     }
 
-    function docStatusColor(docStatus) {
-        if (docStatus === "Verified") return "#16A34A"
-        if (docStatus === "Pending") return "#D97706"
-        return "#6B7280"
-    }
-
-    function docStatusBg(docStatus) {
-        if (docStatus === "Verified") return "#ECFDF5"
-        if (docStatus === "Pending") return "#FFFBEB"
-        return "#F3F4F6"
+    Connections {
+        target: AgentApplicationViewModel
+        function onIsLoadingChanged(loading) {
+            if (!loading && notesHint.visible && notesHint.text === qsTr("Saving...")) {
+                root.notesSaved = true
+                notesHint.text = qsTr("Notes saved")
+                Qt.callLater(function() { notesHint.visible = false })
+            }
+        }
     }
 
     Component.onCompleted: {
@@ -225,7 +215,27 @@ Item {
                         Layout.fillWidth: true
                         spacing: 2
                         Label { text: qsTr("Phone"); font.pixelSize: 10; color: root.mutedColor }
-                        Label { text: root.applicantPhone.length > 0 ? root.applicantPhone : qsTr("Not provided"); font.pixelSize: 12; color: root.textColor; font.bold: true }
+                        RowLayout {
+                            Layout.fillWidth: true
+                            spacing: 6
+                            Label {
+                                Layout.fillWidth: true
+                                text: root.applicantPhone.length > 0 ? root.applicantPhone : qsTr("Not provided")
+                                font.pixelSize: 12
+                                color: root.textColor
+                                font.bold: true
+                                elide: Text.ElideRight
+                            }
+                            ToolButton {
+                                visible: root.applicantPhone.length > 0
+                                implicitHeight: 28
+                                implicitWidth: 28
+                                enabled: root.applicantPhone.length > 0
+                                text: qsTr("Call")
+                                font.pixelSize: 11
+                                onClicked: Qt.openUrlExternally("tel:" + root.applicantPhone)
+                            }
+                        }
                     }
 
                     ColumnLayout {
@@ -245,259 +255,7 @@ Item {
             }
         }
 
-        Rectangle {
-            Layout.fillWidth: true
-            implicitHeight: personalSection.implicitHeight + 28
-            radius: 12
-            color: "#FFFFFF"
-            border.color: root.borderColor
-            border.width: 1
-
-            ColumnLayout {
-                id: personalSection
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.top: parent.top
-                anchors.margins: 14
-                spacing: 12
-
-                Label {
-                    text: qsTr("Personal information")
-                    font.pixelSize: 14
-                    font.bold: true
-                    color: "#111827"
-                }
-
-                Rectangle {
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 1
-                    color: root.borderColor
-                }
-
-                RowLayout {
-                    Layout.fillWidth: true
-                    spacing: 16
-
-                    ColumnLayout {
-                        Layout.fillWidth: true
-                        spacing: 4
-                        Label { text: qsTr("National ID"); font.pixelSize: 11; color: root.mutedColor }
-                        Label { text: root.nationalId.length > 0 ? root.nationalId : qsTr("Not provided"); font.pixelSize: 13; color: root.textColor }
-                    }
-
-                    ColumnLayout {
-                        Layout.fillWidth: true
-                        spacing: 4
-                        Label { text: qsTr("License type"); font.pixelSize: 11; color: root.mutedColor }
-                        Label { text: root.licenseType.length > 0 ? root.licenseType : qsTr("Not provided"); font.pixelSize: 13; color: root.textColor }
-                    }
-                }
-
-                ColumnLayout {
-                    Layout.fillWidth: true
-                    spacing: 4
-                    Label { text: qsTr("Experience"); font.pixelSize: 11; color: root.mutedColor }
-                    Label {
-                        Layout.fillWidth: true
-                        text: root.experience.length > 0 ? root.experience : qsTr("Not provided")
-                        font.pixelSize: 13
-                        color: root.textColor
-                        wrapMode: Text.WordWrap
-                    }
-                }
-
-                ColumnLayout {
-                    Layout.fillWidth: true
-                    spacing: 4
-                    Label { text: qsTr("Why do you want to be an agent?"); font.pixelSize: 11; color: root.mutedColor }
-                    Label {
-                        Layout.fillWidth: true
-                        text: root.motivation.length > 0 ? root.motivation : qsTr("Not provided")
-                        font.pixelSize: 13
-                        color: root.textColor
-                        wrapMode: Text.WordWrap
-                    }
-                }
-
-                ColumnLayout {
-                    Layout.fillWidth: true
-                    spacing: 4
-                    Label { text: qsTr("References"); font.pixelSize: 11; color: root.mutedColor }
-                    Label {
-                        Layout.fillWidth: true
-                        text: root.references.length > 0 ? root.references : qsTr("Not provided")
-                        font.pixelSize: 13
-                        color: root.textColor
-                        wrapMode: Text.WordWrap
-                    }
-                }
-            }
-        }
-
-        Rectangle {
-            Layout.fillWidth: true
-            implicitHeight: docsSection.implicitHeight + 28
-            radius: 12
-            color: "#FFFFFF"
-            border.color: root.borderColor
-            border.width: 1
-
-            ColumnLayout {
-                id: docsSection
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.top: parent.top
-                anchors.margins: 14
-                spacing: 10
-
-                RowLayout {
-                    Layout.fillWidth: true
-                    spacing: 8
-
-                    Label {
-                        text: qsTr("Attached documents")
-                        font.pixelSize: 14
-                        font.bold: true
-                        color: "#111827"
-                    }
-
-                    Rectangle {
-                        visible: root.documents.length > 0
-                        implicitHeight: 20
-                        implicitWidth: docCountLabel.implicitWidth + 12
-                        radius: 10
-                        color: "#EFF6FF"
-
-                        Label {
-                            id: docCountLabel
-                            anchors.centerIn: parent
-                            text: String(root.documents.length)
-                            color: root.primaryColor
-                            font.pixelSize: 10
-                            font.bold: true
-                        }
-                    }
-                }
-
-                Rectangle {
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 1
-                    color: root.borderColor
-                }
-
-                Repeater {
-                    model: root.documents
-
-                    delegate: Rectangle {
-                        id: docRow
-                        required property var modelData
-                        required property int index
-                        Layout.fillWidth: true
-                        implicitHeight: docContent.implicitHeight + 16
-                        radius: 8
-                        color: root.surfaceColor
-                        border.color: root.borderColor
-                        border.width: 1
-
-                        RowLayout {
-                            id: docContent
-                            anchors.left: parent.left
-                            anchors.right: parent.right
-                            anchors.top: parent.top
-                            anchors.margins: 8
-                            spacing: 10
-
-                            Rectangle {
-                                Layout.preferredWidth: 34
-                                Layout.preferredHeight: 34
-                                radius: 8
-                                color: "#FFFFFF"
-                                border.color: root.borderColor
-                                border.width: 1
-
-                                Label {
-                                    anchors.centerIn: parent
-                                    text: root.docIcon(docRow.modelData.type)
-                                    font.pixelSize: 16
-                                }
-                            }
-
-                            ColumnLayout {
-                                Layout.fillWidth: true
-                                spacing: 2
-
-                                Label {
-                                    Layout.fillWidth: true
-                                    text: docRow.modelData.type
-                                    color: "#111827"
-                                    font.pixelSize: 12
-                                    font.bold: true
-                                    elide: Text.ElideRight
-                                }
-
-                                Label {
-                                    Layout.fillWidth: true
-                                    text: docRow.modelData.name
-                                    color: root.mutedColor
-                                    font.pixelSize: 10
-                                    elide: Text.ElideRight
-                                }
-                            }
-
-                            Rectangle {
-                                implicitHeight: 20
-                                implicitWidth: docStatusChip.implicitWidth + 12
-                                radius: 10
-                                color: root.docStatusBg(docRow.modelData.status)
-
-                                Label {
-                                    id: docStatusChip
-                                    anchors.centerIn: parent
-                                    text: docRow.modelData.status
-                                    color: root.docStatusColor(docRow.modelData.status)
-                                    font.pixelSize: 9
-                                    font.bold: true
-                                }
-                            }
-
-                            Rectangle {
-                                implicitHeight: 28
-                                implicitWidth: viewBtnLabel.implicitWidth + 16
-                                radius: 14
-                                color: viewDocArea.pressed ? "#DBEAFE" : "#EFF6FF"
-                                border.color: "#BFDBFE"
-                                border.width: 1
-
-                                Label {
-                                    id: viewBtnLabel
-                                    anchors.centerIn: parent
-                                    text: qsTr("View")
-                                    color: root.primaryColor
-                                    font.pixelSize: 10
-                                    font.bold: true
-                                }
-
-                                MouseArea {
-                                    id: viewDocArea
-                                    anchors.fill: parent
-                                    onClicked: console.log("View document:", docRow.modelData.name)
-                                }
-                            }
-                        }
-                    }
-                }
-
-                Label {
-                    visible: root.documents.length === 0
-                    Layout.fillWidth: true
-                    horizontalAlignment: Text.AlignHCenter
-                    text: qsTr("No documents attached.")
-                    color: root.mutedColor
-                    font.pixelSize: 12
-                    topPadding: 4
-                }
-            }
-        }
+        
 
         Rectangle {
             Layout.fillWidth: true
@@ -547,7 +305,40 @@ Item {
                         font.pixelSize: 12
                         color: root.textColor
                         background: Item {}
+                        onTextChanged: root.notesSaved = false
                     }
+                }
+
+                Label {
+                    id: notesHint
+                    Layout.fillWidth: true
+                    visible: false
+                    text: ""
+                    color: root.successColor
+                    font.pixelSize: 11
+                }
+
+                Button {
+                    id: saveNotesButton
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 40
+                    text: qsTr("Save notes")
+
+                    contentItem: Label {
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        text: saveNotesButton.text
+                        color: "#FFFFFF"
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+
+                    background: Rectangle {
+                        radius: 10
+                        color: saveNotesButton.down ? root.primaryDarkColor : root.primaryColor
+                    }
+
+                    onClicked: root.saveNotes()
                 }
             }
         }
@@ -618,42 +409,10 @@ Item {
                     }
 
                     onClicked: {
+                        // Approving persists the decision and promotes the
+                        // applicant's existing User to AGENT on the backend.
                         root.applicationsListModel.setStatus(root.applicationId, "Approved")
                         root.status = "Approved"
-
-                        if (root.usersModel) {
-                            var existing = root.usersModel.findByEmail(root.applicantEmail)
-                            if (existing) {
-                                root.usersModel.setUserRole(existing.userId, "AGENT")
-                                console.log("Updated existing user role to AGENT:", existing.userId, root.applicantEmail)
-                            } else {
-                                var newUserId = root.usersModel.addUser({
-                                    firstName: root.applicantName.split(" ")[0],
-                                    surname: root.applicantName.split(" ").slice(1).join(" "),
-                                    email: root.applicantEmail,
-                                    phone: root.applicantPhone,
-                                    role: "AGENT",
-                                    password: "12345678",
-                                    residentialAddress: root.preferredArea
-                                })
-                                console.log("Created new user account:", newUserId, root.applicantEmail, "password: 12345678")
-                            }
-                        }
-
-                        if (root.agentsModel) {
-                            var agentName = root.applicantName
-                            var agentEmail = root.applicantEmail
-                            var agentPhone = root.applicantPhone
-                            root.agentsModel.addAgent({
-                                name: agentName,
-                                email: agentEmail,
-                                phone: agentPhone,
-                                area: root.preferredArea,
-                                commissionRate: 10
-                            })
-                            console.log("Created agent record for:", agentName, "area:", root.preferredArea)
-                        }
-
                         console.log("Agent application approved:", root.applicationId)
                         root.applicationApproved(root.applicationId)
                     }

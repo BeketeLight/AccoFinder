@@ -19,7 +19,7 @@ public:
 
     //void getDisputes() override;    
 
-    void resolveDispute(const QString& disputeId) override;
+    void resolveDispute(const QString& disputeId, const QString& status) override;
     void getDisputes() override;
 
 private:

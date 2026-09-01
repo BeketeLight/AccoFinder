@@ -134,6 +134,27 @@ void AgentRepositoryImpl::setAgentActive(const QString &agentId, bool active)
     );
 }
 
+void AgentRepositoryImpl::setAllAgentsCommission(double commissionRate)
+{
+    QJsonObject payload;
+    payload["commissionRate"] = commissionRate;
+
+    // Refetch the full agent list after applying the bulk update so the UI
+    // reflects the new rate on every agent.
+    APIClient::instance().patch(
+        "/agents/commission",
+        payload,
+        [this](bool success, const QJsonObject& response)
+        {
+            if (success) {
+                getAgents();
+            } else {
+                emit agentError(response.value("message").toString());
+            }
+        }, false
+    );
+}
+
 void AgentRepositoryImpl::getAgentApplications()
 {
     APIClient::instance().get(
@@ -197,6 +218,27 @@ void AgentRepositoryImpl::rejectApplication(const QString &applicationId)
         {
             if (success) {
                 emit applicationRejected(applicationId);
+            } else {
+                emit agentError(response.value("message").toString());
+            }
+        }, false
+    );
+}
+
+void AgentRepositoryImpl::updateApplicationNotes(const QString &applicationId, const QString &notes)
+{
+    QJsonObject payload;
+    payload["notes"] = notes;
+
+    APIClient::instance().patch(
+        "/agent-applications/" + applicationId + "/notes",
+        payload,
+        [this, applicationId](bool success, const QJsonObject& response)
+        {
+            if (success) {
+                const QString notes = response.value(QStringLiteral("data"))
+                    .toObject().value("notes").toString();
+                emit applicationNotesUpdated(applicationId, notes);
             } else {
                 emit agentError(response.value("message").toString());
             }

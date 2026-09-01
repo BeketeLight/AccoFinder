@@ -39,6 +39,12 @@ void AgentViewModel::setActive(const QString &agentId, bool active)
     m_agentController->setAgentActive(agentId, active);
 }
 
+void AgentViewModel::setAllAgentsCommission(double commissionRate)
+{
+    setLoading(true);
+    m_agentController->setAllAgentsCommission(commissionRate);
+}
+
 void AgentViewModel::addAgent(const QString &firstName, const QString &lastName,
                               const QString &email, const QString &phone,
                               const QString &area, double commissionRate)

@@ -22,6 +22,7 @@ public:
     Q_INVOKABLE void getApplications();
     Q_INVOKABLE void approve(const QString& applicationId);
     Q_INVOKABLE void reject(const QString& applicationId);
+    Q_INVOKABLE void updateNotes(const QString& applicationId, const QString& notes);
     Q_INVOKABLE QVariantMap findApplication(const QString& applicationId) const;
 
     Q_INVOKABLE int pendingCount() const;
@@ -35,11 +36,13 @@ private:
     AgentListModel* m_applicationListModel = nullptr;
     AgentController* m_agentController = nullptr;
     QHash<QString, QString> m_statusById;
+    QHash<QString, QString> m_notesById;
 
 private slots:
     void onApplicationsLoaded(QList<Agent*>& applications);
     void onApplicationApproved(const QString& applicationId);
     void onApplicationRejected(const QString& applicationId);
+    void onApplicationNotesUpdated(const QString& applicationId, const QString& notes);
     void onAgentError(const QString& error);
 
 signals:

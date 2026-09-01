@@ -2,9 +2,8 @@
 #define DASHBOARDCONTROLLER_H
 
 #include <QObject>
-#include "repositories/impl/adminuserrepositoryimpl.h"
-#include "repositories/impl/agentrepositoryimpl.h"
-#include "repositories/impl/propertyrepositoryimpl.h"
+#include <QJsonObject>
+#include "repositories/impl/dashboardrepositoryimpl.h"
 
 class DashboardController : public QObject
 {
@@ -16,6 +15,8 @@ class DashboardController : public QObject
     Q_PROPERTY(int pendingVerifications READ pendingVerifications NOTIFY statsUpdated)
     Q_PROPERTY(int totalBookings READ totalBookings NOTIFY statsUpdated)
     Q_PROPERTY(double totalBookingValue READ totalBookingValue NOTIFY statsUpdated)
+    Q_PROPERTY(double platformCommission READ platformCommission NOTIFY statsUpdated)
+    Q_PROPERTY(int openDisputes READ openDisputes NOTIFY statsUpdated)
 public:
     explicit DashboardController(QObject *parent = nullptr);
 
@@ -26,6 +27,8 @@ public:
     int pendingVerifications() const { return m_pendingVerifications; }
     int totalBookings() const { return m_totalBookings; }
     double totalBookingValue() const { return m_totalBookingValue; }
+    double platformCommission() const { return m_platformCommission; }
+    int openDisputes() const { return m_openDisputes; }
 
     Q_INVOKABLE void refreshStats();
 
@@ -35,9 +38,7 @@ signals:
     void isLoadingChanged(bool isLoading);
 
 private:
-    AdminUserRepositoryImpl* m_userRepo = nullptr;
-    AgentRepositoryImpl* m_agentRepo = nullptr;
-    PropertyRepositoryImpl* m_propertyRepo = nullptr;
+    DashboardRepositoryImpl* m_repository = nullptr;
     bool m_isLoading = false;
     int m_totalUsers = 0;
     int m_totalProperties = 0;
@@ -45,10 +46,11 @@ private:
     int m_pendingVerifications = 0;
     int m_totalBookings = 0;
     double m_totalBookingValue = 0.0;
-    int m_pendingCount = 0;
+    double m_platformCommission = 0.0;
+    int m_openDisputes = 0;
 
     void setLoading(bool loading);
-    void tryEmitStats();
+    void applyStats(const QJsonObject& stats);
 };
 
 #endif // DASHBOARDCONTROLLER_H

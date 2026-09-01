@@ -53,7 +53,8 @@ Item {
     }
 
     function setStatus(disputeId, status) {
-        // Locally reflect the new status
+        // Optimistically reflect the new status locally, then persist via the
+        // real API when the server confirms the change.
         for (var r = 0; r < disputesModelId.count; r++) {
             var d = disputesModelId.get(r)
             if (d.disputeId === disputeId) {
@@ -62,6 +63,19 @@ Item {
                 break
             }
         }
+        var cppModel = DisputesListViewModel.disputesListModel
+        var idx = -1
+        if (cppModel) {
+            var n = cppModel.size()
+            for (var i = 0; i < n; i++) {
+                if (cppModel.at(i).id === disputeId) {
+                    idx = i
+                    break
+                }
+            }
+        }
+        if (idx >= 0)
+            DisputesListViewModel.resolveDispute(idx, disputeId, status)
         refresh()
     }
 

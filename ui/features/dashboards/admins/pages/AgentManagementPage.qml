@@ -11,7 +11,7 @@ Item {
     property AdminAgentsModel agentsModel: AdminAgentsModel {}
     property string pageTitle: qsTr("Agent Management")
 
-    signal createAgentRequested()
+    signal promoteAgentRequested()
     signal agentUpdated(var agentId)
 
     implicitWidth: 400
@@ -52,7 +52,7 @@ Item {
             Button {
                 id: newAgentButton
                 Layout.preferredHeight: 32
-                text: qsTr("+ New agent")
+                text: qsTr("+ Promote agent")
 
                 contentItem: Label {
                     horizontalAlignment: Text.AlignHCenter
@@ -70,7 +70,31 @@ Item {
                     border.width: 1
                 }
 
-                onClicked: root.createAgentRequested()
+                onClicked: root.promoteAgentRequested()
+            }
+
+            Button {
+                id: commissionButton
+                Layout.preferredHeight: 32
+                text: qsTr("Set commission")
+
+                contentItem: Label {
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    text: commissionButton.text
+                    color: root.warningColor
+                    font.pixelSize: 12
+                    font.bold: true
+                }
+
+                background: Rectangle {
+                    radius: 16
+                    color: commissionButton.down ? "#FEF3C7" : "#FFFBEB"
+                    border.color: "#FDE68A"
+                    border.width: 1
+                }
+
+                onClicked: commissionDialog.open()
             }
         }
 
@@ -391,6 +415,119 @@ Item {
                                         root.agentsModel.findAgent(editDialog.agentId)))
                         root.agentUpdated(editDialog.agentId)
                         editDialog.accept()
+                    }
+                }
+            }
+        }
+
+        background: Rectangle {
+            radius: 14
+            color: "#FFFFFF"
+        }
+    }
+
+    Dialog {
+        id: commissionDialog
+        modal: true
+        width: Math.min(parent ? parent.width - 40 : 320, 340)
+        anchors.centerIn: parent
+        padding: 18
+
+        title: qsTr("Set commission for all agents")
+
+        contentItem: ColumnLayout {
+            spacing: 12
+
+            Label {
+                Layout.fillWidth: true
+                text: qsTr("This applies the same commission rate to every agent on the platform.")
+                color: root.mutedColor
+                font.pixelSize: 12
+                wrapMode: Text.WordWrap
+            }
+
+            ColumnLayout {
+                Layout.fillWidth: true
+                spacing: 4
+
+                Label { text: qsTr("Commission rate (%)"); font.pixelSize: 12; font.bold: true; color: "#1F2937" }
+
+                TextField {
+                    id: commissionRateInput
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 44
+                    font.pixelSize: 13
+                    text: root.agentsModel.agentsModel.count > 0
+                          ? String(root.agentsModel.averageCommission)
+                          : "10"
+                    inputMethodHints: Qt.ImhDigitsOnly
+                    background: Rectangle {
+                        radius: 8
+                        border.color: commissionRateInput.activeFocus ? "#2563EB" : "#E5E7EB"
+                        border.width: 1
+                    }
+                }
+
+                Label { id: commissionError; visible: text.length > 0; text: ""; color: "#DC2626"; font.pixelSize: 11 }
+            }
+
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: 10
+
+                Button {
+                    id: commissionCancelButton
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 42
+                    text: qsTr("Cancel")
+
+                    contentItem: Label {
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        text: commissionCancelButton.text
+                        color: "#6B7280"
+                        font.pixelSize: 13
+                        font.bold: true
+                    }
+
+                    background: Rectangle {
+                        radius: 8
+                        color: commissionCancelButton.down ? "#F3F4F6" : "#FFFFFF"
+                        border.color: "#E5E7EB"
+                    }
+
+                    onClicked: commissionDialog.reject()
+                }
+
+                Button {
+                    id: commissionSaveButton
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 42
+                    text: qsTr("Apply to all")
+
+                    contentItem: Label {
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        text: commissionSaveButton.text
+                        color: "#FFFFFF"
+                        font.pixelSize: 13
+                        font.bold: true
+                    }
+
+                    background: Rectangle {
+                        radius: 8
+                        color: commissionSaveButton.down ? "#B45309" : root.warningColor
+                    }
+
+                    onClicked: {
+                        var rate = parseFloat(commissionRateInput.text)
+                        if (isNaN(rate) || rate < 0 || rate > 100) {
+                            commissionError.text = qsTr("Commission must be between 0 and 100")
+                            return
+                        }
+                        root.agentsModel.setAllCommission(Math.round(rate))
+                        commissionError.text = ""
+                        commissionDialog.accept()
                     }
                 }
             }

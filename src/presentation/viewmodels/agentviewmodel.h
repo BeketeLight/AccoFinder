@@ -22,6 +22,7 @@ public:
     Q_INVOKABLE void getAgents();
     Q_INVOKABLE void updateAgent(const QString& agentId, const QString& area, double commissionRate);
     Q_INVOKABLE void setActive(const QString& agentId, bool active);
+    Q_INVOKABLE void setAllAgentsCommission(double commissionRate);
     Q_INVOKABLE void addAgent(const QString& firstName,
                               const QString& lastName,
                               const QString& email,

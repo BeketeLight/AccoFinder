@@ -108,7 +108,7 @@ Drawer {
                         else if (model.kind === "approvals")
                             NavUtils.push(Qt.resolvedUrl("../../features/dashboards/admins/screens/PropertyApprovalScreen.qml"))
                         else if (model.kind === "agents-register")
-                            NavUtils.push(Qt.resolvedUrl("../../features/dashboards/admins/screens/RegisterAgentScreen.qml"))
+                            NavUtils.push(Qt.resolvedUrl("../../features/dashboards/admins/screens/UserManagementScreen.qml"))
                         else if (model.kind === "disputes")
                             NavUtils.push(Qt.resolvedUrl("../../features/dashboards/admins/screens/DisputesScreen.qml"))
                         else if (model.kind === "payments")

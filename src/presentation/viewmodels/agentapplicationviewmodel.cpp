@@ -11,6 +11,8 @@ AgentApplicationViewModel::AgentApplicationViewModel(QObject *parent)
             this, &AgentApplicationViewModel::onApplicationApproved);
     connect(m_agentController, &AgentController::applicationRejected,
             this, &AgentApplicationViewModel::onApplicationRejected);
+    connect(m_agentController, &AgentController::applicationNotesUpdated,
+            this, &AgentApplicationViewModel::onApplicationNotesUpdated);
     connect(m_agentController, &AgentController::agentError,
             this, &AgentApplicationViewModel::onAgentError);
 }
@@ -41,6 +43,12 @@ void AgentApplicationViewModel::reject(const QString &applicationId)
     m_agentController->rejectApplication(applicationId);
 }
 
+void AgentApplicationViewModel::updateNotes(const QString &applicationId, const QString &notes)
+{
+    setLoading(true);
+    m_agentController->updateApplicationNotes(applicationId, notes);
+}
+
 QVariantMap AgentApplicationViewModel::findApplication(const QString &applicationId) const
 {
     for (int i = 0; i < m_applicationListModel->rowCount(); ++i) {
@@ -54,6 +62,7 @@ QVariantMap AgentApplicationViewModel::findApplication(const QString &applicatio
             row["area"] = m_applicationListModel->data(idx, AgentListModel::AreaRole);
             row["status"] = m_applicationListModel->data(idx, AgentListModel::StatusRole);
             row["appliedDate"] = m_applicationListModel->data(idx, AgentListModel::AppliedDateRole);
+            row["notes"] = m_notesById.value(applicationId);
             return row;
         }
     }
@@ -104,6 +113,13 @@ void AgentApplicationViewModel::onApplicationRejected(const QString &application
 {
     setLoading(false);
     setApplicationStatus(applicationId, "Rejected");
+}
+
+void AgentApplicationViewModel::onApplicationNotesUpdated(const QString &applicationId, const QString &notes)
+{
+    setLoading(false);
+    m_notesById[applicationId] = notes;
+    emit applicationStatusChanged(applicationId, notes);
 }
 
 void AgentApplicationViewModel::onAgentError(const QString &error)

@@ -290,7 +290,10 @@ Page {
                     Button {
                         text: "Contact"
                         flat: true
-                        onClicked: root.contactRequested()
+                        onClicked: {
+                            if (root.agentPhone.length > 0)
+                                Qt.openUrlExternally("tel:" + root.agentPhone)
+                        }
 
                         background: Rectangle {
                             radius: 8
@@ -354,7 +357,10 @@ Page {
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                 }
-                onClicked: root.contactRequested()
+                onClicked: {
+                    if (root.agentPhone.length > 0)
+                        Qt.openUrlExternally("tel:" + root.agentPhone)
+                }
             }
 
             // Book Now (primary)

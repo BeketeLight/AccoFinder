@@ -14,7 +14,6 @@ Item {
 
     function goBack() { NavUtils.pop() }
 
-    signal createAgentRequested()
     signal agentUpdated(var agentId)
 
     Page {
@@ -39,7 +38,7 @@ Item {
                 y: 24
                 width: flick.width > 48 ? Math.min(flick.width - 24, 520) : implicitWidth
 
-                onCreateAgentRequested: NavUtils.push(Qt.resolvedUrl("RegisterAgentScreen.qml"))
+                onPromoteAgentRequested: NavUtils.push(Qt.resolvedUrl("UserManagementScreen.qml"))
                 onAgentUpdated: (agentId) => root.agentUpdated(agentId)
             }
         }
