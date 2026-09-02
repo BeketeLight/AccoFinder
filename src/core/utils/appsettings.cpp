@@ -84,6 +84,7 @@ void AppSettings::setStatusBarAppearance(const QColor &backgroundColor, bool dar
 
 void AppSettings::setToken(const QString &value) {
     m_settings.setValue("auth/token", value);
+    emit userSessionChanged();
 }
 QString AppSettings::token() const {
     return m_settings.value("auth/token").toString();

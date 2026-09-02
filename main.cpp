@@ -122,8 +122,11 @@ int main(int argc, char *argv[])
     // "notification" event arrives (instead of waiting for the 30s poll).
     auto startSocketForCurrentUser = [&socketIOClient]() {
         const AppSettings& s = AppSettings::instance();
-        if (s.isLoggedIn() && !s.userId().isEmpty())
+        if (s.isLoggedIn() && !s.userId().isEmpty()) {
+            qInfo() << "[Main] Starting socket for user:" << s.userId();
+            socketIOClient.stop();
             socketIOClient.start(s.userId(), s.userType(), s.token());
+        }
     };
     startSocketForCurrentUser();
     QObject::connect(&authController, &AuthController::signInSucceded, &app,
@@ -136,6 +139,10 @@ int main(int argc, char *argv[])
                      &notificationViewModel, &NotificationViewModel::getNotifications);
     QObject::connect(&appSettings, &AppSettings::userSessionChanged,
                      &app, startSocketForCurrentUser);
+    QObject::connect(&socketIOClient, &SocketIOClient::errorOccurred,
+                     &app, [](const QString& msg) {
+        qWarning() << "[Main] SocketIO error:" << msg;
+    });
     QObject::connect(
         &engine,
         &QQmlApplicationEngine::objectCreationFailed,
