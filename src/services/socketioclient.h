@@ -34,13 +34,14 @@ private slots:
     void onDisconnected();
     void onTextMessageReceived(const QString& message);
     void onSslErrors(const QList<QSslError>& errors);
+    void onSocketError(QAbstractSocket::SocketError error);
     void onReconnect();
 
 private:
-    void joinRooms();
     void sendEngineFrame(const QString& frame);
     void sendConnect();
     void handleSocketPayload(const QString& payload);
+    void cleanup();
 
     QWebSocket m_socket;
     QTimer m_reconnectTimer;
@@ -49,6 +50,7 @@ private:
     QString m_authToken;
     bool m_connected = false;
     bool m_engineOpen = false;
+    bool m_authFailed = false;
     QString m_sid;
 };
 
