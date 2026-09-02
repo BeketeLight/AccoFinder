@@ -60,11 +60,13 @@ Page {
                 console.log("Category selected:", name);
             }
         }
+        SuperDeals {}
 
         Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
             // 2. Property Grid
+
             GridView {
                 id: propertyGrid
                 anchors.fill: parent         // ← Important!
@@ -72,21 +74,21 @@ Page {
                 anchors.rightMargin: 12
                 anchors.topMargin: 8
 
-                cellWidth: (width - 12) / 2
-                cellHeight: 280
+                cellWidth: (width - 12) / 3
+                cellHeight: 130
                 clip: true
                 visible: count > 0
 
                 model: PropertyListModel {}     // your dummy model
 
                 delegate: Item {
-                    width: propertyGrid.cellWidth
-                    height: propertyGrid.cellHeight
+                    width: GridView.view.cellWidth
+                    height: GridView.view.cellHeight
 
                     PropertyCardDelegate {
                         anchors.centerIn: parent
-                        width: parent.width - 8
-                        height: parent.height - 12
+                        width: parent.width - 10
+                        height: parent.height - 10
 
                         propertyId: model.propertyId
                         title: model.title
@@ -96,9 +98,7 @@ Page {
                         imageUrls: model.imageUrls
                         status: model.status
                         isVerified: model.isVerified
-
                         onClicked: console.log("Clicked:", model.propertyId)
-                        onFavoriteClicked: console.log("Favorite:", model.propertyId)
                     }
                 }
             }

@@ -81,13 +81,12 @@ qt_add_qml_module(appAccoFinder
         ui/features/home/delegates/PropertyDelegateDetails.qml
         ui/features/home/models/PropertyCategoryModel.qml
         ui/features/home/models/PropertyListModel.qml
-        ui/features/home/pages/AddPropertyPage.qml
         ui/features/home/pages/FilterBottomSheet.qml
         ui/features/home/pages/MyPropertiesPage.qml
         ui/features/home/pages/PropertiesPage.qml
         ui/features/home/pages/PropertyDetailsPage.qml
         ui/features/home/pages/SearchPropertiesPage.qml
-        ui/features/home/pages/WelcomePage.qml
+        ui/features/home/pages/SuperDeals.qml
         ui/features/home/screens/PropertiesScreen.qml
         ui/features/home/screens/PropertyDetailScreen.qml
         ui/features/home/screens/SearchPropertiesScreen.qml
