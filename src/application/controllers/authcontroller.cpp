@@ -1,5 +1,6 @@
 #include "authcontroller.h"
 #include "core/utils/ERegistrationPurpose.h"
+#include "services/apiclient.h"
 
 AuthController::AuthController(QObject *parent)
     : QObject(parent)
@@ -51,6 +52,21 @@ AuthController::AuthController(QObject *parent)
             [this, stopLoading](const bool& status) {
         stopLoading();
         emit accountChecked(status);
+    });
+    connect(m_userRepository, &UserRepositoryImpl::profileFetched, this,
+            [this, stopLoading]() {
+        stopLoading();
+        emit profileFetched();
+    });
+    connect(m_userRepository, &UserRepositoryImpl::profileFetchFailed, this,
+            [this, stopLoading](const QString& error) {
+        stopLoading();
+        emit profileFetchFailed(error);
+    });
+    connect(m_userRepository, &UserRepositoryImpl::profileSaved, this,
+            [this, stopLoading](bool status) {
+        stopLoading();
+        emit profileSaved(status);
     });
 }
 
@@ -156,4 +172,41 @@ void AuthController::checkAccount(const QString &email)
 
     setLoading(true);
     m_userRepository->checkAccount(email.trimmed());
+}
+
+QString AuthController::googleAuthUrl() const
+{
+    // The APIClient's base URL is used so this stays correct across
+    // environments (staging / production).
+    return APIClient::instance().baseUrl() + "/auth/google";
+}
+
+void AuthController::signInWithGoogle(const QString &authUrl)
+{
+    QString url = authUrl.trimmed().isEmpty()
+        ? googleAuthUrl()
+        : authUrl;
+
+    setLoading(true);
+    m_userRepository->signInWithGoogle(url);
+}
+
+void AuthController::handleGoogleAuthUrl(const QString &url)
+{
+    setLoading(true);
+    m_userRepository->handleGoogleAuthUrl(url);
+}
+
+void AuthController::fetchProfile()
+{
+    setLoading(true);
+    m_userRepository->fetchProfile();
+}
+
+void AuthController::saveProfile(const QString &bankName,
+                                 const QString &bankAccountNumber,
+                                 const QString &paymentMethod)
+{
+    setLoading(true);
+    m_userRepository->saveProfile(bankName, bankAccountNumber, paymentMethod);
 }

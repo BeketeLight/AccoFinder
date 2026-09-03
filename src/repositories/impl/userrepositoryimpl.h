@@ -27,6 +27,17 @@ public:
     void verifyOtp(const QString& email, const QString& code, const QString& purpose) override;
     void checkAccount(const QString& email) override;
 
+    // Google OAuth
+    void signInWithGoogle(const QString& authUrl) override;
+    void handleGoogleAuthUrl(const QString& url) override;
+
+    // Profile (bank/payment) persistence
+    void fetchProfile() override;
+    void saveProfile(
+        const QString& bankName,
+        const QString& bankAccountNumber,
+        const QString& paymentMethod) override;
+
 signals:
         void signInSucceded(User* user);
         void signInFailed(const QString& error);
@@ -37,6 +48,9 @@ signals:
         void otpRequested(bool status);
         void otpVerified(bool status);
         void accountChecked(const bool& status);
+        void profileFetched();
+        void profileFetchFailed(const QString& error);
+        void profileSaved(bool status);
 };
 
 #endif // USERREPOSITORYIMPL_H

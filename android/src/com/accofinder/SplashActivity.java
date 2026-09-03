@@ -20,7 +20,7 @@ public class SplashActivity extends Activity {
             new ViewTreeObserver.OnPreDrawListener() {
                 @Override
                 public boolean onPreDraw() {
-                    Intent intent = new Intent(SplashActivity.this, QtActivity.class);
+                    Intent intent = new Intent(SplashActivity.this, DeepLinkActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                     startActivity(intent);
 
