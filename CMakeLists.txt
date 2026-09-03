@@ -7,6 +7,8 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
+list(APPEND CMAKE_PREFIX_PATH "/opt/Qt/6.11.1/gcc_64")
+
 find_package(Qt6 REQUIRED COMPONENTS Quick Core Network Gui)
 find_package(Qt6 REQUIRED COMPONENTS QuickControls2)
 find_package(Qt6 REQUIRED COMPONENTS WebSockets)
@@ -259,6 +261,7 @@ set(ACCOFINDER_LOGIC_SOURCES
     src/services/paymentgatewayimpl.h src/services/paymentgatewayimpl.cpp
     src/services/notificationserviceimpl.h src/services/notificationserviceimpl.cpp
     src/services/socketioclient.h src/services/socketioclient.cpp
+    src/services/fcmservice.h src/services/fcmservice.cpp
     src/services/emailservice.h src/services/emailservice.cpp
     src/repositories/interfaces/IBookingRepository.h
     src/repositories/interfaces/IPropertyRepository.h

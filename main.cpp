@@ -27,6 +27,7 @@
 #include "src/presentation/viewmodels/adminnotificationsviewmodel.h"
 #include "src/services/cachedimageprovider.h"
 #include "src/services/socketioclient.h"
+#include "src/services/fcmservice.h"
 #include <QQmlContext>
 #include <QTimer>
 int main(int argc, char *argv[])
@@ -45,11 +46,7 @@ int main(int argc, char *argv[])
 
     //SplashScreen
     auto androidApp = app.nativeInterface<QNativeInterface::QAndroidApplication>();
-    if (androidApp) {
-        QTimer::singleShot(3000, [androidApp]() {
-            androidApp->hideSplashScreen(300);
-        });
-    }
+    const bool hasAndroidSplash = (androidApp != nullptr);
 
     QQmlApplicationEngine engine;
     // Register an async image provider that caches decoded images in memory
@@ -88,6 +85,7 @@ int main(int argc, char *argv[])
     PaymentsOverviewViewModel paymentsOverviewViewModel;
     AdminNotificationsViewModel adminNotificationsViewModel;
     SocketIOClient socketIOClient;
+    FcmService fcmService;
     //ContextProperty
     engine.rootContext()->setContextProperty("AppSettings", &appSettings);
     engine.rootContext()->setContextProperty("AppPermission", &appPermission);
@@ -113,6 +111,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("PaymentsOverviewViewModel", &paymentsOverviewViewModel);
     engine.rootContext()->setContextProperty("AdminNotificationsViewModel", &adminNotificationsViewModel);
     engine.rootContext()->setContextProperty("SocketIO", &socketIOClient);
+    engine.rootContext()->setContextProperty("FcmService", &fcmService);
 
     // Realtime notifications: start the Socket.IO stream once signed in, stop it
     // on logout, and refresh the notification model immediately when a
@@ -140,6 +139,21 @@ int main(int argc, char *argv[])
                      &app, [](const QString& msg) {
         qWarning() << "[Main] SocketIO error:" << msg;
     });
+
+    // FCM: register token on login, unregister on logout
+    QObject::connect(&authController, &AuthController::signInSucceded, &fcmService,
+                     [&fcmService]() { fcmService.registerToken(); });
+    QObject::connect(&authController, &AuthController::userLoggedOut, &fcmService,
+                     [&fcmService]() { fcmService.unregisterToken(); });
+    QObject::connect(&appSettings, &AppSettings::userSessionChanged, &fcmService,
+                     [&fcmService]() {
+        if (AppSettings::instance().isLoggedIn()) {
+            fcmService.registerToken();
+        }
+    });
+    // Forward FCM foreground notifications to refresh the notification list
+    QObject::connect(&fcmService, &FcmService::notificationReceived,
+                     &notificationViewModel, &NotificationViewModel::getNotifications);
     QObject::connect(
         &engine,
         &QQmlApplicationEngine::objectCreationFailed,
@@ -147,6 +161,19 @@ int main(int argc, char *argv[])
         []() { QCoreApplication::exit(-1); },
         Qt::QueuedConnection);
     engine.loadFromModule("AccoFinder", "Main");
+
+    // Hide the sticky Android splash as soon as the UI is ready, instead of
+    // waiting a fixed 3 seconds. The splash is dismissible once the first
+    // frame has been rendered, so we give the event loop a single cycle to
+    // paint, then remove it. A short fallback guarantees it never lingers.
+    if (hasAndroidSplash) {
+        QTimer::singleShot(0, [androidApp]() {
+            androidApp->hideSplashScreen(300);
+        });
+        QTimer::singleShot(2000, [androidApp]() {
+            androidApp->hideSplashScreen(300);
+        });
+    }
 
     return QCoreApplication::exec();
 }

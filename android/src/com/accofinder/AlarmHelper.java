@@ -37,7 +37,7 @@ public class AlarmHelper {
             }
 
             Intent intent = new Intent(context, AlarmReceiver.class);
-            intent.setAction("com.plantdoctor.ALARM_TRIGGERED");
+            intent.setAction("com.accofinder.ALARM_TRIGGERED");
             intent.putExtra("source", "qt_android");
 
             int flags = PendingIntent.FLAG_UPDATE_CURRENT;

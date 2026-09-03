@@ -42,7 +42,7 @@
         <!-- ========================= -->
         <receiver android:enabled="true" android:exported="true" android:name=".AlarmReceiver">
             <intent-filter>
-                <action android:name="com.plantdoctor.ALARM_TRIGGERED"/>
+                <action android:name="com.accofinder.ALARM_TRIGGERED"/>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
             </intent-filter>
         </receiver>
@@ -51,6 +51,14 @@
         <!-- ========================= -->
         <service android:enabled="true" android:exported="false" android:foregroundServiceType="dataSync|specialUse" android:name=".AlarmService" android:stopWithTask="false">
             <property android:name="android.foreground_service_type_special_use" android:value="Alarm service for scheduled tasks"/>
+        </service>
+        <!-- ========================= -->
+        <!-- FCM MESSAGING SERVICE -->
+        <!-- ========================= -->
+        <service android:enabled="true" android:exported="false" android:name=".MyFirebaseMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
         </service>
         <provider android:authorities="${applicationId}.qtprovider" android:exported="false" android:grantUriPermissions="true" android:name="androidx.core.content.FileProvider">
             <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/qtprovider_paths"/>
