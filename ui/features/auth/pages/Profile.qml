@@ -35,6 +35,7 @@ Page {
     property string confirmPassword: ""
     property string passwordError: ""
     property string passwordSuccess: ""
+    property bool profileSaveDone: false
     property string pageTitle: "  Profile"
     property bool showHeader: true
     property bool showBack: false
@@ -56,6 +57,24 @@ Page {
         // profile shows the value actually stored in the user's record.
         AgentViewModel.getMyCommission();
         loadProfile();
+        // Also pull the latest bank/payment details from the backend (they may
+        // differ from the locally cached values, e.g. when changed on another
+        // device). This fires once; refreshProfile() can be called again later.
+        AuthController.fetchProfile();
+    }
+
+    Connections {
+        target: AuthController
+
+        function onProfileFetched() { root.loadProfile() }
+        function onProfileSaved(status) {
+            root.profileSaveDone = true
+            if (status) {
+                root.editMode = false
+                loadProfile()
+            }
+        }
+        function onProfileFetchFailed(error) { /* keep cached values */ }
     }
 
     Connections {
@@ -862,8 +881,15 @@ Page {
         AppSettings.setBankName(root.profileBank.trim());
         AppSettings.setBankAccountNumber(root.profileAccount.trim());
         AppSettings.setPaymentMethod(root.profilePaymentMethod);
-        root.editMode = false;
-        loadProfile();
+
+        // Persist the banking / payment details to the backend so they are saved
+        // for this user and restored on any device. This does NOT touch the
+        // user-creation wizard — it only updates the profile record.
+        AuthController.saveProfile(
+            root.profileBank.trim(),
+            root.profileAccount.trim(),
+            root.profilePaymentMethod
+        );
     }
 
     function valueOr(value, fallback) {

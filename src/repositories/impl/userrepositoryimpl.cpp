@@ -1,6 +1,9 @@
 #include "userrepositoryimpl.h"
 #include <QJsonObject>
 #include <QJsonValue>
+#include <QUrl>
+#include <QUrlQuery>
+#include <QDesktopServices>
 #include "services/apiclient.h"
 #include "core/utils/appsettings.h"  //for persistence
 
@@ -40,6 +43,12 @@ void UserRepositoryImpl::signIn(
                 QString accessToken = data["accessToken"].toString();
                 QString refreshToken = data["refreshToken"].toString();
 
+                // Parse bank/payment details (kept local until the profile page
+                // is opened, at which point fetchProfile() refreshes them).
+                QString bankName = data["bankName"].toString();
+                QString bankAccountNumber = data["bankAccountNumber"].toString();
+                QString paymentMethod = data["paymentMethod"].toString();
+
                 // Use the new constructor
                 User* user = new User(
                     userId,
@@ -62,6 +71,10 @@ void UserRepositoryImpl::signIn(
                 AppSettings::instance().setPreferredLocation(residentialAddress);
                 AppSettings::instance().setFilterLocation(residentialAddress);
                 AppSettings::instance().setCommissionRate(commissionRate);
+                AppSettings::instance().setBankName(bankName);
+                AppSettings::instance().setBankAccountNumber(bankAccountNumber);
+                AppSettings::instance().setPaymentMethod(
+                    paymentMethod.isEmpty() ? "Mobile money" : paymentMethod);
 
                 // Keep the APIClient singleton's cached token in sync so every
                 // authenticated endpoint (dashboard stats, rooms, bookings, …)
@@ -241,6 +254,144 @@ void UserRepositoryImpl::checkAccount(const QString &email)
                 emit accountChecked(false);
             }
         }, true);
+}
+
+void UserRepositoryImpl::signInWithGoogle(const QString &authUrl)
+{
+    QUrl url(authUrl);
+    QDesktopServices::openUrl(url);
+}
+
+void UserRepositoryImpl::handleGoogleAuthUrl(const QString &url)
+{
+    QUrl qurl(url);
+    if (qurl.scheme() != "accofinder" || qurl.host() != "auth") {
+        emit signInFailed("Invalid Google authentication response.");
+        return;
+    }
+
+    QUrlQuery query(qurl.query());
+
+    QString accessToken = query.queryItemValue("accessToken");
+    QString refreshToken = query.queryItemValue("refreshToken");
+    QString userId = query.queryItemValue("userId");
+    QString firstName = query.queryItemValue("firstName");
+    QString surname = query.queryItemValue("surname");
+    QString email = query.queryItemValue("email");
+    QString phone = query.queryItemValue("phone");
+    QString role = query.queryItemValue("role");
+    QString bankName = query.queryItemValue("bankName");
+    QString bankAccountNumber = query.queryItemValue("bankAccountNumber");
+    QString paymentMethod = query.queryItemValue("paymentMethod");
+
+    if (accessToken.isEmpty() || userId.isEmpty()) {
+        emit signInFailed("Google sign in incomplete. Please try again.");
+        return;
+    }
+
+    QString fullName = (firstName + " " + surname).trimmed();
+
+    User* user = new User(userId, fullName, email, "", role, this);
+
+    // Persist the session exactly like a normal login.
+    AppSettings::instance().setToken(accessToken);
+    AppSettings::instance().setRefreshToken(refreshToken);
+    AppSettings::instance().setUserId(userId);
+    AppSettings::instance().setUserType(role);
+    AppSettings::instance().setIsLoggedIn(true);
+    AppSettings::instance().setUserName(fullName);
+    AppSettings::instance().setEmail(email);
+    AppSettings::instance().setPhone(phone);
+    AppSettings::instance().setBankName(bankName);
+    AppSettings::instance().setBankAccountNumber(bankAccountNumber);
+    AppSettings::instance().setPaymentMethod(
+        paymentMethod.isEmpty() ? "Mobile money" : paymentMethod);
+
+    // Keep the API client's cached token in sync.
+    APIClient::instance().setAuthToken(accessToken);
+
+    emit signInSucceded(user);
+}
+
+void UserRepositoryImpl::fetchProfile()
+{
+    APIClient::instance().get(
+        "/users/me/profile",
+        [this](bool success, const QJsonObject& response)
+        {
+            if (!success) {
+                emit profileFetchFailed(
+                    response.value("message").toString()
+                    .isEmpty() ? "Could not load profile." :
+                    response.value("message").toString());
+                return;
+            }
+
+            const QJsonObject obj = response.value("data").toObject();
+
+            const QString firstName = obj.value("firstName").toString();
+            const QString surname = obj.value("surname").toString();
+            const QString fullName = (firstName + " " + surname).trimmed();
+            if (!fullName.isEmpty())
+                AppSettings::instance().setUserName(fullName);
+
+            const QString email = obj.value("email").toString();
+            if (!email.isEmpty())
+                AppSettings::instance().setEmail(email);
+
+            const QString phone = obj.value("phone").toString();
+            if (!phone.isEmpty())
+                AppSettings::instance().setPhone(phone);
+
+            const QString address = obj.value("residentialAddress").toString();
+            if (!address.isEmpty()) {
+                AppSettings::instance().setPreferredLocation(address);
+                AppSettings::instance().setFilterLocation(address);
+            }
+
+            const QString bankName = obj.value("bankName").toString();
+            const QString bankAccount = obj.value("bankAccountNumber").toString();
+            const QString paymentMethod = obj.value("paymentMethod").toString();
+
+            AppSettings::instance().setBankName(bankName);
+            AppSettings::instance().setBankAccountNumber(bankAccount);
+            AppSettings::instance().setPaymentMethod(
+                paymentMethod.isEmpty() ? "Mobile money" : paymentMethod);
+
+            emit profileFetched();
+        }, false);
+}
+
+void UserRepositoryImpl::saveProfile(
+    const QString& bankName,
+    const QString& bankAccountNumber,
+    const QString& paymentMethod)
+{
+    QJsonObject payload;
+    if (!bankName.isEmpty())
+        payload["bankName"] = bankName;
+    if (!bankAccountNumber.isEmpty())
+        payload["bankAccountNumber"] = bankAccountNumber;
+    if (!paymentMethod.isEmpty())
+        payload["paymentMethod"] = paymentMethod;
+
+    if (payload.isEmpty()) {
+        emit profileSaved(false);
+        return;
+    }
+
+    APIClient::instance().patch(
+        "/users/me/profile",
+        payload,
+        [this](bool success, const QJsonObject& response)
+        {
+            if (success) {
+                emit profileSaved(true);
+            } else {
+                qDebug() << "Profile save failed:" << response;
+                emit profileSaved(false);
+            }
+        }, false);
 }
 
 

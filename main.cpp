@@ -30,6 +30,32 @@
 #include "src/services/fcmservice.h"
 #include <QQmlContext>
 #include <QTimer>
+#include <functional>
+
+#if defined(Q_OS_ANDROID)
+#include <QJniObject>
+// Consumes any Google OAuth deep link (accofinder://auth?...) that launched or
+// re-launched the app, forwarding it to AuthController so it can finalise the
+// Google sign-in with the tokens carried in the URL.
+static QString takePendingDeepLinkUrl()
+{
+    QJniObject result = QJniObject::callStaticObjectMethod(
+        "com/accofinder/DeepLinkActivity",
+        "consumePendingUrl",
+        "()Ljava/lang/String;");
+    if (!result.isValid())
+        return QString();
+    return result.toString();
+}
+
+static bool hasPendingDeepLink()
+{
+    return QJniObject::callStaticMethod<jboolean>(
+        "com/accofinder/DeepLinkActivity",
+        "hasPendingUrl",
+        "()Z");
+}
+#endif
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
@@ -161,6 +187,28 @@ int main(int argc, char *argv[])
         []() { QCoreApplication::exit(-1); },
         Qt::QueuedConnection);
     engine.loadFromModule("AccoFinder", "Main");
+
+#if defined(Q_OS_ANDROID)
+    // Poll for Google OAuth deep links (accofinder://auth?...). This covers
+    // both a cold start and the case where the app is already running when the
+    // OAuth flow redirects back to the app's custom scheme. Each captured URL
+    // is forwarded to AuthController so the Google sign-in is finalised.
+    auto processDeepLink = [&authController]() {
+        if (!hasPendingDeepLink())
+            return;
+        const QString url = takePendingDeepLinkUrl();
+        if (!url.isEmpty()) {
+            qInfo() << "[Main] Processing deep link:" << url;
+            authController.handleGoogleAuthUrl(url);
+        }
+    };
+    QTimer* deepLinkTimer = new QTimer(&app);
+    QObject::connect(deepLinkTimer, &QTimer::timeout, &app, processDeepLink);
+    deepLinkTimer->start(1500);
+
+    // Handle a deep link that was already present at launch.
+    QTimer::singleShot(200, &app, processDeepLink);
+#endif
 
     // Hide the sticky Android splash as soon as the UI is ready, instead of
     // waiting a fixed 3 seconds. The splash is dismissible once the first
