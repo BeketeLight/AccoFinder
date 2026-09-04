@@ -136,7 +136,11 @@ void FcmService::registerToken()
     // (on the main Android looper) that stores the token in FcmBridge, which
     // pollPendingData() picks up on the next poll.
     QJniObject listener("com/accofinder/TokenListener");
-    tokenTask.callMethod<void>(
+    // addOnSuccessListener() returns com.google.android.gms.tasks.Task.
+    // It must be called as an object-returning method; calling it as void
+    // (callMethod<void>) makes the JNI runtime abort with
+    // "the return type of CallVoidMethodV does not match ... Task".
+    QJniObject result = tokenTask.callObjectMethod(
         "addOnSuccessListener",
         "(Lcom/google/android/gms/tasks/OnSuccessListener;)Lcom/google/android/gms/tasks/Task;",
         listener.object());
@@ -145,6 +149,7 @@ void FcmService::registerToken()
         qWarning() << "[FCM] addOnSuccessListener() threw an exception";
         return;
     }
+    Q_UNUSED(result);
 #else
     // Non-Android: nothing to register
 #endif
