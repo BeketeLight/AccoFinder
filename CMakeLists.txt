@@ -7,6 +7,8 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
+list(APPEND CMAKE_PREFIX_PATH "/opt/Qt/6.11.1/gcc_64")
+
 find_package(Qt6 REQUIRED COMPONENTS Quick Core Network Gui)
 find_package(Qt6 REQUIRED COMPONENTS QuickControls2)
 find_package(Qt6 REQUIRED COMPONENTS WebSockets)
@@ -81,13 +83,12 @@ qt_add_qml_module(appAccoFinder
         ui/features/home/delegates/PropertyDelegateDetails.qml
         ui/features/home/models/PropertyCategoryModel.qml
         ui/features/home/models/PropertyListModel.qml
-        ui/features/home/pages/AddPropertyPage.qml
         ui/features/home/pages/FilterBottomSheet.qml
         ui/features/home/pages/MyPropertiesPage.qml
         ui/features/home/pages/PropertiesPage.qml
         ui/features/home/pages/PropertyDetailsPage.qml
         ui/features/home/pages/SearchPropertiesPage.qml
-        ui/features/home/pages/WelcomePage.qml
+        ui/features/home/pages/SuperDeals.qml
         ui/features/home/screens/PropertiesScreen.qml
         ui/features/home/screens/PropertyDetailScreen.qml
         ui/features/home/screens/SearchPropertiesScreen.qml
@@ -261,6 +262,7 @@ set(ACCOFINDER_LOGIC_SOURCES
     src/services/paymentgatewayimpl.h src/services/paymentgatewayimpl.cpp
     src/services/notificationserviceimpl.h src/services/notificationserviceimpl.cpp
     src/services/socketioclient.h src/services/socketioclient.cpp
+    src/services/fcmservice.h src/services/fcmservice.cpp
     src/services/emailservice.h src/services/emailservice.cpp
     src/repositories/interfaces/IBookingRepository.h
     src/repositories/interfaces/IPropertyRepository.h

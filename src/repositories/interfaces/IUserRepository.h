@@ -28,6 +28,17 @@ public:
     virtual void verifyOtp(const QString& email, const QString& code, const QString& purpose) = 0;
     virtual void checkAccount(const QString& email) =0;
 
+    // Google OAuth
+    virtual void signInWithGoogle(const QString& authUrl) = 0;
+    virtual void handleGoogleAuthUrl(const QString& url) = 0;
+
+    // Profile (bank/payment) persistence
+    virtual void fetchProfile() = 0;
+    virtual void saveProfile(
+        const QString& bankName,
+        const QString& bankAccountNumber,
+        const QString& paymentMethod) = 0;
+
     virtual ~IUserRepository(){}
 
 };

@@ -25,6 +25,7 @@ public:
 
     void setBaseUrl(const QString& url);
     void setAuthToken(const QString& token);
+    QString baseUrl() const { return m_baseUrl; }
 
     void get(
         const QString& endpoint,

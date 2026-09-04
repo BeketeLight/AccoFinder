@@ -29,20 +29,27 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <!-- Main Qt Activity -->
-        <activity android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|layoutDirection|locale|fontScale|keyboard|keyboardHidden|navigation|mcc|mnc|density" android:exported="true" android:label="AccoFinder" android:launchMode="singleTop" android:name="org.qtproject.qt.android.bindings.QtActivity" android:screenOrientation="unspecified" android:theme="@style/QtAppTheme">
+        <!-- Main Qt Activity (subclassed to capture accofinder:// deep links) -->
+        <activity android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|layoutDirection|locale|fontScale|keyboard|keyboardHidden|navigation|mcc|mnc|density" android:exported="true" android:label="AccoFinder" android:launchMode="singleTop" android:name="com.accofinder.DeepLinkActivity" android:screenOrientation="unspecified" android:theme="@style/QtAppTheme">
             <meta-data android:name="android.app.lib_name" android:value="-- %%INSERT_APP_LIB_NAME%% --"/>
             <meta-data android:name="android.app.arguments" android:value="-- %%INSERT_APP_ARGUMENTS%% --"/>
             <!-- Qt Splash Screen Configuration -->
             <meta-data android:name="android.app.splash_screen_drawable" android:resource="@drawable/qtsplashscreen"/>
             <meta-data android:name="android.app.splash_screen_sticky" android:value="true"/>
+            <!-- Google OAuth deep link: accofinder://auth?accessToken=... -->
+            <intent-filter android:label="Open in AccoFinder">
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="accofinder" android:host="auth"/>
+            </intent-filter>
         </activity>
         <!-- ========================= -->
         <!-- ALARM RECEIVER -->
         <!-- ========================= -->
         <receiver android:enabled="true" android:exported="true" android:name=".AlarmReceiver">
             <intent-filter>
-                <action android:name="com.plantdoctor.ALARM_TRIGGERED"/>
+                <action android:name="com.accofinder.ALARM_TRIGGERED"/>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
             </intent-filter>
         </receiver>
@@ -51,6 +58,14 @@
         <!-- ========================= -->
         <service android:enabled="true" android:exported="false" android:foregroundServiceType="dataSync|specialUse" android:name=".AlarmService" android:stopWithTask="false">
             <property android:name="android.foreground_service_type_special_use" android:value="Alarm service for scheduled tasks"/>
+        </service>
+        <!-- ========================= -->
+        <!-- FCM MESSAGING SERVICE -->
+        <!-- ========================= -->
+        <service android:enabled="true" android:exported="false" android:name=".MyFirebaseMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
         </service>
         <provider android:authorities="${applicationId}.qtprovider" android:exported="false" android:grantUriPermissions="true" android:name="androidx.core.content.FileProvider">
             <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/qtprovider_paths"/>

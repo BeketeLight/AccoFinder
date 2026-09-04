@@ -28,8 +28,35 @@
 #include "src/presentation/models/propertylistmodel.h"
 #include "src/services/cachedimageprovider.h"
 #include "src/services/socketioclient.h"
+#include "src/services/fcmservice.h"
 #include <QQmlContext>
 #include <QTimer>
+#include <functional>
+
+#if defined(Q_OS_ANDROID)
+#include <QJniObject>
+// Consumes any Google OAuth deep link (accofinder://auth?...) that launched or
+// re-launched the app, forwarding it to AuthController so it can finalise the
+// Google sign-in with the tokens carried in the URL.
+static QString takePendingDeepLinkUrl()
+{
+    QJniObject result = QJniObject::callStaticObjectMethod(
+        "com/accofinder/DeepLinkActivity",
+        "consumePendingUrl",
+        "()Ljava/lang/String;");
+    if (!result.isValid())
+        return QString();
+    return result.toString();
+}
+
+static bool hasPendingDeepLink()
+{
+    return QJniObject::callStaticMethod<jboolean>(
+        "com/accofinder/DeepLinkActivity",
+        "hasPendingUrl",
+        "()Z");
+}
+#endif
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
@@ -46,11 +73,7 @@ int main(int argc, char *argv[])
 
     //SplashScreen
     auto androidApp = app.nativeInterface<QNativeInterface::QAndroidApplication>();
-    if (androidApp) {
-        QTimer::singleShot(3000, [androidApp]() {
-            androidApp->hideSplashScreen(300);
-        });
-    }
+    const bool hasAndroidSplash = (androidApp != nullptr);
 
     QQmlApplicationEngine engine;
     // Register an async image provider that caches decoded images in memory
@@ -90,6 +113,7 @@ int main(int argc, char *argv[])
     AdminNotificationsViewModel adminNotificationsViewModel;
     SocketIOClient socketIOClient;
     PropertyListModel propertyListModel;
+    FcmService fcmService;
     //ContextProperty
     engine.rootContext()->setContextProperty("AppSettings", &appSettings);
     engine.rootContext()->setContextProperty("AppPermission", &appPermission);
@@ -116,14 +140,18 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("AdminNotificationsViewModel", &adminNotificationsViewModel);
     engine.rootContext()->setContextProperty("SocketIO", &socketIOClient);
     engine.rootContext()->setContextProperty("PropertyListModel", &propertyListModel);
+    engine.rootContext()->setContextProperty("FcmService", &fcmService);
 
     // Realtime notifications: start the Socket.IO stream once signed in, stop it
     // on logout, and refresh the notification model immediately when a
     // "notification" event arrives (instead of waiting for the 30s poll).
     auto startSocketForCurrentUser = [&socketIOClient]() {
         const AppSettings& s = AppSettings::instance();
-        if (s.isLoggedIn() && !s.userId().isEmpty())
+        if (s.isLoggedIn() && !s.userId().isEmpty()) {
+            qInfo() << "[Main] Starting socket for user:" << s.userId();
+            socketIOClient.stop();
             socketIOClient.start(s.userId(), s.userType(), s.token());
+        }
     };
     startSocketForCurrentUser();
     QObject::connect(&authController, &AuthController::signInSucceded, &app,
@@ -136,6 +164,25 @@ int main(int argc, char *argv[])
                      &notificationViewModel, &NotificationViewModel::getNotifications);
     QObject::connect(&appSettings, &AppSettings::userSessionChanged,
                      &app, startSocketForCurrentUser);
+    QObject::connect(&socketIOClient, &SocketIOClient::errorOccurred,
+                     &app, [](const QString& msg) {
+        qWarning() << "[Main] SocketIO error:" << msg;
+    });
+
+    // FCM: register token on login, unregister on logout
+    QObject::connect(&authController, &AuthController::signInSucceded, &fcmService,
+                     [&fcmService]() { fcmService.registerToken(); });
+    QObject::connect(&authController, &AuthController::userLoggedOut, &fcmService,
+                     [&fcmService]() { fcmService.unregisterToken(); });
+    QObject::connect(&appSettings, &AppSettings::userSessionChanged, &fcmService,
+                     [&fcmService]() {
+        if (AppSettings::instance().isLoggedIn()) {
+            fcmService.registerToken();
+        }
+    });
+    // Forward FCM foreground notifications to refresh the notification list
+    QObject::connect(&fcmService, &FcmService::notificationReceived,
+                     &notificationViewModel, &NotificationViewModel::getNotifications);
     QObject::connect(
         &engine,
         &QQmlApplicationEngine::objectCreationFailed,
@@ -143,6 +190,41 @@ int main(int argc, char *argv[])
         []() { QCoreApplication::exit(-1); },
         Qt::QueuedConnection);
     engine.loadFromModule("AccoFinder", "Main");
+
+#if defined(Q_OS_ANDROID)
+    // Poll for Google OAuth deep links (accofinder://auth?...). This covers
+    // both a cold start and the case where the app is already running when the
+    // OAuth flow redirects back to the app's custom scheme. Each captured URL
+    // is forwarded to AuthController so the Google sign-in is finalised.
+    auto processDeepLink = [&authController]() {
+        if (!hasPendingDeepLink())
+            return;
+        const QString url = takePendingDeepLinkUrl();
+        if (!url.isEmpty()) {
+            qInfo() << "[Main] Processing deep link:" << url;
+            authController.handleGoogleAuthUrl(url);
+        }
+    };
+    QTimer* deepLinkTimer = new QTimer(&app);
+    QObject::connect(deepLinkTimer, &QTimer::timeout, &app, processDeepLink);
+    deepLinkTimer->start(1500);
+
+    // Handle a deep link that was already present at launch.
+    QTimer::singleShot(200, &app, processDeepLink);
+#endif
+
+    // Hide the sticky Android splash as soon as the UI is ready, instead of
+    // waiting a fixed 3 seconds. The splash is dismissible once the first
+    // frame has been rendered, so we give the event loop a single cycle to
+    // paint, then remove it. A short fallback guarantees it never lingers.
+    if (hasAndroidSplash) {
+        QTimer::singleShot(0, [androidApp]() {
+            androidApp->hideSplashScreen(300);
+        });
+        QTimer::singleShot(2000, [androidApp]() {
+            androidApp->hideSplashScreen(300);
+        });
+    }
 
     return QCoreApplication::exec();
 }

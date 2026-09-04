@@ -35,7 +35,7 @@ public class AlarmService extends Service {
     private void startForegroundNotification() {
         createNotificationChannel();
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("PlantDoctor Alarm")
+            .setContentTitle("AccoFinder Alarm")
             .setContentText("Processing alarms in background")
             .setSmallIcon(android.R.drawable.ic_dialog_info)
             .setPriority(NotificationCompat.PRIORITY_LOW)

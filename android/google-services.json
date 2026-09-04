@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "162687483229",
+    "project_id": "placefinder-794f7",
+    "storage_bucket": "placefinder-794f7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:162687483229:android:e36564c401c69354f0bcb4",
+        "android_client_info": {
+          "package_name": "com.accofinder"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAy5uUYiiLRtVJWfpQQRarfD4SMMwwZ2gA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

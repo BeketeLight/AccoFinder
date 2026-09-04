@@ -11,7 +11,7 @@ import android.util.Log;
 
 public class BatteryOptimizationHelper {
     private static final String TAG = "BatteryOptimizationHelper";
-    private static final String PREFS_NAME = "SalesMatePrefs";
+    private static final String PREFS_NAME = "AccoFinderPrefs";
     private static final String KEY_BATTERY_PROMPT_SHOWN = "battery_prompt_shown";
     private static final String KEY_HUAWEI_AUTOSTART_PROMPT_SHOWN = "huawei_autostart_prompt_shown";
 

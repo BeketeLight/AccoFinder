@@ -1,5 +1,6 @@
 package com.accofinder;
 
+import android.content.Context;
 import android.util.Log;
 
 public class NativeBridge {
@@ -8,11 +9,31 @@ public class NativeBridge {
 
     static {
         try {
-            System.loadLibrary("appPlantDoctor_armeabi-v7a");
+            System.loadLibrary("appAccoFinder_arm64-v8a");
             isInitialized = true;
             Log.d(TAG, "Library loaded successfully");
         } catch (UnsatisfiedLinkError e) {
             Log.e(TAG, "Library load error", e);
+        }
+    }
+
+    public static boolean isQtReady(Context context) {
+        try {
+            android.app.ActivityManager am = (android.app.ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+            if (am == null) return false;
+            java.util.List<android.app.ActivityManager.RunningAppProcessInfo> processes = am.getRunningAppProcesses();
+            if (processes != null) {
+                for (android.app.ActivityManager.RunningAppProcessInfo process : processes) {
+                    if (process.processName.equals(context.getPackageName()) &&
+                        process.importance == android.app.ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        } catch (Exception e) {
+            Log.e(TAG, "Error checking Qt readiness", e);
+            return false;
         }
     }
 

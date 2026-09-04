@@ -8,7 +8,7 @@ buildscript {
         //noinspection AndroidGradlePluginVersion
         classpath 'com.android.tools.build:gradle:9.0.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:2.3.0"
-
+        classpath 'com.google.gms:google-services:4.4.2'
     }
 }
 
@@ -18,6 +18,7 @@ repositories {
 }
 
 apply plugin: qtGradlePluginType
+apply plugin: 'com.google.gms.google-services'
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
@@ -30,6 +31,10 @@ dependencies {
     // Add Material Components for modern themes and UI
     implementation 'com.google.android.material:material:1.10.0'
     implementation "androidx.work:work-runtime:2.9.0" //workManager
+
+    // Firebase Cloud Messaging
+    implementation platform('com.google.firebase:firebase-bom:33.14.0')
+    implementation 'com.google.firebase:firebase-messaging'
 }
 
 android {
@@ -92,6 +97,7 @@ android {
     }
 
     defaultConfig {
+        applicationId "com.accofinder"
         resConfig "en"
         minSdkVersion qtMinSdkVersion
         targetSdkVersion qtTargetSdkVersion

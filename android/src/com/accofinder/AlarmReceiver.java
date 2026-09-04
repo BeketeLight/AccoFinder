@@ -28,7 +28,7 @@ public class AlarmReceiver extends BroadcastReceiver {
             return;
         }
 
-        if (!"com.plantdoctor.ALARM_TRIGGERED".equals(intent.getAction())) {
+        if (!"com.accofinder.ALARM_TRIGGERED".equals(intent.getAction())) {
             Log.w(TAG, "Received unexpected intent: " + intent.getAction());
             return;
         }
@@ -47,7 +47,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         PowerManager.WakeLock wl = pm.newWakeLock(
             PowerManager.PARTIAL_WAKE_LOCK,
-            "plantdoctor:alarm_wakelock"
+            "accofinder:alarm_wakelock"
         );
 
         try {
@@ -96,9 +96,9 @@ public class AlarmReceiver extends BroadcastReceiver {
 
             // App not active - launch activity
             Log.w(TAG, "Qt not ready - launching app");
-            Intent launchIntent = context.getPackageManager().getLaunchIntentForPackage("com.plantdoctor");
+            Intent launchIntent = context.getPackageManager().getLaunchIntentForPackage("com.accofinder");
             if (launchIntent == null) {
-                Log.e(TAG, "Failed to get launch intent for com.plantdoctor");
+                Log.e(TAG, "Failed to get launch intent for com.accofinder");
                 showOpenAppNotification(context);
                 return;
             }
@@ -176,7 +176,7 @@ public class AlarmReceiver extends BroadcastReceiver {
             nm.createNotificationChannel(channel);
         }
 
-        Intent notificationIntent = context.getPackageManager().getLaunchIntentForPackage("com.plantdoctor");
+        Intent notificationIntent = context.getPackageManager().getLaunchIntentForPackage("com.accofinder");
         if (notificationIntent != null) {
             notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
             int pendingIntentFlags = PendingIntent.FLAG_UPDATE_CURRENT;
@@ -186,7 +186,7 @@ public class AlarmReceiver extends BroadcastReceiver {
             PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, pendingIntentFlags);
 
             Notification notification = new NotificationCompat.Builder(context, "alarm_notification_channel")
-                .setContentTitle("PlantDoctor Alarm")
+                .setContentTitle("AccoFinder Alarm")
                 .setContentText("Please open the app to process the alarm")
                 .setSmallIcon(android.R.drawable.ic_dialog_info)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
