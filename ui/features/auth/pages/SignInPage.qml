@@ -267,7 +267,10 @@ Page {
                     border.width: 1
                 }
 
-                onClicked: console.log("TODO AuthController.signInWithGoogle")
+                onClicked: {
+                    root.pendingAction = "google";
+                    AuthController.signInWithGoogle(AuthController.googleAuthUrl());
+                }
             }
 
             Button {
