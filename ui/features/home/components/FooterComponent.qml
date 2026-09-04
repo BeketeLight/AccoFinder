@@ -10,11 +10,15 @@ Page{
    // calls alone are not reactive.
    property string userRole: ""
    property bool isAdminUser: false
+   property bool showPropertiesTab: false
+   property bool showSavedTab: true
 
    function refreshSessionState() {
        userRole = AppSettings.userType()
        isAdminUser = userRole === "ADMIN" || userRole === "SUPER_ADMIN"
-       if (currentIndex === 2 && !(userRole === "CLIENT" || userRole === ""))
+       showPropertiesTab = userRole === "AGENT" || isAdminUser
+       showSavedTab = userRole === "CLIENT" || userRole === ""
+       if (currentIndex === 2 && !showSavedTab)
            currentIndex = 0
    }
 
@@ -40,16 +44,21 @@ Page{
       background: Rectangle {
          color: "#F8F9FA"
       }
-       RowLayout {
+       Item {
            anchors.fill: parent
            anchors.leftMargin: 10
            anchors.rightMargin: 10
-           spacing: 0
+
+       RowLayout {
+           anchors.horizontalCenter: parent.horizontalCenter
+           anchors.top: parent.top
+           anchors.bottom: parent.bottom
+           spacing: 32
 
          ColumnLayout{
             Layout.preferredHeight: 0
-            Layout.fillWidth: true  // 👈 Distributes tab evenly across parent width
             Layout.fillHeight: true
+            Layout.minimumWidth: 0
             spacing: 0
             ToolButton{
                icon.name: footerPageId.isAdminUser ? "dashboard-icon" : "Home-icon"
@@ -77,10 +86,12 @@ Page{
          }
          ColumnLayout{
             Layout.preferredHeight: 0
-            Layout.fillWidth: true  // 👈 Distributes tab evenly across parent width
             Layout.fillHeight: true
+            Layout.minimumWidth: 0
+            Layout.preferredWidth: footerPageId.showPropertiesTab ? -1 : 0
+            Layout.maximumWidth: footerPageId.showPropertiesTab ? Number.POSITIVE_INFINITY : 0
             spacing: 0
-            visible: footerPageId.userRole === "AGENT" || footerPageId.isAdminUser
+            visible: footerPageId.showPropertiesTab
             ToolButton{
                icon.name: "Properties-icon"
                icon.source:"qrc:/ui/assets/properties-icon.svg"
@@ -104,10 +115,12 @@ Page{
          }
          ColumnLayout{
             Layout.preferredHeight: 0
-            Layout.fillWidth: true  // 👈 Distributes tab evenly across parent width
             Layout.fillHeight: true
+            Layout.minimumWidth: 0
+            Layout.preferredWidth: footerPageId.showSavedTab ? -1 : 0
+            Layout.maximumWidth: footerPageId.showSavedTab ? Number.POSITIVE_INFINITY : 0
             spacing: 0
-            visible: footerPageId.userRole === "CLIENT" || footerPageId.userRole === ""
+            visible: footerPageId.showSavedTab
          ToolButton{
             icon.name: "Save-icon"
             icon.source:"qrc:/ui/assets/save-icon.svg"
@@ -132,8 +145,8 @@ Page{
 
          ColumnLayout{
             Layout.preferredHeight: 0
-            Layout.fillWidth: true // 👈 Distributes tab evenly across parent width
             Layout.fillHeight: true
+            Layout.minimumWidth: 0
             spacing: 0
             ToolButton{
                icon.name: "Bookings-icon"
@@ -157,12 +170,12 @@ Page{
             }
          }
           ColumnLayout{
-             Layout.preferredHeight: 0
-             Layout.fillWidth: true// 👈 Distributes tab evenly across parent width
-             Layout.fillHeight: true
-             spacing: 0
-             ToolButton{
-                icon.name: "Account-icon"
+              Layout.preferredHeight: 0
+              Layout.fillHeight: true
+              Layout.minimumWidth: 0
+              spacing: 0
+              ToolButton{
+                 icon.name: "Account-icon"
                 icon.source:"qrc:/ui/assets/account-icon.svg"
                 icon.height: 24
                 icon.width: 24
@@ -183,7 +196,8 @@ Page{
              }
 
           }
-}
+       }
+   }
 
 }
 
