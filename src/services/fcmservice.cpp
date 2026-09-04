@@ -59,97 +59,26 @@ void FcmService::registerToken()
 #if defined(Q_OS_ANDROID)
     QJniEnvironment env;
 
-    // Check if Google Play Services is available before calling any Firebase APIs.
-    // On devices without GMS (e.g. Huawei, some Chinese OEM devices),
-    // FirebaseMessaging.getInstance() throws a fatal exception that crashes
-    // the app via JNI.
-    {
-        QJniObject availability = QJniObject::callStaticObjectMethod(
-            "com/google/android/gms/common/GoogleApiAvailability",
-            "getInstance",
-            "()Lcom/google/android/gms/common/GoogleApiAvailability;");
-        if (env->ExceptionCheck()) {
-            env->ExceptionClear();
-            qWarning() << "[FCM] Google Play Services not available. Skipping FCM registration.";
-            return;
-        }
-        if (availability.isValid()) {
-            int result = availability.callMethod<jint>(
-                "isGooglePlayServicesAvailable",
-                "(Landroid/content/Context;)I",
-                QNativeInterface::QAndroidApplication::context().object());
-            if (env->ExceptionCheck()) {
-                env->ExceptionClear();
-                qWarning() << "[FCM] GMS availability check failed. Skipping FCM registration.";
-                return;
-            }
-            if (result != 0) {
-                qWarning() << "[FCM] Google Play Services not available (code"
-                           << result << "). Skipping FCM registration.";
-                return;
-            }
-        } else {
-            qWarning() << "[FCM] Google Play Services not found on device. Skipping FCM registration.";
-            return;
-        }
-    }
-
-    QJniObject context = QNativeInterface::QAndroidApplication::context();
-    if (!context.isValid()) {
-        qWarning() << "[FCM] No valid Android context";
-        return;
-    }
-
     // Clear any pending JNI exception from previous calls
     if (env->ExceptionCheck()) {
         env->ExceptionClear();
     }
 
-    QJniObject firebaseMessaging = QJniObject::callStaticObjectMethod(
-        "com/google/firebase/messaging/FirebaseMessaging",
-        "getInstance",
-        "()Lcom/google/firebase/messaging/FirebaseMessaging;");
+    // Fetch the FCM token entirely on the Java side (FcmBridge.requestToken()).
+    // It is not safe to drive FirebaseMessaging / com.google.android.gms.tasks
+    // classes directly from C++ via JNI: on some devices the JNI runtime aborts
+    // the app (return-type mismatches, listener dispatch). Java owns the
+    // Firebase call and its exceptions; the resulting token is stored for
+    // pollPendingData() to pick up synchronously afterwards.
+    QJniObject::callStaticMethod<void>(
+        "com/accofinder/FcmBridge",
+        "requestToken",
+        "()V");
     if (env->ExceptionCheck()) {
         env->ExceptionClear();
-        qWarning() << "[FCM] FirebaseMessaging.getInstance() threw an exception";
+        qWarning() << "[FCM] requestToken() threw an exception";
         return;
     }
-    if (!firebaseMessaging.isValid()) {
-        qWarning() << "[FCM] FirebaseMessaging.getInstance() failed";
-        return;
-    }
-
-    QJniObject tokenTask = firebaseMessaging.callObjectMethod(
-        "getToken", "()Lcom/google/android/gms/tasks/Task;");
-    if (env->ExceptionCheck()) {
-        env->ExceptionClear();
-        qWarning() << "[FCM] getToken() threw an exception";
-        return;
-    }
-    if (!tokenTask.isValid()) {
-        qWarning() << "[FCM] getToken() returned invalid task";
-        return;
-    }
-
-    // Fetch the token asynchronously. Never call Tasks.await() on the main
-    // (Qt) thread - it throws and crashes the app. Instead attach a listener
-    // (on the main Android looper) that stores the token in FcmBridge, which
-    // pollPendingData() picks up on the next poll.
-    QJniObject listener("com/accofinder/TokenListener");
-    // addOnSuccessListener() returns com.google.android.gms.tasks.Task.
-    // It must be called as an object-returning method; calling it as void
-    // (callMethod<void>) makes the JNI runtime abort with
-    // "the return type of CallVoidMethodV does not match ... Task".
-    QJniObject result = tokenTask.callObjectMethod(
-        "addOnSuccessListener",
-        "(Lcom/google/android/gms/tasks/OnSuccessListener;)Lcom/google/android/gms/tasks/Task;",
-        listener.object());
-    if (env->ExceptionCheck()) {
-        env->ExceptionClear();
-        qWarning() << "[FCM] addOnSuccessListener() threw an exception";
-        return;
-    }
-    Q_UNUSED(result);
 #else
     // Non-Android: nothing to register
 #endif
