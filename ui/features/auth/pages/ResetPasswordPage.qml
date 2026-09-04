@@ -8,6 +8,7 @@ import "../../../components/dialogs"
 Page {
     id: root
 
+    property string email: ""
     property color primaryColor: "#2563EB"
     property color secondaryColor: "#22C55E"
     property color pageColor: "#FFFFFF"
@@ -17,12 +18,9 @@ Page {
     property color borderColor: "#E5E7EB"
     property color errorColor: "#EF4444"
     property bool busy: AuthController.isLoading
-    property string pendingAction: ""
-    property string pageTitle: "Forgot password"
+    property string pageTitle: "Reset password"
     property bool showHeader: true
     property bool showBottomBorder: false
-
-    readonly property string otpPurpose: "password_reset"
 
     anchors.fill: parent
 
@@ -53,11 +51,11 @@ Page {
                     width: 72
                     height: 72
                     radius: 20
-                    color: "#EFF6FF"
+                    color: "#FEF2F2"
 
                     Text {
                         anchors.centerIn: parent
-                        text: "\u2764"
+                        text: "\uD83D\uDD12"
                         font.pixelSize: 32
                     }
 
@@ -75,7 +73,7 @@ Page {
             }
 
             Label {
-                text: "Forgot your password?"
+                text: "Create a new password"
                 color: root.textColor
                 font.pixelSize: 22
                 font.bold: true
@@ -83,7 +81,7 @@ Page {
             }
 
             Label {
-                text: "Enter the email address associated with your account and we'll send you a verification code to reset your password."
+                text: "Enter your new password below."
                 color: root.mutedColor
                 font.pixelSize: 14
                 wrapMode: Text.WordWrap
@@ -92,9 +90,10 @@ Page {
             }
 
             AppTextInput {
-                id: emailInput
-                label: "Email address"
-                placeholder: "name@example.com"
+                id: newPasswordInput
+                label: "New password"
+                placeholder: "Enter new password"
+                password: true
                 required: true
                 fieldHeight: 52
                 backgroundColor: root.surfaceColor
@@ -109,6 +108,24 @@ Page {
                 Layout.topMargin: 12
             }
 
+            AppTextInput {
+                id: confirmPasswordInput
+                label: "Confirm password"
+                placeholder: "Re-enter new password"
+                password: true
+                required: true
+                fieldHeight: 52
+                backgroundColor: root.surfaceColor
+                textColor: root.textColor
+                labelColor: root.textColor
+                placeholderColor: "#9CA3AF"
+                borderColor: root.borderColor
+                focusColor: root.primaryColor
+                errorColor: root.errorColor
+                Layout.fillWidth: true
+                Layout.preferredHeight: 76
+            }
+
             Label {
                 id: errorLabel
                 visible: text.length > 0
@@ -119,15 +136,25 @@ Page {
                 Layout.fillWidth: true
             }
 
+            Label {
+                id: successLabel
+                visible: text.length > 0
+                text: ""
+                color: "#16A34A"
+                font.pixelSize: 13
+                wrapMode: Text.WordWrap
+                Layout.fillWidth: true
+            }
+
             Button {
-                id: sendCodeButton
-                text: root.busy ? "Sending code..." : "Send verification code"
+                id: resetButton
+                text: root.busy ? "Resetting..." : "Reset password"
                 enabled: !root.busy
                 Layout.fillWidth: true
                 Layout.preferredHeight: 52
 
                 contentItem: Text {
-                    text: sendCodeButton.text
+                    text: resetButton.text
                     color: "#FFFFFF"
                     font.pixelSize: 15
                     font.bold: true
@@ -137,61 +164,12 @@ Page {
 
                 background: Rectangle {
                     radius: 12
-                    color: !sendCodeButton.enabled ? "#93C5FD"
-                           : sendCodeButton.down ? "#1D4ED8"
+                    color: !resetButton.enabled ? "#93C5FD"
+                           : resetButton.down ? "#1D4ED8"
                            : root.primaryColor
                 }
 
-                onClicked: root.submitEmail()
-            }
-
-            RowLayout {
-                Layout.fillWidth: true
-                Layout.topMargin: 8
-                spacing: 12
-
-                Rectangle {
-                    Layout.fillWidth: true
-                    height: 1
-                    color: root.borderColor
-                }
-
-                Label {
-                    text: "or"
-                    color: root.mutedColor
-                    font.pixelSize: 12
-                }
-
-                Rectangle {
-                    Layout.fillWidth: true
-                    height: 1
-                    color: root.borderColor
-                }
-            }
-
-            Button {
-                id: backToSignInButton
-                text: "Back to sign in"
-                Layout.fillWidth: true
-                Layout.preferredHeight: 50
-
-                contentItem: Text {
-                    text: backToSignInButton.text
-                    color: root.primaryColor
-                    font.pixelSize: 15
-                    font.bold: true
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                }
-
-                background: Rectangle {
-                    radius: 12
-                    color: backToSignInButton.down ? "#EFF6FF" : root.pageColor
-                    border.color: root.primaryColor
-                    border.width: 1
-                }
-
-                onClicked: NavUtils.pop()
+                onClicked: root.submitReset()
             }
         }
     }
@@ -199,78 +177,69 @@ Page {
     Shortcut {
         sequence: "Return"
         enabled: !root.busy
-        onActivated: root.submitEmail()
+        onActivated: root.submitReset()
     }
 
     AppLoadingDialog {
         id: loadingDialog
-        title: "Sending code"
-        message: "Sending verification code to your email..."
+        title: "Resetting password"
+        message: "Updating your password..."
     }
 
-    function submitEmail() {
+    function submitReset() {
         if (root.busy)
             return;
 
-        const email = emailInput.text.trim().toLowerCase();
+        const newPass = newPasswordInput.text;
+        const confirmPass = confirmPasswordInput.text;
 
-        if (email.length === 0) {
-            errorLabel.text = "Enter your email address to continue.";
+        if (newPass.length === 0) {
+            errorLabel.text = "Enter a new password.";
             return;
         }
 
-        if (email.indexOf("@") === -1) {
-            errorLabel.text = "Enter a valid email address.";
+        if (newPass.length < 6) {
+            errorLabel.text = "Password must be at least 6 characters.";
+            return;
+        }
+
+        if (newPass !== confirmPass) {
+            errorLabel.text = "Passwords do not match.";
             return;
         }
 
         errorLabel.text = "";
-        root.pendingAction = "checkAccount";
-        AuthController.checkAccount(email);
+        successLabel.text = "";
+        AuthController.resetPassword(root.email, newPass);
     }
 
     Connections {
         target: AuthController
 
         function onIsLoadingChanged(isLoading) {
-            if (isLoading && root.pendingAction.length > 0)
+            if (isLoading)
                 loadingDialog.open();
             else
                 loadingDialog.close();
         }
 
-        function onAccountChecked(exists) {
-            if (root.pendingAction !== "checkAccount")
-                return;
-
-            if (!exists) {
-                root.pendingAction = "";
-                loadingDialog.close();
-                errorLabel.text = "No account found with that email address.";
-                return;
-            }
-
-            root.pendingAction = "requestOtp";
-            AuthController.requestOtp(emailInput.text.trim().toLowerCase(), root.otpPurpose);
-        }
-
-        function onOtpRequested(status) {
-            if (root.pendingAction !== "requestOtp")
-                return;
-
-            root.pendingAction = "";
+        function onPasswordReset(status) {
             loadingDialog.close();
-
             if (status) {
                 errorLabel.text = "";
-                NavUtils.navigateToOtp(
-                    emailInput.text.trim().toLowerCase(),
-                    root.otpPurpose,
-                    ""
-                );
+                successLabel.text = "Password reset successfully! Redirecting to sign in...";
+                resetTimer.start();
             } else {
-                errorLabel.text = "Could not send the verification code. Try again.";
+                errorLabel.text = "Failed to reset password. Please try again.";
+                successLabel.text = "";
             }
         }
+    }
+
+    Timer {
+        id: resetTimer
+        interval: 2000
+        repeat: false
+        onTriggered: NavUtils.resetToSignIn()
     }
 }

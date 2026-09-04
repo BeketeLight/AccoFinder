@@ -28,6 +28,7 @@ public:
     Q_INVOKABLE void requestOtp(const QString& email, const QString& purpose);
     Q_INVOKABLE void verifyOtp(const QString& email, const QString& code, const QString& purpose);
     Q_INVOKABLE void checkAccount(const QString& email);
+    Q_INVOKABLE void resetPassword(const QString& email, const QString& newPassword);
     Q_INVOKABLE void signInWithGoogle(const QString& authUrl);
     Q_INVOKABLE void handleGoogleAuthUrl(const QString& url);
     Q_INVOKABLE void fetchProfile();
@@ -46,6 +47,7 @@ signals:
     void otpRequested(bool status);
     void otpVerified(bool status);
     void accountChecked(const bool& status);
+    void passwordReset(bool status);
     void profileFetched();
     void profileFetchFailed(const QString& error);
     void profileSaved(bool status);

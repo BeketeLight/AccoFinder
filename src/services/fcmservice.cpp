@@ -57,16 +57,63 @@ QString FcmService::getFcmToken()
 void FcmService::registerToken()
 {
 #if defined(Q_OS_ANDROID)
+    QJniEnvironment env;
+
+    // Check if Google Play Services is available before calling any Firebase APIs.
+    // On devices without GMS (e.g. Huawei, some Chinese OEM devices),
+    // FirebaseMessaging.getInstance() throws a fatal exception that crashes
+    // the app via JNI.
+    {
+        QJniObject availability = QJniObject::callStaticObjectMethod(
+            "com/google/android/gms/common/GoogleApiAvailability",
+            "getInstance",
+            "()Lcom/google/android/gms/common/GoogleApiAvailability;");
+        if (env->ExceptionCheck()) {
+            env->ExceptionClear();
+            qWarning() << "[FCM] Google Play Services not available. Skipping FCM registration.";
+            return;
+        }
+        if (availability.isValid()) {
+            int result = availability.callMethod<jint>(
+                "isGooglePlayServicesAvailable",
+                "(Landroid/content/Context;)I",
+                QNativeInterface::QAndroidApplication::context().object());
+            if (env->ExceptionCheck()) {
+                env->ExceptionClear();
+                qWarning() << "[FCM] GMS availability check failed. Skipping FCM registration.";
+                return;
+            }
+            if (result != 0) {
+                qWarning() << "[FCM] Google Play Services not available (code"
+                           << result << "). Skipping FCM registration.";
+                return;
+            }
+        } else {
+            qWarning() << "[FCM] Google Play Services not found on device. Skipping FCM registration.";
+            return;
+        }
+    }
+
     QJniObject context = QNativeInterface::QAndroidApplication::context();
     if (!context.isValid()) {
         qWarning() << "[FCM] No valid Android context";
         return;
     }
 
+    // Clear any pending JNI exception from previous calls
+    if (env->ExceptionCheck()) {
+        env->ExceptionClear();
+    }
+
     QJniObject firebaseMessaging = QJniObject::callStaticObjectMethod(
         "com/google/firebase/messaging/FirebaseMessaging",
         "getInstance",
         "()Lcom/google/firebase/messaging/FirebaseMessaging;");
+    if (env->ExceptionCheck()) {
+        env->ExceptionClear();
+        qWarning() << "[FCM] FirebaseMessaging.getInstance() threw an exception";
+        return;
+    }
     if (!firebaseMessaging.isValid()) {
         qWarning() << "[FCM] FirebaseMessaging.getInstance() failed";
         return;
@@ -74,6 +121,11 @@ void FcmService::registerToken()
 
     QJniObject tokenTask = firebaseMessaging.callObjectMethod(
         "getToken", "()Lcom/google/android/gms/tasks/Task;");
+    if (env->ExceptionCheck()) {
+        env->ExceptionClear();
+        qWarning() << "[FCM] getToken() threw an exception";
+        return;
+    }
     if (!tokenTask.isValid()) {
         qWarning() << "[FCM] getToken() returned invalid task";
         return;
@@ -88,6 +140,11 @@ void FcmService::registerToken()
         "addOnSuccessListener",
         "(Lcom/google/android/gms/tasks/OnSuccessListener;)Lcom/google/android/gms/tasks/Task;",
         listener.object());
+    if (env->ExceptionCheck()) {
+        env->ExceptionClear();
+        qWarning() << "[FCM] addOnSuccessListener() threw an exception";
+        return;
+    }
 #else
     // Non-Android: nothing to register
 #endif
@@ -104,12 +161,19 @@ void FcmService::pollPendingData()
 #if defined(Q_OS_ANDROID)
     QJniEnvironment env;
 
+    // Clear any stale JNI exception before making calls
+    if (env->ExceptionCheck()) {
+        env->ExceptionClear();
+    }
+
     // Check for refreshed token from FcmBridge
     QJniObject tokenResult = QJniObject::callStaticObjectMethod(
         "com/accofinder/FcmBridge",
         "consumePendingToken",
         "()Ljava/lang/String;");
-    if (tokenResult.isValid() && !tokenResult.toString().isEmpty()) {
+    if (env->ExceptionCheck()) {
+        env->ExceptionClear();
+    } else if (tokenResult.isValid() && !tokenResult.toString().isEmpty()) {
         QString newToken = tokenResult.toString();
         qInfo() << "[FCM] Got refreshed token from FcmBridge";
         m_currentToken = newToken;
@@ -124,7 +188,9 @@ void FcmService::pollPendingData()
         "com/accofinder/FcmBridge",
         "consumePendingNotification",
         "()[Ljava/lang/String;");
-    if (notifResult.isValid()) {
+    if (env->ExceptionCheck()) {
+        env->ExceptionClear();
+    } else if (notifResult.isValid()) {
         jobjectArray arr = static_cast<jobjectArray>(notifResult.object());
         if (arr != nullptr && env->GetArrayLength(arr) >= 2) {
             QJniObject title(env->GetObjectArrayElement(arr, 0));

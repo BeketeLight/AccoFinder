@@ -97,6 +97,11 @@ function navigateToAdmins(){
 function navigateToForgotPassword(){
     push("../features/auth/pages/ForgotPasswordPage.qml")
 }
+function navigateToResetPassword(email){
+    push("../features/auth/pages/ResetPasswordPage.qml", {
+        email: email || ""
+    })
+}
 //===================AUTH=======================
 function navigateToSignIn(){
     push("../features/auth/screens/SignInScreen.qml")
@@ -167,6 +172,7 @@ var Navigation = {
     navigateToSignUp: navigateToSignUp,
     navigateToOtp: navigateToOtp,
     navigateToForgotPassword: navigateToForgotPassword,
+    navigateToResetPassword: navigateToResetPassword,
     navigateToAccount: navigateToAccount,
     navigateToProfile: navigateToProfile,
     resetToProfile: resetToProfile,

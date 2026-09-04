@@ -53,6 +53,11 @@ AuthController::AuthController(QObject *parent)
         stopLoading();
         emit accountChecked(status);
     });
+    connect(m_userRepository, &UserRepositoryImpl::passwordReset, this,
+            [this, stopLoading](bool status) {
+        stopLoading();
+        emit passwordReset(status);
+    });
     connect(m_userRepository, &UserRepositoryImpl::profileFetched, this,
             [this, stopLoading]() {
         stopLoading();
@@ -172,6 +177,17 @@ void AuthController::checkAccount(const QString &email)
 
     setLoading(true);
     m_userRepository->checkAccount(email.trimmed());
+}
+
+void AuthController::resetPassword(const QString &email, const QString &newPassword)
+{
+    if (email.trimmed().isEmpty() || newPassword.isEmpty()) {
+        emit passwordReset(false);
+        return;
+    }
+
+    setLoading(true);
+    m_userRepository->resetPassword(email.trimmed(), newPassword);
 }
 
 QString AuthController::googleAuthUrl() const
