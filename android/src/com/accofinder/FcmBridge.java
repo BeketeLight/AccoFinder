@@ -2,6 +2,8 @@ package com.accofinder;
 
 import android.util.Log;
 
+import com.google.firebase.messaging.FirebaseMessaging;
+
 /**
  * JNI bridge for FCM token and notification forwarding to Qt/C++ layer.
  * Called from MyFirebaseMessagingService when tokens refresh or messages arrive.
@@ -11,6 +13,31 @@ public class FcmBridge {
     private static String sPendingToken = null;
     private static String sPendingTitle = null;
     private static String sPendingBody = null;
+
+    /**
+     * Fetches the FCM token entirely in Java. The token is delivered to the
+     * Qt/C++ layer through the same asynchronously-stored pending token that
+     * consumePendingToken() polls.
+     *
+     * This intentionally keeps ALL Firebase / com.google.android.gms.tasks
+     * interaction inside Java. Calling those classes from C++ via JNI is what
+     * aborts the app on some devices (JNI return-type mismatches, listener
+     * overhead), so the native layer only triggers this and polls the result.
+     */
+    public static synchronized void requestToken() {
+        try {
+            FirebaseMessaging.getInstance().getToken()
+                    .addOnSuccessListener(token -> {
+                        if (token != null) {
+                            onTokenRefreshed(token);
+                        }
+                    })
+                    .addOnFailureListener(e ->
+                            Log.e(TAG, "getToken() failed", e));
+        } catch (Exception e) {
+            Log.e(TAG, "requestToken() failed, will retry on next poll", e);
+        }
+    }
 
     public static synchronized void onTokenRefreshed(String token) {
         Log.d(TAG, "Token refreshed, storing for Qt pickup");

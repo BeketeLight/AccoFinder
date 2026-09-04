@@ -27,6 +27,7 @@ public:
     virtual void requestOtp(const QString& email, const QString& purpose) = 0;
     virtual void verifyOtp(const QString& email, const QString& code, const QString& purpose) = 0;
     virtual void checkAccount(const QString& email) =0;
+    virtual void resetPassword(const QString& email, const QString& newPassword) =0;
 
     // Google OAuth
     virtual void signInWithGoogle(const QString& authUrl) = 0;

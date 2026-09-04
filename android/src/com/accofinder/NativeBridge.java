@@ -1,6 +1,7 @@
 package com.accofinder;
 
 import android.content.Context;
+import android.os.Build;
 import android.util.Log;
 
 public class NativeBridge {
@@ -9,11 +10,25 @@ public class NativeBridge {
 
     static {
         try {
-            System.loadLibrary("appAccoFinder_arm64-v8a");
-            isInitialized = true;
-            Log.d(TAG, "Library loaded successfully");
-        } catch (UnsatisfiedLinkError e) {
-            Log.e(TAG, "Library load error", e);
+            // Try ABI-specific library name first, then fall back to generic name.
+            // Qt 6 androiddeployqt may name the library with or without the ABI suffix.
+            String baseName = "appAccoFinder";
+            String abiSpecific = baseName + "_" + Build.SUPPORTED_ABIS[0];
+            try {
+                System.loadLibrary(abiSpecific);
+                isInitialized = true;
+                Log.d(TAG, "Library loaded: " + abiSpecific);
+            } catch (UnsatisfiedLinkError e1) {
+                try {
+                    System.loadLibrary(baseName);
+                    isInitialized = true;
+                    Log.d(TAG, "Library loaded: " + baseName);
+                } catch (UnsatisfiedLinkError e2) {
+                    Log.e(TAG, "Failed to load native library with any name", e2);
+                }
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Unexpected error loading native library", e);
         }
     }
 
@@ -40,7 +55,7 @@ public class NativeBridge {
     public static void invoked() {
         if (!isInitialized) {
             Log.e(TAG, "Native library not loaded");
-            throw new IllegalStateException("Native library not loaded");
+            return;
         }
         try {
             nativeInvoked();

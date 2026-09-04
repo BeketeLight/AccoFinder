@@ -42,13 +42,13 @@ Page{
       }
        RowLayout {
            anchors.fill: parent
+           anchors.leftMargin: 10
+           anchors.rightMargin: 10
            spacing: 0
-           Item {
-               Layout.preferredWidth: 10
-           }
+
          ColumnLayout{
             Layout.preferredHeight: 0
-            Layout.fillWidth: true  // 👈 Distributes tab to 25% of parent width
+            Layout.fillWidth: true  // 👈 Distributes tab evenly across parent width
             Layout.fillHeight: true
             spacing: 0
             ToolButton{
@@ -75,12 +75,9 @@ Page{
                //font.bold: currentIndex === 0
             }
          }
-         Item {
-             Layout.preferredWidth: 10
-         }
          ColumnLayout{
             Layout.preferredHeight: 0
-            Layout.fillWidth: true  // 👈 Distributes tab to 25% of parent width
+            Layout.fillWidth: true  // 👈 Distributes tab evenly across parent width
             Layout.fillHeight: true
             spacing: 0
             visible: footerPageId.userRole === "AGENT" || footerPageId.isAdminUser
@@ -107,7 +104,7 @@ Page{
          }
          ColumnLayout{
             Layout.preferredHeight: 0
-            Layout.fillWidth: true  // 👈 Distributes tab to 25% of parent width
+            Layout.fillWidth: true  // 👈 Distributes tab evenly across parent width
             Layout.fillHeight: true
             spacing: 0
             visible: footerPageId.userRole === "CLIENT" || footerPageId.userRole === ""
@@ -135,7 +132,7 @@ Page{
 
          ColumnLayout{
             Layout.preferredHeight: 0
-            Layout.fillWidth: true // 👈 Distributes tab to 25% of parent width
+            Layout.fillWidth: true // 👈 Distributes tab evenly across parent width
             Layout.fillHeight: true
             spacing: 0
             ToolButton{
@@ -161,7 +158,7 @@ Page{
          }
           ColumnLayout{
              Layout.preferredHeight: 0
-             Layout.fillWidth: true// 👈 Distributes tab to 25% of parent width
+             Layout.fillWidth: true// 👈 Distributes tab evenly across parent width
              Layout.fillHeight: true
              spacing: 0
              ToolButton{

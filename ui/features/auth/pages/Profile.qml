@@ -3,6 +3,8 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import "../../../utils/NavigationUtils.js" as NavUtils
 import "../../properties/components"
+import "../../../components/dialogs"
+import "../../../components/indicators"
 
 Page {
     id: root
@@ -36,6 +38,7 @@ Page {
     property string passwordError: ""
     property string passwordSuccess: ""
     property bool profileSaveDone: false
+    property bool pendingLogout: false
     property string pageTitle: "  Profile"
     property bool showHeader: true
     property bool showBack: false
@@ -636,7 +639,10 @@ Page {
                     border.color: "#FECACA"
                 }
 
-                onClicked: AuthController.logOut()
+                onClicked: {
+                    root.pendingLogout = true
+                    AuthController.logOut()
+                }
             }
         }
     }
@@ -645,7 +651,26 @@ Page {
         target: AuthController
 
         function onUserLoggedOut() {
+            root.pendingLogout = false
             NavUtils.resetToSignIn();
+        }
+    }
+
+    AppLoadingDialog {
+        id: logoutDialog
+        title: "Signing out"
+        message: "Signing out..."
+    }
+
+    Connections {
+        target: AuthController
+        enabled: root.pendingLogout
+
+        function onIsLoadingChanged(isLoading) {
+            if (isLoading)
+                logoutDialog.open()
+            else
+                logoutDialog.close()
         }
     }
 
