@@ -2,30 +2,20 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Effects
-
 import "../../../components/inputs"
 import "../../../utils/NavigationUtils.js" as NavUtils
 
 Page {
     id: root
 
-    // ========== CONTROL THE SHARED APP HEADER ==========
+    // ========== HEADER CONTROL ==========
     property string pageTitle: ""
     property bool isSearchBar: true
     property bool showBack: true
     property bool showHeader: true
     property bool searchReadOnly: false
 
-    function onSearchBarTapped() {
-        root.searchRequested();
-    }
-
-    function goBack() {
-        root.backRequested();
-        NavUtils.pop();
-    }
-
-    // ========== DATA (pass from Screen) ==========
+    // ========== PROPERTY DATA ==========
     property string propertyId: ""
     property string propertyTitle: "Modern 2 Bedroom Apartment"
     property string location: "Area 47, Lilongwe"
@@ -42,20 +32,54 @@ Page {
     property string imageUrls: ""
     property var imageList: root.imageUrls ? root.imageUrls.split(",") : []
 
-    // etc.
+    // ========== AGENT ==========
+    property string agentFirstName: "John"
+    property string agentLastName: "Banda"
+    property real agentRating: 4.6
+    property int agentReviewCount: 28
 
-    // Signals
+    // ========== REVIEWS (dummy) ==========
+    property var reviewsModel: [
+        {
+            name: "Mary Phiri",
+            rating: 5,
+            comment: "Very clean and well maintained. Agent was helpful.",
+            date: "2 weeks ago"
+        },
+        {
+            name: "James Banda",
+            rating: 4,
+            comment: "Good location, peaceful area. Would recommend.",
+            date: "1 month ago"
+        },
+        {
+            name: "Grace Mwale",
+            rating: 5,
+            comment: "Excellent experience. Fast response from the agent.",
+            date: "1 month ago"
+        }
+    ]
+
+    // ========== SIGNALS ==========
     signal backRequested
     signal bookRequested
     signal contactRequested
     signal favoriteToggled
     signal searchRequested
 
+    function onSearchBarTapped() {
+        root.searchRequested();
+    }
+    function goBack() {
+        root.backRequested();
+        NavUtils.pop();
+    }
+
     background: Rectangle {
         color: "#FFFFFF"
     }
 
-    // ========== SCROLLABLE CONTENT ==========
+    // ========== CONTENT ==========
     Flickable {
         id: flickable
         anchors.fill: parent
@@ -69,34 +93,29 @@ Page {
             width: flickable.width
             spacing: 0
 
-            // ========== IMAGE CAROUSEL ==========
+            // ===== IMAGE CAROUSEL =====
             Item {
                 Layout.fillWidth: true
-                Layout.preferredHeight: 320
+                Layout.preferredHeight: 300
 
                 SwipeView {
                     id: imageSwipe
                     anchors.fill: parent
                     clip: true
 
-                    // Example images (replace with real model later)
                     Repeater {
-                        model: root.imageList          // list of image urls
+                        model: root.imageList.length > 0 ? root.imageList : [root.imageUrl]
 
                         Image {
-                            required property string modelData   // each url
-                            // or required property var model if using objects
-
+                            required property var modelData
                             source: modelData
                             fillMode: Image.PreserveAspectCrop
                             asynchronous: true
 
-                            // Optional placeholder while loading
                             Rectangle {
                                 anchors.fill: parent
                                 color: "#F5F5F5"
                                 visible: parent.status !== Image.Ready
-
                                 Label {
                                     anchors.centerIn: parent
                                     text: "🏠"
@@ -121,42 +140,19 @@ Page {
                     Label {
                         id: counterText
                         anchors.centerIn: parent
-                        text: (imageSwipe.currentIndex + 1) + " / " + imageSwipe.count
+                        text: (imageSwipe.currentIndex + 1) + " / " + Math.max(imageSwipe.count, 1)
                         color: "white"
                         font.pixelSize: 12
                     }
                 }
-
-                // Status badge
-                // Rectangle {
-                //     // anchors.right: parent.right
-                //     // anchors.top: parent.top
-                //     // anchors.margins: 12
-                //     anchors.centerIn: parent
-                //     height: 26
-                //     radius: 8
-                //     color: "red"
-                //     //color: root.status === "Available" ? "#DCFCE7" : root.status === "Booked" ? "#FEE2E2" : "#FEF3C7"
-
-                //     Label {
-                //         anchors.centerIn: parent
-                //         leftPadding: 10
-                //         rightPadding: 10
-                //         text: root.status
-                //         font.pixelSize: 12
-                //         font.bold: true
-                //         color: root.status === "Available" ? "#16A34A" : root.status === "Booked" ? "#DC2626" : "#D97706"
-                //     }
-                // }
             }
 
-            // ========== MAIN INFO ==========
+            // ===== MAIN INFO =====
             ColumnLayout {
                 Layout.fillWidth: true
                 Layout.margins: 16
-                spacing: 10
+                spacing: 8
 
-                // Title
                 Label {
                     text: root.propertyTitle
                     font.pixelSize: 20
@@ -166,7 +162,6 @@ Page {
                     Layout.fillWidth: true
                 }
 
-                // Location
                 RowLayout {
                     spacing: 4
                     Label {
@@ -180,15 +175,13 @@ Page {
                     }
                 }
 
-                // Price
                 Label {
                     text: "MWK " + Number(root.price).toLocaleString(Qt.locale(), "f", 0)
-                    font.pixelSize: 26
+                    font.pixelSize: 24
                     font.bold: true
-                    color: "#2563EB"          // Primary
+                    color: "#2563EB"
                 }
 
-                // Quick specs
                 RowLayout {
                     spacing: 16
                     Layout.topMargin: 4
@@ -197,12 +190,10 @@ Page {
                         icon: "🛏"
                         label: root.bedrooms + " Beds"
                     }
-
                     SpecItem {
                         icon: "🛁"
                         label: root.bathrooms + " Baths"
                     }
-
                     SpecItem {
                         icon: "📐"
                         label: root.size
@@ -218,14 +209,13 @@ Page {
                 }
             }
 
-            // Divider
             Rectangle {
                 Layout.fillWidth: true
                 height: 8
                 color: "#F5F5F5"
             }
 
-            // ========== DESCRIPTION ==========
+            // ===== DESCRIPTION =====
             ColumnLayout {
                 Layout.fillWidth: true
                 Layout.margins: 16
@@ -248,18 +238,17 @@ Page {
                 }
             }
 
-            // Divider
             Rectangle {
                 Layout.fillWidth: true
                 height: 8
                 color: "#F5F5F5"
             }
 
-            // ========== AGENT ==========
+            // ===== AGENT =====
             ColumnLayout {
                 Layout.fillWidth: true
                 Layout.margins: 16
-                spacing: 10
+                spacing: 12
 
                 Label {
                     text: "Listed by"
@@ -279,8 +268,8 @@ Page {
 
                         Label {
                             anchors.centerIn: parent
-                            text: root.agentName.charAt(0)
-                            font.pixelSize: 20
+                            text: (root.agentFirstName.charAt(0) + root.agentLastName.charAt(0)).toUpperCase()
+                            font.pixelSize: 16
                             font.bold: true
                             color: "#2563EB"
                         }
@@ -288,31 +277,42 @@ Page {
 
                     ColumnLayout {
                         spacing: 2
+                        Layout.fillWidth: true
+
                         Label {
-                            text: root.agentName
+                            text: root.agentFirstName + " " + root.agentLastName
                             font.pixelSize: 15
                             font.weight: Font.Medium
                             color: "#1F2937"
                         }
-                        Label {
-                            text: "Property Agent"
-                            font.pixelSize: 13
-                            color: "#6B7280"
-                        }
-                    }
 
-                    Item {
-                        Layout.fillWidth: true
+                        RowLayout {
+                            spacing: 6
+                            Label {
+                                text: "Property Agent"
+                                font.pixelSize: 13
+                                color: "#6B7280"
+                            }
+                            Label {
+                                text: "★ " + root.agentRating.toFixed(1)
+                                font.pixelSize: 13
+                                font.bold: true
+                                color: "#F59E0B"
+                            }
+                            Label {
+                                text: "(" + root.agentReviewCount + ")"
+                                font.pixelSize: 12
+                                color: "#9CA3AF"
+                            }
+                        }
                     }
 
                     Button {
                         text: "Contact"
-                        flat: true
                         onClicked: {
                             if (root.agentPhone.length > 0)
                                 Qt.openUrlExternally("tel:" + root.agentPhone);
                         }
-
                         background: Rectangle {
                             radius: 8
                             color: "#EFF6FF"
@@ -329,15 +329,118 @@ Page {
                 }
             }
 
-            // Bottom spacing so content is not hidden behind footer
+            Rectangle {
+                Layout.fillWidth: true
+                height: 8
+                color: "#F5F5F5"
+            }
+
+            // ===== REVIEWS =====
+            ColumnLayout {
+                Layout.fillWidth: true
+                Layout.margins: 16
+                spacing: 12
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    Label {
+                        text: "Reviews"
+                        font.pixelSize: 16
+                        font.weight: Font.DemiBold
+                        color: "#1F2937"
+                        Layout.fillWidth: true
+                    }
+                    Label {
+                        text: root.agentReviewCount + " reviews"
+                        font.pixelSize: 13
+                        color: "#6B7280"
+                    }
+                }
+
+                Repeater {
+                    model: root.reviewsModel
+
+                    Rectangle {
+                        Layout.fillWidth: true
+                        radius: 12
+                        color: "#F9FAFB"
+                        border.color: "#E5E7EB"
+                        border.width: 1
+                        height: reviewCol.height + 24
+
+                        ColumnLayout {
+                            id: reviewCol
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            anchors.top: parent.top
+                            anchors.margins: 12
+                            spacing: 6
+
+                            RowLayout {
+                                spacing: 8
+
+                                Rectangle {
+                                    width: 32
+                                    height: 32
+                                    radius: 16
+                                    color: "#E0E7FF"
+                                    Label {
+                                        anchors.centerIn: parent
+                                        text: modelData.name.charAt(0)
+                                        font.pixelSize: 13
+                                        font.bold: true
+                                        color: "#4338CA"
+                                    }
+                                }
+
+                                ColumnLayout {
+                                    spacing: 1
+                                    Label {
+                                        text: modelData.name
+                                        font.pixelSize: 13
+                                        font.weight: Font.Medium
+                                        color: "#1F2937"
+                                    }
+                                    Label {
+                                        text: modelData.date
+                                        font.pixelSize: 11
+                                        color: "#9CA3AF"
+                                    }
+                                }
+
+                                Item {
+                                    Layout.fillWidth: true
+                                }
+
+                                Label {
+                                    text: "★".repeat(modelData.rating)
+                                    font.pixelSize: 12
+                                    color: "#F59E0B"
+                                }
+                            }
+
+                            Label {
+                                text: modelData.comment
+                                font.pixelSize: 13
+                                color: "#4B5563"
+                                wrapMode: Text.WordWrap
+                                Layout.fillWidth: true
+                                lineHeight: 1.3
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Space for footer
             Item {
                 Layout.fillWidth: true
-                Layout.preferredHeight: 90
+                Layout.preferredHeight: 100
             }
         }
     }
 
-    // ========== STICKY BOTTOM ACTION BAR ==========
+    // ========== FOOTER ==========
     footer: ToolBar {
         height: 72
         background: Rectangle {
@@ -355,12 +458,10 @@ Page {
             anchors.margins: 12
             spacing: 12
 
-            // Contact button (secondary)
             Button {
                 Layout.preferredWidth: 120
                 Layout.fillHeight: true
                 text: "Contact"
-
                 background: Rectangle {
                     radius: 12
                     color: "#FFFFFF"
@@ -381,15 +482,13 @@ Page {
                 }
             }
 
-            // Book Now (primary)
             Button {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 text: "Book Now"
-
                 background: Rectangle {
                     radius: 12
-                    color: "#2563EB"          // Primary
+                    color: "#2563EB"
                 }
                 contentItem: Label {
                     text: parent.text
@@ -409,7 +508,6 @@ Page {
         property string icon
         property string label
         spacing: 4
-
         Label {
             text: icon
             font.pixelSize: 14
