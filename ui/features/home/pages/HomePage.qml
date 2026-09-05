@@ -1,94 +1,108 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-
 import "../components"
 import "../delegates"
 import "../models"
-import "../pages"
 
 Page {
     id: homePageId
-
-    // ========== HEADER (already contains title + search bar) ==========
-    header: HeaderComponent {
-        id: header
-    }
-
-    // ========== CONTENT (this is the important part) ==========
     background: Rectangle {
         color: "#FFFFFF"
     }
 
-    ColumnLayout {
+    // ===== Header as overlay (not using Page.header) =====
+    HeaderComponent {
+        id: headerComponent
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
+        z: 10                          // stay on top of content
+        scrollPosition: mainFlick.contentY
+        maxCollapse: 50
+    }
+
+    // ===== Scrollable content =====
+    Flickable {
+        id: mainFlick
         anchors.fill: parent
-        spacing: 0
+        contentWidth: width
+        contentHeight: contentColumn.height
+        clip: true
+        boundsBehavior: Flickable.StopAtBounds
 
-        // 1. Category Row
-        PropertyCategoryRow {
-            id: categoryRow
-            Layout.fillWidth: true
-            Layout.preferredHeight: 48
-            Layout.topMargin: 8
-            Layout.bottomMargin: 4
+        Column {
+            id: contentColumn
+            width: mainFlick.width
+            spacing: 0
 
-            model: ListModel {
-                ListElement {
-                    name: "All"
-                }
-                ListElement {
-                    name: "Apartments"
-                }
-                ListElement {
-                    name: "Houses"
-                }
-                ListElement {
-                    name: "Rooms"
-                }
-                ListElement {
-                    name: "Studios"
-                }
-                ListElement {
-                    name: "Shared"
-                }
-                ListElement {
-                    name: "Luxury"
+            // Spacer = full height of header when not collapsed
+            // This pushes the real content below the header
+            Item {
+                width: 1
+                height: 50 + 16 + 40   // titleRow + margins + searchBar approx
+            }
+
+            // Categories
+            PropertyCategoryRow {
+                width: parent.width
+                height: 48
+                model: ListModel {
+                    ListElement {
+                        name: "All"
+                    }
+                    ListElement {
+                        name: "Apartments"
+                    }
+                    ListElement {
+                        name: "Houses"
+                    }
+                    ListElement {
+                        name: "Rooms"
+                    }
+                    ListElement {
+                        name: "Studios"
+                    }
+                    ListElement {
+                        name: "Shared"
+                    }
+                    ListElement {
+                        name: "Luxury"
+                    }
                 }
             }
 
-            onCategoryClicked: function (index, name) {
-                console.log("Category selected:", name);
+            // Super Deals
+            SuperDeals {
+                width: parent.width
+                height: 180
             }
-        }
-        SuperDeals {}
 
-        Item {
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            // 2. Property Grid
+            // Section title
+            Label {
+                text: "All Properties"
+                font.pixelSize: 16
+                font.bold: true
+                color: "#1F2937"
+                leftPadding: 16
+                topPadding: 12
+                bottomPadding: 8
+            }
 
-            GridView {
-                id: propertyGrid
-                anchors.fill: parent         // ← Important!
-                anchors.leftMargin: 12
-                anchors.rightMargin: 12
-                anchors.topMargin: 8
+            // Properties
+            Flow {
+                id: propertyFlow
+                width: parent.width
+                leftPadding: 12
+                rightPadding: 12
+                spacing: 10
 
-                cellWidth: (width - 12) / 3
-                cellHeight: 130
-                clip: true
-                visible: count > 0
-
-                model: PropertyListModel {}     // your dummy model
-
-                delegate: Item {
-                    width: GridView.view.cellWidth
-                    height: GridView.view.cellHeight
+                Repeater {
+                    model: PropertyListModel {}
 
                     PropertyCardDelegate {
-                        anchors.centerIn: parent
-                        width: parent.width - 10
-                        height: parent.height - 10
+                        width: (propertyFlow.width - 24 - 10) / 2
+                        height: width * 1.35
 
                         propertyId: model.propertyId
                         title: model.title
@@ -98,16 +112,14 @@ Page {
                         imageUrls: model.imageUrls
                         status: model.status
                         isVerified: model.isVerified
-                        onClicked: console.log("Clicked:", model.propertyId)
                     }
                 }
             }
-            // Empty state
-            Label {
-                anchors.centerIn: parent
-                text: "No Properties Found"
-                visible: propertyGrid.count === 0
-                font.pixelSize: 18
+            Item {
+                width: 1
+                height: headerComponent.maxCollapse + 52
+                //height: 48 + 12 + 40
+                // height: 48 + 48
             }
         }
     }

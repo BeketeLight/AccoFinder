@@ -19,75 +19,64 @@ Item {
     signal clicked
     signal favoriteClicked
 
-    width: 180
-    height: 240
+    // Remove fixed width/height - let the GridView control this
+    // width: 100  // REMOVE THIS
+    // height: 240 // REMOVE THIS
 
-    // Background
-    Rectangle {
+    Column {
         anchors.fill: parent
-        radius: 5
-        color: "#FFFFFF"
-        border.color: "#E5E7EB"
-        border.width: 1
-        clip: true
-
-        layer.enabled: true
-        layer.effect: MultiEffect {
-            shadowEnabled: true
-            shadowColor: "#15000000"
-            shadowBlur: 0.6
-            shadowVerticalOffset: 2
-        }
-    }
-
-    ColumnLayout {
-        anchors.fill: parent
-        spacing: 0
+        spacing: 4  // Small gap between image and price
 
         // ========== IMAGE ==========
-        Item {
-            Layout.fillWidth: true
-            Layout.preferredHeight: 105
+        Rectangle {
+            id: borderRect
+            width: parent.width
+            height: parent.height - 24  // Leave space for price (adjust as needed)
+            border.color: "#E5E7EB"
+            color: "transparent"
+            border.width: 1.5
+            radius: 16
+
+            Image {
+                id: img
+                anchors.fill: parent
+                anchors.margins: borderRect.border.width
+                source: root.imageUrl
+                fillMode: Image.PreserveAspectCrop
+                asynchronous: true
+
+                layer.enabled: true
+                layer.smooth: true
+                layer.effect: MultiEffect {
+                    maskEnabled: true
+                    maskSource: mask
+                }
+                clip: true
+            }
 
             Rectangle {
+                id: mask
                 anchors.fill: parent
-                radius: 5
-                color: "red" //"#F5F5F5"
-                clip: true
-
-                Image {
-                    anchors.fill: parent
-                    source: root.imageUrl
-                    fillMode: Image.PreserveAspectCrop
-                    asynchronous: true
-
-                    Rectangle {
-                        anchors.fill: parent
-                        color: "#F5F5F5"
-                        visible: parent.status !== Image.Ready
-
-                        Label {
-                            anchors.centerIn: parent
-                            text: "🏠"
-                            font.pixelSize: 28
-                            opacity: 0.3
-                        }
-                    }
-                }
+                anchors.margins: borderRect.border.width
+                radius: 16
+                color: "black"
+                visible: false
+                layer.enabled: true
+                layer.smooth: true
             }
         }
-        // Price
+
+        // ========== PRICE ==========
         Label {
+            width: parent.width
+            height: 20  // Fixed height for price
             text: "MWK " + Number(root.price).toLocaleString(Qt.locale(), "f", 0)
             font.pixelSize: 14
             font.bold: true
             color: "#2563EB"
             elide: Text.ElideRight
-
-            Layout.fillWidth: true                    // take full width
-            horizontalAlignment: Text.AlignHCenter    // ← center the text
-            Layout.alignment: Qt.AlignHCenter         // ← center the item (optional)
-            //Layout.topMargin: 4
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
         }
     }
 

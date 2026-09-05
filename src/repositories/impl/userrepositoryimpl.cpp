@@ -256,6 +256,22 @@ void UserRepositoryImpl::checkAccount(const QString &email)
         }, true);
 }
 
+void UserRepositoryImpl::resetPassword(const QString &email, const QString &newPassword)
+{
+    QString normalizedEmail = email.trimmed().toLower();
+    QJsonObject payload;
+    payload["email"] = normalizedEmail;
+    payload["newPassword"] = newPassword;
+
+    APIClient::instance().post(
+        "/auth/password/reset",
+        payload,
+        [this](bool success, const QJsonObject &)
+        {
+            emit passwordReset(success);
+        }, true);
+}
+
 void UserRepositoryImpl::signInWithGoogle(const QString &authUrl)
 {
     QUrl url(authUrl);

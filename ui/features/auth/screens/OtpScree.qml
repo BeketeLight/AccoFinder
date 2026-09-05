@@ -20,7 +20,7 @@ Page {
     property color errorColor: "#EF4444"
     property bool busy: AuthController.isLoading
     property string pendingAction: ""
-    property string pageTitle: "Verify email"
+    property string pageTitle: root.purpose === "password_reset" ? "Verify identity" : "Verify email"
     property bool showHeader: true
     property bool showBottomBorder: false
 
@@ -109,9 +109,13 @@ Page {
 
             if (status) {
                 otpStep.clearError();
-                UtilsModule.NavigationUtils.resetToSignIn();
+                if (root.purpose === "password_reset") {
+                    UtilsModule.NavigationUtils.navigateToResetPassword(root.email);
+                } else {
+                    UtilsModule.NavigationUtils.resetToSignIn();
+                }
             } else {
-                otpStep.setError("Email verification failed. Check the code and try again.");
+                otpStep.setError("Verification failed. Check the code and try again.");
             }
         }
 
