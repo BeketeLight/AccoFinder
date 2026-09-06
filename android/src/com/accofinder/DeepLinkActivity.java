@@ -20,6 +20,10 @@ public class DeepLinkActivity extends QtActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Capture the app context for lazy Firebase initialization. Since we
+        // removed FirebaseInitProvider, the first real Firebase use (token
+        // request / foreground notification) must bootstrap FirebaseApp itself.
+        FcmBridge.initialize(this);
         captureUrl(getIntent());
     }
 

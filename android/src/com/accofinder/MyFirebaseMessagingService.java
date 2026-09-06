@@ -20,6 +20,16 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private static final String CHANNEL_ID = "fcm_notification_channel";
 
     @Override
+    public void onCreate() {
+        super.onCreate();
+        // FirebaseInitProvider is removed from the manifest, so the process may
+        // be started purely to deliver an FCM message. Initialize FirebaseApp
+        // here (idempotent) so token sync and message handling work in both the
+        // foreground and the terminated-app background cases.
+        FcmBridge.initialize(this);
+    }
+
+    @Override
     public void onNewToken(String token) {
         super.onNewToken(token);
         Log.d(TAG, "FCM token refreshed: " + token.substring(0, Math.min(20, token.length())) + "...");

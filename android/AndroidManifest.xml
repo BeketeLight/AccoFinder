@@ -41,7 +41,7 @@
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
-                <data android:scheme="accofinder" android:host="auth"/>
+                <data android:host="auth" android:scheme="accofinder"/>
             </intent-filter>
         </activity>
         <!-- ========================= -->
@@ -70,5 +70,12 @@
         <provider android:authorities="${applicationId}.qtprovider" android:exported="false" android:grantUriPermissions="true" android:name="androidx.core.content.FileProvider">
             <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/qtprovider_paths"/>
         </provider>
+        <!-- Remove Firebase's auto-start ContentProvider (FirebaseInitProvider):
+             it runs FirebaseApp.initializeApp() synchronously on the main thread
+             before ANY activity renders, adding cold-start latency on every app
+             launch. Firebase is instead initialized lazily on first use via
+             FcmBridge.initialize() (called from DeepLinkActivity and the FCM
+             service), keeping push notifications fully functional. -->
+        <provider android:name="com.google.firebase.provider.FirebaseInitProvider" tools:node="remove"/>
     </application>
 </manifest>
