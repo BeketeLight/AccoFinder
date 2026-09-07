@@ -20,6 +20,9 @@ public:
     Q_INVOKABLE void loadRooms();
     Q_INVOKABLE void loadRoom(const QString& roomId);
     Q_INVOKABLE void createRoom(const QString& propertyId, const QString& type, bool available);
+    Q_INVOKABLE void createRoomWithPrice(const QString& propertyId, const QString& type, double price, bool available);
+    Q_INVOKABLE void updateRoom(const QString& roomId, const QString& type, double price, bool available);
+    Q_INVOKABLE void deleteRoom(const QString& roomId);
 
     Q_INVOKABLE int availableRoomsCount() const;
     Q_INVOKABLE int bookedRoomsCount() const;
@@ -40,11 +43,13 @@ private slots:
     void onRoomsLoaded(const QList<QSharedPointer<Room>>& rooms);
     void onRoomLoaded(const QSharedPointer<Room>& room);
     void onRoomCreated(const QSharedPointer<Room>& room);
+    void onRoomDeleted(const QString& roomId);
     void onError(const QString& message);
 
 signals:
     void isLoadingChanged(bool isLoading);
     void roomError(const QString& error);
+    void roomDeletedSignal(const QString& roomId);
 };
 
 #endif // ROOMVIEWMODEL_H

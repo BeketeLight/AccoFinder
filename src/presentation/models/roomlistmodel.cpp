@@ -82,6 +82,32 @@ void RoomListModel::apppendRoom(QSharedPointer<Room> room)
     endInsertRows();
 }
 
+void RoomListModel::upsertRoom(QSharedPointer<Room> room)
+{
+    if (!room)
+        return;
+    for (int i = 0; i < m_rooms.size(); ++i) {
+        if (m_rooms.at(i) && m_rooms.at(i)->getId() == room->getId()) {
+            m_rooms[i] = room;
+            emit dataChanged(index(i), index(i));
+            return;
+        }
+    }
+    apppendRoom(room);
+}
+
+void RoomListModel::removeRoom(const QString& roomId)
+{
+    for (int i = 0; i < m_rooms.size(); ++i) {
+        if (m_rooms.at(i) && m_rooms.at(i)->getId() == roomId) {
+            beginRemoveRows(QModelIndex(), i, i);
+            m_rooms.removeAt(i);
+            endRemoveRows();
+            return;
+        }
+    }
+}
+
 int RoomListModel::availableCount() const
 {
     int count = 0;
@@ -111,6 +137,7 @@ QVariantList RoomListModel::roomsForProperty(const QString &propertyId) const
         if (room->getPropertyId() != propertyId)
             continue;
         QVariantMap m;
+        m["roomId"] = room->getId();
         m["roomType"] = room->getType();
         m["price"] = room->getPrice();
         m["available"] = room->getAvailable();

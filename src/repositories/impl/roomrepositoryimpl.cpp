@@ -29,6 +29,30 @@ void RoomRepositoryImpl::createRoom(const QString &id,
         );
 }
 
+void RoomRepositoryImpl::createRoomWithPrice(const QString &id,
+                                             const QString &propertyId,
+                                             const QString &type,
+                                             double price,
+                                             bool available)
+{
+    RoomDto dto(id,propertyId,type,price,available);
+    APIClient::instance().post(
+        "/rooms/",
+        dto.toJson(),
+        [this](bool success,
+               const QJsonObject& response)
+        {
+            if (success)
+            {
+                RoomDto roomDTO = RoomDto::fromJson(response["data"].toObject());
+                QSharedPointer<Room> room= roomDTO.toDomainModel();
+
+                emit roomCreated(room);
+            }
+        }, false
+        );
+}
+
 void RoomRepositoryImpl::getRooms()
 {
     // The backend /rooms/ endpoint paginates with a server default of 10 rows
@@ -78,37 +102,47 @@ void RoomRepositoryImpl::getRoomById(const QString &id)
     );
 }
 
-void RoomRepositoryImpl::updateRoom(Room *room)
+void RoomRepositoryImpl::updateRoom(const QString &roomId,
+                                    const QString &type,
+                                    double price,
+                                    bool available)
 {
-    // APIClient::instance().patch(
-    //     "/rooms/" + id,
-    //     [this](bool success,
-    //            const QJsonObject& response)
-    //     {
-    //         if(success)
-    //         {
-    //             RoomDto roomDTO = RoomDto::fromJson(response["data"].toObject());
-    //             emit roomLoaded(roomDTO.toDomainModel());
-    //         }
-    //         else {
-    //             emit error("no room was found");
-    //         }
-    //     }
-    // );
-    
+    // The PATCH body only carries the fields the UI lets the agent change.
+    // The refreshed room is pushed back into the cache via roomLoaded (the
+    // response row replaces the cached row in RoomListModel::upsertRoom).
+    QJsonObject payload;
+    payload["type"] = type;
+    payload["price"] = price;
+    payload["available"] = available;
+
+    APIClient::instance().patch(
+        "/rooms/" + roomId,
+        payload,
+        [this](bool success,
+               const QJsonObject& response)
+        {
+            if (success)
+            {
+                RoomDto roomDTO = RoomDto::fromJson(response["data"].toObject());
+                emit roomLoaded(roomDTO.toDomainModel());
+            }
+            else {
+                emit error("no room was found");
+            }
+        }, false
+    );
 }
 
 void RoomRepositoryImpl::deleteRoom(const QString &id)
 {
     APIClient::instance().del(
         "/rooms/" + id,
-        [this](bool success,
+        [this, id](bool success,
                const QJsonObject& response)
         {
             if(success)
             {
-                RoomDto roomDTO = RoomDto::fromJson(response["data"].toObject());
-                emit roomLoaded(roomDTO.toDomainModel());
+                emit roomDeleted(id);
             }
             else {
                 emit error("no room was found");

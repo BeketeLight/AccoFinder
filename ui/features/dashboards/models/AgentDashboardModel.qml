@@ -27,11 +27,19 @@ Item {
         var myId = String(AppSettings.userId())
         var out = []
         var server = PropertyViewModel.propertiesForView() || []
+        // Deduplicate by property id (the shared view model can hold the same
+        // listing more than once across refreshes), mirroring the dashboard's
+        // keyed-uniqueness strategy.
+        var seen = ({})
         for (var s = 0; s < server.length; s++) {
             var sp = server[s] || {}
             var ownerId = String(sp.agentId || "")
             if (ownerId.length > 0 && ownerId !== myId)
                 continue
+            var pid = String(sp.id || "")
+            if (pid.length === 0 || seen.hasOwnProperty(pid))
+                continue
+            seen[pid] = true
             out.push(sp)
         }
         return out
@@ -235,11 +243,20 @@ Item {
         // Server-backed properties that need the agent's action. Detection is
         // limited to the fields exposed by propertiesForView(): status + price.
         var server = PropertyViewModel.propertiesForView() || []
+        // A property may appear more than once in the shared view model; only
+        // process the first occurrence so the attention list is never duped.
+        var seenServer = ({})
         for (var s = 0; s < server.length; s++) {
             var sp = server[s] || {}
             var ownerId = String(sp.agentId || "")
             if (ownerId.length > 0 && ownerId !== String(myId))
                 continue
+            var pid = String(sp.id || "")
+            if (pid.length > 0) {
+                if (seenServer.hasOwnProperty(pid))
+                    continue
+                seenServer[pid] = true
+            }
             var status = String(sp.verificationStatus || "").toUpperCase()
             if (status === "REJECTED") {
                 attentionModelId.append({

@@ -72,8 +72,12 @@ int main(int argc, char *argv[])
     QCoreApplication::setApplicationName("accofinder");
 
     //SplashScreen
+#if defined(Q_OS_ANDROID)
     auto androidApp = app.nativeInterface<QNativeInterface::QAndroidApplication>();
     const bool hasAndroidSplash = (androidApp != nullptr);
+#else
+    const bool hasAndroidSplash = false;
+#endif
 
     QQmlApplicationEngine engine;
     // Register an async image provider that caches decoded images in memory
@@ -217,6 +221,7 @@ int main(int argc, char *argv[])
     // waiting a fixed 3 seconds. The splash is dismissible once the first
     // frame has been rendered, so we give the event loop a single cycle to
     // paint, then remove it. A short fallback guarantees it never lingers.
+#if defined(Q_OS_ANDROID)
     if (hasAndroidSplash) {
         QTimer::singleShot(0, [androidApp]() {
             androidApp->hideSplashScreen(300);
@@ -225,6 +230,9 @@ int main(int argc, char *argv[])
             androidApp->hideSplashScreen(300);
         });
     }
+#else
+    Q_UNUSED(hasAndroidSplash)
+#endif
 
     return QCoreApplication::exec();
 }

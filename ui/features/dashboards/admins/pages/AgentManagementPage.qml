@@ -286,16 +286,107 @@ Item {
                                 anchors.fill: parent
 
                                 onClicked: {
-                                    var newState = !agentRow.model.active
-                                    root.agentsModel.updateAgent(agentRow.model.agentId, { active: newState })
-                                    console.log("Agent status:", agentRow.model.agentId, "->", newState ? "ACTIVE" : "SUSPENDED")
-                                    root.agentUpdated(agentRow.model.agentId)
+                                    agentConfirmDialog.agentId = agentRow.model.agentId
+                                    agentConfirmDialog.agentName = agentRow.model.name
+                                    agentConfirmDialog.activate = !agentRow.model.active
+                                    agentConfirmDialog.open()
                                 }
                             }
                         }
                     }
                 }
             }
+        }
+    }
+
+    Dialog {
+        id: agentConfirmDialog
+        modal: true
+        parent: Overlay.overlay
+        width: Math.min(340, Overlay.overlay ? Overlay.overlay.width - 40 : 340)
+        x: Overlay.overlay ? Math.round((Overlay.overlay.width - width) / 2) : 0
+        y: Overlay.overlay ? Math.round((Overlay.overlay.height - height) / 2) : 0
+        padding: 18
+
+        property string agentId: ""
+        property string agentName: ""
+        property bool activate: false
+
+        title: qsTr("%1 account").arg(agentName)
+
+        contentItem: ColumnLayout {
+            spacing: 12
+
+            Label {
+                Layout.fillWidth: true
+                text: agentConfirmDialog.activate
+                      ? qsTr("Reactivate %1's access to AccoFinder?").arg(agentConfirmDialog.agentName)
+                      : qsTr("Suspend %1's access? They will be signed out and unable to sign in.").arg(agentConfirmDialog.agentName)
+                wrapMode: Text.WordWrap
+                font.pixelSize: 13
+                color: "#374151"
+            }
+
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: 10
+
+                Button {
+                    id: agentConfirmCancelButton
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 42
+                    text: qsTr("Cancel")
+
+                    contentItem: Label {
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        text: agentConfirmCancelButton.text
+                        color: "#FFFFFF"
+                        font.pixelSize: 13
+                        font.bold: true
+                    }
+
+                    background: Rectangle {
+                        radius: 8
+                        color: parent.down ? "#1D4ED8" : "#2563EB"
+                    }
+
+                    onClicked: agentConfirmDialog.reject()
+                }
+
+                Button {
+                    id: agentConfirmButton
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 42
+                    text: agentConfirmDialog.activate ? qsTr("Activate") : qsTr("Suspend")
+
+                    contentItem: Label {
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        text: agentConfirmButton.text
+                        color: "#FFFFFF"
+                        font.pixelSize: 13
+                        font.bold: true
+                    }
+
+                    background: Rectangle {
+                        radius: 8
+                        color: agentConfirmButton.down ? "#B91C1C" : (agentConfirmDialog.activate ? "#16A34A" : "#DC2626")
+                    }
+
+                    onClicked: {
+                        root.agentsModel.updateAgent(agentConfirmDialog.agentId, { active: agentConfirmDialog.activate })
+                        console.log("Agent status:", agentConfirmDialog.agentId, "->", agentConfirmDialog.activate ? "ACTIVE" : "SUSPENDED")
+                        root.agentUpdated(agentConfirmDialog.agentId)
+                        agentConfirmDialog.accept()
+                    }
+                }
+            }
+        }
+
+        background: Rectangle {
+            radius: 14
+            color: "#FFFFFF"
         }
     }
 

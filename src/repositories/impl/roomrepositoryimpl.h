@@ -19,9 +19,17 @@ public:
                     const QString& propertyId,
                     const QString& type,
                     bool available) override;
+    void createRoomWithPrice(const QString& id,
+                             const QString& propertyId,
+                             const QString& type,
+                             double price,
+                             bool available) override;
     void getRooms() override;
     void getRoomById(const QString& id) override;
-    void updateRoom(Room* room) override;
+    void updateRoom(const QString& roomId,
+                    const QString& type,
+                    double price,
+                    bool available) override;
     void deleteRoom(const QString& id) override;
 private:
     QList<QSharedPointer<Room>> m_rooms;
@@ -29,6 +37,7 @@ signals:
     void roomsLoaded(const QList<QSharedPointer<Room>>& rooms);
     void roomLoaded(const QSharedPointer<Room> &room);
     void roomCreated(const QSharedPointer<Room> &room);
+    void roomDeleted(const QString& roomId);
     void error(const QString& message);
 };
 

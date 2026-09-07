@@ -12,7 +12,7 @@ property bool showBackButton: false
 property Component leftAction: null
 property Component rightAction: null
 property bool searchReadOnly: false // exposing readonly for searchBar
-property int titleFontSize: 18
+property int titleFontSize: 15
 property bool showBottomBorder: true
 
 signal backClicked()

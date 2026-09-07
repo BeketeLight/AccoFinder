@@ -116,7 +116,7 @@ ApplicationWindow {
             title: currentPage && currentPage.pageTitle ? currentPage.pageTitle:""
             isSearchBar: Boolean(currentPage && currentPage.isSearchBar)
             titleFontSize: (currentPage && typeof currentPage.titleFontSize !== "undefined")
-                           ? currentPage.titleFontSize : 18
+                           ? currentPage.titleFontSize : 15
             showBottomBorder: (currentPage && typeof currentPage.showBottomBorder !== "undefined")
                               ? currentPage.showBottomBorder : true
             showBackButton: mainStack.depth > 0 || Boolean(currentPage && currentPage.showBack)

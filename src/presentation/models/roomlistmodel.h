@@ -37,12 +37,14 @@ public:
 
     void setRooms(QList<QSharedPointer<Room>> newRooms);
     void apppendRoom(QSharedPointer<Room> room);
+    void upsertRoom(QSharedPointer<Room> room);
+    void removeRoom(const QString& roomId);
 
     int availableCount() const;
     int bookedCount() const;
 
     // Rooms belonging to the given property id, shaped for QML display as
-    // {roomType, price, available} maps.
+    // {roomId, roomType, price, available} maps.
     QVariantList roomsForProperty(const QString& propertyId) const;
 
 private:

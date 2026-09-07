@@ -10,7 +10,7 @@ Item {
     property bool showBack: true
     property bool showBackButton: true
     property bool isSearchBar: false
-    property int titleFontSize: 20
+    property int titleFontSize: 16
     property bool showBottomBorder: false
 
     function goBack() {

@@ -11,6 +11,8 @@ RoomViewModel::RoomViewModel(QObject *parent)
             this, &RoomViewModel::onRoomLoaded);
     connect(m_roomController, &RoomController::roomsLoaded,
             this, &RoomViewModel::onRoomsLoaded);
+    connect(m_roomController, &RoomController::roomDeleted,
+            this, &RoomViewModel::onRoomDeleted);
     connect(m_roomController, &RoomController::onError,
             this, &RoomViewModel::onError);
 }
@@ -40,6 +42,21 @@ void RoomViewModel::createRoom(const QString &propertyId, const QString &type, b
     m_roomController->createRoom(propertyId, type, available);
 }
 
+void RoomViewModel::createRoomWithPrice(const QString &propertyId, const QString &type, double price, bool available)
+{
+    m_roomController->createRoomWithPrice(propertyId, type, price, available);
+}
+
+void RoomViewModel::updateRoom(const QString &roomId, const QString &type, double price, bool available)
+{
+    m_roomController->updateRoom(roomId, type, price, available);
+}
+
+void RoomViewModel::deleteRoom(const QString &roomId)
+{
+    m_roomController->deleteRoom(roomId);
+}
+
 void RoomViewModel::onRoomsLoaded(const QList<QSharedPointer<Room>> &rooms)
 {
     setLoading(false);
@@ -51,7 +68,7 @@ void RoomViewModel::onRoomLoaded(const QSharedPointer<Room> &room)
 {
     setLoading(false);
     if (m_roomListModel)
-        m_roomListModel->apppendRoom(room);
+        m_roomListModel->upsertRoom(room);
 }
 
 void RoomViewModel::onRoomCreated(const QSharedPointer<Room> &room)
@@ -59,6 +76,14 @@ void RoomViewModel::onRoomCreated(const QSharedPointer<Room> &room)
     setLoading(false);
     if (m_roomListModel)
         m_roomListModel->apppendRoom(room);
+}
+
+void RoomViewModel::onRoomDeleted(const QString &roomId)
+{
+    setLoading(false);
+    if (m_roomListModel)
+        m_roomListModel->removeRoom(roomId);
+    emit roomDeletedSignal(roomId);
 }
 
 void RoomViewModel::onError(const QString &message)
