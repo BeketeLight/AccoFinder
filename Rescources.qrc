@@ -25,5 +25,7 @@
         <file>ui/assets/good-standing-icon.svg</file>
         <file>ui/assets/pending-icon.svg</file>
         <file>ui/assets/cancelled-icon.svg</file>
+        <file>ui/assets/your-bookings-icon.svg</file>
+        <file>ui/assets/amount-icon.svg</file>
     </qresource>
 </RCC>

@@ -1,0 +1,1003 @@
+09-04 08:05:14.844 25446 25446 I 100     : Open /data/app/~~f1Tn6n5nHtTDTHmJ7Zix2w==/com.accofinder-8uJiDNJBuvEo64uSq1-78Q==/base.apk took:394ms
+09-04 08:05:16.431 25446 25446 I 309     : package:com.accofinder took:2033 calssname:android.app.ActivityThread$H callback:null what:159
+09-04 08:05:16.738  1941  2079 I 322     : com.accofinder#366#4036
+09-04 08:15:03.436  3377  3377 I 100     : Open /data/app/~~LFy74VOhvz1wj-lERtr47w==/com.accofinder-EHR2ptJdVfLNCrmJ8Q4xfg==/base.apk took:686ms
+09-04 08:15:04.501  3377  3377 I 309     : package:com.accofinder took:1840 calssname:android.app.ActivityThread$H callback:null what:110
+09-04 08:15:05.564  3377  3377 I 309     : package:com.accofinder took:1050 calssname:android.app.ActivityThread$H callback:null what:159
+09-04 08:15:07.149  3377  3377 I 309     : package:com.accofinder took:1585 calssname:android.view.Choreographer$FrameHandler callback:null what:0
+09-04 08:15:07.822  3377  3377 I 100     : Open /data/app/~~LFy74VOhvz1wj-lERtr47w==/com.accofinder-EHR2ptJdVfLNCrmJ8Q4xfg==/base.apk took:434ms
+09-04 08:15:09.054  3377  3377 I 309     : package:com.accofinder took:1713 calssname:android.app.ActivityThread$H callback:null what:159
+09-04 08:16:45.842  4553  4553 I 100     : Open /data/app/~~AOVUTwFsHZywW3_jIOsz3g==/com.accofinder-SyQT8TpuOhQ1ow7SBph3bA==/base.apk took:386ms
+09-04 08:16:46.501  4553  4553 I 309     : package:com.accofinder took:1161 calssname:android.app.ActivityThread$H callback:null what:110
+09-04 08:16:48.440  4553  4553 I 100     : Open /data/app/~~AOVUTwFsHZywW3_jIOsz3g==/com.accofinder-SyQT8TpuOhQ1ow7SBph3bA==/base.apk took:418ms
+09-04 08:16:49.116  4553  4553 I 309     : package:com.accofinder took:1156 calssname:android.app.ActivityThread$H callback:null what:159
+09-04 08:16:49.225  1941  2079 I 322     : com.accofinder#656#4660
+09-04 08:18:21.880  5035  5035 I 100     : Open /data/app/~~E99aQR9wX7Dp2tjSIgWPvw==/com.accofinder-Sl3YfnNC4cDPBFs00ZPZLg==/base.apk took:344ms
+09-04 08:18:23.724  5035  5035 I 100     : Open /data/app/~~E99aQR9wX7Dp2tjSIgWPvw==/com.accofinder-Sl3YfnNC4cDPBFs00ZPZLg==/base.apk took:386ms
+09-04 08:18:24.516  5035  5035 I 309     : package:com.accofinder took:1231 calssname:android.app.ActivityThread$H callback:null what:159
+09-04 08:18:24.634  1941  2079 I 322     : com.accofinder#451#3606
+09-04 08:21:27.173  6302  6302 I 100     : Open /data/app/~~4gRl7W15K8xaoLRbJL7d6g==/com.accofinder-P61ySnnr1bJCuESRkCknxA==/base.apk took:361ms
+09-04 08:21:27.878  6302  6302 I 309     : package:com.accofinder took:1119 calssname:android.app.ActivityThread$H callback:null what:110
+09-04 08:21:29.124  6302  6302 I 100     : Open /data/app/~~4gRl7W15K8xaoLRbJL7d6g==/com.accofinder-P61ySnnr1bJCuESRkCknxA==/base.apk took:364ms
+09-04 08:21:29.770  6302  6302 I 309     : package:com.accofinder took:1065 calssname:android.app.ActivityThread$H callback:null what:159
+09-04 08:21:29.905  1941  2079 I 322     : com.accofinder#400#3692
+09-04 08:25:03.426  7363  7363 I 100     : Open /data/app/~~Zc_kmpkzV1-Qdu7bN0j9ZQ==/com.accofinder-WtQd5sPWqMJ_rArdlpPSKQ==/base.apk took:355ms
+09-04 08:25:05.101  7363  7363 I 100     : Open /data/app/~~Zc_kmpkzV1-Qdu7bN0j9ZQ==/com.accofinder-WtQd5sPWqMJ_rArdlpPSKQ==/base.apk took:336ms
+09-04 08:25:05.718  1941  2079 I 322     : com.accofinder#362#3589
+09-04 08:26:44.259  8475  8475 I 100     : Open /data/app/~~-6OnK2CL2bN5fCdYpLzJCQ==/com.accofinder-v5BaDqQeQ9qyNXoT-1JpPQ==/base.apk took:371ms
+09-04 08:26:44.970  8475  8475 I 309     : package:com.accofinder took:1260 calssname:android.app.ActivityThread$H callback:null what:110
+09-04 08:26:58.522  8899  8899 I 100     : Open /data/app/~~-6OnK2CL2bN5fCdYpLzJCQ==/com.accofinder-v5BaDqQeQ9qyNXoT-1JpPQ==/base.apk took:324ms
+09-04 08:26:59.035  1941  2079 I 322     : com.accofinder#151#1795
+09-04 08:28:32.244  9589  9589 I 100     : Open /data/app/~~cHDOIkUW0likuN2mlZxPpg==/com.accofinder-lGdW8nYCLyfJHTM2rYa-tw==/base.apk took:355ms
+09-04 08:28:33.760  9589  9589 I 100     : Open /data/app/~~cHDOIkUW0likuN2mlZxPpg==/com.accofinder-lGdW8nYCLyfJHTM2rYa-tw==/base.apk took:355ms
+09-04 08:28:34.450  9589  9589 I 309     : package:com.accofinder took:1093 calssname:android.app.ActivityThread$H callback:null what:159
+09-04 08:28:34.531  1941  2079 I 322     : com.accofinder#399#3115
+09-04 08:32:05.169 10880 10880 I 100     : Open /data/app/~~Jw2UhDpmtiKCx8CxDjhGWg==/com.accofinder-TDWeFJQIqQ_HK-r-KEndLg==/base.apk took:362ms
+09-04 08:32:05.804 10880 10880 I 309     : package:com.accofinder took:1103 calssname:android.app.ActivityThread$H callback:null what:110
+09-04 08:32:07.457 10880 10880 I 100     : Open /data/app/~~Jw2UhDpmtiKCx8CxDjhGWg==/com.accofinder-TDWeFJQIqQ_HK-r-KEndLg==/base.apk took:347ms
+09-04 08:32:08.103 10880 10880 I 309     : package:com.accofinder took:1075 calssname:android.app.ActivityThread$H callback:null what:159
+09-04 08:32:08.333  1941  2079 I 322     : com.accofinder#446#4175
+09-04 08:34:52.233 13640 13640 I 100     : Open /data/app/~~RSJFNoTodrzRbsuQ2oBzBw==/com.accofinder-bw2y-o6mzTOANMFyK__dYA==/base.apk took:426ms
+09-04 08:34:53.022 13640 13640 I 309     : package:com.accofinder took:1326 calssname:android.app.ActivityThread$H callback:null what:110
+09-04 08:35:05.888 13910 13910 I 100     : Open /data/app/~~RSJFNoTodrzRbsuQ2oBzBw==/com.accofinder-bw2y-o6mzTOANMFyK__dYA==/base.apk took:332ms
+09-04 08:35:06.477  1941  2079 I 322     : com.accofinder#226#2335
+09-04 08:38:19.090 15819 15819 I 100     : Open /data/app/~~hfPJnspKztWI0cHyrEP1HQ==/com.accofinder-3bvQ-14U0fDb5V83asdzQQ==/base.apk took:379ms
+09-04 08:38:19.630 15819 15819 I 309     : package:com.accofinder took:1003 calssname:android.app.ActivityThread$H callback:null what:110
+09-04 08:38:21.463 15819 15819 I 100     : Open /data/app/~~hfPJnspKztWI0cHyrEP1HQ==/com.accofinder-3bvQ-14U0fDb5V83asdzQQ==/base.apk took:349ms
+09-04 08:38:22.085  1941  2079 I 322     : com.accofinder#469#4218
+09-04 08:40:28.113 16747 16747 I 100     : Open /data/app/~~ZpJpn-idbBJ6TRhH6IJHPg==/com.accofinder-mkVcgZpYuEzDfN8HLCJ0dA==/base.apk took:368ms
+09-04 08:40:29.885 16747 16747 I 100     : Open /data/app/~~ZpJpn-idbBJ6TRhH6IJHPg==/com.accofinder-mkVcgZpYuEzDfN8HLCJ0dA==/base.apk took:336ms
+09-04 08:40:30.514 16747 16747 I 309     : package:com.accofinder took:1023 calssname:android.app.ActivityThread$H callback:null what:159
+09-04 08:40:30.625  1941  2079 I 322     : com.accofinder#432#3961
+09-04 08:42:01.209 17375 17375 I 100     : Open /data/app/~~a4EWvUkyS6gC6CoG4acFzQ==/com.accofinder-hB5IMuHptr5PHl_mQywDGg==/base.apk took:377ms
+09-04 08:45:57.324 17711 17711 I 100     : Open /data/app/~~a4EWvUkyS6gC6CoG4acFzQ==/com.accofinder-hB5IMuHptr5PHl_mQywDGg==/base.apk took:325ms
+09-04 08:45:57.914  1941  2079 I 322     : com.accofinder#156#1788
+09-04 08:50:22.381 19076 19076 I 100     : Open /data/app/~~6yuxa4vD7kciTYPlytIerg==/com.accofinder-xIVQpT6hLssjgtgU7UpYLw==/base.apk took:360ms
+09-04 08:50:23.185 19076 19076 I 309     : package:com.accofinder took:1297 calssname:android.app.ActivityThread$H callback:null what:110
+09-04 08:50:24.363 19076 19076 I 100     : Open /data/app/~~6yuxa4vD7kciTYPlytIerg==/com.accofinder-xIVQpT6hLssjgtgU7UpYLw==/base.apk took:341ms
+09-04 08:50:25.025 19076 19076 I 309     : package:com.accofinder took:1068 calssname:android.app.ActivityThread$H callback:null what:159
+09-04 08:50:25.134  1941  2079 I 322     : com.accofinder#487#4211
+09-04 08:52:43.383 20399 20399 I 100     : Open /data/app/~~ohBW9vKITvvpT7Ddwi5lCg==/com.accofinder-rTw7zFe55UmcY6bzUbIDqQ==/base.apk took:367ms
+09-04 08:52:45.136 20399 20399 I 100     : Open /data/app/~~ohBW9vKITvvpT7Ddwi5lCg==/com.accofinder-rTw7zFe55UmcY6bzUbIDqQ==/base.apk took:345ms
+09-04 08:52:45.855  1941  2079 I 322     : com.accofinder#381#3429
+09-04 08:56:52.115 21964 21964 I 100     : Open /data/app/~~lDQBUbdsYSdXjah4j1D1YQ==/com.accofinder-B0_ao2N4Vwo0lDShKCTLnw==/base.apk took:367ms
+09-04 08:56:54.541 21964 21964 I 100     : Open /data/app/~~lDQBUbdsYSdXjah4j1D1YQ==/com.accofinder-B0_ao2N4Vwo0lDShKCTLnw==/base.apk took:343ms
+09-04 08:56:55.232  1941  2079 I 322     : com.accofinder#769#4398
+09-04 08:58:29.778 22407 22407 I 100     : Open /data/app/~~xg9eDj6KDmJ89dwbER2EEA==/com.accofinder-uLpixsvGTxqKxhH52tBiSg==/base.apk took:346ms
+09-04 08:58:31.135 22407 22407 I 100     : Open /data/app/~~xg9eDj6KDmJ89dwbER2EEA==/com.accofinder-uLpixsvGTxqKxhH52tBiSg==/base.apk took:353ms
+09-04 08:58:31.611  1941  2079 I 322     : com.accofinder#456#2975
+09-04 09:00:04.074 23151 23151 I 100     : Open /data/app/~~INPnQt4xlaRiHgtAD6BD3A==/com.accofinder-akjYg51UWp220GOCtsYNQg==/base.apk took:360ms
+09-04 09:00:05.592 23151 23151 I 100     : Open /data/app/~~INPnQt4xlaRiHgtAD6BD3A==/com.accofinder-akjYg51UWp220GOCtsYNQg==/base.apk took:357ms
+09-04 09:00:06.097  1941  2079 I 322     : com.accofinder#494#2958
+09-04 09:03:12.139 24093 24093 I 100     : Open /data/app/~~kjfHNPOSTqYmIJ-3d5mniA==/com.accofinder-ppoIN9yUUquYKq0K6WRSug==/base.apk took:362ms
+09-04 09:03:12.710 24093 24093 I 309     : package:com.accofinder took:1002 calssname:android.app.ActivityThread$H callback:null what:110
+09-04 09:03:13.770 24093 24093 I 100     : Open /data/app/~~kjfHNPOSTqYmIJ-3d5mniA==/com.accofinder-ppoIN9yUUquYKq0K6WRSug==/base.apk took:356ms
+09-04 09:03:14.418  1941  2079 I 322     : com.accofinder#481#3636
+09-04 09:04:56.604 24598 24598 I 100     : Open /data/app/~~_RljpX7p45uZoWfw1LDbfg==/com.accofinder-fRqhmKsnTM2Hg9O9vH8G0w==/base.apk took:357ms
+09-04 09:04:58.103 24598 24598 I 100     : Open /data/app/~~_RljpX7p45uZoWfw1LDbfg==/com.accofinder-fRqhmKsnTM2Hg9O9vH8G0w==/base.apk took:339ms
+09-04 09:04:58.502  1941  2079 I 322     : com.accofinder#512#2865
+09-04 09:06:34.542 25463 25463 I 100     : Open /data/app/~~4Ruwik4xk8dTyNiOfs_TxA==/com.accofinder-q-VEmDJaG4m7kypXhaSmFg==/base.apk took:361ms
+09-04 09:06:36.190 25463 25463 I 100     : Open /data/app/~~4Ruwik4xk8dTyNiOfs_TxA==/com.accofinder-q-VEmDJaG4m7kypXhaSmFg==/base.apk took:381ms
+09-04 09:06:36.773 25463 25463 I 309     : package:com.accofinder took:1020 calssname:android.app.ActivityThread$H callback:null what:159
+09-04 09:06:36.855  1941  2079 I 322     : com.accofinder#422#3250
+09-04 09:09:44.414 26555 26555 I 100     : Open /data/app/~~83eJA13BDCfjtEJmTNG1JA==/com.accofinder-Fcc8YhD2QMp19fHM_wbLyw==/base.apk took:353ms
+09-04 09:09:46.006 26555 26555 I 100     : Open /data/app/~~83eJA13BDCfjtEJmTNG1JA==/com.accofinder-Fcc8YhD2QMp19fHM_wbLyw==/base.apk took:348ms
+09-04 09:09:46.634 26555 26555 I 309     : package:com.accofinder took:1017 calssname:android.app.ActivityThread$H callback:null what:159
+09-04 09:09:46.735  1941  2079 I 322     : com.accofinder#576#3387
+09-04 09:11:13.224 27325 27325 I 100     : Open /data/app/~~CoaUprbQ7Lpki_AYQ6EYIQ==/com.accofinder-G5fFRmy30uFY9OALfbwLqw==/base.apk took:389ms
+09-04 09:11:36.237 27548 27548 I 100     : Open /data/app/~~CoaUprbQ7Lpki_AYQ6EYIQ==/com.accofinder-G5fFRmy30uFY9OALfbwLqw==/base.apk took:342ms
+09-04 09:11:36.824  1941  2079 I 322     : com.accofinder#171#1899
+09-04 09:18:22.940 28995 28995 I 100     : Open /data/app/~~9fysinO89eDwzFzZuAjHRw==/com.accofinder-GcOMnEGrR-6laVtFWZWcPQ==/base.apk took:424ms
+09-04 09:18:23.700 28995 28995 I 309     : package:com.accofinder took:1270 calssname:android.app.ActivityThread$H callback:null what:110
+09-04 09:18:25.490 28995 28995 I 100     : Open /data/app/~~9fysinO89eDwzFzZuAjHRw==/com.accofinder-GcOMnEGrR-6laVtFWZWcPQ==/base.apk took:345ms
+09-04 09:18:26.166 28995 28995 I 309     : package:com.accofinder took:1080 calssname:android.app.ActivityThread$H callback:null what:159
+09-04 09:18:26.278  1941  2079 I 322     : com.accofinder#475#4486
+09-04 09:20:17.929 29648 29648 I 100     : Open /data/app/~~N07eP50I5xUSw46mVNmKZw==/com.accofinder-XQX-C-Tvg_0U9tHF2iQDPw==/base.apk took:362ms
+09-04 09:20:19.522 29648 29648 I 100     : Open /data/app/~~N07eP50I5xUSw46mVNmKZw==/com.accofinder-XQX-C-Tvg_0U9tHF2iQDPw==/base.apk took:332ms
+09-04 09:20:20.204  1941  2079 I 322     : com.accofinder#431#3539
+09-04 09:36:39.778 32486 32486 I 100     : Open /data/app/~~SfZ6ShXzRLK7ZBAFyf0Fxw==/com.accofinder-kT_lrXOnzp8S8g2qsXcrPw==/base.apk took:388ms
+09-04 09:36:42.447 32486 32486 I 100     : Open /data/app/~~SfZ6ShXzRLK7ZBAFyf0Fxw==/com.accofinder-kT_lrXOnzp8S8g2qsXcrPw==/base.apk took:359ms
+09-04 09:36:43.104 32486 32486 I 309     : package:com.accofinder took:1104 calssname:android.app.ActivityThread$H callback:null what:159
+09-04 09:36:43.225  1941  2079 I 322     : com.accofinder#923#4911
+09-04 09:40:11.978  3271  3271 I 100     : Open /data/app/~~SfZ6ShXzRLK7ZBAFyf0Fxw==/com.accofinder-kT_lrXOnzp8S8g2qsXcrPw==/base.apk took:320ms
+09-04 09:40:12.529  1941  2079 I 322     : com.accofinder#190#1583
+09-04 09:43:01.860  4822  4822 I 100     : Open /data/app/~~s5_Olvoimvx3U1fAe9psTg==/com.accofinder-EAIw2HB0YsjxNRtal5dqow==/base.apk took:403ms
+09-04 09:43:02.441  4822  4822 I 309     : package:com.accofinder took:1045 calssname:android.app.ActivityThread$H callback:null what:110
+09-04 09:43:04.425  4822  4822 I 100     : Open /data/app/~~s5_Olvoimvx3U1fAe9psTg==/com.accofinder-EAIw2HB0YsjxNRtal5dqow==/base.apk took:364ms
+09-04 09:43:05.313  4822  4822 I 309     : package:com.accofinder took:1308 calssname:android.app.ActivityThread$H callback:null what:159
+09-04 09:43:05.503  1941  2079 I 322     : com.accofinder#833#4940
+09-04 09:44:34.611  5916  5916 I 100     : Open /data/app/~~qxgA9VEwmE-g2-qS_YF7TA==/com.accofinder-yb_eGeSI8bX6Ib-A1OoM_Q==/base.apk took:364ms
+09-04 09:44:36.158  5916  5916 I 100     : Open /data/app/~~qxgA9VEwmE-g2-qS_YF7TA==/com.accofinder-yb_eGeSI8bX6Ib-A1OoM_Q==/base.apk took:343ms
+09-04 09:44:36.789  5916  5916 I 309     : package:com.accofinder took:1024 calssname:android.app.ActivityThread$H callback:null what:159
+09-04 09:44:36.887  1941  2079 I 322     : com.accofinder#349#3568
+09-04 09:46:35.855  6754  6754 I 100     : Open /data/app/~~1BLAn31soZpP6IPoL6nesQ==/com.accofinder-viJkHNTJ2CDUaSwhP0dNZA==/base.apk took:392ms
+09-04 09:46:36.416  6754  6754 I 309     : package:com.accofinder took:1019 calssname:android.app.ActivityThread$H callback:null what:110
+09-04 09:47:18.043  6961  6961 I 100     : Open /data/app/~~1BLAn31soZpP6IPoL6nesQ==/com.accofinder-viJkHNTJ2CDUaSwhP0dNZA==/base.apk took:337ms
+09-04 09:47:18.614  1941  2079 I 322     : com.accofinder#160#1820
+09-04 09:48:22.481  7320  7320 I 100     : Open /data/app/~~Hh29G7qHKzr7G1_wHBtFrA==/com.accofinder-IxlTZY_b46Gtx6hbEOOz9g==/base.apk took:354ms
+09-04 09:48:23.961  7320  7320 I 100     : Open /data/app/~~Hh29G7qHKzr7G1_wHBtFrA==/com.accofinder-IxlTZY_b46Gtx6hbEOOz9g==/base.apk took:346ms
+09-04 09:48:24.610  7320  7320 I 309     : package:com.accofinder took:1037 calssname:android.app.ActivityThread$H callback:null what:159
+09-04 09:48:24.687  1941  2079 I 322     : com.accofinder#388#3044
+09-04 09:52:54.515 12042 12042 I 100     : Open /data/app/~~lcFmvag7ZqmtOqBlUBUfJQ==/com.accofinder-FsepsnQVEBMeG62PExS4Yw==/base.apk took:401ms
+09-04 09:52:56.573 12042 12042 I 100     : Open /data/app/~~lcFmvag7ZqmtOqBlUBUfJQ==/com.accofinder-FsepsnQVEBMeG62PExS4Yw==/base.apk took:366ms
+09-04 09:52:57.389 12042 12042 I 309     : package:com.accofinder took:1240 calssname:android.app.ActivityThread$H callback:null what:159
+09-04 09:52:57.638  1941  2079 I 322     : com.accofinder#-1#5275
+09-04 09:55:28.300 14306 14306 I 100     : Open /data/app/~~eHjbdw9mPwQTNK1qZZZFJg==/com.accofinder-wgVTBmJpvlNb4DUImrubRw==/base.apk took:361ms
+09-04 09:55:29.079 14306 14306 I 309     : package:com.accofinder took:1242 calssname:android.app.ActivityThread$H callback:null what:110
+09-04 09:55:30.858 14306 14306 I 100     : Open /data/app/~~eHjbdw9mPwQTNK1qZZZFJg==/com.accofinder-wgVTBmJpvlNb4DUImrubRw==/base.apk took:373ms
+09-04 09:55:31.698 14306 14306 I 309     : package:com.accofinder took:1268 calssname:android.app.ActivityThread$H callback:null what:159
+09-04 09:55:31.838  1941  2079 I 322     : com.accofinder#664#5064
+09-04 09:59:50.868 16174 16174 I 100     : Open /data/app/~~E30CIqWOvUiGyZwJPAtv5g==/com.accofinder-DTGiFICW6EAsdjTgeubGhw==/base.apk took:364ms
+09-04 09:59:52.912 16174 16174 I 100     : Open /data/app/~~E30CIqWOvUiGyZwJPAtv5g==/com.accofinder-DTGiFICW6EAsdjTgeubGhw==/base.apk took:365ms
+09-04 09:59:53.604  1941  2079 I 322     : com.accofinder#417#3623
+09-04 10:02:42.416 17316 17316 I 100     : Open /data/app/~~UD2-EvT-YbMvskxjnmW8dw==/com.accofinder-9G-S-upXjB0jOWBp4rMCBg==/base.apk took:353ms
+09-04 10:02:56.642 18061 18061 I 100     : Open /data/app/~~UD2-EvT-YbMvskxjnmW8dw==/com.accofinder-9G-S-upXjB0jOWBp4rMCBg==/base.apk took:344ms
+09-04 10:02:57.304  1941  2079 I 322     : com.accofinder#206#2418
+09-04 10:04:55.298 18776 18776 I 100     : Open /data/app/~~YyhvIwZr4szA2aJVJnO-qA==/com.accofinder-94-FjDd_ams6XMgCit7VPg==/base.apk took:366ms
+09-04 10:04:57.005 18776 18776 I 100     : Open /data/app/~~YyhvIwZr4szA2aJVJnO-qA==/com.accofinder-94-FjDd_ams6XMgCit7VPg==/base.apk took:360ms
+09-04 10:04:57.710 18776 18776 I 309     : package:com.accofinder took:1171 calssname:android.app.ActivityThread$H callback:null what:159
+09-04 10:04:57.818  1941  2079 I 322     : com.accofinder#358#3413
+09-04 10:05:58.681 19476 19476 I 100     : Open /data/app/~~zR9oFIsman5zfA7YkAQHuw==/com.accofinder-DpTsk5AGB6rOI12jtGpQ5Q==/base.apk took:382ms
+09-04 10:06:06.796 20034 20034 I 100     : Open /data/app/~~zR9oFIsman5zfA7YkAQHuw==/com.accofinder-DpTsk5AGB6rOI12jtGpQ5Q==/base.apk took:331ms
+09-04 10:06:07.392  1941  2079 I 322     : com.accofinder#157#1710
+09-04 10:10:14.660 21008 21008 I 100     : Open /data/app/~~35bME8KKctZiIMrkrLShdA==/com.accofinder-AdTs-jT3fm1CXrIVfclDNA==/base.apk took:361ms
+09-04 10:10:15.266 21008 21008 I 309     : package:com.accofinder took:1024 calssname:android.app.ActivityThread$H callback:null what:110
+09-04 10:10:16.397 21008 21008 I 100     : Open /data/app/~~35bME8KKctZiIMrkrLShdA==/com.accofinder-AdTs-jT3fm1CXrIVfclDNA==/base.apk took:355ms
+09-04 10:10:17.018 21008 21008 I 309     : package:com.accofinder took:1047 calssname:android.app.ActivityThread$H callback:null what:159
+09-04 10:10:17.161  1941  2079 I 322     : com.accofinder#441#3429
+09-04 10:12:57.318 21594 21594 I 100     : Open /data/app/~~Pzypq9RAxS8ZXMiKDEZFhQ==/com.accofinder-2ijCJd5FzPOIV3g-aK0T1g==/base.apk took:364ms
+09-04 10:12:58.762 21594 21594 I 100     : Open /data/app/~~Pzypq9RAxS8ZXMiKDEZFhQ==/com.accofinder-2ijCJd5FzPOIV3g-aK0T1g==/base.apk took:343ms
+09-04 10:12:59.392 21594 21594 I 309     : package:com.accofinder took:1017 calssname:android.app.ActivityThread$H callback:null what:159
+09-04 10:12:59.479  1941  2079 I 322     : com.accofinder#492#3121
+09-04 10:46:41.823 29658 29658 I 100     : Open /data/app/~~Pzypq9RAxS8ZXMiKDEZFhQ==/com.accofinder-2ijCJd5FzPOIV3g-aK0T1g==/base.apk took:323ms
+09-04 10:46:42.373  1941  2079 I 322     : com.accofinder#446#2205
+09-04 11:02:46.272 29658 29658 I 309     : package:com.accofinder took:1204 calssname:android.app.ActivityThread$H callback:null what:159
+09-04 11:20:45.104  5176  5176 I 100     : Open /data/app/~~Pzypq9RAxS8ZXMiKDEZFhQ==/com.accofinder-2ijCJd5FzPOIV3g-aK0T1g==/base.apk took:315ms
+09-04 11:20:45.891  1941  2079 I 322     : com.accofinder#370#1991
+09-04 11:28:59.156  6587  6587 I 100     : Open /data/app/~~Pzypq9RAxS8ZXMiKDEZFhQ==/com.accofinder-2ijCJd5FzPOIV3g-aK0T1g==/base.apk took:316ms
+09-04 11:28:59.725  1941  2079 I 322     : com.accofinder#349#1824
+09-04 12:48:32.459 20524 20524 I 100     : Open /data/app/~~Pzypq9RAxS8ZXMiKDEZFhQ==/com.accofinder-2ijCJd5FzPOIV3g-aK0T1g==/base.apk took:312ms
+09-04 12:51:14.485 21632 21632 I 100     : Open /data/app/~~Pzypq9RAxS8ZXMiKDEZFhQ==/com.accofinder-2ijCJd5FzPOIV3g-aK0T1g==/base.apk took:316ms
+09-04 12:51:15.080  1941  2079 I 322     : com.accofinder#255#1949
+09-04 14:13:05.962 30767 30767 I 100     : Open /data/app/~~Pzypq9RAxS8ZXMiKDEZFhQ==/com.accofinder-2ijCJd5FzPOIV3g-aK0T1g==/base.apk took:317ms
+09-04 14:13:06.464  1941  2079 I 322     : com.accofinder#346#2002
+09-04 14:16:56.033 32175 32175 I 100     : Open /data/app/~~-J0KddacBUg2iAelbeVI6w==/com.accofinder-OBwCLNi_ZbP6KmrVYwNWIQ==/base.apk took:368ms
+09-04 14:16:57.920 32175 32175 I 100     : Open /data/app/~~-J0KddacBUg2iAelbeVI6w==/com.accofinder-OBwCLNi_ZbP6KmrVYwNWIQ==/base.apk took:357ms
+09-04 14:16:58.650 32175 32175 I 309     : package:com.accofinder took:1147 calssname:android.app.ActivityThread$H callback:null what:159
+09-04 14:16:58.741  1941  2079 I 322     : com.accofinder#433#3833
+09-04 14:18:24.546 32602 32602 I 100     : Open /data/app/~~qoT3YpD0cmh3ddrAY-rmig==/com.accofinder-EqjiHlQM2fjhy_ROsYuwbA==/base.apk took:344ms
+09-04 14:18:25.797 32602 32602 I 100     : Open /data/app/~~qoT3YpD0cmh3ddrAY-rmig==/com.accofinder-EqjiHlQM2fjhy_ROsYuwbA==/base.apk took:352ms
+09-04 14:18:26.152  1941  2079 I 322     : com.accofinder#334#2412
+09-04 14:24:36.881  8032  8032 I 100     : Open /data/app/~~qoT3YpD0cmh3ddrAY-rmig==/com.accofinder-EqjiHlQM2fjhy_ROsYuwbA==/base.apk took:315ms
+09-04 14:24:37.416  1941  2079 I 322     : com.accofinder#236#1734
+09-04 14:26:28.014  8838  8838 I 100     : Open /data/app/~~v1RsfyAxich0EU9Fo_urnw==/com.accofinder-Gl0y7zV4OAySP3liFIZFtw==/base.apk took:358ms
+09-04 14:26:30.091  8838  8838 I 100     : Open /data/app/~~v1RsfyAxich0EU9Fo_urnw==/com.accofinder-Gl0y7zV4OAySP3liFIZFtw==/base.apk took:372ms
+09-04 14:26:30.924  8838  8838 I 309     : package:com.accofinder took:1267 calssname:android.app.ActivityThread$H callback:null what:159
+09-04 14:26:31.071  1941  2079 I 322     : com.accofinder#-1#4855
+09-04 14:27:11.349  9174  9174 I 100     : Open /data/app/~~v1RsfyAxich0EU9Fo_urnw==/com.accofinder-Gl0y7zV4OAySP3liFIZFtw==/base.apk took:321ms
+09-04 14:27:11.607  1941  2079 I 322     : com.accofinder#166#1342
+09-04 14:29:17.780  9840  9840 I 100     : Open /data/app/~~Gl1CF-j9sbZvLHlbvagEJA==/com.accofinder-BlL9S-U3SZYQP3liwvm90Q==/base.apk took:368ms
+09-04 14:29:41.977 10024 10024 I 100     : Open /data/app/~~Gl1CF-j9sbZvLHlbvagEJA==/com.accofinder-BlL9S-U3SZYQP3liwvm90Q==/base.apk took:340ms
+09-04 14:29:42.504  1941  2079 I 322     : com.accofinder#153#1756
+09-04 14:48:11.668 16642 16642 I 100     : Open /data/app/~~LrLcxm8HJSajlCNp2pkEDQ==/com.accofinder-_jI0v5ZcXbf3qYXjAnDJXg==/base.apk took:360ms
+09-04 14:48:13.627 16642 16642 I 100     : Open /data/app/~~LrLcxm8HJSajlCNp2pkEDQ==/com.accofinder-_jI0v5ZcXbf3qYXjAnDJXg==/base.apk took:353ms
+09-04 14:48:14.378 16642 16642 I 309     : package:com.accofinder took:1157 calssname:android.app.ActivityThread$H callback:null what:159
+09-04 14:48:14.504  1941  2079 I 322     : com.accofinder#523#3929
+09-04 15:13:07.099 21101 21101 I 100     : Open /data/app/~~CK4isZDBijTR3EOx75cI1A==/com.accofinder-85O6iQtgzni34_GjMaqtiA==/base.apk took:439ms
+09-04 15:13:07.644 21101 21101 I 309     : package:com.accofinder took:1068 calssname:android.app.ActivityThread$H callback:null what:110
+09-04 15:13:09.351 21101 21101 I 100     : Open /data/app/~~CK4isZDBijTR3EOx75cI1A==/com.accofinder-85O6iQtgzni34_GjMaqtiA==/base.apk took:423ms
+09-04 15:13:10.134 21101 21101 I 309     : package:com.accofinder took:1274 calssname:android.app.ActivityThread$H callback:null what:159
+09-04 15:13:10.268  1941  2079 I 322     : com.accofinder#415#4228
+09-04 15:13:23.653 21353 21353 I 100     : Open /data/app/~~CK4isZDBijTR3EOx75cI1A==/com.accofinder-85O6iQtgzni34_GjMaqtiA==/base.apk took:403ms
+09-04 15:13:23.959  1941  2079 I 322     : com.accofinder#205#1686
+09-04 15:13:48.182 21524 21524 I 100     : Open /data/app/~~CK4isZDBijTR3EOx75cI1A==/com.accofinder-85O6iQtgzni34_GjMaqtiA==/base.apk took:372ms
+09-04 15:13:48.400  1941  2079 I 322     : com.accofinder#138#1200
+09-04 15:14:02.963 21638 21638 I 100     : Open /data/app/~~CK4isZDBijTR3EOx75cI1A==/com.accofinder-85O6iQtgzni34_GjMaqtiA==/base.apk took:364ms
+09-04 15:14:03.165  1941  2079 I 322     : com.accofinder#139#1195
+09-04 15:14:10.379 22069 22069 I 100     : Open /data/app/~~CK4isZDBijTR3EOx75cI1A==/com.accofinder-85O6iQtgzni34_GjMaqtiA==/base.apk took:406ms
+09-04 15:14:10.706  1941  2079 I 322     : com.accofinder#159#1489
+09-04 15:14:19.082 22330 22330 I 100     : Open /data/app/~~CK4isZDBijTR3EOx75cI1A==/com.accofinder-85O6iQtgzni34_GjMaqtiA==/base.apk took:364ms
+09-04 15:14:19.396  1941  2079 I 322     : com.accofinder#166#1487
+09-04 15:25:50.371 23228 23228 I 100     : Open /data/app/~~v3bpKmjkPlvbBkxnVKTozQ==/com.accofinder-rnqLzewFBECKJjZ4wjuV1Q==/base.apk took:411ms
+09-04 15:25:52.020 23228 23228 I 100     : Open /data/app/~~v3bpKmjkPlvbBkxnVKTozQ==/com.accofinder-rnqLzewFBECKJjZ4wjuV1Q==/base.apk took:401ms
+09-04 15:25:52.661  1941  2079 I 322     : com.accofinder#-1#4331
+09-04 17:26:31.526 17316 17316 I 100     : Open /data/app/~~v3bpKmjkPlvbBkxnVKTozQ==/com.accofinder-rnqLzewFBECKJjZ4wjuV1Q==/base.apk took:387ms
+09-04 17:26:32.073  1941  2079 I 322     : com.accofinder#545#2233
+09-04 17:26:41.027 17428 17428 I 100     : Open /data/app/~~v3bpKmjkPlvbBkxnVKTozQ==/com.accofinder-rnqLzewFBECKJjZ4wjuV1Q==/base.apk took:405ms
+09-04 17:26:41.337  1941  2079 I 322     : com.accofinder#190#1554
+09-04 17:26:48.975 17532 17532 I 100     : Open /data/app/~~v3bpKmjkPlvbBkxnVKTozQ==/com.accofinder-rnqLzewFBECKJjZ4wjuV1Q==/base.apk took:367ms
+09-04 17:26:49.272  1941  2079 I 322     : com.accofinder#191#1310
+09-04 18:54:14.544 15186 15186 I 100     : Open /data/app/~~kOyd4QsRIQzvgUTfaEs3YQ==/com.accofinder-CbxLz5gk9i2QLXxmP8kQyA==/base.apk took:558ms
+09-04 18:54:15.550 15186 15186 I 309     : package:com.accofinder took:1930 calssname:android.app.ActivityThread$H callback:null what:110
+09-04 18:54:17.538 15186 15186 I 309     : package:com.accofinder took:1289 calssname:android.view.Choreographer$FrameHandler callback:null what:0
+09-04 18:54:18.155 15186 15186 I 100     : Open /data/app/~~kOyd4QsRIQzvgUTfaEs3YQ==/com.accofinder-CbxLz5gk9i2QLXxmP8kQyA==/base.apk took:453ms
+09-04 18:54:19.113 15186 15186 I 309     : package:com.accofinder took:1496 calssname:android.app.ActivityThread$H callback:null what:159
+09-04 18:54:19.347  1941  2079 I 322     : com.accofinder#861#7291
+09-04 19:36:19.702  3978  3978 I 100     : Open /data/app/~~kOyd4QsRIQzvgUTfaEs3YQ==/com.accofinder-CbxLz5gk9i2QLXxmP8kQyA==/base.apk took:381ms
+09-04 19:36:20.251  1941  2079 I 322     : com.accofinder#373#2186
+09-04 19:44:12.647  9125  9125 I 100     : Open /data/app/~~O9pKrEzVR2aB7HeDvokOtw==/com.accofinder-R47RVpRkNRNqMuMKsgD21w==/base.apk took:497ms
+09-04 19:44:13.540  9125  9125 I 309     : package:com.accofinder took:1441 calssname:android.app.ActivityThread$H callback:null what:110
+09-04 19:44:15.531  9125  9125 I 100     : Open /data/app/~~O9pKrEzVR2aB7HeDvokOtw==/com.accofinder-R47RVpRkNRNqMuMKsgD21w==/base.apk took:441ms
+09-04 19:44:16.784  9125  9125 I 309     : package:com.accofinder took:1771 calssname:android.app.ActivityThread$H callback:null what:159
+09-04 19:44:16.965  1941  2079 I 322     : com.accofinder#576#5722
+09-05 09:41:17.176 22788 22788 I 100     : Open /data/app/~~XVMzLyJRyWM0Jedcn6264w==/com.accofinder-3kfGwHEprKgp-b6ij3uO6Q==/base.apk took:561ms
+09-05 09:41:18.302 22788 22788 I 309     : package:com.accofinder took:1901 calssname:android.app.ActivityThread$H callback:null what:110
+09-05 09:41:19.422 22788 22788 I 309     : package:com.accofinder took:1107 calssname:android.app.ActivityThread$H callback:null what:159
+09-05 09:41:20.980 22788 22788 I 309     : package:com.accofinder took:1557 calssname:android.view.Choreographer$FrameHandler callback:null what:0
+09-05 09:41:22.627 22788 22788 I 100     : Open /data/app/~~XVMzLyJRyWM0Jedcn6264w==/com.accofinder-3kfGwHEprKgp-b6ij3uO6Q==/base.apk took:515ms
+09-05 09:41:26.721 22788 22788 I 309     : package:com.accofinder took:4846 calssname:android.app.ActivityThread$H callback:null what:159
+09-05 09:45:48.594  5739  5739 I 100     : Open /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/base.apk took:423ms
+09-05 09:45:50.551  5739  5739 I 100     : Open /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/base.apk took:419ms
+09-05 09:45:51.243  5739  5739 I 309     : package:com.accofinder took:1169 calssname:android.app.ActivityThread$H callback:null what:159
+09-05 09:45:51.336  1941  2079 I 322     : com.accofinder#-1#4552
+09-05 09:50:42.286 30526 30526 I AndroidRuntime: VM exiting with result code 0, cleanup skipped.
+09-05 09:50:43.221 30323 30323 I AndroidRuntime: VM exiting with result code 0, cleanup skipped.
+09-05 09:50:44.400 10315 10439 I djni    : (REDACTED) Starting batch sync for corpora: %s
+09-05 09:50:44.410 10315 11016 I djni    : (REDACTED) The syncToken for corpus %s is %s and the syncRequestReason is %s
+09-05 09:50:52.047 29940 30031 W djni    : (REDACTED) Upload permissions denied for Corpus %s
+09-05 09:50:58.687 29940 30373 I djni    : (REDACTED) Starting batch sync for corpora: %s
+09-05 09:50:58.752 29940 30429 I djni    : (REDACTED) No previous syncToken for corpus %s found.
+09-05 09:51:02.286 29940 30032 I djni    : (REDACTED) Starting batch sync for corpora: %s
+09-05 09:51:02.324 29940 30437 I djni    : (REDACTED) No previous syncToken for corpus %s found.
+09-05 09:51:04.685 10315 10568 I djni    : (REDACTED) Starting batch sync for corpora: %s
+09-05 09:51:04.707 10315 10834 I djni    : (REDACTED) The syncToken for corpus %s is %s and the syncRequestReason is %s
+09-05 09:51:06.410 29940 30373 W djni    : (REDACTED) Upload permissions denied for Corpus %s
+09-05 09:51:08.701 10315 10569 I djni    : (REDACTED) Starting batch sync for corpora: %s
+09-05 09:51:08.708 29940 30033 I djni    : (REDACTED) Starting batch sync for corpora: %s
+09-05 09:51:08.709 10315 10443 W djni    : (REDACTED) Upload permissions denied for Corpus %s
+09-05 09:51:08.711 10315 30601 I djni    : (REDACTED) The syncToken for corpus %s is %s and the syncRequestReason is %s
+09-05 09:51:08.749 29940 30446 I djni    : (REDACTED) No previous syncToken for corpus %s found.
+09-05 09:51:09.255  1941  4547 I ActivityTaskManager: START u0 {act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10200000 cmp=com.accofinder/.SplashActivity bnds=[22,253][157,491]} from uid 10191 pid 26520
+09-05 09:51:09.289  1941  4547 E ANDR-PERF-JNI: com_qualcomm_qtiperformance_native_perf_io_prefetch_start
+09-05 09:51:09.331 26520 26520 D BaseDraggingActivity: startActivity bookkeeping intent = Intent { act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10200000 cmp=com.accofinder/.SplashActivity bnds=[22,253][157,491] }
+09-05 09:51:09.335 26520 26520 D Stats   : Intent.getPackage() is null. therefore try to get package name from componentName.getPackageName(): com.accofinder
+09-05 09:51:09.340 26520 26520 D Stats   : Intent.getPackage() is null. therefore try to get package name from componentName.getPackageName(): com.accofinder
+09-05 09:51:09.344 26520 26520 D ItemClickHandler: onClick app, allappsTransProgress = 0.0, tag = AppInfo(id=-1 type=APP container=-1 screen=-1 cell(-1,-1) span(1,1) minSpan(1,1) rank=0 user=UserHandle{0} title=AccoFinder hidden=false dirty = false newInstallTag=null componentName=ComponentInfo{com.accofinder/com.accofinder.SplashActivity} searchResult=null suggestionApp=null)
+09-05 09:51:09.425 30981 30981 I com.accofinder: Late-enabling -Xcheck:jni
+09-05 09:51:09.446  1941  2060 I ActivityManager: Start proc 30981:com.accofinder/u0a268 for pre-top-activity {com.accofinder/com.accofinder.SplashActivity}
+09-05 09:51:09.460  1941  2039 D OpRestartProcessManager: updateSelf :  com.accofinder, size : 21
+09-05 09:51:09.491 30981 30981 I com.accofinder: Unquickening 21 vdex files!
+09-05 09:51:09.501  1941  2040 W WindowManager: Token{4c83f5d ActivityRecord{78a40a0 u0 com.accofinder/.SplashActivity t26906}} failed creating starting window
+09-05 09:51:09.627 30981 30981 E com.accofinder: Unknown bits set in runtime_flags: 0x800000
+09-05 09:51:09.705 26520 31026 D RecentTasksList: dumpTasks# id=26884, cmp=ComponentInfo{com.facebook.katana/com.facebook.katana.LoginActivity}, uid=0, locked=false, isAppLocked=false; id=26903, cmp=ComponentInfo{com.whatsapp/com.whatsapp.Main}, uid=0, locked=false, isAppLocked=false; id=26906, cmp=ComponentInfo{com.accofinder/com.accofinder.SplashActivity}, uid=0, locked=false, isAppLocked=false;
+09-05 09:51:09.946  1188 31032 E ANDR-RAMBOOST_SERVER: ramboost cmd_len = 110 cmd: iop_start -1 com.accofinder /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA== false
+09-05 09:51:09.947  1188 31033 E ANDR-RAMBOOST_SERVER: ramboost cmd_len = 113 cmd: iop_start 30981 com.accofinder /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA== false
+09-05 09:51:09.955  1941  2154 D OpColorDisplayService: frontPackageChanged: com.accofinder
+09-05 09:51:09.959  1941  2154 D OpProximityController: noteFrontPackageChanged pkg:com.accofinder uid:10268 lpkg:net.oneplus.launcher luid:10191
+09-05 09:51:09.986  1941  2154 E OpScreenModeService: getAppToken ActivityRecord{78a40a0 u0 com.accofinder/.SplashActivity t26906}
+09-05 09:51:09.986  1941  2154 E OpScreenModeService: setRefreshRate token ActivityRecord{78a40a0 u0 com.accofinder/.SplashActivity t26906} request refresh rate=-1 tmpRate -1
+09-05 09:51:09.987  1941  2154 E OpScreenModeService: setRefreshRate token ActivityRecord{78a40a0 u0 com.accofinder/.SplashActivity t26906} app request rateid=1 fps=90.0
+09-05 09:51:09.990  1941  2154 D OpQuickReply: setQuickReplyResumed focusedApp ActivityRecord{78a40a0 u0 com.accofinder/.SplashActivity t26906} pkgName com.accofinder
+09-05 09:51:09.993  1941  2154 D Hypnus  : hypnusSetScene: uid=10268, pid=30981, name=com.accofinder, activity=null
+09-05 09:51:10.041  1941  2039 D OpScreenModeService: updateRefreshRate token ActivityRecord{78a40a0 u0 com.accofinder/.SplashActivity t26906} rate=1
+09-05 09:51:10.171 30981 30981 I com.accofinder: [GL_OOM] ClampGrowthLimit 268435456
+09-05 09:51:10.290 30981 30981 I TetheringManager: registerTetheringEventCallback:com.accofinder
+09-05 09:51:10.510 30981 30981 E com.accofinder: Invalid ID 0x00000000.
+09-05 09:51:10.577 30981 30981 E com.accofinder: Invalid ID 0x00000000.
+09-05 09:51:10.589 30981 30981 I chatty  : uid=10268(com.accofinder) identical 39 lines
+09-05 09:51:10.589 30981 30981 E com.accofinder: Invalid ID 0x00000000.
+09-05 09:51:10.706  1941  4547 I ActivityTaskManager: START u0 {flg=0x10000 cmp=com.accofinder/.DeepLinkActivity} from uid 10268 pid 30981
+09-05 09:51:10.744  1941  2040 W WindowManager: Token{6981425 ActivityRecord{dc49bab u0 com.accofinder/.DeepLinkActivity t26906}} failed creating starting window
+09-05 09:51:10.877  1941  2039 D OpRestartProcessManager: updateSelf :  com.accofinder, size : 21
+09-05 09:51:10.878  1941  4547 I ActivityTaskManager: The Process com.accofinder Already Exists in BG. So sending its PID: 30981
+09-05 09:51:10.888  1941  4547 E OpScreenModeService: getAppToken ActivityRecord{dc49bab u0 com.accofinder/.DeepLinkActivity t26906}
+09-05 09:51:10.888  1941  4547 E OpScreenModeService: setRefreshRate token ActivityRecord{dc49bab u0 com.accofinder/.DeepLinkActivity t26906} request refresh rate=-1 tmpRate -1
+09-05 09:51:10.889  1941  4547 E OpScreenModeService: setRefreshRate token ActivityRecord{dc49bab u0 com.accofinder/.DeepLinkActivity t26906} app request rateid=1 fps=90.0
+09-05 09:51:10.889  1941  4547 D OpQuickReply: setQuickReplyResumed focusedApp ActivityRecord{dc49bab u0 com.accofinder/.DeepLinkActivity t26906} pkgName com.accofinder
+09-05 09:51:10.889  1941  4547 D Hypnus  : hypnusSetScene: uid=10268, pid=30981, name=com.accofinder, activity=null
+09-05 09:51:10.899  1941  2039 D OpScreenModeService: updateRefreshRate token ActivityRecord{dc49bab u0 com.accofinder/.DeepLinkActivity t26906} rate=1
+09-05 09:51:10.925 30981 30981 W com.accofinder: ClassLoaderContext parent mismatch.  (PCL[] | PCL[];PCL[/data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/base.apk*1761278996:/data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/base.apk!classes2.dex*125074649:/data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/base.apk!classes3.dex*339351218:/data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/base.apk!classes4.dex*2279709806:/data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/base.apk!classes5.dex*3406085738:/data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/base.apk!classes6.dex*411340954])
+09-05 09:51:10.926 30981 30981 W com.accofinder: Found duplicate classes, falling back to extracting from APK : /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/base.apk
+09-05 09:51:10.926 30981 30981 W com.accofinder: NOTE: This wastes RAM and hurts startup performance.
+09-05 09:51:10.926 30981 30981 W com.accofinder: Found duplicated class when checking oat files: 'L_COROUTINE/ArtificialStackFrames;' in /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/base.apk and /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/base.apk
+09-05 09:51:10.999 26520 30687 D RecentTasksList: dumpTasks# id=26884, cmp=ComponentInfo{com.facebook.katana/com.facebook.katana.LoginActivity}, uid=0, locked=false, isAppLocked=false; id=26903, cmp=ComponentInfo{com.whatsapp/com.whatsapp.Main}, uid=0, locked=false, isAppLocked=false; id=26906, cmp=ComponentInfo{com.accofinder/com.accofinder.SplashActivity}, uid=0, locked=false, isAppLocked=false;
+09-05 09:51:11.307 30981 30981 I 100     : Open /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/base.apk took:385ms
+09-05 09:51:11.338 30981 31058 W linker  : Warning: "/data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libc++_shared.so" unused DT entry: unknown processor-specific (type 0x70000001 arg 0x0) (ignoring)
+09-05 09:51:11.802  1941  2068 D ArtManagerInternalImpl: /data/misc/iorapd/com.accofinder/1/com.accofinder.DeepLinkActivity/compiled_traces/compiled_trace.pb doesn't exist
+09-05 09:51:11.810  1941  2079 I ===> HoustonPackage: addLaunchTimeInfo: for com.accofinder/.DeepLinkActivity isCold:true launchTime:2548
+09-05 09:51:11.810  1941  2079 I 322     : com.accofinder#693#2548
+09-05 09:51:11.810  1941  2068 I ActivityTaskManager: Displayed com.accofinder/.DeepLinkActivity: +2s548ms
+09-05 09:51:11.858  7607  7607 I PhoneStatusBarView: isFullAndNotchEnabled() isFullMode=false pkg=com.accofinder isCameraNotchIgnoreSetting=false, uid=10268
+09-05 09:51:11.905  6126  6126 I GoogleInputMethodService: GoogleInputMethodService.onStartInput():1532 onStartInput(EditorInfo{EditorInfo{packageName=com.accofinder, inputType=0, inputTypeString=NULL, enableLearning=false, autoCorrection=false, autoComplete=false, imeOptions=0, privateImeOptions=null, actionName=UNSPECIFIED, actionLabel=null, initialSelStart=-1, initialSelEnd=-1, initialCapsMode=0, label=null, fieldId=-1, fieldName=null, extras=null, hintText=null, hintLocales=[]}}, false)
+09-05 09:51:12.521 30981 31058 I default : [SocketIO] Connecting to: "wss://accofinder-trsm.onrender.com/socket.io/?EIO=4&transport=websocket"
+09-05 09:51:13.393 30981 31058 W default : qrc:/qt/qml/AccoFinder/ui/features/home/pages/HomePage.qml:63:9: QML SuperDeals: Detected anchors on an item that is managed by a layout. This is undefined behavior; use Layout.alignment instead.
+09-05 09:51:13.412 30981 31058 E com.accofinder: Invalid ID 0x00000000.
+09-05 09:51:13.429 30981 31058 I chatty  : uid=10268(com.accofinder) qtMainLoopThrea identical 6 lines
+09-05 09:51:13.429 30981 31058 E com.accofinder: Invalid ID 0x00000000.
+09-05 09:51:13.447 30981 30981 I chatty  : uid=10268(com.accofinder) identical 2 lines
+09-05 09:51:13.512  1941  2316 E OpScreenModeService: getAppToken ActivityRecord{dc49bab u0 com.accofinder/.DeepLinkActivity t26906}
+09-05 09:51:13.512  1941  2316 E OpScreenModeService: setRefreshRate token ActivityRecord{dc49bab u0 com.accofinder/.DeepLinkActivity t26906} request refresh rate=1 tmpRate 2
+09-05 09:51:13.512  1941  2316 E OpScreenModeService: setRefreshRate token ActivityRecord{dc49bab u0 com.accofinder/.DeepLinkActivity t26906} app request rateid=2 fps=60.0
+09-05 09:51:14.013  1941  2039 D OpScreenModeService: updateRefreshRate token ActivityRecord{dc49bab u0 com.accofinder/.DeepLinkActivity t26906} rate=2
+09-05 09:51:14.215 10315 10570 I djni    : (REDACTED) Starting batch sync for corpora: %s
+09-05 09:51:14.240 10315 30607 I djni    : (REDACTED) The syncToken for corpus %s is %s and the syncRequestReason is %s
+09-05 09:51:14.582 10315 10443 I djni    : (REDACTED) Starting batch sync for corpora: %s
+09-05 09:51:14.598 10315 11010 I djni    : (REDACTED) The syncToken for corpus %s is %s and the syncRequestReason is %s
+09-05 09:51:15.148 30981 31018 I com.accofinder: WaitForGcToComplete blocked RunEmptyCheckpoint on ProfileSaver for 8.112ms
+09-05 09:51:15.414 30981 31058 F com.accofinder: java_vm_ext.cc:577] JNI DETECTED ERROR IN APPLICATION: the return type of CallVoidMethodV does not match com.google.android.gms.tasks.Task com.google.android.gms.tasks.zzw.addOnSuccessListener(com.google.android.gms.tasks.OnSuccessListener)
+09-05 09:51:15.414 30981 31058 F com.accofinder: java_vm_ext.cc:577]     in call to CallVoidMethodV
+09-05 09:51:15.414 30981 31058 F com.accofinder: java_vm_ext.cc:577]     from void org.qtproject.qt.android.QtNative.startQtNativeApplication(java.lang.String)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] Runtime aborting...
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] Dumping all threads without mutator lock held
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] All threads:
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] DALVIK THREADS (28):
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] "qtMainLoopThread" prio=5 tid=27 Runnable
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | group="" sCount=0 dsCount=0 flags=0 obj=0x132001a8 self=0xb40000750558d520
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | sysTid=31058 nice=0 cgrp=default sched=0/0 handle=0x731f807cc0
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | state=R schedstat=( 957946963 107678339 754 ) utm=69 stm=25 core=5 HZ=100
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | stack=0x731f704000-0x731f706000 stackSize=1043KB
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | held mutexes= "abort lock" "mutator lock"(shared held)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #00 pc 000000000049f414  /apex/com.android.art/lib64/libart.so (art::DumpNativeStack(std::__1::basic_ostream<char, std::__1::char_traits<char> >&, int, BacktraceMap*, char const*, art::ArtMethod*, void*, bool)+140)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #01 pc 00000000005ac728  /apex/com.android.art/lib64/libart.so (art::Thread::DumpStack(std::__1::basic_ostream<char, std::__1::char_traits<char> >&, bool, BacktraceMap*, bool) const+376)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #02 pc 00000000005c98c8  /apex/com.android.art/lib64/libart.so (art::DumpCheckpoint::Run(art::Thread*)+924)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #03 pc 00000000005c37ac  /apex/com.android.art/lib64/libart.so (art::ThreadList::RunCheckpoint(art::Closure*, art::Closure*)+528)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #04 pc 00000000005c2978  /apex/com.android.art/lib64/libart.so (art::ThreadList::Dump(std::__1::basic_ostream<char, std::__1::char_traits<char> >&, bool)+1920)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #05 pc 000000000055d5e4  /apex/com.android.art/lib64/libart.so (art::Runtime::Abort(char const*)+1864)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #06 pc 0000000000013be4  /system/lib64/libbase.so (android::base::SetAborter(std::__1::function<void (char const*)>&&)::$_3::__invoke(char const*)+76)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #07 pc 0000000000012fb4  /system/lib64/libbase.so (android::base::LogMessage::~LogMessage()+320)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #08 pc 000000000038551c  /apex/com.android.art/lib64/libart.so (art::JavaVMExt::JniAbort(char const*, char const*)+2572)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #09 pc 0000000000385594  /apex/com.android.art/lib64/libart.so (art::JavaVMExt::JniAbortV(char const*, char const*, std::__va_list)+108)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #10 pc 0000000000377270  /apex/com.android.art/lib64/libart.so (art::(anonymous namespace)::ScopedCheck::AbortF(char const*, ...)+144)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #11 pc 000000000037a358  /apex/com.android.art/lib64/libart.so (art::(anonymous namespace)::ScopedCheck::CheckMethodAndSig(art::ScopedObjectAccess&, _jobject*, _jclass*, _jmethodID*, art::Primitive::Type, art::InvokeType)+292)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #12 pc 00000000003790fc  /apex/com.android.art/lib64/libart.so (art::(anonymous namespace)::CheckJNI::CallMethodV(char const*, _JNIEnv*, _jobject*, _jclass*, _jmethodID*, std::__va_list, art::Primitive::Type, art::InvokeType)+764)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #13 pc 0000000000367880  /apex/com.android.art/lib64/libart.so (art::(anonymous namespace)::CheckJNI::CallVoidMethodV(_JNIEnv*, _jobject*, _jmethodID*, std::__va_list)+72)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #14 pc 000000000051812c  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libQt6Core_arm64-v8a.so (QJniObject::callVoidMethodV(_JNIEnv*, _jmethodID*, ...) const+128)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #15 pc 0000000000931e2c  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libappAccoFinder_arm64-v8a.so (_ZNK10QJniObject10callMethodIvJP8_jobjectETnNSt6__ndk19enable_ifIX20ValidFieldTypeDetailIu11__remove_cvIu20__remove_reference_tIT_EEEEbE4typeELb1EEEDaPKcSB_DpOT0_+200)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #16 pc 0000000000931c3c  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libappAccoFinder_arm64-v8a.so (FcmService::registerToken()+696)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #17 pc 00000000009330e8  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libappAccoFinder_arm64-v8a.so (???)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #18 pc 00000000009330b0  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libappAccoFinder_arm64-v8a.so (???)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #19 pc 0000000000933088  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libappAccoFinder_arm64-v8a.so (???)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #20 pc 0000000000933044  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libappAccoFinder_arm64-v8a.so (???)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #21 pc 0000000000932fec  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libappAccoFinder_arm64-v8a.so (???)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #22 pc 0000000000932f8c  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libappAccoFinder_arm64-v8a.so (???)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #23 pc 00000000003c5f6c  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libQt6Core_arm64-v8a.so (???)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #24 pc 00000000003d5188  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libQt6Core_arm64-v8a.so (???)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #25 pc 00000000003c0ea0  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libQt6Core_arm64-v8a.so (QObject::event(QEvent*)+124)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #26 pc 00000000003896e0  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libQt6Core_arm64-v8a.so (QCoreApplication::notifyInternal2(QObject*, QEvent*)+160)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #27 pc 00000000004afcd0  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libQt6Core_arm64-v8a.so (QTimerInfoList::activateTimers()+500)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #28 pc 00000000004b240c  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libQt6Core_arm64-v8a.so (QEventDispatcherUNIX::processEvents(QFlags<QEventLoop::ProcessEventsFlag>)+544)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #29 pc 00000000006675cc  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libQt6Gui_arm64-v8a.so (QUnixEventDispatcherQPA::processEvents(QFlags<QEventLoop::ProcessEventsFlag>)+20)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #30 pc 000000000007241c  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libplugins_platforms_qtforandroid_arm64-v8a.so (???)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #31 pc 0000000000391568  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libQt6Core_arm64-v8a.so (QEventLoop::exec(QFlags<QEventLoop::ProcessEventsFlag>)+340)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #32 pc 0000000000389c88  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libQt6Core_arm64-v8a.so (QCoreApplication::exec()+136)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #33 pc 00000000005a07bc  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libappAccoFinder_arm64-v8a.so (main+4920)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #34 pc 0000000000067e20  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libplugins_platforms_qtforandroid_arm64-v8a.so (???)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #35 pc 000000000013ced4  /apex/com.android.art/lib64/libart.so (art_quick_generic_jni_trampoline+148)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #36 pc 00000000001337e8  /apex/com.android.art/lib64/libart.so (art_quick_invoke_static_stub+568)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #37 pc 00000000001a8a94  /apex/com.android.art/lib64/libart.so (art::ArtMethod::Invoke(art::Thread*, unsigned int*, unsigned int, art::JValue*, char const*)+228)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #38 pc 00000000003185d8  /apex/com.android.art/lib64/libart.so (art::interpreter::ArtInterpreterToCompiledCodeBridge(art::Thread*, art::ArtMethod*, art::ShadowFrame*, unsigned short, art::JValue*)+376)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #39 pc 000000000030e904  /apex/com.android.art/lib64/libart.so (bool art::interpreter::DoCall<false, false>(art::ArtMethod*, art::Thread*, art::ShadowFrame&, art::Instruction const*, unsigned short, art::JValue*)+996)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #40 pc 000000000067fc4c  /apex/com.android.art/lib64/libart.so (MterpInvokeStatic+548)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #41 pc 000000000012d994  /apex/com.android.art/lib64/libart.so (mterp_op_invoke_static+20)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #42 pc 00000000000ef6f8  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/base.apk (offset b05000) (org.qtproject.qt.android.QtNative.lambda$startApplication$2)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #43 pc 000000000067fef0  /apex/com.android.art/lib64/libart.so (MterpInvokeStatic+1224)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #44 pc 000000000012d994  /apex/com.android.art/lib64/libart.so (mterp_op_invoke_static+20)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #45 pc 00000000000eeee8  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/base.apk (offset b05000) (org.qtproject.qt.android.QtNative$$ExternalSyntheticLambda3.run+4)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #46 pc 000000000067e9cc  /apex/com.android.art/lib64/libart.so (MterpInvokeInterface+1808)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #47 pc 000000000012da14  /apex/com.android.art/lib64/libart.so (mterp_op_invoke_interface+20)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #48 pc 00000000000f0fac  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/base.apk (offset b05000) (org.qtproject.qt.android.QtThread$1.run+148)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #49 pc 000000000067e9cc  /apex/com.android.art/lib64/libart.so (MterpInvokeInterface+1808)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #50 pc 000000000012da14  /apex/com.android.art/lib64/libart.so (mterp_op_invoke_interface+20)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #51 pc 00000000000ed090  /apex/com.android.art/javalib/core-oj.jar (java.lang.Thread.run+8)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #52 pc 0000000000305f00  /apex/com.android.art/lib64/libart.so (art::interpreter::Execute(art::Thread*, art::CodeItemDataAccessor const&, art::ShadowFrame&, art::JValue, bool, bool) (.llvm.7972480776628613073)+268)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #53 pc 000000000066b9fc  /apex/com.android.art/lib64/libart.so (artQuickToInterpreterBridge+780)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #54 pc 000000000013cff8  /apex/com.android.art/lib64/libart.so (art_quick_to_interpreter_bridge+88)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #55 pc 0000000000133564  /apex/com.android.art/lib64/libart.so (art_quick_invoke_stub+548)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #56 pc 00000000001a8a78  /apex/com.android.art/lib64/libart.so (art::ArtMethod::Invoke(art::Thread*, unsigned int*, unsigned int, art::JValue*, char const*)+200)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #57 pc 00000000005553d8  /apex/com.android.art/lib64/libart.so (art::JValue art::InvokeVirtualOrInterfaceWithJValues<art::ArtMethod*>(art::ScopedObjectAccessAlreadyRunnable const&, _jobject*, art::ArtMethod*, jvalue const*)+460)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #58 pc 00000000005a4788  /apex/com.android.art/lib64/libart.so (art::Thread::CreateCallback(void*)+1308)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #59 pc 00000000000b0048  /apex/com.android.runtime/lib64/bionic/libc.so (__pthread_start(void*)+64)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #60 pc 00000000000503c8  /apex/com.android.runtime/lib64/bionic/libc.so (__start_thread+64)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at org.qtproject.qt.android.QtNative.startQtNativeApplication(Native method)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at org.qtproject.qt.android.QtNative.lambda$startApplication$2(QtNative.java:366)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at org.qtproject.qt.android.QtNative$$ExternalSyntheticLambda3.run(D8$$SyntheticClass:0)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at org.qtproject.qt.android.QtThread$1.run(QtThread.java:25)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.lang.Thread.run(Thread.java:923)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] 
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] "main" prio=10 tid=1 Native
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | group="" sCount=1 dsCount=0 flags=1 obj=0x71e06470 self=0xb40000750554ebe0
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | sysTid=30981 nice=-10 cgrp=default sched=0/0 handle=0x768ca854f8
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | state=S schedstat=( 1175060368 44522333 693 ) utm=87 stm=30 core=5 HZ=100
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | stack=0x7fe3e56000-0x7fe3e58000 stackSize=8192KB
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | held mutexes=
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #00 pc 000000000009c238  /apex/com.android.runtime/lib64/bionic/libc.so (__epoll_pwait+8)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #01 pc 0000000000019acc  /system/lib64/libutils.so (android::Looper::pollInner(int)+184)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #02 pc 00000000000199ac  /system/lib64/libutils.so (android::Looper::pollOnce(int, int*, int*, void**)+112)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #03 pc 00000000001144b4  /system/lib64/libandroid_runtime.so (android::android_os_MessageQueue_nativePollOnce(_JNIEnv*, _jobject*, long, int)+44)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at android.os.MessageQueue.nativePollOnce(Native method)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at android.os.MessageQueue.next(MessageQueue.java:335)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at android.os.Looper.loop(Looper.java:183)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at android.app.ActivityThread.main(ActivityThread.java:8063)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.lang.reflect.Method.invoke(Native method)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:631)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:978)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] 
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] "Signal Catcher" prio=10 tid=6 WaitingInMainSignalCatcherLoop
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | group="" sCount=1 dsCount=0 flags=1 obj=0x13203f88 self=0xb400007505555b20
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | sysTid=31004 nice=-20 cgrp=default sched=0/0 handle=0x7387714cc0
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | state=S schedstat=( 1003490 2080364 3 ) utm=0 stm=0 core=7 HZ=100
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | stack=0x738761d000-0x738761f000 stackSize=995KB
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | held mutexes=
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #00 pc 000000000009bc78  /apex/com.android.runtime/lib64/bionic/libc.so (__rt_sigtimedwait+8)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #01 pc 000000000005cdb8  /apex/com.android.runtime/lib64/bionic/libc.so (sigwait+68)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #02 pc 00000000005836e8  /apex/com.android.art/lib64/libart.so (art::SignalCatcher::WaitForSignal(art::Thread*, art::SignalSet&)+428)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #03 pc 00000000005822e0  /apex/com.android.art/lib64/libart.so (art::SignalCatcher::Run(void*)+272)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #04 pc 00000000000b0048  /apex/com.android.runtime/lib64/bionic/libc.so (__pthread_start(void*)+64)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #05 pc 00000000000503c8  /apex/com.android.runtime/lib64/bionic/libc.so (__start_thread+64)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   (no managed stack frames)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] 
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] "perfetto_hprof_listener" prio=10 tid=7 Native (still starting up)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | group="" sCount=1 dsCount=0 flags=1 obj=0x0 self=0xb400007505560200
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | sysTid=31015 nice=-20 cgrp=default sched=0/0 handle=0x7387616cc0
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | state=S schedstat=( 498958 179583 1 ) utm=0 stm=0 core=7 HZ=100
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | stack=0x738751f000-0x7387521000 stackSize=995KB
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | held mutexes=
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #00 pc 000000000009aff4  /apex/com.android.runtime/lib64/bionic/libc.so (read+4)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #01 pc 00000000000180bc  /apex/com.android.art/lib64/libperfetto_hprof.so (void* std::__1::__thread_proxy<std::__1::tuple<std::__1::unique_ptr<std::__1::__thread_struct, std::__1::default_delete<std::__1::__thread_struct> >, ArtPlugin_Initialize::$_29> >(void*)+280)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #02 pc 00000000000b0048  /apex/com.android.runtime/lib64/bionic/libc.so (__pthread_start(void*)+64)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #03 pc 00000000000503c8  /apex/com.android.runtime/lib64/bionic/libc.so (__start_thread+64)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   (no managed stack frames)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] 
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] "ADB-JDWP Connection Control Thread" prio=10 tid=8 WaitingInMainDebuggerLoop
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | group="" sCount=1 dsCount=0 flags=1 obj=0x13204000 self=0xb400007505552380
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | sysTid=31016 nice=-20 cgrp=default sched=0/0 handle=0x7387518cc0
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | state=S schedstat=( 1167085 395520 4 ) utm=0 stm=0 core=4 HZ=100
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | stack=0x7387421000-0x7387423000 stackSize=995KB
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | held mutexes=
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #00 pc 000000000009c338  /apex/com.android.runtime/lib64/bionic/libc.so (__ppoll+8)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #01 pc 000000000005a380  /apex/com.android.runtime/lib64/bionic/libc.so (poll+92)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #02 pc 0000000000009efc  /apex/com.android.art/lib64/libadbconnection.so (adbconnection::AdbConnectionState::RunPollLoop(art::Thread*)+828)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #03 pc 0000000000008578  /apex/com.android.art/lib64/libadbconnection.so (adbconnection::CallbackFunction(void*)+1508)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #04 pc 00000000000b0048  /apex/com.android.runtime/lib64/bionic/libc.so (__pthread_start(void*)+64)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #05 pc 00000000000503c8  /apex/com.android.runtime/lib64/bionic/libc.so (__start_thread+64)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   (no managed stack frames)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] 
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] "HeapTaskDaemon" prio=5 tid=9 WaitingForTaskProcessor
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | group="" sCount=1 dsCount=0 flags=1 obj=0x13205538 self=0xb40000750555e630
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | sysTid=31018 nice=4 cgrp=default sched=0/0 handle=0x7387319cc0
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | state=S schedstat=( 18543492 1705157 9 ) utm=1 stm=0 core=6 HZ=100
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | stack=0x7387216000-0x7387218000 stackSize=1043KB
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | held mutexes=
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #00 pc 000000000004b490  /apex/com.android.runtime/lib64/bionic/libc.so (syscall+32)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #01 pc 00000000001afdb0  /apex/com.android.art/lib64/libart.so (art::ConditionVariable::TimedWait(art::Thread*, long, int)+172)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #02 pc 00000000002e558c  /apex/com.android.art/lib64/libart.so (art::gc::TaskProcessor::GetTask(art::Thread*)+512)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #03 pc 00000000002e5ed4  /apex/com.android.art/lib64/libart.so (art::gc::TaskProcessor::RunAllTasks(art::Thread*)+92)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at dalvik.system.VMRuntime.runHeapTasks(Native method)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.lang.Daemons$HeapTaskDaemon.runInternal(Daemons.java:540)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.lang.Daemons$Daemon.run(Daemons.java:139)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.lang.Thread.run(Thread.java:923)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] 
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] "Jit thread pool worker thread 0" prio=5 tid=10 Native
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | group="" sCount=1 dsCount=0 flags=1 obj=0x13204078 self=0xb400007505567140
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | sysTid=31017 nice=0 cgrp=default sched=0/0 handle=0x738741ed00
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | state=S schedstat=( 136819596 77388067 156 ) utm=8 stm=5 core=6 HZ=100
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | stack=0x7387320000-0x7387322000 stackSize=1023KB
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | held mutexes=
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #00 pc 000000000004b48c  /apex/com.android.runtime/lib64/bionic/libc.so (syscall+28)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #01 pc 00000000001af9e0  /apex/com.android.art/lib64/libart.so (art::ConditionVariable::WaitHoldingLocks(art::Thread*)+164)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #02 pc 00000000005cb5fc  /apex/com.android.art/lib64/libart.so (art::ThreadPool::GetTask(art::Thread*)+120)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #03 pc 00000000005ca894  /apex/com.android.art/lib64/libart.so (art::ThreadPoolWorker::Run()+144)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #04 pc 00000000005ca364  /apex/com.android.art/lib64/libart.so (art::ThreadPoolWorker::Callback(void*)+192)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #05 pc 00000000000b0048  /apex/com.android.runtime/lib64/bionic/libc.so (__pthread_start(void*)+64)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #06 pc 00000000000503c8  /apex/com.android.runtime/lib64/bionic/libc.so (__start_thread+64)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   (no managed stack frames)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] 
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] "FinalizerWatchdogDaemon" prio=5 tid=11 Sleeping
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | group="" sCount=1 dsCount=0 flags=1 obj=0x132040f0 self=0xb40000750556c4b0
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | sysTid=31021 nice=4 cgrp=default sched=0/0 handle=0x7386ffbcc0
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | state=S schedstat=( 409688 869115 3 ) utm=0 stm=0 core=7 HZ=100
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | stack=0x7386ef8000-0x7386efa000 stackSize=1043KB
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | held mutexes=
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #00 pc 000000000004b490  /apex/com.android.runtime/lib64/bionic/libc.so (syscall+32)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #01 pc 00000000001afdb0  /apex/com.android.art/lib64/libart.so (art::ConditionVariable::TimedWait(art::Thread*, long, int)+172)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #02 pc 000000000049a404  /apex/com.android.art/lib64/libart.so (art::Monitor::Wait(art::Thread*, long, int, bool, art::ThreadState)+564)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #03 pc 000000000049be5c  /apex/com.android.art/lib64/libart.so (art::Monitor::Wait(art::Thread*, art::ObjPtr<art::mirror::Object>, long, int, bool, art::ThreadState)+280)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.lang.Thread.sleep(Native method)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   - sleeping on <0x01f3aae9> (a java.lang.Object)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.lang.Thread.sleep(Thread.java:442)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   - locked <0x01f3aae9> (a java.lang.Object)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.lang.Thread.sleep(Thread.java:358)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.lang.Daemons$FinalizerWatchdogDaemon.sleepForNanos(Daemons.java:390)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.lang.Daemons$FinalizerWatchdogDaemon.waitForFinalization(Daemons.java:428)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.lang.Daemons$FinalizerWatchdogDaemon.runInternal(Daemons.java:325)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.lang.Daemons$Daemon.run(Daemons.java:139)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.lang.Thread.run(Thread.java:923)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] 
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] "FinalizerDaemon" prio=5 tid=12 Waiting
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | group="" sCount=1 dsCount=0 flags=1 obj=0x13204168 self=0xb400007505565570
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | sysTid=31020 nice=4 cgrp=default sched=0/0 handle=0x7387105cc0
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | state=S schedstat=( 1715884 1131355 3 ) utm=0 stm=0 core=5 HZ=100
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | stack=0x7387002000-0x7387004000 stackSize=1043KB
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | held mutexes=
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #00 pc 000000000004b48c  /apex/com.android.runtime/lib64/bionic/libc.so (syscall+28)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #01 pc 00000000001af9e0  /apex/com.android.art/lib64/libart.so (art::ConditionVariable::WaitHoldingLocks(art::Thread*)+164)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #02 pc 000000000049a3f0  /apex/com.android.art/lib64/libart.so (art::Monitor::Wait(art::Thread*, long, int, bool, art::ThreadState)+544)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #03 pc 000000000049be5c  /apex/com.android.art/lib64/libart.so (art::Monitor::Wait(art::Thread*, art::ObjPtr<art::mirror::Object>, long, int, bool, art::ThreadState)+280)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.lang.Object.wait(Native method)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   - waiting on <0x0c08f36e> (a java.lang.Object)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.lang.Object.wait(Object.java:442)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.lang.ref.ReferenceQueue.remove(ReferenceQueue.java:190)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   - locked <0x0c08f36e> (a java.lang.Object)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.lang.ref.ReferenceQueue.remove(ReferenceQueue.java:211)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.lang.Daemons$FinalizerDaemon.runInternal(Daemons.java:273)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.lang.Daemons$Daemon.run(Daemons.java:139)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.lang.Thread.run(Thread.java:923)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] 
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] "ReferenceQueueDaemon" prio=5 tid=13 Waiting
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | group="" sCount=1 dsCount=0 flags=1 obj=0x132041e0 self=0xb400007505561dd0
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | sysTid=31019 nice=4 cgrp=default sched=0/0 handle=0x738720fcc0
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | state=S schedstat=( 1089115 1611667 5 ) utm=0 stm=0 core=7 HZ=100
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | stack=0x738710c000-0x738710e000 stackSize=1043KB
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | held mutexes=
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #00 pc 000000000004b48c  /apex/com.android.runtime/lib64/bionic/libc.so (syscall+28)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #01 pc 00000000001af9e0  /apex/com.android.art/lib64/libart.so (art::ConditionVariable::WaitHoldingLocks(art::Thread*)+164)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #02 pc 000000000049a3f0  /apex/com.android.art/lib64/libart.so (art::Monitor::Wait(art::Thread*, long, int, bool, art::ThreadState)+544)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #03 pc 000000000049be5c  /apex/com.android.art/lib64/libart.so (art::Monitor::Wait(art::Thread*, art::ObjPtr<art::mirror::Object>, long, int, bool, art::ThreadState)+280)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.lang.Object.wait(Native method)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   - waiting on <0x0f0f5a0f> (a java.lang.Class<java.lang.ref.ReferenceQueue>)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.lang.Object.wait(Object.java:442)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.lang.Object.wait(Object.java:568)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.lang.Daemons$ReferenceQueueDaemon.runInternal(Daemons.java:217)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   - locked <0x0f0f5a0f> (a java.lang.Class<java.lang.ref.ReferenceQueue>)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.lang.Daemons$Daemon.run(Daemons.java:139)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.lang.Thread.run(Thread.java:923)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] 
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] "Binder:30981_1" prio=5 tid=14 Native
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | group="" sCount=1 dsCount=0 flags=1 obj=0x13204258 self=0xb40000750556a8e0
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | sysTid=31025 nice=0 cgrp=default sched=0/0 handle=0x7386cf3cc0
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | state=S schedstat=( 833698 513177 3 ) utm=0 stm=0 core=7 HZ=100
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | stack=0x7386bfc000-0x7386bfe000 stackSize=995KB
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | held mutexes=
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #00 pc 000000000009b274  /apex/com.android.runtime/lib64/bionic/libc.so (__ioctl+4)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #01 pc 0000000000057da0  /apex/com.android.runtime/lib64/bionic/libc.so (ioctl+156)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #02 pc 0000000000051d94  /system/lib64/libbinder.so (android::IPCThreadState::talkWithDriver(bool)+296)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #03 pc 0000000000051f84  /system/lib64/libbinder.so (android::IPCThreadState::getAndExecuteCommand()+24)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #04 pc 0000000000052840  /system/lib64/libbinder.so (android::IPCThreadState::joinThreadPool(bool)+60)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #05 pc 00000000000788c4  /system/lib64/libbinder.so (android::PoolThread::threadLoop()+24)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #06 pc 00000000000154cc  /system/lib64/libutils.so (android::Thread::_threadLoop(void*)+260)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #07 pc 00000000000a3818  /system/lib64/libandroid_runtime.so (android::AndroidRuntime::javaThreadShell(void*)+144)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #08 pc 0000000000014d90  /system/lib64/libutils.so (thread_data_t::trampoline(thread_data_t const*)+412)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #09 pc 00000000000b0048  /apex/com.android.runtime/lib64/bionic/libc.so (__pthread_start(void*)+64)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #10 pc 00000000000503c8  /apex/com.android.runtime/lib64/bionic/libc.so (__start_thread+64)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   (no managed stack frames)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] 
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] "Binder:30981_2" prio=5 tid=15 Native
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | group="" sCount=1 dsCount=0 flags=1 obj=0x132042d0 self=0xb400007505568d10
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | sysTid=31028 nice=0 cgrp=default sched=0/0 handle=0x7386bf5cc0
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | state=S schedstat=( 36955415 30299899 72 ) utm=2 stm=1 core=4 HZ=100
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | stack=0x7386afe000-0x7386b00000 stackSize=995KB
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | held mutexes=
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #00 pc 000000000009b274  /apex/com.android.runtime/lib64/bionic/libc.so (__ioctl+4)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #01 pc 0000000000057da0  /apex/com.android.runtime/lib64/bionic/libc.so (ioctl+156)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #02 pc 0000000000051d94  /system/lib64/libbinder.so (android::IPCThreadState::talkWithDriver(bool)+296)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #03 pc 0000000000051f84  /system/lib64/libbinder.so (android::IPCThreadState::getAndExecuteCommand()+24)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #04 pc 0000000000052840  /system/lib64/libbinder.so (android::IPCThreadState::joinThreadPool(bool)+60)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #05 pc 00000000000788c4  /system/lib64/libbinder.so (android::PoolThread::threadLoop()+24)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #06 pc 00000000000154cc  /system/lib64/libutils.so (android::Thread::_threadLoop(void*)+260)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #07 pc 00000000000a3818  /system/lib64/libandroid_runtime.so (android::AndroidRuntime::javaThreadShell(void*)+144)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #08 pc 0000000000014d90  /system/lib64/libutils.so (thread_data_t::trampoline(thread_data_t const*)+412)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #09 pc 00000000000b0048  /apex/com.android.runtime/lib64/bionic/libc.so (__pthread_start(void*)+64)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #10 pc 00000000000503c8  /apex/com.android.runtime/lib64/bionic/libc.so (__start_thread+64)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   (no managed stack frames)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] 
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] "Binder:30981_3" prio=5 tid=16 Native
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | group="" sCount=1 dsCount=0 flags=1 obj=0x13204348 self=0xb40000750556e080
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | sysTid=31031 nice=0 cgrp=default sched=0/0 handle=0x7386af7cc0
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | state=S schedstat=( 12756509 10335365 39 ) utm=1 stm=0 core=4 HZ=100
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | stack=0x7386a00000-0x7386a02000 stackSize=995KB
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | held mutexes=
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #00 pc 000000000009b274  /apex/com.android.runtime/lib64/bionic/libc.so (__ioctl+4)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #01 pc 0000000000057da0  /apex/com.android.runtime/lib64/bionic/libc.so (ioctl+156)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #02 pc 0000000000051d94  /system/lib64/libbinder.so (android::IPCThreadState::talkWithDriver(bool)+296)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #03 pc 0000000000051f84  /system/lib64/libbinder.so (android::IPCThreadState::getAndExecuteCommand()+24)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #04 pc 0000000000052840  /system/lib64/libbinder.so (android::IPCThreadState::joinThreadPool(bool)+60)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #05 pc 00000000000788c4  /system/lib64/libbinder.so (android::PoolThread::threadLoop()+24)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #06 pc 00000000000154cc  /system/lib64/libutils.so (android::Thread::_threadLoop(void*)+260)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #07 pc 00000000000a3818  /system/lib64/libandroid_runtime.so (android::AndroidRuntime::javaThreadShell(void*)+144)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #08 pc 0000000000014d90  /system/lib64/libutils.so (thread_data_t::trampoline(thread_data_t const*)+412)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #09 pc 00000000000b0048  /apex/com.android.runtime/lib64/bionic/libc.so (__pthread_start(void*)+64)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #10 pc 00000000000503c8  /apex/com.android.runtime/lib64/bionic/libc.so (__start_thread+64)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   (no managed stack frames)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] 
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] "Profile Saver" prio=5 tid=17 Native
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | group="" sCount=1 dsCount=0 flags=1 obj=0x132043c0 self=0xb40000750556fc50
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | sysTid=31036 nice=9 cgrp=default sched=0/0 handle=0x738693bcc0
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | state=S schedstat=( 9794272 3372135 13 ) utm=0 stm=0 core=1 HZ=100
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | stack=0x7386844000-0x7386846000 stackSize=995KB
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | held mutexes=
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #00 pc 000000000004b490  /apex/com.android.runtime/lib64/bionic/libc.so (syscall+32)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #01 pc 00000000001afdb0  /apex/com.android.art/lib64/libart.so (art::ConditionVariable::TimedWait(art::Thread*, long, int)+172)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #02 pc 0000000000353f74  /apex/com.android.art/lib64/libart.so (art::ProfileSaver::Run()+528)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #03 pc 0000000000358d38  /apex/com.android.art/lib64/libart.so (art::ProfileSaver::RunProfileSaverThread(void*)+180)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #04 pc 00000000000b0048  /apex/com.android.runtime/lib64/bionic/libc.so (__pthread_start(void*)+64)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #05 pc 00000000000503c8  /apex/com.android.runtime/lib64/bionic/libc.so (__start_thread+64)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   (no managed stack frames)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] 
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] "Firebase-Messaging-Init" prio=5 tid=18 Waiting
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | group="" sCount=1 dsCount=0 flags=1 obj=0x13204438 self=0xb400007505574fc0
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | sysTid=31037 nice=0 cgrp=default sched=0/0 handle=0x732a6a5cc0
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | state=S schedstat=( 23118389 10679479 39 ) utm=2 stm=0 core=1 HZ=100
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | stack=0x732a5a2000-0x732a5a4000 stackSize=1043KB
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | held mutexes=
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #00 pc 000000000004b48c  /apex/com.android.runtime/lib64/bionic/libc.so (syscall+28)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #01 pc 00000000005a2cf0  /apex/com.android.art/lib64/libart.so (art::Thread::Park(bool, long)+480)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #02 pc 00000000004dc06c  /apex/com.android.art/lib64/libart.so (art::Unsafe_park(_JNIEnv*, _jobject*, unsigned char, long)+660)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at sun.misc.Unsafe.park(Native method)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   - waiting on an unknown object
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.util.concurrent.locks.LockSupport.park(LockSupport.java:190)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:2067)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.util.concurrent.ScheduledThreadPoolExecutor$DelayedWorkQueue.take(ScheduledThreadPoolExecutor.java:1120)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.util.concurrent.ScheduledThreadPoolExecutor$DelayedWorkQueue.take(ScheduledThreadPoolExecutor.java:849)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.util.concurrent.ThreadPoolExecutor.getTask(ThreadPoolExecutor.java:1092)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1152)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:641)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at com.google.android.gms.common.util.concurrent.zza.run(com.google.android.gms:play-services-basement@@18.3.0:2)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.lang.Thread.run(Thread.java:923)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] 
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] "Firebase-Messaging-Topics-Io" prio=5 tid=19 Waiting
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | group="" sCount=1 dsCount=0 flags=1 obj=0x13204688 self=0xb4000075055733f0
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | sysTid=31038 nice=0 cgrp=default sched=0/0 handle=0x732959bcc0
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | state=S schedstat=( 2882135 2464064 6 ) utm=0 stm=0 core=2 HZ=100
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | stack=0x7329498000-0x732949a000 stackSize=1043KB
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | held mutexes=
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #00 pc 000000000004b48c  /apex/com.android.runtime/lib64/bionic/libc.so (syscall+28)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #01 pc 00000000005a2cf0  /apex/com.android.art/lib64/libart.so (art::Thread::Park(bool, long)+480)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #02 pc 00000000004dc06c  /apex/com.android.art/lib64/libart.so (art::Unsafe_park(_JNIEnv*, _jobject*, unsigned char, long)+660)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at sun.misc.Unsafe.park(Native method)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   - waiting on an unknown object
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.util.concurrent.locks.LockSupport.park(LockSupport.java:190)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:2067)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.util.concurrent.ScheduledThreadPoolExecutor$DelayedWorkQueue.take(ScheduledThreadPoolExecutor.java:1120)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.util.concurrent.ScheduledThreadPoolExecutor$DelayedWorkQueue.take(ScheduledThreadPoolExecutor.java:849)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.util.concurrent.ThreadPoolExecutor.getTask(ThreadPoolExecutor.java:1092)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1152)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:641)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at com.google.android.gms.common.util.concurrent.zza.run(com.google.android.gms:play-services-basement@@18.3.0:2)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.lang.Thread.run(Thread.java:923)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] 
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] "Firebase Background Thread #0" prio=4 tid=20 Waiting
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | group="" sCount=1 dsCount=0 flags=1 obj=0x132047f0 self=0xb400007505571820
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | sysTid=31039 nice=10 cgrp=default sched=0/0 handle=0x7328491cc0
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | state=S schedstat=( 13804061 15863231 25 ) utm=0 stm=1 core=2 HZ=100
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | stack=0x732838e000-0x7328390000 stackSize=1043KB
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | held mutexes=
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #00 pc 000000000004b48c  /apex/com.android.runtime/lib64/bionic/libc.so (syscall+28)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #01 pc 00000000005a2cf0  /apex/com.android.art/lib64/libart.so (art::Thread::Park(bool, long)+480)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #02 pc 00000000004dc06c  /apex/com.android.art/lib64/libart.so (art::Unsafe_park(_JNIEnv*, _jobject*, unsigned char, long)+660)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at sun.misc.Unsafe.park(Native method)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   - waiting on an unknown object
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.util.concurrent.locks.LockSupport.park(LockSupport.java:190)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:2067)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.util.concurrent.LinkedBlockingQueue.take(LinkedBlockingQueue.java:442)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.util.concurrent.ThreadPoolExecutor.getTask(ThreadPoolExecutor.java:1092)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1152)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:641)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at com.google.firebase.concurrent.CustomThreadFactory.lambda$newThread$0$com-google-firebase-concurrent-CustomThreadFactory(CustomThreadFactory.java:47)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at com.google.firebase.concurrent.CustomThreadFactory$$ExternalSyntheticLambda0.run(D8$$SyntheticClass:0)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.lang.Thread.run(Thread.java:923)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] 
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] "Firebase Background Thread #2" prio=4 tid=21 Waiting
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | group="" sCount=1 dsCount=0 flags=1 obj=0x13204b80 self=0xb40000750557dad0
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | sysTid=31047 nice=10 cgrp=default sched=0/0 handle=0x7327173cc0
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | state=S schedstat=( 3432655 4203855 14 ) utm=0 stm=0 core=1 HZ=100
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | stack=0x7327070000-0x7327072000 stackSize=1043KB
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | held mutexes=
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #00 pc 000000000004b48c  /apex/com.android.runtime/lib64/bionic/libc.so (syscall+28)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #01 pc 00000000005a2cf0  /apex/com.android.art/lib64/libart.so (art::Thread::Park(bool, long)+480)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #02 pc 00000000004dc06c  /apex/com.android.art/lib64/libart.so (art::Unsafe_park(_JNIEnv*, _jobject*, unsigned char, long)+660)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at sun.misc.Unsafe.park(Native method)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   - waiting on an unknown object
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.util.concurrent.locks.LockSupport.park(LockSupport.java:190)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:2067)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.util.concurrent.LinkedBlockingQueue.take(LinkedBlockingQueue.java:442)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.util.concurrent.ThreadPoolExecutor.getTask(ThreadPoolExecutor.java:1092)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1152)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:641)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at com.google.firebase.concurrent.CustomThreadFactory.lambda$newThread$0$com-google-firebase-concurrent-CustomThreadFactory(CustomThreadFactory.java:47)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at com.google.firebase.concurrent.CustomThreadFactory$$ExternalSyntheticLambda0.run(D8$$SyntheticClass:0)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.lang.Thread.run(Thread.java:923)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] 
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] "WM.task-1" prio=5 tid=22 Waiting
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | group="" sCount=1 dsCount=0 flags=1 obj=0x13204c58 self=0xb400007505578760
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | sysTid=31046 nice=0 cgrp=default sched=0/0 handle=0x732727dcc0
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | state=S schedstat=( 71418913 40948649 88 ) utm=5 stm=1 core=5 HZ=100
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | stack=0x732717a000-0x732717c000 stackSize=1043KB
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | held mutexes=
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #00 pc 000000000004b48c  /apex/com.android.runtime/lib64/bionic/libc.so (syscall+28)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #01 pc 00000000005a2cf0  /apex/com.android.art/lib64/libart.so (art::Thread::Park(bool, long)+480)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #02 pc 00000000004dc06c  /apex/com.android.art/lib64/libart.so (art::Unsafe_park(_JNIEnv*, _jobject*, unsigned char, long)+660)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at sun.misc.Unsafe.park(Native method)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   - waiting on an unknown object
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.util.concurrent.locks.LockSupport.park(LockSupport.java:190)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:2067)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.util.concurrent.LinkedBlockingQueue.take(LinkedBlockingQueue.java:442)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.util.concurrent.ThreadPoolExecutor.getTask(ThreadPoolExecutor.java:1092)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1152)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:641)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.lang.Thread.run(Thread.java:923)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] 
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] "Firebase Background Thread #1" prio=4 tid=23 Waiting
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | group="" sCount=1 dsCount=0 flags=1 obj=0x13204dc8 self=0xb40000750557bf00
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | sysTid=31044 nice=10 cgrp=default sched=0/0 handle=0x7327387cc0
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | state=S schedstat=( 1407916 2617344 7 ) utm=0 stm=0 core=7 HZ=100
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | stack=0x7327284000-0x7327286000 stackSize=1043KB
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | held mutexes=
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #00 pc 000000000004b48c  /apex/com.android.runtime/lib64/bionic/libc.so (syscall+28)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #01 pc 00000000005a2cf0  /apex/com.android.art/lib64/libart.so (art::Thread::Park(bool, long)+480)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #02 pc 00000000004dc06c  /apex/com.android.art/lib64/libart.so (art::Unsafe_park(_JNIEnv*, _jobject*, unsigned char, long)+660)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at sun.misc.Unsafe.park(Native method)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   - waiting on an unknown object
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.util.concurrent.locks.LockSupport.park(LockSupport.java:190)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:2067)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.util.concurrent.LinkedBlockingQueue.take(LinkedBlockingQueue.java:442)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.util.concurrent.ThreadPoolExecutor.getTask(ThreadPoolExecutor.java:1092)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1152)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:641)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at com.google.firebase.concurrent.CustomThreadFactory.lambda$newThread$0$com-google-firebase-concurrent-CustomThreadFactory(CustomThreadFactory.java:47)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at com.google.firebase.concurrent.CustomThreadFactory$$ExternalSyntheticLambda0.run(D8$$SyntheticClass:0)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.lang.Thread.run(Thread.java:923)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] 
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] "Firebase Background Thread #3" prio=4 tid=24 Waiting
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | group="" sCount=1 dsCount=0 flags=1 obj=0x13204ea0 self=0xb400007505576b90
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | sysTid=31049 nice=10 cgrp=default sched=0/0 handle=0x7324069cc0
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | state=S schedstat=( 2680989 1829062 6 ) utm=0 stm=0 core=0 HZ=100
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | stack=0x7323f66000-0x7323f68000 stackSize=1043KB
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | held mutexes=
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #00 pc 000000000004b48c  /apex/com.android.runtime/lib64/bionic/libc.so (syscall+28)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #01 pc 00000000005a2cf0  /apex/com.android.art/lib64/libart.so (art::Thread::Park(bool, long)+480)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #02 pc 00000000004dc06c  /apex/com.android.art/lib64/libart.so (art::Unsafe_park(_JNIEnv*, _jobject*, unsigned char, long)+660)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at sun.misc.Unsafe.park(Native method)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   - waiting on an unknown object
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.util.concurrent.locks.LockSupport.park(LockSupport.java:190)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:2067)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.util.concurrent.LinkedBlockingQueue.take(LinkedBlockingQueue.java:442)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.util.concurrent.ThreadPoolExecutor.getTask(ThreadPoolExecutor.java:1092)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1152)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:641)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at com.google.firebase.concurrent.CustomThreadFactory.lambda$newThread$0$com-google-firebase-concurrent-CustomThreadFactory(CustomThreadFactory.java:47)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at com.google.firebase.concurrent.CustomThreadFactory$$ExternalSyntheticLambda0.run(D8$$SyntheticClass:0)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.lang.Thread.run(Thread.java:923)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] 
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] "RenderThread" prio=10 tid=25 Native
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | group="" sCount=1 dsCount=0 flags=1 obj=0x13204f78 self=0xb400007505582e40
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | sysTid=31050 nice=-10 cgrp=default sched=0/0 handle=0x7322f5fcc0
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | state=S schedstat=( 144859421 8252547 351 ) utm=7 stm=7 core=5 HZ=100
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | stack=0x7322e68000-0x7322e6a000 stackSize=995KB
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | held mutexes=
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #00 pc 000000000009c238  /apex/com.android.runtime/lib64/bionic/libc.so (__epoll_pwait+8)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #01 pc 0000000000019acc  /system/lib64/libutils.so (android::Looper::pollInner(int)+184)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #02 pc 00000000000199ac  /system/lib64/libutils.so (android::Looper::pollOnce(int, int*, int*, void**)+112)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #03 pc 0000000000220684  /system/lib64/libhwui.so (android::uirenderer::ThreadBase::waitForWork()+156)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #04 pc 0000000000244354  /system/lib64/libhwui.so (android::uirenderer::renderthread::RenderThread::threadLoop()+80)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #05 pc 00000000000154cc  /system/lib64/libutils.so (android::Thread::_threadLoop(void*)+260)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #06 pc 0000000000014d90  /system/lib64/libutils.so (thread_data_t::trampoline(thread_data_t const*)+412)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #07 pc 00000000000b0048  /apex/com.android.runtime/lib64/bionic/libc.so (__pthread_start(void*)+64)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #08 pc 00000000000503c8  /apex/com.android.runtime/lib64/bionic/libc.so (__start_thread+64)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   (no managed stack frames)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] 
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] "WM.task-2" prio=5 tid=26 Waiting
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | group="" sCount=1 dsCount=0 flags=1 obj=0x13204ff0 self=0xb4000075055881b0
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | sysTid=31055 nice=0 cgrp=default sched=0/0 handle=0x7320d63cc0
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | state=S schedstat=( 6074063 0 1 ) utm=0 stm=0 core=0 HZ=100
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | stack=0x7320c60000-0x7320c62000 stackSize=1043KB
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | held mutexes=
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #00 pc 000000000004b48c  /apex/com.android.runtime/lib64/bionic/libc.so (syscall+28)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #01 pc 00000000005a2cf0  /apex/com.android.art/lib64/libart.so (art::Thread::Park(bool, long)+480)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #02 pc 00000000004dc06c  /apex/com.android.art/lib64/libart.so (art::Unsafe_park(_JNIEnv*, _jobject*, unsigned char, long)+660)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at sun.misc.Unsafe.park(Native method)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   - waiting on an unknown object
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.util.concurrent.locks.LockSupport.park(LockSupport.java:190)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:2067)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.util.concurrent.LinkedBlockingQueue.take(LinkedBlockingQueue.java:442)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.util.concurrent.ThreadPoolExecutor.getTask(ThreadPoolExecutor.java:1092)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1152)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:641)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.lang.Thread.run(Thread.java:923)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] 
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] "queued-work-looper" prio=6 tid=29 Native
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | group="" sCount=1 dsCount=0 flags=1 obj=0x132a1760 self=0xb40000750558b950
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | sysTid=31060 nice=-2 cgrp=default sched=0/0 handle=0x7317dcccc0
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | state=S schedstat=( 1007447 2343177 6 ) utm=0 stm=0 core=5 HZ=100
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | stack=0x7317cc9000-0x7317ccb000 stackSize=1043KB
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | held mutexes=
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #00 pc 000000000009c238  /apex/com.android.runtime/lib64/bionic/libc.so (__epoll_pwait+8)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #01 pc 0000000000019acc  /system/lib64/libutils.so (android::Looper::pollInner(int)+184)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #02 pc 00000000000199ac  /system/lib64/libutils.so (android::Looper::pollOnce(int, int*, int*, void**)+112)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #03 pc 00000000001144b4  /system/lib64/libandroid_runtime.so (android::android_os_MessageQueue_nativePollOnce(_JNIEnv*, _jobject*, long, int)+44)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at android.os.MessageQueue.nativePollOnce(Native method)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at android.os.MessageQueue.next(MessageQueue.java:335)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at android.os.Looper.loop(Looper.java:183)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at android.os.HandlerThread.run(HandlerThread.java:67)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] 
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] "QtThread" prio=5 tid=28 Native
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | group="" sCount=1 dsCount=0 flags=1 obj=0x13000018 self=0xb4000075055a3eb0
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | sysTid=31068 nice=0 cgrp=default sched=0/0 handle=0x73129becc0
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | state=S schedstat=( 10642237 16661304 34 ) utm=1 stm=0 core=6 HZ=100
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | stack=0x73128c7000-0x73128c9000 stackSize=995KB
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | held mutexes=
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #00 pc 000000000009c338  /apex/com.android.runtime/lib64/bionic/libc.so (__ppoll+8)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #01 pc 000000000005a4cc  /apex/com.android.runtime/lib64/bionic/libc.so (ppoll64+200)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #02 pc 000000000005a3dc  /apex/com.android.runtime/lib64/bionic/libc.so (ppoll+48)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #03 pc 00000000004af1c8  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libQt6Core_arm64-v8a.so (qt_safe_poll(pollfd*, unsigned int, QDeadlineTimer)+72)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #04 pc 00000000004b23c4  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libQt6Core_arm64-v8a.so (QEventDispatcherUNIX::processEvents(QFlags<QEventLoop::ProcessEventsFlag>)+472)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #05 pc 0000000000391568  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libQt6Core_arm64-v8a.so (QEventLoop::exec(QFlags<QEventLoop::ProcessEventsFlag>)+340)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #06 pc 000000000043aff4  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libQt6Core_arm64-v8a.so (QThread::exec()+144)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #07 pc 000000000054c128  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libQt6Quick_arm64-v8a.so (???)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #08 pc 00000000004b0e14  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libQt6Core_arm64-v8a.so (???)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #09 pc 00000000000b0048  /apex/com.android.runtime/lib64/bionic/libc.so (__pthread_start(void*)+64)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #10 pc 00000000000503c8  /apex/com.android.runtime/lib64/bionic/libc.so (__start_thread+64)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   (no managed stack frames)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] 
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] "QtThread" prio=5 tid=30 Native
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | group="" sCount=1 dsCount=0 flags=1 obj=0x13080018 self=0xb4000075055ac9c0
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | sysTid=31073 nice=0 cgrp=default sched=0/0 handle=0x73107c2cc0
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | state=S schedstat=( 518535453 25673598 262 ) utm=43 stm=8 core=3 HZ=100
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | stack=0x73106cb000-0x73106cd000 stackSize=995KB
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | held mutexes=
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #00 pc 000000000004b48c  /apex/com.android.runtime/lib64/bionic/libc.so (syscall+28)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #01 pc 000000000004f074  /apex/com.android.runtime/lib64/bionic/libc.so (__futex_wait_ex(void volatile*, bool, int, bool, timespec const*)+144)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #02 pc 00000000000af430  /apex/com.android.runtime/lib64/bionic/libc.so (pthread_cond_wait+60)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #03 pc 00000000004b76a0  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libQt6Core_arm64-v8a.so (???)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #04 pc 00000000004b7640  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libQt6Core_arm64-v8a.so (QWaitCondition::wait(QMutex*, QDeadlineTimer)+52)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #05 pc 00000000006074b8  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libQt6Quick_arm64-v8a.so (???)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #06 pc 0000000000607534  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libQt6Quick_arm64-v8a.so (???)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #07 pc 00000000006079f4  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libQt6Quick_arm64-v8a.so (???)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #08 pc 00000000004b0e14  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libQt6Core_arm64-v8a.so (???)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #09 pc 00000000000b0048  /apex/com.android.runtime/lib64/bionic/libc.so (__pthread_start(void*)+64)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #10 pc 00000000000503c8  /apex/com.android.runtime/lib64/bionic/libc.so (__start_thread+64)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   (no managed stack frames)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] 
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] "hwuiTask1" prio=6 tid=31 Native
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | group="" sCount=1 dsCount=0 flags=1 obj=0x130c0020 self=0xb4000075055aadf0
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | sysTid=31075 nice=-2 cgrp=default sched=0/0 handle=0x730f5c6cc0
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | state=S schedstat=( 948489 3110990 6 ) utm=0 stm=0 core=6 HZ=100
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | stack=0x730f4cf000-0x730f4d1000 stackSize=995KB
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | held mutexes=
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #00 pc 000000000004b48c  /apex/com.android.runtime/lib64/bionic/libc.so (syscall+28)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #01 pc 000000000004f074  /apex/com.android.runtime/lib64/bionic/libc.so (__futex_wait_ex(void volatile*, bool, int, bool, timespec const*)+144)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #02 pc 00000000000af430  /apex/com.android.runtime/lib64/bionic/libc.so (pthread_cond_wait+60)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #03 pc 00000000000584ec  /system/lib64/libc++.so (std::__1::condition_variable::wait(std::__1::unique_lock<std::__1::mutex>&)+20)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #04 pc 000000000024825c  /system/lib64/libhwui.so (android::uirenderer::CommonPool::workerLoop()+84)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #05 pc 0000000000248890  /system/lib64/libhwui.so (void* std::__1::__thread_proxy<std::__1::tuple<std::__1::unique_ptr<std::__1::__thread_struct, std::__1::default_delete<std::__1::__thread_struct> >, android::uirenderer::CommonPool::CommonPool()::$_0> >(void*)+376)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #06 pc 00000000000b0048  /apex/com.android.runtime/lib64/bionic/libc.so (__pthread_start(void*)+64)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #07 pc 00000000000503c8  /apex/com.android.runtime/lib64/bionic/libc.so (__start_thread+64)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   (no managed stack frames)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] 
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] "hwuiTask0" prio=6 tid=32 Native
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | group="" sCount=1 dsCount=0 flags=1 obj=0x13100020 self=0xb4000075055b3900
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | sysTid=31074 nice=-2 cgrp=default sched=0/0 handle=0x730f6c4cc0
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | state=S schedstat=( 392344 3168177 1 ) utm=0 stm=0 core=6 HZ=100
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | stack=0x730f5cd000-0x730f5cf000 stackSize=995KB
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | held mutexes=
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #00 pc 000000000004b48c  /apex/com.android.runtime/lib64/bionic/libc.so (syscall+28)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #01 pc 000000000004f074  /apex/com.android.runtime/lib64/bionic/libc.so (__futex_wait_ex(void volatile*, bool, int, bool, timespec const*)+144)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #02 pc 00000000000af430  /apex/com.android.runtime/lib64/bionic/libc.so (pthread_cond_wait+60)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #03 pc 00000000000584ec  /system/lib64/libc++.so (std::__1::condition_variable::wait(std::__1::unique_lock<std::__1::mutex>&)+20)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #04 pc 000000000024825c  /system/lib64/libhwui.so (android::uirenderer::CommonPool::workerLoop()+84)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #05 pc 0000000000248820  /system/lib64/libhwui.so (void* std::__1::__thread_proxy<std::__1::tuple<std::__1::unique_ptr<std::__1::__thread_struct, std::__1::default_delete<std::__1::__thread_struct> >, android::uirenderer::CommonPool::CommonPool()::$_0> >(void*)+264)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #06 pc 00000000000b0048  /apex/com.android.runtime/lib64/bionic/libc.so (__pthread_start(void*)+64)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #07 pc 00000000000503c8  /apex/com.android.runtime/lib64/bionic/libc.so (__start_thread+64)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   (no managed stack frames)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] 
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] Aborting thread:
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] "qtMainLoopThread" prio=5 tid=27 Native
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | group="" sCount=0 dsCount=0 flags=0 obj=0x132001a8 self=0xb40000750558d520
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | sysTid=31058 nice=0 cgrp=default sched=0/0 handle=0x731f807cc0
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | state=R schedstat=( 1095950831 157093654 879 ) utm=79 stm=30 core=7 HZ=100
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | stack=0x731f704000-0x731f706000 stackSize=1043KB
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   | held mutexes= "abort lock"
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #00 pc 000000000049f414  /apex/com.android.art/lib64/libart.so (art::DumpNativeStack(std::__1::basic_ostream<char, std::__1::char_traits<char> >&, int, BacktraceMap*, char const*, art::ArtMethod*, void*, bool)+140)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #01 pc 00000000005ac728  /apex/com.android.art/lib64/libart.so (art::Thread::DumpStack(std::__1::basic_ostream<char, std::__1::char_traits<char> >&, bool, BacktraceMap*, bool) const+376)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #02 pc 0000000000571e50  /apex/com.android.art/lib64/libart.so (art::AbortState::DumpThread(std::__1::basic_ostream<char, std::__1::char_traits<char> >&, art::Thread*) const+60)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #03 pc 000000000055d820  /apex/com.android.art/lib64/libart.so (art::Runtime::Abort(char const*)+2436)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #04 pc 0000000000013be4  /system/lib64/libbase.so (android::base::SetAborter(std::__1::function<void (char const*)>&&)::$_3::__invoke(char const*)+76)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #05 pc 0000000000012fb4  /system/lib64/libbase.so (android::base::LogMessage::~LogMessage()+320)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #06 pc 000000000038551c  /apex/com.android.art/lib64/libart.so (art::JavaVMExt::JniAbort(char const*, char const*)+2572)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #07 pc 0000000000385594  /apex/com.android.art/lib64/libart.so (art::JavaVMExt::JniAbortV(char const*, char const*, std::__va_list)+108)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #08 pc 0000000000377270  /apex/com.android.art/lib64/libart.so (art::(anonymous namespace)::ScopedCheck::AbortF(char const*, ...)+144)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #09 pc 000000000037a358  /apex/com.android.art/lib64/libart.so (art::(anonymous namespace)::ScopedCheck::CheckMethodAndSig(art::ScopedObjectAccess&, _jobject*, _jclass*, _jmethodID*, art::Primitive::Type, art::InvokeType)+292)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #10 pc 00000000003790fc  /apex/com.android.art/lib64/libart.so (art::(anonymous namespace)::CheckJNI::CallMethodV(char const*, _JNIEnv*, _jobject*, _jclass*, _jmethodID*, std::__va_list, art::Primitive::Type, art::InvokeType)+764)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #11 pc 0000000000367880  /apex/com.android.art/lib64/libart.so (art::(anonymous namespace)::CheckJNI::CallVoidMethodV(_JNIEnv*, _jobject*, _jmethodID*, std::__va_list)+72)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #12 pc 000000000051812c  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libQt6Core_arm64-v8a.so (QJniObject::callVoidMethodV(_JNIEnv*, _jmethodID*, ...) const+128)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #13 pc 0000000000931e2c  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libappAccoFinder_arm64-v8a.so (_ZNK10QJniObject10callMethodIvJP8_jobjectETnNSt6__ndk19enable_ifIX20ValidFieldTypeDetailIu11__remove_cvIu20__remove_reference_tIT_EEEEbE4typeELb1EEEDaPKcSB_DpOT0_+200)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #14 pc 0000000000931c3c  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libappAccoFinder_arm64-v8a.so (FcmService::registerToken()+696)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #15 pc 00000000009330e8  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libappAccoFinder_arm64-v8a.so (???)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #16 pc 00000000009330b0  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libappAccoFinder_arm64-v8a.so (???)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #17 pc 0000000000933088  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libappAccoFinder_arm64-v8a.so (???)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #18 pc 0000000000933044  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libappAccoFinder_arm64-v8a.so (???)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #19 pc 0000000000932fec  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libappAccoFinder_arm64-v8a.so (???)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #20 pc 0000000000932f8c  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libappAccoFinder_arm64-v8a.so (???)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #21 pc 00000000003c5f6c  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libQt6Core_arm64-v8a.so (???)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #22 pc 00000000003d5188  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libQt6Core_arm64-v8a.so (???)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #23 pc 00000000003c0ea0  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libQt6Core_arm64-v8a.so (QObject::event(QEvent*)+124)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #24 pc 00000000003896e0  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libQt6Core_arm64-v8a.so (QCoreApplication::notifyInternal2(QObject*, QEvent*)+160)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #25 pc 00000000004afcd0  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libQt6Core_arm64-v8a.so (QTimerInfoList::activateTimers()+500)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #26 pc 00000000004b240c  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libQt6Core_arm64-v8a.so (QEventDispatcherUNIX::processEvents(QFlags<QEventLoop::ProcessEventsFlag>)+544)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #27 pc 00000000006675cc  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libQt6Gui_arm64-v8a.so (QUnixEventDispatcherQPA::processEvents(QFlags<QEventLoop::ProcessEventsFlag>)+20)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #28 pc 000000000007241c  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libplugins_platforms_qtforandroid_arm64-v8a.so (???)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #29 pc 0000000000391568  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libQt6Core_arm64-v8a.so (QEventLoop::exec(QFlags<QEventLoop::ProcessEventsFlag>)+340)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #30 pc 0000000000389c88  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libQt6Core_arm64-v8a.so (QCoreApplication::exec()+136)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #31 pc 00000000005a07bc  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libappAccoFinder_arm64-v8a.so (main+4920)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #32 pc 0000000000067e20  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libplugins_platforms_qtforandroid_arm64-v8a.so (???)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #33 pc 000000000013ced4  /apex/com.android.art/lib64/libart.so (art_quick_generic_jni_trampoline+148)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #34 pc 00000000001337e8  /apex/com.android.art/lib64/libart.so (art_quick_invoke_static_stub+568)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #35 pc 00000000001a8a94  /apex/com.android.art/lib64/libart.so (art::ArtMethod::Invoke(art::Thread*, unsigned int*, unsigned int, art::JValue*, char const*)+228)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #36 pc 00000000003185d8  /apex/com.android.art/lib64/libart.so (art::interpreter::ArtInterpreterToCompiledCodeBridge(art::Thread*, art::ArtMethod*, art::ShadowFrame*, unsigned short, art::JValue*)+376)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #37 pc 000000000030e904  /apex/com.android.art/lib64/libart.so (bool art::interpreter::DoCall<false, false>(art::ArtMethod*, art::Thread*, art::ShadowFrame&, art::Instruction const*, unsigned short, art::JValue*)+996)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #38 pc 000000000067fc4c  /apex/com.android.art/lib64/libart.so (MterpInvokeStatic+548)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #39 pc 000000000012d994  /apex/com.android.art/lib64/libart.so (mterp_op_invoke_static+20)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #40 pc 00000000000ef6f8  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/base.apk (offset b05000) (org.qtproject.qt.android.QtNative.lambda$startApplication$2)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #41 pc 000000000067fef0  /apex/com.android.art/lib64/libart.so (MterpInvokeStatic+1224)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #42 pc 000000000012d994  /apex/com.android.art/lib64/libart.so (mterp_op_invoke_static+20)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #43 pc 00000000000eeee8  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/base.apk (offset b05000) (org.qtproject.qt.android.QtNative$$ExternalSyntheticLambda3.run+4)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #44 pc 000000000067e9cc  /apex/com.android.art/lib64/libart.so (MterpInvokeInterface+1808)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #45 pc 000000000012da14  /apex/com.android.art/lib64/libart.so (mterp_op_invoke_interface+20)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #46 pc 00000000000f0fac  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/base.apk (offset b05000) (org.qtproject.qt.android.QtThread$1.run+148)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #47 pc 000000000067e9cc  /apex/com.android.art/lib64/libart.so (MterpInvokeInterface+1808)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #48 pc 000000000012da14  /apex/com.android.art/lib64/libart.so (mterp_op_invoke_interface+20)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #49 pc 00000000000ed090  /apex/com.android.art/javalib/core-oj.jar (java.lang.Thread.run+8)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #50 pc 0000000000305f00  /apex/com.android.art/lib64/libart.so (art::interpreter::Execute(art::Thread*, art::CodeItemDataAccessor const&, art::ShadowFrame&, art::JValue, bool, bool) (.llvm.7972480776628613073)+268)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #51 pc 000000000066b9fc  /apex/com.android.art/lib64/libart.so (artQuickToInterpreterBridge+780)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #52 pc 000000000013cff8  /apex/com.android.art/lib64/libart.so (art_quick_to_interpreter_bridge+88)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #53 pc 0000000000133564  /apex/com.android.art/lib64/libart.so (art_quick_invoke_stub+548)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #54 pc 00000000001a8a78  /apex/com.android.art/lib64/libart.so (art::ArtMethod::Invoke(art::Thread*, unsigned int*, unsigned int, art::JValue*, char const*)+200)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #55 pc 00000000005553d8  /apex/com.android.art/lib64/libart.so (art::JValue art::InvokeVirtualOrInterfaceWithJValues<art::ArtMethod*>(art::ScopedObjectAccessAlreadyRunnable const&, _jobject*, art::ArtMethod*, jvalue const*)+460)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #56 pc 00000000005a4788  /apex/com.android.art/lib64/libart.so (art::Thread::CreateCallback(void*)+1308)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #57 pc 00000000000b0048  /apex/com.android.runtime/lib64/bionic/libc.so (__pthread_start(void*)+64)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   native: #58 pc 00000000000503c8  /apex/com.android.runtime/lib64/bionic/libc.so (__start_thread+64)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at org.qtproject.qt.android.QtNative.startQtNativeApplication(Native method)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at org.qtproject.qt.android.QtNative.lambda$startApplication$2(QtNative.java:366)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at org.qtproject.qt.android.QtNative$$ExternalSyntheticLambda3.run(D8$$SyntheticClass:0)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at org.qtproject.qt.android.QtThread$1.run(QtThread.java:25)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655]   at java.lang.Thread.run(Thread.java:923)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:655] 
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:663] JNI DETECTED ERROR IN APPLICATION: the return type of CallVoidMethodV does not match com.google.android.gms.tasks.Task com.google.android.gms.tasks.zzw.addOnSuccessListener(com.google.android.gms.tasks.OnSuccessListener)
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:663]     in call to CallVoidMethodV
+09-05 09:51:15.846 30981 31058 F com.accofinder: runtime.cc:663]     from void org.qtproject.qt.android.QtNative.startQtNativeApplication(java.lang.String)
+09-05 09:51:15.855 30981 31058 F libc    : Fatal signal 6 (SIGABRT), code -1 (SI_QUEUE) in tid 31058 (qtMainLoopThrea), pid 30981 (com.accofinder)
+09-05 09:51:15.876 30981 31085 D ProfileInstaller: Installing profile for com.accofinder
+09-05 09:51:15.977 31086 31086 F DEBUG   : pid: 30981, tid: 31058, name: qtMainLoopThrea  >>> com.accofinder <<<
+09-05 09:51:15.977 31086 31086 F DEBUG   : Abort message: 'JNI DETECTED ERROR IN APPLICATION: the return type of CallVoidMethodV does not match com.google.android.gms.tasks.Task com.google.android.gms.tasks.zzw.addOnSuccessListener(com.google.android.gms.tasks.OnSuccessListener)
+09-05 09:51:16.413 31086 31086 F DEBUG   :       #04 pc 000000000038551c  /apex/com.android.art/lib64/libart.so (art::JavaVMExt::JniAbort(char const*, char const*)+2572) (BuildId: 32cda5ceec1e68666841a6ebde60d2e1)
+09-05 09:51:16.413 31086 31086 F DEBUG   :       #05 pc 0000000000385594  /apex/com.android.art/lib64/libart.so (art::JavaVMExt::JniAbortV(char const*, char const*, std::__va_list)+108) (BuildId: 32cda5ceec1e68666841a6ebde60d2e1)
+09-05 09:51:16.413 31086 31086 F DEBUG   :       #08 pc 00000000003790fc  /apex/com.android.art/lib64/libart.so (art::(anonymous namespace)::CheckJNI::CallMethodV(char const*, _JNIEnv*, _jobject*, _jclass*, _jmethodID*, std::__va_list, art::Primitive::Type, art::InvokeType)+764) (BuildId: 32cda5ceec1e68666841a6ebde60d2e1)
+09-05 09:51:16.413 31086 31086 F DEBUG   :       #09 pc 0000000000367880  /apex/com.android.art/lib64/libart.so (art::(anonymous namespace)::CheckJNI::CallVoidMethodV(_JNIEnv*, _jobject*, _jmethodID*, std::__va_list)+72) (BuildId: 32cda5ceec1e68666841a6ebde60d2e1)
+09-05 09:51:16.413 31086 31086 F DEBUG   :       #10 pc 000000000051812c  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libQt6Core_arm64-v8a.so (QJniObject::callVoidMethodV(_JNIEnv*, _jmethodID*, ...) const+128) (BuildId: d1303f29a2ce382b307061012170ea76e3c40f6d)
+09-05 09:51:16.413 31086 31086 F DEBUG   :       #11 pc 0000000000931e2c  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libappAccoFinder_arm64-v8a.so (_ZNK10QJniObject10callMethodIvJP8_jobjectETnNSt6__ndk19enable_ifIX20ValidFieldTypeDetailIu11__remove_cvIu20__remove_reference_tIT_EEEEbE4typeELb1EEEDaPKcSB_DpOT0_+200) (BuildId: bf57fa883beac2d5230d37fa60db3dae3230f6ad)
+09-05 09:51:16.413 31086 31086 F DEBUG   :       #12 pc 0000000000931c3c  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libappAccoFinder_arm64-v8a.so (FcmService::registerToken()+696) (BuildId: bf57fa883beac2d5230d37fa60db3dae3230f6ad)
+09-05 09:51:16.413 31086 31086 F DEBUG   :       #13 pc 00000000009330e8  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libappAccoFinder_arm64-v8a.so (BuildId: bf57fa883beac2d5230d37fa60db3dae3230f6ad)
+09-05 09:51:16.413 31086 31086 F DEBUG   :       #14 pc 00000000009330b0  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libappAccoFinder_arm64-v8a.so (BuildId: bf57fa883beac2d5230d37fa60db3dae3230f6ad)
+09-05 09:51:16.413 31086 31086 F DEBUG   :       #15 pc 0000000000933088  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libappAccoFinder_arm64-v8a.so (BuildId: bf57fa883beac2d5230d37fa60db3dae3230f6ad)
+09-05 09:51:16.413 31086 31086 F DEBUG   :       #16 pc 0000000000933044  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libappAccoFinder_arm64-v8a.so (BuildId: bf57fa883beac2d5230d37fa60db3dae3230f6ad)
+09-05 09:51:16.413 31086 31086 F DEBUG   :       #17 pc 0000000000932fec  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libappAccoFinder_arm64-v8a.so (BuildId: bf57fa883beac2d5230d37fa60db3dae3230f6ad)
+09-05 09:51:16.413 31086 31086 F DEBUG   :       #18 pc 0000000000932f8c  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libappAccoFinder_arm64-v8a.so (BuildId: bf57fa883beac2d5230d37fa60db3dae3230f6ad)
+09-05 09:51:16.413 31086 31086 F DEBUG   :       #19 pc 00000000003c5f6c  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libQt6Core_arm64-v8a.so (BuildId: d1303f29a2ce382b307061012170ea76e3c40f6d)
+09-05 09:51:16.414 31086 31086 F DEBUG   :       #20 pc 00000000003d5188  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libQt6Core_arm64-v8a.so (BuildId: d1303f29a2ce382b307061012170ea76e3c40f6d)
+09-05 09:51:16.414 31086 31086 F DEBUG   :       #21 pc 00000000003c0ea0  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libQt6Core_arm64-v8a.so (QObject::event(QEvent*)+124) (BuildId: d1303f29a2ce382b307061012170ea76e3c40f6d)
+09-05 09:51:16.414 31086 31086 F DEBUG   :       #22 pc 00000000003896e0  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libQt6Core_arm64-v8a.so (QCoreApplication::notifyInternal2(QObject*, QEvent*)+160) (BuildId: d1303f29a2ce382b307061012170ea76e3c40f6d)
+09-05 09:51:16.414 31086 31086 F DEBUG   :       #23 pc 00000000004afcd0  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libQt6Core_arm64-v8a.so (QTimerInfoList::activateTimers()+500) (BuildId: d1303f29a2ce382b307061012170ea76e3c40f6d)
+09-05 09:51:16.414 31086 31086 F DEBUG   :       #24 pc 00000000004b240c  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libQt6Core_arm64-v8a.so (QEventDispatcherUNIX::processEvents(QFlags<QEventLoop::ProcessEventsFlag>)+544) (BuildId: d1303f29a2ce382b307061012170ea76e3c40f6d)
+09-05 09:51:16.414 31086 31086 F DEBUG   :       #25 pc 00000000006675cc  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libQt6Gui_arm64-v8a.so (QUnixEventDispatcherQPA::processEvents(QFlags<QEventLoop::ProcessEventsFlag>)+20) (BuildId: 92b3e3d8e0c18be2ac8760208e274c35c68d8cb5)
+09-05 09:51:16.414 31086 31086 F DEBUG   :       #26 pc 000000000007241c  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libplugins_platforms_qtforandroid_arm64-v8a.so (BuildId: ac547d2afdab9cd7c0627bb9d96c1f2908cab58c)
+09-05 09:51:16.414 31086 31086 F DEBUG   :       #27 pc 0000000000391568  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libQt6Core_arm64-v8a.so (QEventLoop::exec(QFlags<QEventLoop::ProcessEventsFlag>)+340) (BuildId: d1303f29a2ce382b307061012170ea76e3c40f6d)
+09-05 09:51:16.414 31086 31086 F DEBUG   :       #28 pc 0000000000389c88  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libQt6Core_arm64-v8a.so (QCoreApplication::exec()+136) (BuildId: d1303f29a2ce382b307061012170ea76e3c40f6d)
+09-05 09:51:16.414 31086 31086 F DEBUG   :       #29 pc 00000000005a07bc  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libappAccoFinder_arm64-v8a.so (main+4920) (BuildId: bf57fa883beac2d5230d37fa60db3dae3230f6ad)
+09-05 09:51:16.414 31086 31086 F DEBUG   :       #30 pc 0000000000067e20  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/lib/arm64/libplugins_platforms_qtforandroid_arm64-v8a.so (BuildId: ac547d2afdab9cd7c0627bb9d96c1f2908cab58c)
+09-05 09:51:16.414 31086 31086 F DEBUG   :       #31 pc 000000000013ced4  /apex/com.android.art/lib64/libart.so (art_quick_generic_jni_trampoline+148) (BuildId: 32cda5ceec1e68666841a6ebde60d2e1)
+09-05 09:51:16.414 31086 31086 F DEBUG   :       #38 pc 00000000000ef6f8  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/base.apk (offset 0xb05000) (org.qtproject.qt.android.QtNative.lambda$startApplication$2)
+09-05 09:51:16.414 31086 31086 F DEBUG   :       #41 pc 00000000000eeee8  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/base.apk (offset 0xb05000) (org.qtproject.qt.android.QtNative$$ExternalSyntheticLambda3.run+4)
+09-05 09:51:16.415 31086 31086 F DEBUG   :       #44 pc 00000000000f0fac  /data/app/~~f61W-aZ6SD7qTxU23HECmA==/com.accofinder-sMMNZ3dOTRaqP23gSJsfHA==/base.apk (offset 0xb05000) (org.qtproject.qt.android.QtThread$1.run+148)
+09-05 09:51:17.655  1941 31092 W ActivityTaskManager:   Force finishing activity com.accofinder/.DeepLinkActivity
+09-05 09:51:17.661  1941 31093 D FrameworkEventCollector: recordAppIssue PN: com.accofinder
+09-05 09:51:17.767  1941  2547 I WindowManager: WIN DEATH: Window{88f4d13 u0 com.accofinder/com.accofinder.DeepLinkActivity}
+09-05 09:51:17.772  1941  2154 I ActivityManager: Process com.accofinder (pid 30981) has died: prcp TOP 
+09-05 09:51:17.778  1941  2547 W InputDispatcher: Attempted to unregister already unregistered input channel '88f4d13 com.accofinder/com.accofinder.DeepLinkActivity (server)'
+09-05 09:51:17.818  1941  2154 D OpColorDisplayService: lpackageName: com.accofinder
+09-05 09:51:17.818  1941  2154 D OpProximityController: noteFrontPackageChanged pkg:net.oneplus.launcher uid:10191 lpkg:com.accofinder luid:10268
+09-05 09:51:18.856 10315 10569 I djni    : (REDACTED) Starting batch sync for corpora: %s
+09-05 09:51:18.869 10315 10834 I djni    : (REDACTED) The syncToken for corpus %s is %s and the syncRequestReason is %s
+09-05 09:51:19.014 10315 10443 I djni    : (REDACTED) Starting batch sync for corpora: %s
+09-05 09:51:19.020 10315 10568 W djni    : (REDACTED) Upload permissions denied for Corpus %s
+09-05 09:51:19.022 10315 30601 I djni    : (REDACTED) The syncToken for corpus %s is %s and the syncRequestReason is %s
+09-05 09:51:19.955  1188 31105 E ANDR-RAMBOOST_SERVER: ramboost cmd_len = 25 cmd: iop_record com.accofinder
+09-05 09:51:19.956 

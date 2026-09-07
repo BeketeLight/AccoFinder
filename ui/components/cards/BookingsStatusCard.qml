@@ -8,18 +8,20 @@ Rectangle{
     property double values: 0
     property string iconSource: ""
     property color iconBgColor: "#2563EB"
-    property color cardBgColor: "#F8FAFC"
+    property color cardBgColor: "#FFFFFF"
     property bool isSelected: false
-
+    property real  cardWidth: 0
+    property real cardHeight: 0
     //signal
     signal clicked()
 
-    implicitWidth: 150
-    implicitHeight: 96
+    width: cardWidth
+    height: cardHeight
+
     radius: 10
     color: isSelected ? Qt.lighter(cardBgColor, 1.05) : cardBgColor
-    border.color : "#06B6D4"
-    border.width: 1
+    //border.color : "#06B6D4"
+    //border.width: 1
     //animation
     scale: cardMouseArea.pressed ? 0.96 : 1.0
         Behavior on scale {
@@ -31,13 +33,13 @@ Rectangle{
         onClicked: root.clicked()
     }
     //Alignment in of componenets in cardBgColor:
-    RowLayout{
+    ColumnLayout{
         anchors.fill: parent
             anchors.leftMargin: 12
             anchors.rightMargin: 12
             anchors.topMargin: 10
-            anchors.bottomMargin: 10
-            spacing: 12
+            //anchors.bottomMargin: 10
+            spacing: 2
 
         Rectangle{
             id: iconRect
@@ -49,14 +51,15 @@ Rectangle{
             ToolButton{
                 anchors.centerIn: parent
                 icon.source: root.iconSource
-                icon.height: 16
-                icon.width: 16
+                icon.height: 20
+                icon.width: 20
+                icon.color: "#6366F1"
             }
         }
         //card Label
         ColumnLayout {
                     Layout.fillWidth: true
-                    Layout.alignment: Qt.AlignVCenter
+                    Layout.alignment: Qt.AlignHCenter
                     spacing: 2
 
                     Text {
@@ -66,6 +69,7 @@ Rectangle{
                         font.bold: true
                         elide: Text.ElideRight
                         Layout.fillWidth: true
+                        horizontalAlignment: Text.AlignHCenter
                     }
 
                     Text {
@@ -75,7 +79,8 @@ Rectangle{
                         color: "#0F172A"
                         elide: Text.ElideRight
                         Layout.fillWidth: true
+                        horizontalAlignment: Text.AlignHCenter
                     }
-                }
+            }
     }
 }
