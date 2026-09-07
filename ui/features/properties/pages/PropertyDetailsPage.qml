@@ -215,6 +215,13 @@ Page {
         function onDataChanged(topLeft, bottomRight, roles) { root.loadRooms() }
     }
 
+    // Surface backend failures from room create/update/delete so a silent
+    // failure never looks like a success (the list simply unchanged).
+    Connections {
+        target: RoomViewModel
+        function onRoomError(error) { root.roomOpError = String(error) }
+    }
+
     Connections {
         target: PropertyViewModel.propertyListModel
         function onCountChanged() { root.loadAmenities() }

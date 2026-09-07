@@ -56,12 +56,14 @@ void RoomRepositoryImpl::createRoomWithPrice(const QString &id,
 void RoomRepositoryImpl::getRooms()
 {
     // The backend /rooms/ endpoint paginates with a server default of 10 rows
-    // (limit=10), so without an explicit limit only the newest handful of
-    // rooms would ever be cached. Per-property room counts (roomsForProperty)
-    // then read as 0 for every property whose rooms fall outside that page.
-    // Request the whole catalogue so the counts are accurate for all cards.
+    // (limit=10), so without an explicit limit only the newest handful of rooms
+    // would ever be cached. Per-property room counts (roomsForProperty) then
+    // read as 0 for every property whose rooms fall outside that page.
+    // NOTE: the backend validator caps `limit` at 100 (queryRoomSchema), so a
+    // larger value is REJECTED with 400 and the whole list never loads; request
+    // the maximum page instead so counts are accurate for all cards up to 100.
     APIClient::instance().get(
-        "/rooms/?limit=10000",
+        "/rooms/?limit=100",
         [this](bool success,
                const QJsonObject& response)
         {
@@ -107,7 +109,9 @@ void RoomRepositoryImpl::updateRoom(const QString &roomId,
                                     double price,
                                     bool available)
 {
-    // The PATCH body only carries the fields the UI lets the agent change.
+    // The body only carries the fields the UI lets the agent change. The
+    // backend exposes room updates as PUT /rooms/:id (see roomRoutes.mjs), so
+    // a PATCH here falls through to the generic 404 "route not found" handler.
     // The refreshed room is pushed back into the cache via roomLoaded (the
     // response row replaces the cached row in RoomListModel::upsertRoom).
     QJsonObject payload;
@@ -115,7 +119,7 @@ void RoomRepositoryImpl::updateRoom(const QString &roomId,
     payload["price"] = price;
     payload["available"] = available;
 
-    APIClient::instance().patch(
+    APIClient::instance().put(
         "/rooms/" + roomId,
         payload,
         [this](bool success,
