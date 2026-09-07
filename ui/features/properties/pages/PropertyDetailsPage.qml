@@ -260,6 +260,75 @@ Page {
         function onMediaError(error) { root.onMediaFailure(error) }
     }
 
+    // Snapshot of the committed values when an edit session begins. Cancel uses
+    // it to revert everything, and Save uses it to skip the backend call
+    // entirely when the user left the listing untouched.
+    function snapshotEditState() {
+        root.savedName = root.propertyTitleName
+        root.savedDistrict = root.propertyDistrictValue
+        root.savedVillage = root.propertyVillageValue
+        root.savedPrice = root.hasMonthlyPrice ? Number(root.monthlyPrice) : NaN
+        root.savedDescription = root.descriptionTextValue
+        root.savedLandlord = root.landlordName
+        root.savedLandlordPhone = root.landlordPhone
+        root.savedPhotosList = root.photosList.slice()
+        root.savedRooms = []
+        for (var r = 0; r < root.roomsList.length; r++)
+            root.savedRooms.push(root.roomComparable(root.roomsList[r]))
+    }
+
+    // Canonical, comparison-safe projection of a room row (id/type/price/
+    // available). Type casing is normalised because the backend stores it
+    // uppercased while the editor options are title-cased.
+    function roomComparable(r) {
+        return {
+            id: String(r.roomId !== undefined ? r.roomId : ""),
+            type: String(r.roomType !== undefined ? r.roomType : (r.type !== undefined ? r.type : "")).toUpperCase(),
+            price: Number(r.price || 0),
+            available: Boolean(r.available)
+        }
+    }
+
+    function hasUncommittedChanges() {
+        if (root.editNameValue.trim() !== root.savedName)
+            return true
+        if (root.editDistrictValue.trim() !== root.savedDistrict)
+            return true
+        if (root.editVillageValue.trim() !== root.savedVillage)
+            return true
+        var parsedPrice = Number(root.editMonthlyPriceValue.replace(/[^0-9.]/g, ""))
+        var expectedPrice = isNaN(Number(root.savedPrice)) ? 0 : Number(root.savedPrice)
+        if (isNaN(parsedPrice) ? expectedPrice !== 0 : parsedPrice !== expectedPrice)
+            return true
+        if (root.editDescriptionValue.trim() !== root.savedDescription)
+            return true
+        if (root.editLandlordNameValue.trim() !== root.savedLandlord)
+            return true
+        if (root.editLandlordPhoneValue.trim() !== root.savedLandlordPhone)
+            return true
+        if ((root.savedRooms || []).length !== root.roomsList.length)
+            return true
+        for (var r = 0; r < root.roomsList.length; r++) {
+            var a = root.roomComparable(root.roomsList[r])
+            var b = root.savedRooms[r]
+            if (a.id !== b.id || a.type !== b.type || a.price !== b.price || a.available !== b.available)
+                return true
+        }
+        var curPhotos = root.photosList || []
+        var basePhotos = root.savedPhotosList || []
+        if (curPhotos.length !== basePhotos.length)
+            return true
+        for (var i = 0; i < curPhotos.length; i++) {
+            var c = curPhotos[i] || {}
+            var d = basePhotos[i] || {}
+            if (String(c.mediaId || "").trim() !== String(d.mediaId || "").trim())
+                return true
+            if (String(c.path || "").trim() !== String(d.path || "").trim())
+                return true
+        }
+        return false
+    }
+
     function startEditing() {
         root.editNameValue = root.propertyTitleName
         root.editDistrictValue = root.propertyDistrictValue
@@ -270,9 +339,9 @@ Page {
         root.editLandlordPhoneValue = root.landlordPhone
         root.saveErrorText = ""
         root.photoOpError = ""
-        // Snapshot the committed photos so cancel can drop any newly staged
-        // (not-yet-uploaded) picks and restore the grid to this exact state.
-        root.savedPhotosList = root.photosList.slice()
+        // Snapshot the committed state (fields, rooms and photos) so Cancel can
+        // revert everything and Save skips the backend call when untouched.
+        root.snapshotEditState()
         root.editMode = true
     }
 
@@ -573,8 +642,15 @@ Page {
             return
         }
 
-        // Server-backed property: the agent is required to provide the missing
-        // details before the edited listing may be submitted.
+        // Server-backed property: if nothing actually changed, exit edit mode
+        // without touching the backend (no PUT, no photo uploads).
+        if (!root.hasUncommittedChanges()) {
+            root.cancelEditing()
+            return
+        }
+
+        // The agent is required to provide the missing details before the
+        // edited listing may be submitted.
         var missing = root.missingRequiredFields()
         if (missing.length > 0) {
             root.saveErrorText = qsTr("Required to provide: ") + missing.join("; ")
@@ -1547,6 +1623,11 @@ Page {
                                         }
                                     }
                                 }
+                            }
+
+                            RowLayout {
+                                Layout.fillWidth: true
+                                spacing: 10
 
                                 ColumnLayout {
                                     Layout.fillWidth: true
@@ -1565,8 +1646,17 @@ Page {
                                         Layout.preferredHeight: 40
                                         font.pixelSize: 12
                                         model: ["Single", "Double", "Shared", "Self-contained", "Bedsitter", "Suite"]
-                                        currentIndex: Math.max(0, roomTypeCombo.model.indexOf(roomTypeLabel))
-                                        textRole: "text"
+                                        // Preselect the room's current type. The backend stores types
+                                        // uppercased ("SINGLE"), while the options here are title-cased, so
+                                        // match case-insensitively and fall back to the first option.
+                                        currentIndex: {
+                                            var t = String(roomTypeLabel).trim().toLowerCase()
+                                            for (var i = 0; i < roomTypeCombo.model.length; i++) {
+                                                if (String(roomTypeCombo.model[i]).toLowerCase() === t)
+                                                    return i
+                                            }
+                                            return 0
+                                        }
                                         contentItem: Label {
                                             text: roomTypeCombo.currentText
                                             leftPadding: 10
@@ -1626,23 +1716,61 @@ Page {
                                 spacing: 10
 
                                 Button {
+                                    id: cancelRoomBtn
+                                    Layout.preferredWidth: 106
+                                    Layout.preferredHeight: 40
+                                    text: qsTr("Cancel")
+
+                                    contentItem: Label {
+                                        text: cancelRoomBtn.text
+                                        color: "#4B5563"
+                                        font.pixelSize: 13
+                                        font.bold: true
+                                        horizontalAlignment: Text.AlignHCenter
+                                        verticalAlignment: Text.AlignVCenter
+                                    }
+
+                                    // Outline / secondary action: discards any
+                                    // un-saved edits and exits edit mode.
+                                    background: Rectangle {
+                                        radius: 12
+                                        color: cancelRoomBtn.down ? "#F3F4F6" : "#FFFFFF"
+                                        border.color: "#D1D5DB"
+                                        border.width: 1
+                                    }
+
+                                    onClicked: root.cancelEditing()
+                                }
+
+                                Button {
                                     id: updateRoomBtn
                                     Layout.fillWidth: true
-                                    Layout.preferredHeight: 36
+                                    Layout.preferredHeight: 40
                                     text: qsTr(roomEditable ? "Save room" : "Update room")
 
                                     contentItem: Label {
                                         text: updateRoomBtn.text
                                         color: "#FFFFFF"
-                                        font.pixelSize: 12
+                                        font.pixelSize: 13
                                         font.bold: true
                                         horizontalAlignment: Text.AlignHCenter
                                         verticalAlignment: Text.AlignVCenter
                                     }
 
                                     background: Rectangle {
-                                        radius: 18
+                                        radius: 12
                                         color: updateRoomBtn.down ? root.primaryDarkColor : root.primaryColor
+
+                                        DropShadow {
+                                            anchors.fill: parent
+                                            source: parent
+                                            horizontalOffset: 0
+                                            verticalOffset: 2
+                                            radius: 6
+                                            samples: 9
+                                            color: Qt.rgba(37, 99, 235, 0.35)
+                                            transparentBorder: true
+                                        }
                                     }
 
                                     onClicked: {
@@ -1652,6 +1780,13 @@ Page {
                                             return
                                         }
                                         root.roomOpError = ""
+                                        // No edits on this room? Don't fire an API call.
+                                        var typeChanged = String(roomTypeCombo.currentText || "").trim().toUpperCase()
+                                                          !== String(roomTypeLabel || "").trim().toUpperCase()
+                                        var priceChanged = Math.abs(price - Number(modelData.price || 0)) > 0.001
+                                        var availChanged = Boolean(roomAvaSwitch.checked) !== Boolean(modelData.available)
+                                        if (!typeChanged && !priceChanged && !availChanged)
+                                            return
                                         if (roomEditable) {
                                             RoomViewModel.updateRoom(roomServerId,
                                                                       roomTypeCombo.currentText,
@@ -2289,6 +2424,34 @@ Page {
                     color: root.mutedColor
                     font.pixelSize: 11
                 }
+            }
+
+            Button {
+                id: cancelFooterButton
+                visible: root.agentMode && root.editMode && !root.savingInProgress
+                Layout.preferredWidth: 104
+                Layout.preferredHeight: 48
+                text: qsTr("Cancel")
+
+                contentItem: Label {
+                    text: cancelFooterButton.text
+                    color: "#4B5563"
+                    font.pixelSize: 13
+                    font.bold: true
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                }
+
+                // Overall cancel: reverts every uncommitted edit (fields, staged
+                // photos, local room changes) and exits edit mode locally.
+                background: Rectangle {
+                    radius: 24
+                    color: cancelFooterButton.down ? "#F3F4F6" : "#FFFFFF"
+                    border.color: "#D1D5DB"
+                    border.width: 1
+                }
+
+                onClicked: root.cancelEditing()
             }
 
             Button {
