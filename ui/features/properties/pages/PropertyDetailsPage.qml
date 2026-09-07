@@ -108,6 +108,17 @@ Page {
     // Snapshot of the server photos taken when editing starts, so cancel can
     // restore the grid to exactly the committed state (discarding staged picks).
     property var savedPhotosList: []
+    // Snapshot of the committed field/room state taken when editing starts
+    // (snapshotEditState). Cancel reverts to these, and Save uses them to skip
+    // the backend call entirely when the listing was left untouched.
+    property string savedName: ""
+    property string savedDistrict: ""
+    property string savedVillage: ""
+    property real savedPrice: NaN
+    property string savedDescription: ""
+    property string savedLandlord: ""
+    property string savedLandlordPhone: ""
+    property var savedRooms: []
 
     // Last room-editing error surfaced in the edit-mode room editor.
     property string roomOpError: ""
@@ -1760,17 +1771,8 @@ Page {
                                     background: Rectangle {
                                         radius: 12
                                         color: updateRoomBtn.down ? root.primaryDarkColor : root.primaryColor
-
-                                        DropShadow {
-                                            anchors.fill: parent
-                                            source: parent
-                                            horizontalOffset: 0
-                                            verticalOffset: 2
-                                            radius: 6
-                                            samples: 9
-                                            color: Qt.rgba(37, 99, 235, 0.35)
-                                            transparentBorder: true
-                                        }
+                                        border.width: 1
+                                        border.color: updateRoomBtn.down ? root.primaryColor : root.primaryDarkColor
                                     }
 
                                     onClicked: {
@@ -2402,15 +2404,18 @@ Page {
         RowLayout {
             id: footerBarRow
             anchors.fill: parent
-            anchors.leftMargin: 20
-            anchors.rightMargin: 20
+            anchors.leftMargin: 16
+            anchors.rightMargin: 16
             spacing: 14
 
             ColumnLayout {
                 Layout.fillWidth: true
+                Layout.minimumWidth: 52
                 spacing: 1
 
                 Label {
+                    Layout.fillWidth: true
+                    elide: Text.ElideRight
                     text: root.hasMonthlyPrice
                           ? "MK " + Number(root.monthlyPrice).toLocaleString()
                           : qsTr("Rent on request")
@@ -2420,6 +2425,8 @@ Page {
                 }
 
                 Label {
+                    Layout.fillWidth: true
+                    elide: Text.ElideRight
                     text: root.agentMode ? qsTr("monthly rent") : qsTr("per month")
                     color: root.mutedColor
                     font.pixelSize: 11
@@ -2429,8 +2436,10 @@ Page {
             Button {
                 id: cancelFooterButton
                 visible: root.agentMode && root.editMode && !root.savingInProgress
-                Layout.preferredWidth: 104
+                Layout.preferredWidth: 96
                 Layout.preferredHeight: 48
+                Layout.minimumWidth: 76
+                Layout.maximumWidth: 96
                 text: qsTr("Cancel")
 
                 contentItem: Label {
@@ -2457,8 +2466,10 @@ Page {
             Button {
                 id: agentFooterButton
                 visible: root.agentMode
-                Layout.preferredWidth: 170
+                Layout.preferredWidth: 164
                 Layout.preferredHeight: 48
+                Layout.minimumWidth: 140
+                Layout.maximumWidth: 164
                 text: root.editMode
                       ? (root.savingInProgress ? qsTr("Saving...") : qsTr("Save changes"))
                       : (root.isDraftItem ? qsTr("Resend draft") : qsTr("Edit property"))
@@ -2491,8 +2502,10 @@ Page {
             Button {
                 id: bookNowButton
                 visible: !root.agentMode
-                Layout.preferredWidth: 160
+                Layout.preferredWidth: 150
                 Layout.preferredHeight: 48
+                Layout.minimumWidth: 130
+                Layout.maximumWidth: 150
                 text: qsTr("Book now")
 
                 contentItem: Label {
