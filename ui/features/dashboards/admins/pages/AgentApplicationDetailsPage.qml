@@ -339,7 +339,7 @@ Item {
 
                 Rectangle {
                     Layout.fillWidth: true
-                    implicitHeight: notesField.implicitHeight + 20
+                    implicitHeight: 96
                     radius: 8
                     color: "#FFFFFF"
                     border.color: notesField.activeFocus ? root.primaryColor : root.borderColor
@@ -347,9 +347,7 @@ Item {
 
                     TextArea {
                         id: notesField
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                        anchors.top: parent.top
+                        anchors.fill: parent
                         anchors.margins: 10
                         placeholderText: qsTr("Add internal notes about this application...")
                         wrapMode: TextArea.Wrap
@@ -492,7 +490,7 @@ Item {
 
             Rectangle {
                 Layout.fillWidth: true
-                implicitHeight: rejectReasonField.implicitHeight + 20
+                implicitHeight: 96
                 radius: 8
                 color: "#FFFFFF"
                 border.color: rejectReasonField.activeFocus || rejectError.visible ? root.primaryColor
@@ -501,9 +499,7 @@ Item {
 
                 TextArea {
                     id: rejectReasonField
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.top: parent.top
+                    anchors.fill: parent
                     anchors.margins: 10
                     placeholderText: qsTr("Reason for rejection...")
                     wrapMode: TextArea.Wrap

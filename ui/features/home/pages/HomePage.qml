@@ -34,7 +34,7 @@ Page {
         Column {
             id: contentColumn
             width: mainFlick.width
-            spacing: 0
+            spacing: 2
 
             // Spacer = full height of header when not collapsed
             // This pushes the real content below the header
@@ -71,11 +71,45 @@ Page {
                     }
                 }
             }
+            // space
+            Rectangle {
+                width: parent.width
+                height: 8
+                color: "#F5F5F5"
+            }
 
             // Super Deals
             SuperDeals {
+                id: superDeals
                 width: parent.width
-                height: 180
+                cardHeight: 150
+                cardWidth: 190
+                model: PropertyListModel {}
+            }
+
+            // space
+            Rectangle {
+                width: parent.width
+                height: 8
+                color: "#F5F5F5"
+            }
+
+            // Near you
+            SuperDeals {
+                id: nearYou
+                title: "Near You"
+                width: parent.width
+                cardWidth: 130
+                cardHeight: 160
+                model: PropertyListModel {}
+                // height: 220
+            }
+
+            // space
+            Rectangle {
+                width: parent.width
+                height: 8
+                color: "#F5F5F5"
             }
 
             // Section title
@@ -95,14 +129,17 @@ Page {
                 width: parent.width
                 leftPadding: 12
                 rightPadding: 12
-                spacing: 10
+                spacing: 8
 
                 Repeater {
                     model: PropertyListModel {}
 
                     PropertyCardDelegate {
-                        width: (propertyFlow.width - 24 - 10) / 2
-                        height: width * 1.35
+                        width: (propertyFlow.width - propertyFlow.leftPadding - propertyFlow.rightPadding - propertyFlow.spacing * 2) / 3
+
+                        height: width * 1.25
+                        // width: (propertyFlow.width - 24 - 10) / 2
+                        // height: width * 1.35
 
                         propertyId: model.propertyId
                         title: model.title

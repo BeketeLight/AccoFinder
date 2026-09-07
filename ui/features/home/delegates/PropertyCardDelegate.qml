@@ -16,6 +16,9 @@ Item {
     property string status: "PENDING"
     property bool isVerified: false
 
+    property real rating: 4.5          // e.g. 4.5
+    property int reviewCount: 12       // e.g. 12 reviews
+
     signal clicked
     signal favoriteClicked
 
@@ -31,7 +34,7 @@ Item {
         Rectangle {
             id: borderRect
             width: parent.width
-            height: parent.height - 24  // Leave space for price (adjust as needed)
+            height: parent.height - 52  // Leave space for price (adjust as needed)
             border.color: "#E5E7EB"
             color: "transparent"
             border.width: 1.5
@@ -66,18 +69,71 @@ Item {
             }
         }
 
-        // ========== PRICE ==========
-        Label {
+        // INFO SECTION
+        Column {
             width: parent.width
-            height: 20  // Fixed height for price
-            text: "MWK " + Number(root.price).toLocaleString(Qt.locale(), "f", 0)
-            font.pixelSize: 14
-            font.bold: true
-            color: "#2563EB"
-            elide: Text.ElideRight
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
+            spacing: 2
+            leftPadding: 2
+            rightPadding: 2
+
+            // Price
+            Label {
+                width: parent.width
+                text: "MWK " + Number(root.price).toLocaleString(Qt.locale(), "f", 0)
+                font.pixelSize: 12
+                font.bold: true
+                color: "#2563EB"
+                elide: Text.ElideRight
+            }
+
+            // Location
+            Label {
+                width: parent.width
+                text: root.location
+                font.pixelSize: 11
+                color: "#6B7280"
+                elide: Text.ElideRight
+            }
+
+            // Stars + review count
+            Row {
+                spacing: 3
+
+                // Simple star display
+                Label {
+                    text: "★".repeat(Math.floor(root.rating)) + (root.rating % 1 >= 0.5 ? "½" : "")
+                    font.pixelSize: 11
+                    color: "#F59E0B"          // amber/gold
+                }
+
+                Label {
+                    text: root.rating.toFixed(1)
+                    font.pixelSize: 10
+                    color: "#6B7280"
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+
+                Label {
+                    text: "(" + root.reviewCount + ")"
+                    font.pixelSize: 10
+                    color: "#9CA3AF"
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+            }
         }
+
+        // ========== PRICE ==========
+        // Label {
+        //     width: parent.width
+        //     height: 20  // Fixed height for price
+        //     text: "MWK " + Number(root.price).toLocaleString(Qt.locale(), "f", 0)
+        //     font.pixelSize: 14
+        //     font.bold: true
+        //     color: "#2563EB"
+        //     elide: Text.ElideRight
+        //     horizontalAlignment: Text.AlignHCenter
+        //     verticalAlignment: Text.AlignVCenter
+        // }
     }
 
     // Click area

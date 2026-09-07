@@ -5,19 +5,19 @@ import "../../utils/NavigationUtils.js" as NavUtils
 
 Drawer {
     id: root
-    width: 300
+    width: 260
     height: parent.height
     edge: Qt.LeftEdge
     background: Rectangle { color: "#FFFFFF" }
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: 16
+        anchors.margins: 12
         spacing: 6
 
         Rectangle {
             Layout.fillWidth: true
-            implicitHeight: 56
+            implicitHeight: 48
             radius: 12
             color: "#EFF6FF"
 
@@ -25,7 +25,7 @@ Drawer {
                 anchors.centerIn: parent
                 text: qsTr("Quick actions")
                 color: "#2563EB"
-                font.pixelSize: 16
+                font.pixelSize: 14
                 font.bold: true
             }
         }
@@ -64,8 +64,8 @@ Drawer {
                     anchors.left: parent.left
                     anchors.right: parent.right
                     anchors.top: parent.top
-                    anchors.margins: 10
-                    spacing: 10
+                    anchors.margins: 8
+                    spacing: 8
 
                     Rectangle {
                         Layout.preferredWidth: 4
@@ -82,7 +82,7 @@ Drawer {
                             Layout.fillWidth: true
                             text: model.title
                             color: "#1F2937"
-                            font.pixelSize: 13
+                            font.pixelSize: 12
                             font.bold: true
                             elide: Text.ElideRight
                         }
@@ -91,7 +91,7 @@ Drawer {
                             Layout.fillWidth: true
                             text: model.detail
                             color: "#6B7280"
-                            font.pixelSize: 11
+                            font.pixelSize: 10
                             elide: Text.ElideRight
                         }
                     }

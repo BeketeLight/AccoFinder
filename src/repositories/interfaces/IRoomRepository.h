@@ -10,9 +10,17 @@ class IRoomRepository
                                 const QString& propertyId,
                                 const QString& type,
                                 bool available) = 0;
+        virtual void createRoomWithPrice(const QString& id,
+                                         const QString& propertyId,
+                                         const QString& type,
+                                         double price,
+                                         bool available) = 0;
         virtual void getRooms() = 0;
         virtual void getRoomById(const QString& id) = 0;
-        virtual void updateRoom(Room* room) = 0;
+        virtual void updateRoom(const QString& roomId,
+                                const QString& type,
+                                double price,
+                                bool available) = 0;
         virtual void deleteRoom(const QString& id) = 0;
 
         ~IRoomRepository(){}

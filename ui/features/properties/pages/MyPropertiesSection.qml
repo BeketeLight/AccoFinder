@@ -131,11 +131,20 @@ Item {
         var myId = AppSettings.userId()
         var server = PropertyViewModel.propertiesForView() || []
         root.serverCount = 0
+        // The shared C++ view model can hold the same listing more than once
+        // (e.g. after a backend fetch re-appends a row). Deduplicate by the
+        // property id, matching how dashboard models collapse duplicates.
+        var seen = ({})
         for (var s = 0; s < server.length; s++) {
             var sp = server[s]
             var ownerId = String(sp.agentId || "")
             if (ownerId.length > 0 && ownerId !== String(myId))
                 continue
+            var pid = String(sp.id || "")
+            if (pid.length === 0 || seen.hasOwnProperty(pid))
+                continue
+            if (!sp) continue
+            seen[pid] = true
             root.serverCount++
             allPropertiesModel.append({
                 propertyId: sp.id || "",

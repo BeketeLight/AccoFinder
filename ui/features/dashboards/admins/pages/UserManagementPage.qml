@@ -496,15 +496,14 @@ Item {
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                         text: cancelButton.text
-                        color: "#6B7280"
+                        color: "#FFFFFF"
                         font.pixelSize: 13
                         font.bold: true
                     }
 
                     background: Rectangle {
                         radius: 8
-                        color: parent.down ? "#F3F4F6" : "#FFFFFF"
-                        border.color: "#E5E7EB"
+                        color: parent.down ? "#1D4ED8" : "#2563EB"
                     }
 
                     onClicked: confirmDialog.reject()
@@ -514,7 +513,7 @@ Item {
                     id: confirmButton
                     Layout.fillWidth: true
                     Layout.preferredHeight: 42
-                    text: confirmDialog.activate ? qsTr("Activate") : qsTr("Deactivate")
+                    text: confirmDialog.activate ? qsTr("Activate") : qsTr("Suspend")
 
                     contentItem: Label {
                         horizontalAlignment: Text.AlignHCenter
@@ -527,7 +526,7 @@ Item {
 
                     background: Rectangle {
                         radius: 8
-                        color: confirmButton.down ? "#1D4ED8" : "#2563EB"
+                        color: confirmButton.down ? "#B91C1C" : (confirmDialog.activate ? "#16A34A" : "#DC2626")
                     }
 
                     onClicked: {

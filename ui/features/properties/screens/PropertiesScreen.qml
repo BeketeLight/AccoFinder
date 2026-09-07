@@ -13,7 +13,7 @@ Item {
     property bool showHeader: true
     property bool showBackButton: false
     property bool isSearchBar: false
-    property int titleFontSize: 18
+    property int titleFontSize: 15
     property bool showBottomBorder: false
     property bool searchReadOnly: true
 

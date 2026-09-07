@@ -109,6 +109,9 @@ Page {
     // restore the grid to exactly the committed state (discarding staged picks).
     property var savedPhotosList: []
 
+    // Last room-editing error surfaced in the edit-mode room editor.
+    property string roomOpError: ""
+
     FileDialog {
         id: photoPickerDialog
         title: qsTr("Select photos")
@@ -207,6 +210,16 @@ Page {
         target: RoomViewModel.roomListModel
         function onCountChanged() { root.loadRooms() }
         function onModelReset() { root.loadRooms() }
+        function onRowsInserted(parent, first, last) { root.loadRooms() }
+        function onRowsRemoved(parent, first, last) { root.loadRooms() }
+        function onDataChanged(topLeft, bottomRight, roles) { root.loadRooms() }
+    }
+
+    // Surface backend failures from room create/update/delete so a silent
+    // failure never looks like a success (the list simply unchanged).
+    Connections {
+        target: RoomViewModel
+        function onRoomError(error) { root.roomOpError = String(error) }
     }
 
     Connections {
@@ -421,6 +434,41 @@ Page {
         root.photoOpError = ""
     }
 
+    // Draft rooms live only in the local roomsList (no /rooms/ backend row).
+    // These helpers edit that list directly; the draft save persists them.
+    function addDraftRoom(type, price, available) {
+        var arr = root.roomsList.slice()
+        arr.push({ roomId: -1, roomType: type, price: price, available: available })
+        root.roomsList = arr
+        root.roomOpError = ""
+    }
+
+    function updateDraftRoom(index, type, price, available) {
+        if (index < 0 || index >= root.roomsList.length)
+            return
+        var arr = root.roomsList.slice()
+        var it = {}
+        var k
+        for (k in arr[index]) it[k] = arr[index][k]
+        it.roomType = type
+        it.price = price
+        it.available = available
+        arr[index] = it
+        root.roomsList = arr
+        root.roomOpError = ""
+    }
+
+    function removeDraftRoom(index) {
+        if (index < 0 || index >= root.roomsList.length)
+            return
+        var arr = []
+        for (var i = 0; i < root.roomsList.length; i++)
+            if (i !== index)
+                arr.push(root.roomsList[i])
+        root.roomsList = arr
+        root.roomOpError = ""
+    }
+
     // Refresh the photos grid straight from the shared media model after a
     // delete / cover change / upload lands there.
     function syncPhotosFromServer() {
@@ -514,6 +562,9 @@ Page {
                     merged.price = updated.price
                 merged.landlord = updated.landlord
                 merged.landlordPhone = updated.landlordPhone
+                // Persist the edited room list (roomType / price / available)
+                // so updated room prices survive the draft until it is resent.
+                merged.rooms = root.roomsList
                 DraftViewModel.updateDraft(root.draftKey, merged)
             }
             root.applyEditedValues()
@@ -1355,15 +1406,19 @@ Page {
                                 t = String(modelData.type)
                             return t.length > 0 ? t : qsTr("Room")
                         }
+                        readonly property string roomServerId: modelData.roomId !== undefined ? String(modelData.roomId) : ""
+                        readonly property bool roomEditable: String(root.propertyId).length > 0 && !root.isDraftItem
                         Layout.fillWidth: true
-                        implicitHeight: roomRow.implicitHeight + 24
+                        implicitHeight: root.editMode ? roomEditCol.implicitHeight + 22 : roomRow.implicitHeight + 24
                         radius: 12
                         color: root.surfaceColor
                         border.color: root.borderColor
                         border.width: 1
 
+                        // Non-editing row: room summary card.
                         RowLayout {
                             id: roomRow
+                            visible: !root.editMode
                             anchors.fill: parent
                             anchors.margins: 12
                             spacing: 12
@@ -1407,6 +1462,343 @@ Page {
                                 textValue: modelData.available ? qsTr("Available") : qsTr("Unavailable")
                                 variant: modelData.available ? "success" : "neutral"
                             }
+                        }
+
+                        // Edit-mode row: editable price, type, availability and
+                        // remove control. Server-backed rooms update immediately
+                        // through RoomViewModel; drafts edit the local list.
+                        ColumnLayout {
+                            id: roomEditCol
+                            visible: root.editMode
+                            anchors.fill: parent
+                            anchors.margins: 12
+                            spacing: 10
+
+                            RowLayout {
+                                Layout.fillWidth: true
+                                spacing: 10
+
+                                Label {
+                                    Layout.fillWidth: true
+                                    text: qsTr("Room %1").arg(index + 1)
+                                    color: root.textColor
+                                    font.pixelSize: 13
+                                    font.bold: true
+                                }
+
+                                Button {
+                                    id: removeRoomBtn
+                                    Layout.preferredHeight: 30
+                                    text: qsTr("Remove")
+
+                                    contentItem: Label {
+                                        text: removeRoomBtn.text
+                                        color: root.dangerColor
+                                        font.pixelSize: 11
+                                        font.bold: true
+                                        horizontalAlignment: Text.AlignHCenter
+                                        verticalAlignment: Text.AlignVCenter
+                                    }
+
+                                    background: Rectangle {
+                                        radius: 15
+                                        color: removeRoomBtn.down ? "#FEE2E2" : "#FEF2F2"
+                                        border.color: "#FECACA"
+                                        border.width: 1
+                                    }
+
+                                    onClicked: {
+                                        if (roomEditable)
+                                            RoomViewModel.deleteRoom(roomServerId)
+                                        else
+                                            root.removeDraftRoom(index)
+                                    }
+                                }
+                            }
+
+                            RowLayout {
+                                Layout.fillWidth: true
+                                spacing: 10
+
+                                ColumnLayout {
+                                    Layout.fillWidth: true
+                                    spacing: 2
+
+                                    Label {
+                                        text: qsTr("Price (MK / month)")
+                                        color: root.textColor
+                                        font.pixelSize: 10
+                                        font.bold: true
+                                    }
+
+                                    TextField {
+                                        id: roomPriceField
+                                        Layout.fillWidth: true
+                                        Layout.preferredHeight: 40
+                                        text: String(modelData.price !== undefined ? Math.round(modelData.price) : "")
+                                        font.pixelSize: 13
+                                        color: root.textColor
+                                        inputMethodHints: Qt.ImhDigitsOnly
+                                        background: Rectangle {
+                                            radius: 8
+                                            color: root.pageColor
+                                            border.color: roomPriceField.activeFocus ? root.primaryColor : root.borderColor
+                                            border.width: 1
+                                        }
+                                    }
+                                }
+
+                                ColumnLayout {
+                                    Layout.fillWidth: true
+                                    spacing: 2
+
+                                    Label {
+                                        text: qsTr("Type")
+                                        color: root.textColor
+                                        font.pixelSize: 10
+                                        font.bold: true
+                                    }
+
+                                    ComboBox {
+                                        id: roomTypeCombo
+                                        Layout.fillWidth: true
+                                        Layout.preferredHeight: 40
+                                        font.pixelSize: 12
+                                        model: ["Single", "Double", "Shared", "Self-contained", "Bedsitter", "Suite"]
+                                        currentIndex: Math.max(0, roomTypeCombo.model.indexOf(roomTypeLabel))
+                                        textRole: "text"
+                                        contentItem: Label {
+                                            text: roomTypeCombo.currentText
+                                            leftPadding: 10
+                                            verticalAlignment: Text.AlignVCenter
+                                            color: root.textColor
+                                            elide: Text.ElideRight
+                                        }
+                                        background: Rectangle {
+                                            radius: 8
+                                            color: root.pageColor
+                                            border.color: roomTypeCombo.activeFocus ? root.primaryColor : root.borderColor
+                                            border.width: 1
+                                        }
+                                        popup: Popup {
+                                            width: roomTypeCombo.width
+                                            padding: 4
+                                            modal: true
+                                            focus: true
+                                            contentItem: ListView {
+                                                clip: true
+                                                implicitHeight: contentHeight
+                                                model: roomTypeCombo.popup.visible ? roomTypeCombo.delegateModel : null
+                                            }
+                                            background: Rectangle {
+                                                radius: 8
+                                                color: "#FFFFFF"
+                                                border.color: root.borderColor
+                                                border.width: 1
+                                            }
+                                        }
+                                    }
+                                }
+
+                                ColumnLayout {
+                                    Layout.minimumWidth: 92
+                                    spacing: 2
+
+                                    Label {
+                                        text: qsTr("Available")
+                                        color: root.textColor
+                                        font.pixelSize: 10
+                                        font.bold: true
+                                    }
+
+                                    Switch {
+                                        id: roomAvaSwitch
+                                        Layout.preferredHeight: 28
+                                        Layout.alignment: Qt.AlignLeft
+                                        checked: modelData.available
+                                        font.pixelSize: 10
+                                    }
+                                }
+                            }
+
+                            RowLayout {
+                                Layout.fillWidth: true
+                                spacing: 10
+
+                                Button {
+                                    id: updateRoomBtn
+                                    Layout.fillWidth: true
+                                    Layout.preferredHeight: 36
+                                    text: qsTr(roomEditable ? "Save room" : "Update room")
+
+                                    contentItem: Label {
+                                        text: updateRoomBtn.text
+                                        color: "#FFFFFF"
+                                        font.pixelSize: 12
+                                        font.bold: true
+                                        horizontalAlignment: Text.AlignHCenter
+                                        verticalAlignment: Text.AlignVCenter
+                                    }
+
+                                    background: Rectangle {
+                                        radius: 18
+                                        color: updateRoomBtn.down ? root.primaryDarkColor : root.primaryColor
+                                    }
+
+                                    onClicked: {
+                                        var price = parseFloat(roomPriceField.text)
+                                        if (isNaN(price) || price <= 0) {
+                                            root.roomOpError = qsTr("Room %1: enter a valid price greater than 0.").arg(index + 1)
+                                            return
+                                        }
+                                        root.roomOpError = ""
+                                        if (roomEditable) {
+                                            RoomViewModel.updateRoom(roomServerId,
+                                                                      roomTypeCombo.currentText,
+                                                                      price,
+                                                                      roomAvaSwitch.checked)
+                                        } else {
+                                            root.updateDraftRoom(index, roomTypeCombo.currentText, price, roomAvaSwitch.checked)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Edit-mode inline editor to add a brand-new room.
+                Rectangle {
+                    visible: root.editMode
+                    Layout.fillWidth: true
+                    implicitHeight: addRoomCol.implicitHeight + 18
+                    radius: 12
+                    color: root.softBlueColor
+                    border.color: "#BFDBFE"
+                    border.width: 1
+
+                    ColumnLayout {
+                        id: addRoomCol
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.top: parent.top
+                        anchors.margins: 10
+                        spacing: 8
+
+                        Label {
+                            text: qsTr("Add a room")
+                            color: root.primaryColor
+                            font.pixelSize: 12
+                            font.bold: true
+                        }
+
+                        RowLayout {
+                            Layout.fillWidth: true
+                            spacing: 8
+
+                            TextField {
+                                id: newRoomPrice
+                                Layout.fillWidth: true
+                                Layout.preferredHeight: 38
+                                placeholderText: qsTr("Price (MK/mo)")
+                                placeholderTextColor: root.mutedColor
+                                font.pixelSize: 12
+                                color: root.textColor
+                                inputMethodHints: Qt.ImhDigitsOnly
+                                background: Rectangle {
+                                    radius: 8
+                                    color: "#FFFFFF"
+                                    border.color: newRoomPrice.activeFocus ? root.primaryColor : root.borderColor
+                                    border.width: 1
+                                }
+                            }
+
+                            ComboBox {
+                                id: newRoomType
+                                Layout.fillWidth: true
+                                Layout.preferredHeight: 38
+                                font.pixelSize: 12
+                                model: ["Single", "Double", "Shared", "Self-contained", "Bedsitter", "Suite"]
+                                contentItem: Label {
+                                    text: newRoomType.currentText
+                                    leftPadding: 8
+                                    verticalAlignment: Text.AlignVCenter
+                                    color: root.textColor
+                                    elide: Text.ElideRight
+                                }
+                                background: Rectangle {
+                                    radius: 8
+                                    color: "#FFFFFF"
+                                    border.color: newRoomType.activeFocus ? root.primaryColor : root.borderColor
+                                    border.width: 1
+                                }
+                                popup: Popup {
+                                    width: newRoomType.width
+                                    padding: 4
+                                    modal: true
+                                    focus: true
+                                    contentItem: ListView {
+                                        clip: true
+                                        implicitHeight: contentHeight
+                                        model: newRoomType.popup.visible ? newRoomType.delegateModel : null
+                                    }
+                                    background: Rectangle {
+                                        radius: 8
+                                        color: "#FFFFFF"
+                                        border.color: root.borderColor
+                                        border.width: 1
+                                    }
+                                }
+                            }
+
+                            Button {
+                                id: addRoomBtn
+                                Layout.preferredHeight: 36
+                                Layout.preferredWidth: 88
+                                text: qsTr("+ Add")
+
+                                contentItem: Label {
+                                    text: addRoomBtn.text
+                                    color: "#FFFFFF"
+                                    font.pixelSize: 12
+                                    font.bold: true
+                                    horizontalAlignment: Text.AlignHCenter
+                                    verticalAlignment: Text.AlignVCenter
+                                }
+
+                                background: Rectangle {
+                                    radius: 18
+                                    color: addRoomBtn.down ? root.primaryDarkColor : root.primaryColor
+                                }
+
+                                onClicked: {
+                                    var price = parseFloat(newRoomPrice.text)
+                                    if (isNaN(price) || price <= 0) {
+                                        root.roomOpError = qsTr("Enter a valid price greater than 0 for the new room.")
+                                        return
+                                    }
+                                    root.roomOpError = ""
+                                    if (root.isDraftItem || String(root.propertyId).length === 0) {
+                                        root.addDraftRoom(newRoomType.currentText, price, true)
+                                    } else {
+                                        RoomViewModel.createRoomWithPrice(root.propertyId,
+                                                                         newRoomType.currentText,
+                                                                         price,
+                                                                         true)
+                                    }
+                                    newRoomPrice.text = ""
+                                    newRoomType.currentIndex = -1
+                                }
+                            }
+                        }
+
+                        Label {
+                            visible: root.roomOpError.length > 0
+                            Layout.fillWidth: true
+                            text: root.roomOpError
+                            color: root.dangerColor
+                            font.pixelSize: 11
+                            wrapMode: Text.WordWrap
                         }
                     }
                 }
