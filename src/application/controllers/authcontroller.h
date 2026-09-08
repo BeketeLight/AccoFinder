@@ -44,6 +44,7 @@ signals:
     void signUpFailed(const QString& message);
     void userLoggedOut();
     void emailVerificationRequired(const QString& email);
+    void accountSuspended();
     void otpRequested(bool status);
     void otpVerified(bool status);
     void accountChecked(const bool& status);

@@ -4,6 +4,7 @@ import QtQuick.Layouts
 import QtQuick.Dialogs
 import "../../../components/inputs"
 import "../components"
+import "../../../utils/NavigationUtils.js" as NavUtils
 
 Item {
     id: root
@@ -35,6 +36,19 @@ Item {
         }
     }
 
+    // When the full-screen camera page captures a photo it stores the path in
+    // AppSettings and pops back here; this picks it up and adds it to the grid.
+    Connections {
+        target: AppSettings
+        function onCapturedPhotoPathChanged() {
+            var path = AppSettings.capturedPhotoPath()
+            if (!path)
+                return
+            AppSettings.setCapturedPhotoPath("")
+            photosModelId.append({ path: path, isPrimary: photosModelId.count === 0, roomId: -1 })
+        }
+    }
+
     ColumnLayout {
         id: layout
         anchors.left: parent.left
@@ -50,7 +64,7 @@ Item {
         }
 
         Label {
-            text: qsTr("Upload clear photos of the property. Tap a photo to set it as the primary cover image.")
+            text: qsTr("Upload or take clear photos of the property. Tap a photo to set it as the primary cover image.")
             color: root.mutedColor
             font.pixelSize: 13
             lineHeight: 1.15
@@ -59,48 +73,87 @@ Item {
             Layout.topMargin: -8
         }
 
-        Button {
-            id: uploadButton
+        RowLayout {
             Layout.fillWidth: true
-            Layout.preferredHeight: 52
+            spacing: 12
 
-            contentItem: RowLayout {
-                spacing: 10
+            // Take photos with the device camera.
+            Button {
+                id: takePhotoButton
+                Layout.fillWidth: true
+                Layout.preferredHeight: 52
+                focusPolicy: Qt.NoFocus
 
-                Item { Layout.fillWidth: true }
-
-                Rectangle {
-                    Layout.preferredWidth: 28
-                    Layout.preferredHeight: 28
-                    radius: 14
-                    color: "#EFF6FF"
-
+                contentItem: RowLayout {
+                    spacing: 10
                     Image {
-                        anchors.centerIn: parent
-                        source: "qrc:/ui/assets/camera.svg"
-                        sourceSize.width: 15
-                        sourceSize.height: 15
+                        Layout.preferredWidth: 22
+                        Layout.preferredHeight: 22
+                        source: "qrc:/ui/assets/photo-camera-icon.svg"
+                        sourceSize.width: 22
+                        sourceSize.height: 22
+                        Layout.alignment: Qt.AlignVCenter
+                    }
+                    Label {
+                        Layout.fillWidth: true
+                        elide: Text.ElideRight
+                        text: qsTr("Take photos")
+                        color: root.primaryColor
+                        font.pixelSize: 11
+                        font.bold: true
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
                     }
                 }
 
-                Label {
-                    text: uploadButton.down ? qsTr("Selecting...") : qsTr("Upload photos")
-                    color: root.primaryColor
-                    font.pixelSize: 14
-                    font.bold: true
+                background: Rectangle {
+                    radius: 12
+                    color: takePhotoButton.down ? "#DBEAFE" : "#EFF6FF"
+                    border.color: "#BFDBFE"
+                    border.width: 1
                 }
 
-                Item { Layout.fillWidth: true }
+                onClicked: root.openCamera()
             }
 
-            background: Rectangle {
-                radius: 12
-                color: uploadButton.down ? "#DBEAFE" : "#EFF6FF"
-                border.color: "#BFDBFE"
-                border.width: 1
-            }
+            // Upload photos from the gallery.
+            Button {
+                id: uploadButton
+                Layout.fillWidth: true
+                Layout.preferredHeight: 52
+                focusPolicy: Qt.NoFocus
 
-            onClicked: photoDialog.open()
+                contentItem: RowLayout {
+                    spacing: 10
+                    Image {
+                        Layout.preferredWidth: 22
+                        Layout.preferredHeight: 22
+                        source: "qrc:/ui/assets/upload-icon.svg"
+                        sourceSize.width: 22
+                        sourceSize.height: 22
+                        Layout.alignment: Qt.AlignVCenter
+                    }
+                    Label {
+                        Layout.fillWidth: true
+                        elide: Text.ElideRight
+                        text: qsTr("Upload photos")
+                        color: root.primaryColor
+                        font.pixelSize: 11
+                        font.bold: true
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                }
+
+                background: Rectangle {
+                    radius: 12
+                    color: uploadButton.down ? "#DBEAFE" : "#EFF6FF"
+                    border.color: "#BFDBFE"
+                    border.width: 1
+                }
+
+                onClicked: photoDialog.open()
+            }
         }
 
         ColumnLayout {
@@ -359,5 +412,14 @@ Item {
                 return true
         }
         return false
+    }
+
+    // Push the full-screen camera page onto the main stack. Pushing (instead of a
+    // modal dialog) keeps the wizard below it alive, so the system back button
+    // and the close button simply pop back here without losing any entered data.
+    function openCamera() {
+        errorText.text = ""
+        AppPermission.requestCameraPeremision()
+        NavUtils.push(Qt.resolvedUrl("../../../components/pages/CameraCapturePage.qml"))
     }
 }

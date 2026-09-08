@@ -12,6 +12,7 @@ list(APPEND CMAKE_PREFIX_PATH "/opt/Qt/6.11.1/gcc_64")
 find_package(Qt6 REQUIRED COMPONENTS Quick Core Network Gui)
 find_package(Qt6 REQUIRED COMPONENTS QuickControls2)
 find_package(Qt6 REQUIRED COMPONENTS WebSockets)
+find_package(Qt6 REQUIRED COMPONENTS Multimedia)
 
 qt_standard_project_setup(REQUIRES 6.10)
 
@@ -22,6 +23,7 @@ qt_add_executable(appAccoFinder
 qt_add_qml_module(appAccoFinder
     URI AccoFinder
     VERSION 1.0
+    IMPORTS QtMultimedia
     QML_FILES
         Main.qml
         ui/app/MainStackview.qml
@@ -30,6 +32,7 @@ qt_add_qml_module(appAccoFinder
         ui/components/dialogs/AppLoadingDialog.qml
         ui/components/dialogs/AppConfirmationDialog.qml
         ui/components/dialogs/AppImageLightbox.qml
+        ui/components/pages/CameraCapturePage.qml
         ui/components/buttons/AppIconButton.qml
         ui/components/buttons/AppPrimaryButton.qml
         ui/components/buttons/AppSecondaryButton.qml
@@ -327,7 +330,7 @@ target_include_directories(AccoFinderLogic
 )
 
 target_link_libraries(AccoFinderLogic
-    PUBLIC Qt6::Core Qt6::Network Qt6::Gui Qt6::Quick Qt6::WebSockets
+    PUBLIC Qt6::Core Qt6::Network Qt6::Gui Qt6::Quick Qt6::WebSockets Qt6::Multimedia
 )
 
 # ─────────────────────────────────────────────────────────────
@@ -540,6 +543,7 @@ set_target_properties(appAccoFinder PROPERTIES
 target_link_libraries(appAccoFinder
     PRIVATE Qt6::Quick Qt6::Core
     PRIVATE Qt6::QuickControls2
+    PRIVATE Qt6::Multimedia
     PRIVATE AccoFinderLogic
 )
 

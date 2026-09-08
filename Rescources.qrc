@@ -22,5 +22,8 @@
         <file>ui/assets/dashboard-icon.svg</file>
         <file>ui/assets/hamburger-icon.svg</file>
         <file>ui/assets/disputes-icon.svg</file>
+        <file>ui/assets/close-icon.svg</file>
+        <file>ui/assets/photo-camera-icon.svg</file>
+        <file>ui/assets/upload-icon.svg</file>
     </qresource>
 </RCC>

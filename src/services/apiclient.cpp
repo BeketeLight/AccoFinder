@@ -146,10 +146,12 @@ void APIClient::postMultipart(
     request.setAttribute(QNetworkRequest::Http2AllowedAttribute, false);
     setupHeadersAllowMultipart(request);
 
-    QFile *file = new QFile(filePath);
+    QUrl fileUrl(filePath);
+    const QString localFile = fileUrl.isLocalFile() ? fileUrl.toLocalFile() : filePath;
+    QFile *file = new QFile(localFile);
     if (!file->open(QIODevice::ReadOnly)) {
         // Build an error response for the callback and emit a network error.
-        QString err = QStringLiteral("Could not open file for upload: %1").arg(filePath);
+        QString err = QStringLiteral("Could not open file for upload: %1").arg(localFile);
         qWarning() << err;
         emit networkError(err);
         if (callback)
@@ -172,7 +174,7 @@ void APIClient::postMultipart(
 
     // File part
     QHttpPart filePart;
-    const QString fileName = QFileInfo(filePath).fileName();
+    const QString fileName = QFileInfo(localFile).fileName();
     filePart.setHeader(
         QNetworkRequest::ContentDispositionHeader,
         QStringLiteral("form-data; name=\"%1\"; filename=\"%2\"").arg(fileFieldName).arg(fileName));

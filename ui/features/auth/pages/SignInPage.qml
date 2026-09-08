@@ -363,6 +363,12 @@ Page {
             AuthController.requestOtp(root.pendingOtpEmail, root.otpPurpose);
         }
 
+        function onAccountSuspended() {
+            root.pendingAction = "";
+            loadingDialog.close();
+            errorLabel.text = "Your account has been suspended. Please contact support for assistance.";
+        }
+
         function onOtpRequested(status) {
             if (root.pendingAction !== "requestOtpAfterLogin")
                 return;

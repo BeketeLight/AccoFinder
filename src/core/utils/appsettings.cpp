@@ -375,3 +375,15 @@ void AppSettings::setRecentRoomId(const QString &value) {
 QString AppSettings::recentRoomId() const {
     return m_settings.value("recent/roomId").toString();
 }
+
+// CAMERA (transient, in-memory)
+
+void AppSettings::setCapturedPhotoPath(const QString &value) {
+    if (m_capturedPhotoPath == value)
+        return;
+    m_capturedPhotoPath = value;
+    emit capturedPhotoPathChanged();
+}
+QString AppSettings::capturedPhotoPath() const {
+    return m_capturedPhotoPath;
+}

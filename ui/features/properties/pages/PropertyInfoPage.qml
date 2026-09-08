@@ -118,6 +118,7 @@ Item {
                 borderColor: districtError.visible ? root.errorColor : root.borderColor
                 focusBorderColor: root.primaryColor
                 textColor: root.textColor
+                onActivated: districtError.visible = false
             }
         }
 
@@ -131,9 +132,13 @@ Item {
             textColor: root.textColor
             labelColor: root.textColor
             placeholderColor: "#9CA3AF"
-            borderColor: root.borderColor
+            borderColor: districtError.visible ? root.errorColor : root.borderColor
             focusColor: root.primaryColor
             errorColor: root.errorColor
+            onTextEdited: {
+                if (districtError.visible && text.trim().length > 0)
+                    districtError.visible = false
+            }
             Layout.fillWidth: true
             Layout.preferredHeight: 76
         }
@@ -208,6 +213,10 @@ Item {
             borderColor: landlordError.visible ? root.errorColor : root.borderColor
             focusColor: root.primaryColor
             errorColor: root.errorColor
+            onTextEdited: {
+                if (landlordError.visible && text.trim().length > 0)
+                    landlordError.visible = false
+            }
             Layout.fillWidth: true
             Layout.preferredHeight: 76
         }
@@ -225,6 +234,10 @@ Item {
             borderColor: landlordError.visible ? root.errorColor : root.borderColor
             focusColor: root.primaryColor
             errorColor: root.errorColor
+            onTextEdited: {
+                if (landlordError.visible && text.trim().length >= 7)
+                    landlordError.visible = false
+            }
             Layout.fillWidth: true
             Layout.preferredHeight: 76
         }
@@ -254,9 +267,15 @@ Item {
             textColor: root.textColor
             labelColor: root.textColor
             placeholderColor: "#9CA3AF"
-            borderColor: root.borderColor
+            borderColor: priceError.visible ? root.errorColor : root.borderColor
             focusColor: root.primaryColor
             errorColor: root.errorColor
+            error: priceError.visible
+            helperText: priceError.visible ? qsTr("Enter a valid price greater than 0") : ""
+            onTextEdited: {
+                if (priceError.visible && parseFloat(text) > 0)
+                    priceError.visible = false
+            }
             Layout.fillWidth: true
             Layout.preferredHeight: 76
         }
@@ -285,6 +304,10 @@ Item {
                 rightPadding: 14
                 topPadding: descriptionArea.activeFocus || descriptionArea.text.length > 0 ? 26 : 14
                 bottomPadding: descriptionArea.activeFocus || descriptionArea.text.length > 0 ? 8 : 14
+                onTextChanged: {
+                    if (descriptionError.visible && text.trim().length >= 10)
+                        descriptionError.visible = false
+                }
 
                 background: Item {
                     Rectangle {
@@ -338,6 +361,15 @@ Item {
             id: districtError
             visible: false
             text: qsTr("Select the district and enter the village or area")
+            color: root.errorColor
+            font.pixelSize: 12
+            Layout.fillWidth: true
+        }
+
+        Label {
+            id: priceError
+            visible: false
+            text: qsTr("Enter a valid price for the property")
             color: root.errorColor
             font.pixelSize: 12
             Layout.fillWidth: true
@@ -422,10 +454,16 @@ Item {
             errorText.text = qsTr("Complete the highlighted fields to continue.")
             return
         }
+        if (root.isWholeProperty && root.priceValue <= 0) {
+            priceError.visible = true
+            errorText.text = qsTr("Enter a valid price for the property.")
+            return
+        }
 
         districtError.visible = false
         landlordError.visible = false
         descriptionError.visible = false
+        priceError.visible = false
         root.nextRequested()
     }
 }
