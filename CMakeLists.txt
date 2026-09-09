@@ -86,11 +86,6 @@ qt_add_qml_module(appAccoFinder
         ui/features/home/delegates/PropertyDelegateDetails.qml
         ui/features/home/models/PropertyCategoryModel.qml
         ui/features/home/models/PropertyListModel.qml
-        ui/features/home/pages/FilterBottomSheet.qml
-        ui/features/home/pages/MyPropertiesPage.qml
-        ui/features/home/pages/PropertiesPage.qml
-        ui/features/home/pages/PropertyDetailsPage.qml
-        ui/features/home/pages/SearchPropertiesPage.qml
         ui/features/home/pages/SuperDeals.qml
         ui/features/home/screens/PropertiesScreen.qml
         ui/features/home/screens/PropertyDetailScreen.qml
@@ -99,6 +94,12 @@ qt_add_qml_module(appAccoFinder
         ui/features/home/components/PropertyFilterBar.qml
         ui/features/home/components/PropertyLoadingSkeleton.qml
         ui/features/home/components/StickyActionBar.qml
+        ui/features/home/models/PropertyListModel.qml
+        ui/features/home/pages/AllPage.qml
+        ui/features/home/pages/HostelsPage.qml
+        ui/features/home/pages/RoomsPage.qml
+        ui/features/home/pages/HousesPage.qml
+        ui/features/home/pages/StudiosPage.qml
         #======FEATURE-NOTIFICATIONS=====
         ui/features/notifications/components/NotificationItem.qml
         ui/features/notifications/delegates/NotificationDelegate.qml
@@ -210,7 +211,7 @@ qt_add_qml_module(appAccoFinder
 
     RESOURCES
         Rescources.qrc
-        QML_FILES ui/features/home/models/PropertyListModel.qml
+
 )
 
 # ─────────────────────────────────────────────────────────────

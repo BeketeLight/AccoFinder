@@ -45,6 +45,7 @@ Page {
 
             // Categories
             PropertyCategoryRow {
+                id: categoryRow
                 width: parent.width
                 height: 48
                 model: ListModel {
@@ -70,87 +71,53 @@ Page {
                         name: "Luxury"
                     }
                 }
-            }
-            // space
-            Rectangle {
-                width: parent.width
-                height: 8
-                color: "#F5F5F5"
-            }
-
-            // Super Deals
-            SuperDeals {
-                id: superDeals
-                width: parent.width
-                cardHeight: 150
-                cardWidth: 190
-                model: PropertyListModel {}
-            }
-
-            // space
-            Rectangle {
-                width: parent.width
-                height: 8
-                color: "#F5F5F5"
-            }
-
-            // Near you
-            SuperDeals {
-                id: nearYou
-                title: "Near You"
-                width: parent.width
-                cardWidth: 130
-                cardHeight: 160
-                model: PropertyListModel {}
-                // height: 220
-            }
-
-            // space
-            Rectangle {
-                width: parent.width
-                height: 8
-                color: "#F5F5F5"
-            }
-
-            // Section title
-            Label {
-                text: "All Properties"
-                font.pixelSize: 16
-                font.bold: true
-                color: "#1F2937"
-                leftPadding: 16
-                topPadding: 12
-                bottomPadding: 8
-            }
-
-            // Properties
-            Flow {
-                id: propertyFlow
-                width: parent.width
-                leftPadding: 12
-                rightPadding: 12
-                spacing: 8
-
-                Repeater {
-                    model: PropertyListModel {}
-
-                    PropertyCardDelegate {
-                        width: (propertyFlow.width - propertyFlow.leftPadding - propertyFlow.rightPadding - propertyFlow.spacing * 2) / 3
-
-                        height: width * 1.25
-                        // width: (propertyFlow.width - 24 - 10) / 2
-                        // height: width * 1.35
-
-                        propertyId: model.propertyId
-                        title: model.title
-                        location: model.location
-                        price: model.price
-                        imageUrl: model.imageUrl
-                        imageUrls: model.imageUrls
-                        status: model.status
-                        isVerified: model.isVerified
-                    }
+                onCategoryClicked: function (index, name) {
+                    contentSwipe.currentIndex = index;
                 }
+            }
+            SwipeView {
+                id: contentSwipe
+                width: parent.width
+                height: Math.max(mainFlick.height - y, 600) // or bind better later
+                clip: true
+                currentIndex: categoryRow.currentIndex
+
+                // When user swipes → update chips
+                onCurrentIndexChanged: {
+                    categoryRow.currentIndex = currentIndex;
+                }
+
+                // Page 0 - All
+                AllPage {
+                    width: contentSwipe.width
+                    height: contentSwipe.height
+                }
+
+                // Page 1 - Hostels
+                HostelsPage {
+                    width: contentSwipe.width
+                    height: contentSwipe.height
+                }
+
+                // Page 2 - Rooms
+                RoomsPage {
+                    width: contentSwipe.width
+                    height: contentSwipe.height
+                }
+
+                // Page 3 - Houses
+                HousesPage {
+                    width: contentSwipe.width
+                    height: contentSwipe.height
+                }
+
+                // Page 4 - Studios
+                StudiosPage {
+                    width: contentSwipe.width
+                    height: contentSwipe.height
+                }
+
+                // ... Shared, Luxury
             }
             Item {
                 width: 1
