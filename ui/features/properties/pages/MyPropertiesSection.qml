@@ -4,6 +4,7 @@ import QtQuick.Layouts
 import "../components"
 import "../delegates"
 import "../../../components/inputs"
+import "../../../components/scrollbars"
 import "../../../components/indicators"
 
 Item {
@@ -233,7 +234,7 @@ Item {
         contentHeight: contentColumn.implicitHeight + 120
         clip: true
 
-        ScrollBar.vertical: ScrollBar { }
+        ScrollBar.vertical: AppScrollBar { }
 
         onContentYChanged: root.armIfPulled()
         onDragEnded: root.handlePullRelease()

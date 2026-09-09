@@ -4,6 +4,7 @@ import QtQuick.Layouts
 import "../pages"
 import "../../models"
 import "../../../../utils/NavigationUtils.js" as NavUtils
+import "../../../../components/scrollbars"
 
 Item {
     id: root
@@ -28,7 +29,7 @@ Item {
             contentHeight: detailsPage.implicitHeight + 48
             clip: true
 
-            ScrollBar.vertical: ScrollBar { }
+            ScrollBar.vertical: AppScrollBar { }
 
             AgentApplicationDetailsPage {
                 id: detailsPage

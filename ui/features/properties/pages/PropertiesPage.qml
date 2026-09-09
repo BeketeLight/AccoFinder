@@ -6,6 +6,7 @@ import "../delegates"
 import "../../dashboards/Agets/pages"
 import "../../../components/inputs"
 import "../../../components/indicators"
+import "../../../components/scrollbars"
 
 Page {
     id: root
@@ -258,7 +259,7 @@ Page {
         contentHeight: contentColumn.implicitHeight + 96
         clip: true
 
-        ScrollBar.vertical: ScrollBar { }
+        ScrollBar.vertical: AppScrollBar { }
 
         onContentYChanged: root.armIfPulled()
         onDragEnded: root.handlePullRelease()

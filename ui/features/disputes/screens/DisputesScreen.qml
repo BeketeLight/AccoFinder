@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import "../pages"
 import "../../../components/indicators"
+import "../../../components/scrollbars"
 
 Item {
     id: root
@@ -86,7 +87,7 @@ Item {
             onContentYChanged: root.armIfPulled()
             onDragEnded: root.handlePullRelease()
 
-            ScrollBar.vertical: ScrollBar { }
+            ScrollBar.vertical: AppScrollBar { }
 
             DisputesPage {
                 id: disputesPage
