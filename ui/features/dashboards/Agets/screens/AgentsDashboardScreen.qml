@@ -17,7 +17,7 @@ Item {
     // the agent dashboard too (an admin using it can see their own copy).
     property Component rightComponentAction: Component {
         AppNotificationBell {
-            notificationScreen: Qt.resolvedUrl("../../notifications/screens/NotificationsScreen.qml")
+            notificationScreen: Qt.resolvedUrl("../../../notifications/screens/NotificationsScreen.qml")
         }
     }
 
