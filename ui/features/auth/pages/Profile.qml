@@ -381,7 +381,7 @@ Page {
                     status: "Not started"
                     progress: 0.0
                     statusColor: root.mutedColor
-                    detail: "Your booked items and booking progress will appear here after you make a booking."
+                    detail: "Your booking progress will appear here after you make a booking."
                 }
 
                 Button {
