@@ -43,6 +43,7 @@ qt_add_qml_module(appAccoFinder
         ui/components/indicators/AppSpinner.qml
         ui/components/indicators/AppEmptyState.qml
         ui/components/pages/AppScrollablePage.qml
+        ui/components/scrollbars/AppScrollBar.qml
         ui/components/cards/ContactCard.qml
         ui/components/navigations/AppBottomNavBar.qml
         ui/components/navigations/AppNotificationBell.qml

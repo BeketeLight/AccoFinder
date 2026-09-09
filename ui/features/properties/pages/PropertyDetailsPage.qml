@@ -5,6 +5,7 @@ import QtQuick.Dialogs
 import "../components"
 import "../../../components/inputs"
 import "../../../components/indicators"
+import "../../../components/scrollbars"
 import "../../../components/cards"
 import "../../../components/dialogs"
 import "../../../utils" as UtilsModule
@@ -852,7 +853,7 @@ Page {
         contentHeight: detailsColumn.implicitHeight + 32
         clip: true
 
-        ScrollBar.vertical: ScrollBar { }
+        ScrollBar.vertical: AppScrollBar { }
 
         ColumnLayout {
             id: detailsColumn

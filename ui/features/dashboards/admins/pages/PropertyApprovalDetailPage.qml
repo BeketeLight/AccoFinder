@@ -4,6 +4,7 @@ import QtQuick.Layouts
 import "../../../properties/components"
 import "../../../properties/models"
 import "../../../../components/cards"
+import "../../../../components/scrollbars"
 import "../../../../components/dialogs"
 import "../../../../components/indicators"
 import "../../../../utils/Utils.js" as Utils
@@ -131,7 +132,7 @@ Item {
         contentHeight: contentColumn.implicitHeight + 24
         clip: true
 
-        ScrollBar.vertical: ScrollBar { }
+        ScrollBar.vertical: AppScrollBar { }
 
         ColumnLayout {
             id: contentColumn

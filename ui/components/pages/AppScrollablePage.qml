@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import "../indicators"
+import "../scrollbars"
 
 // Shared scrollable page shell used by the dashboard screens (and reusable by
 // any feature). Wraps a Page with the standard canvas color, a Flickable with a
@@ -44,7 +45,7 @@ Page {
         clip: true
         boundsBehavior: Flickable.DragAndOvershootBounds
 
-        ScrollBar.vertical: ScrollBar { }
+        ScrollBar.vertical: AppScrollBar { }
 
         onContentYChanged: {
             if (root.pullEnabled && flick.dragging && flick.contentY <= -56)
