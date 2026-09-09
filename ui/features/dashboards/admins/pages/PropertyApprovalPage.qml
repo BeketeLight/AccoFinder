@@ -4,6 +4,7 @@ import QtQuick.Layouts
 import "../../../properties/models"
 import "../../../properties/components"
 import "../../../../utils/Utils.js" as Utils
+import "../delegates"
 
 Item {
     id: root
@@ -113,137 +114,24 @@ Item {
         Repeater {
             model: queueModel
 
-            delegate: Rectangle {
-                id: approvalRow
-                required property var model
-                required property int index
-                Layout.fillWidth: true
-                implicitHeight: approvalContent.implicitHeight + 20
-                radius: 12
-                color: "#FFFFFF"
-                border.color: "#E5E7EB"
-                border.width: 1
-
-                ColumnLayout {
-                    id: approvalContent
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.top: parent.top
-                    anchors.margins: 12
-                    spacing: 8
-
-                    Label {
-                        Layout.fillWidth: true
-                        text: approvalRow.model.title
-                        color: "#111827"
-                        font.pixelSize: 14
-                        font.bold: true
-                        elide: Text.ElideRight
-                    }
-
-                    Label {
-                        Layout.fillWidth: true
-                        text: approvalRow.model.district + " · " + approvalRow.model.village
-                              + " · " + Utils.formatCurrency(approvalRow.model.price) + "/mo"
-                        color: "#6B7280"
-                        font.pixelSize: 11
-                        elide: Text.ElideRight
-                    }
-
-                    Label {
-                        Layout.fillWidth: true
-                        text: qsTr("Landlord: %1").arg(approvalRow.model.landlord)
-                        color: "#6B7280"
-                        font.pixelSize: 11
-                        elide: Text.ElideRight
-                    }
-
-                    Button {
-                        id: reviewButton
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: 38
-                        text: qsTr("Review & decide")
-
-                        contentItem: Label {
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
-                            text: reviewButton.text
-                            color: "#2563EB"
-                            font.pixelSize: 12
-                            font.bold: true
-                        }
-
-                        background: Rectangle {
-                            radius: 19
-                            color: reviewButton.down ? "#DBEAFE" : "#EFF6FF"
-                            border.color: "#BFDBFE"
-                            border.width: 1
-                        }
-
-                        onClicked: root.reviewRequested(approvalRow.model.propertyId)
-                    }
-
-                    RowLayout {
-                        Layout.fillWidth: true
-                        spacing: 10
-
-                        Button {
-                            id: approveButton
-                            Layout.fillWidth: true
-                            Layout.preferredHeight: 36
-                            text: qsTr("Approve")
-
-                            contentItem: Label {
-                                horizontalAlignment: Text.AlignHCenter
-                                verticalAlignment: Text.AlignVCenter
-                                text: approveButton.text
-                                color: "#FFFFFF"
-                                font.pixelSize: 12
-                                font.bold: true
-                            }
-
-                            background: Rectangle {
-                                radius: 18
-                                color: approveButton.down ? "#15803D" : root.successColor
-                            }
-
-                            onClicked: {
-                                root.listingsModel.setPropertyStatus(approvalRow.model.propertyId, "VERIFIED")
-                                // Persist the decision on the backend so it survives a
-                                // refresh. setPropertyStatus only edits the local list.
-                                PropertyViewModel.updatePropertyStatus(approvalRow.model.propertyId, "VERIFIED")
-                                console.log("Approval:", approvalRow.model.propertyId, "-> VERIFIED")
-                                root.decisionMade(approvalRow.model.propertyId, approvalRow.model.title, true)
-                                root.refreshQueue()
-                            }
-                        }
-
-                        Button {
-                            id: rejectButton
-                            Layout.fillWidth: true
-                            Layout.preferredHeight: 36
-                            text: qsTr("Reject")
-
-                            contentItem: Label {
-                                horizontalAlignment: Text.AlignHCenter
-                                verticalAlignment: Text.AlignVCenter
-                                text: rejectButton.text
-                                color: "#B91C1C"
-                                font.pixelSize: 12
-                                font.bold: true
-                            }
-
-                            background: Rectangle {
-                                radius: 18
-                                color: rejectButton.down ? "#FEE2E2" : "#FEF2F2"
-                                border.color: "#FECACA"
-                                border.width: 1
-                            }
-
-                            onClicked: root.confirmReject(approvalRow.model.propertyId, approvalRow.model.title)
-                        }
-                    }
+            delegate: ApprovalRowDelegate {
+                propertyId: model.propertyId
+                title: model.title
+                district: model.district
+                village: model.village
+                price: model.price
+                landlord: model.landlord
+                onReviewRequested: (propertyId) => root.reviewRequested(propertyId)
+                onApproveRequested: (propertyId, title) => {
+                    root.listingsModel.setPropertyStatus(propertyId, "VERIFIED")
+                    // Persist the decision on the backend so it survives a
+                    // refresh. setPropertyStatus only edits the local list.
+                    PropertyViewModel.updatePropertyStatus(propertyId, "VERIFIED")
+                    console.log("Approval:", propertyId, "-> VERIFIED")
+                    root.decisionMade(propertyId, title, true)
+                    root.refreshQueue()
                 }
+                onRejectRequested: (propertyId, title) => root.confirmReject(propertyId, title)
             }
         }
 

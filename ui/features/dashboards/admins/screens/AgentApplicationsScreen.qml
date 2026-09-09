@@ -1,10 +1,9 @@
 import QtQuick
-import QtQuick.Controls
 import QtQuick.Layouts
 import "../pages"
 import "../../models"
 import "../../../../utils/NavigationUtils.js" as NavUtils
-import "../../../../components/indicators"
+import "../../../../components/pages"
 
 Item {
     id: root
@@ -17,47 +16,22 @@ Item {
 
     function goBack() { NavUtils.pop() }
 
-    Page {
+    AppScrollablePage {
         anchors.fill: parent
-        background: Rectangle { color: "#F8FAFC" }
+        loading: AgentApplicationViewModel.isLoading
 
-        Flickable {
-            id: flick
-            anchors.fill: parent
-            contentWidth: width
-            contentHeight: appsPage.implicitHeight + 48
-            clip: true
+        AgentApplicationsPage {
+            id: appsPage
+            Layout.fillWidth: true
 
-            ScrollBar.vertical: ScrollBar { }
+            applicationsListModel: root.applicationsListModel
 
-            AgentApplicationsPage {
-                id: appsPage
-
-                Component.onCompleted: Qt.callLater(function() { console.log("AASZ", "appsPage", "root=" + root.width + "x" + root.height + " flick=" + flick.width + " page=" + width + " x=" + x) })
-                anchors.horizontalCenter: parent.horizontalCenter
-                y: 24
-                width: flick.width > 48 ? Math.min(flick.width - 24, 520) : implicitWidth
-
-                applicationsListModel: root.applicationsListModel
-
-                onViewApplicationRequested: (applicationId) => {
-                    NavUtils.push(Qt.resolvedUrl("AgentApplicationDetailsScreen.qml"), {
-                        applicationId: applicationId,
-                        applicationsListModel: root.applicationsListModel
-                    })
-                }
+            onViewApplicationRequested: (applicationId) => {
+                NavUtils.push(Qt.resolvedUrl("AgentApplicationDetailsScreen.qml"), {
+                    applicationId: applicationId,
+                    applicationsListModel: root.applicationsListModel
+                })
             }
-        }
-
-        // Non-blocking spinner while the agent applications are being fetched.
-        AppSpinner {
-            visible: AgentApplicationViewModel.isLoading
-            anchors.centerIn: parent
-            z: 20
-            size: 32
-            lineWidth: 3
-            color: "#2563EB"
-            running: AgentApplicationViewModel.isLoading
         }
     }
 }

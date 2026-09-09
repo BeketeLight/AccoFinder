@@ -4,6 +4,7 @@ import QtQuick.Layouts
 import "../../../properties/components"
 import "../../../../components/inputs"
 import "../../models"
+import "../delegates"
 
 Item {
     id: root
@@ -123,177 +124,20 @@ Item {
         Repeater {
             model: root.agentsModel.agentsModel
 
-            delegate: Rectangle {
-                id: agentRow
-                required property var model
-                required property int index
-                Layout.fillWidth: true
-                implicitHeight: agentContent.implicitHeight + 20
-                radius: 12
-                color: "#FFFFFF"
-                border.color: "#E5E7EB"
-                border.width: 1
-
-                ColumnLayout {
-                    id: agentContent
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.top: parent.top
-                    anchors.margins: 12
-                    spacing: 8
-
-                    RowLayout {
-                        Layout.fillWidth: true
-                        spacing: 10
-
-                        Rectangle {
-                            Layout.preferredWidth: 38
-                            Layout.preferredHeight: 38
-                            radius: 19
-                            color: "#EFF6FF"
-
-                            Label {
-                                anchors.centerIn: parent
-                                text: agentRow.model.name.charAt(0)
-                                color: root.primaryColor
-                                font.pixelSize: 15
-                                font.bold: true
-                            }
-                        }
-
-                        ColumnLayout {
-                            Layout.fillWidth: true
-                            spacing: 2
-
-                            Label {
-                                Layout.fillWidth: true
-                                text: agentRow.model.name
-                                color: "#111827"
-                                font.pixelSize: 13
-                                font.bold: true
-                                elide: Text.ElideRight
-                            }
-
-                            Label {
-                                Layout.fillWidth: true
-                                text: agentRow.model.email + " · " + agentRow.model.phone
-                                color: root.mutedColor
-                                font.pixelSize: 11
-                                elide: Text.ElideRight
-                            }
-                        }
-
-                        Rectangle {
-                            implicitHeight: 20
-                            implicitWidth: stateChipLabel.implicitWidth + 14
-                            radius: 10
-                            color: agentRow.model.active ? "#ECFDF5" : "#FEF2F2"
-
-                            Label {
-                                id: stateChipLabel
-                                anchors.centerIn: parent
-                                text: agentRow.model.active ? qsTr("Active") : qsTr("Suspended")
-                                color: agentRow.model.active ? "#166534" : "#B91C1C"
-                                font.pixelSize: 10
-                                font.bold: true
-                            }
-                        }
-                    }
-
-                    Flow {
-                        Layout.fillWidth: true
-                        spacing: 8
-
-                        Rectangle {
-                            implicitHeight: 22
-                            implicitWidth: areaChipLabel.implicitWidth + 16
-                            radius: 11
-                            color: "#F3F4F6"
-
-                            Label {
-                                id: areaChipLabel
-                                anchors.centerIn: parent
-                                text: qsTr("Area: %1").arg(agentRow.model.area)
-                                color: "#374151"
-                                font.pixelSize: 10
-                                font.bold: true
-                            }
-                        }
-
-                        Rectangle {
-                            implicitHeight: 22
-                            implicitWidth: rateChipLabel.implicitWidth + 16
-                            radius: 11
-                            color: "#FEF3C7"
-
-                            Label {
-                                id: rateChipLabel
-                                anchors.centerIn: parent
-                                text: qsTr("%1% commission").arg(agentRow.model.commissionRate)
-                                color: "#92400E"
-                                font.pixelSize: 10
-                                font.bold: true
-                            }
-                        }
-
-                        Rectangle {
-                            id: editAgentButton
-                            implicitHeight: 24
-                            implicitWidth: editLabel.implicitWidth + 20
-                            radius: 12
-                            color: editArea.pressed ? "#DBEAFE" : "#EFF6FF"
-                            border.color: "#BFDBFE"
-                            border.width: 1
-
-                            Label {
-                                id: editLabel
-                                anchors.centerIn: parent
-                                text: qsTr("Edit")
-                                color: root.primaryColor
-                                font.pixelSize: 10
-                                font.bold: true
-                            }
-
-                            MouseArea {
-                                id: editArea
-                                anchors.fill: parent
-                                onClicked: root.openEditor(root.agentsModel.findAgent(agentRow.model.agentId))
-                            }
-                        }
-
-                        Rectangle {
-                            id: toggleAgentButton
-                            implicitHeight: 24
-                            implicitWidth: agentToggleLabel.implicitWidth + 20
-                            radius: 12
-                            color: agentToggleArea.pressed
-                                   ? (agentRow.model.active ? "#FEE2E2" : "#DCFCE7")
-                                   : (agentRow.model.active ? "#FEF2F2" : "#F0FDF4")
-                            border.color: agentRow.model.active ? "#FECACA" : "#BBF7D0"
-                            border.width: 1
-
-                            Label {
-                                id: agentToggleLabel
-                                anchors.centerIn: parent
-                                text: agentRow.model.active ? qsTr("Suspend") : qsTr("Activate")
-                                color: agentRow.model.active ? "#B91C1C" : "#166534"
-                                font.pixelSize: 10
-                                font.bold: true
-                            }
-
-                            MouseArea {
-                                id: agentToggleArea
-                                anchors.fill: parent
-
-                                onClicked: {
-                                    agentConfirmDialog.agentId = agentRow.model.agentId
-                                    agentConfirmDialog.agentName = agentRow.model.name
-                                    agentConfirmDialog.activate = !agentRow.model.active
-                                    agentConfirmDialog.open()
-                                }
-                            }
-                        }
-                    }
+            delegate: AgentRowDelegate {
+                agentId: model.agentId
+                name: model.name
+                email: model.email
+                phone: model.phone
+                area: model.area
+                commissionRate: model.commissionRate
+                active: model.active
+                onEditRequested: (agentId) => root.openEditor(root.agentsModel.findAgent(agentId))
+                onToggleRequested: (agentId, name, activate) => {
+                    agentConfirmDialog.agentId = agentId
+                    agentConfirmDialog.agentName = name
+                    agentConfirmDialog.activate = activate
+                    agentConfirmDialog.open()
                 }
             }
         }

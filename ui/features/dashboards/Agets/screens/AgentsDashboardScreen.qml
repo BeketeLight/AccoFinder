@@ -1,9 +1,9 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import "../../../../components/pages"
+import "../../../../components/navigations"
 import "../pages"
-import "../../../../components/indicators"
-import "../../../../utils/NavigationUtils.js" as NavUtils
 
 Item {
     id: root
@@ -16,40 +16,8 @@ Item {
     // notification list, so announcements broadcast to ALL are visible from
     // the agent dashboard too (an admin using it can see their own copy).
     property Component rightComponentAction: Component {
-        Item {
-            implicitWidth: 36
-            implicitHeight: 36
-
-            ToolButton {
-                anchors.centerIn: parent
-                icon.color: "#1F2937"
-                icon.height: 24
-                icon.width: 24
-                icon.source: "qrc:/ui/assets/notification.svg"
-                onClicked: NavUtils.push(Qt.resolvedUrl("../../../notifications/screens/NotificationsScreen.qml"))
-            }
-
-            Rectangle {
-                visible: NotificationViewModel.notificationListModel.unreadCount > 0
-                width: 16
-                height: 16
-                radius: 8
-                anchors.top: parent.top
-                anchors.right: parent.right
-                color: "#DC2626"
-                border.color: "#FFFFFF"
-                border.width: 1
-
-                Label {
-                    anchors.centerIn: parent
-                    text: NotificationViewModel.notificationListModel.unreadCount > 99
-                          ? "99+"
-                          : String(NotificationViewModel.notificationListModel.unreadCount)
-                    color: "#FFFFFF"
-                    font.pixelSize: 9
-                    font.bold: true
-                }
-            }
+        AppNotificationBell {
+            notificationScreen: Qt.resolvedUrl("../../notifications/screens/NotificationsScreen.qml")
         }
     }
 
@@ -109,24 +77,12 @@ Item {
         }
     }
 
-    property bool pullArmed: false
-
-    function armIfPulled() {
-        if (flick.dragging && flick.contentY <= -56)
-            root.pullArmed = true
-    }
-
-    function handlePullRelease() {
-        if (root.pullArmed && !root.refreshing && !root.loading) {
-            root.refresh()
-            flick.returnToBounds()
-        }
-        root.pullArmed = false
-    }
-
-    Page {
+    AppScrollablePage {
         anchors.fill: parent
-        background: Rectangle { color: "#F8FAFC" }
+        pullEnabled: true
+        refreshing: root.refreshing
+        loading: root.loading || root.refreshing
+        onRefreshRequested: root.refresh()
 
         header: ToolBar {
             background: Rectangle { color: "#FFFFFF" }
@@ -154,43 +110,15 @@ Item {
             }
         }
 
-        Flickable {
-            id: flick
-            anchors.fill: parent
-            contentWidth: width
-            contentHeight: dashPage.implicitHeight + 48
-            clip: true
-            boundsBehavior: Flickable.DragAndOvershootBounds
+        AgentsDashboardPage {
+            id: dashPage
+            Layout.fillWidth: true
 
-            onContentYChanged: root.armIfPulled()
-            onDragEnded: root.handlePullRelease()
-
-            ScrollBar.vertical: ScrollBar { }
-
-            AgentsDashboardPage {
-                id: dashPage
-                x: Math.max(12, (flick.width - width) / 2)
-                y: 24
-                width: Math.min(flick.width - 24, 520)
-
-                onAddPropertyRequested: root.addPropertyRequested()
-                onAttentionClicked: (kind, targetId) => root.attentionClicked(kind, targetId)
-                onBookingClicked: root.bookingClicked()
-                onNotificationClicked: root.notificationClicked()
-                onDisputeClicked: root.disputeClicked()
-            }
-        }
-
-        // Non-blocking spinner centered on the page, shown on first load and
-        // whenever a pull-to-refresh (or auto refresh) triggers a backend call.
-        AppSpinner {
-            visible: root.loading || root.refreshing
-            anchors.centerIn: parent
-            z: 20
-            size: 32
-            lineWidth: 3
-            color: "#2563EB"
-            running: root.loading || root.refreshing
+            onAddPropertyRequested: root.addPropertyRequested()
+            onAttentionClicked: (kind, targetId) => root.attentionClicked(kind, targetId)
+            onBookingClicked: root.bookingClicked()
+            onNotificationClicked: root.notificationClicked()
+            onDisputeClicked: root.disputeClicked()
         }
     }
 

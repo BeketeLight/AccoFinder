@@ -1,9 +1,8 @@
 import QtQuick
-import QtQuick.Controls
 import QtQuick.Layouts
 import "../pages"
 import "../../../../utils/NavigationUtils.js" as NavUtils
-import "../../../../components/indicators"
+import "../../../../components/pages"
 
 Item {
     id: root
@@ -16,43 +15,20 @@ Item {
 
     signal propertyClicked(var propertyId)
 
-    Page {
+    AppScrollablePage {
         anchors.fill: parent
-        background: Rectangle { color: "#F8FAFC" }
+        loading: PropertyViewModel.isLoading
 
-        Flickable {
-            id: flick
-            anchors.fill: parent
-            contentWidth: width
-            contentHeight: allPropsPage.implicitHeight + 48
-            clip: true
+        AllPropertiesPage {
+            id: allPropsPage
+            Layout.fillWidth: true
 
-            ScrollBar.vertical: ScrollBar { }
-
-            AllPropertiesPage {
-                id: allPropsPage
-                anchors.horizontalCenter: parent.horizontalCenter
-                y: 24
-                width: flick.width > 48 ? Math.min(flick.width - 24, 520) : implicitWidth
-
-                onPropertyClicked: function(propertyId) {
-                    var payload = allPropsPage.propertiesModel.registrationPayloadFor(propertyId, "propertyId")
-                    if (payload)
-                        NavUtils.push(Qt.resolvedUrl("../../../properties/screens/PropertyDetailScreen.qml"),
-                                      { initialPayload: payload })
-                }
+            onPropertyClicked: function(propertyId) {
+                var payload = allPropsPage.propertiesModel.registrationPayloadFor(propertyId, "propertyId")
+                if (payload)
+                    NavUtils.push(Qt.resolvedUrl("../../../properties/screens/PropertyDetailScreen.qml"),
+                                  { initialPayload: payload })
             }
-        }
-
-        // Non-blocking spinner while the property list is being fetched.
-        AppSpinner {
-            visible: PropertyViewModel.isLoading
-            anchors.centerIn: parent
-            z: 20
-            size: 32
-            lineWidth: 3
-            color: "#2563EB"
-            running: PropertyViewModel.isLoading
         }
     }
 }

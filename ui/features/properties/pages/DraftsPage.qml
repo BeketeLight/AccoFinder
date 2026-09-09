@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import "../delegates"
 
 Page {
     id: root
@@ -98,111 +99,21 @@ Page {
                 Repeater {
                     model: Object.keys(root.draftsCache)
 
-                    Rectangle {
-                        Layout.fillWidth: true
-                        implicitHeight: cardColumn.implicitHeight + 24
-                        radius: 14
-                        color: root.pageColor
-                        border.color: root.borderColor
-                        border.width: 1
-
-                        ColumnLayout {
-                            id: cardColumn
-                            anchors.left: parent.left
-                            anchors.right: parent.right
-                            anchors.top: parent.top
-                            anchors.margins: 14
-                            spacing: 8
-
-                            RowLayout {
-                                Layout.fillWidth: true
-                                spacing: 8
-
-                                Label {
-                                    Layout.fillWidth: true
-                                    text: {
-                                        var d = root.draftsCache[modelData]
-                                        return (d && (d.title || "Untitled property"))
-                                    }
-                                    color: root.textColor
-                                    font.pixelSize: 15
-                                    font.bold: true
-                                    elide: Text.ElideRight
-                                }
-
-                                Label {
-                                    text: {
-                                        var d = root.draftsCache[modelData]
-                                        return (d && d.propertyType) || ""
-                                    }
-                                    color: root.primaryColor
-                                    font.pixelSize: 11
-                                    font.bold: true
-                                }
-                            }
-
-                            Label {
-                                Layout.fillWidth: true
-                                visible: (function(){ var d = root.draftsCache[modelData]; return d && (d.physicalAddress && (d.physicalAddress.district || d.physicalAddress.village)) }())
-                                text: {
-                                    var d = root.draftsCache[modelData]
-                                    var a = d && d.physicalAddress ? d.physicalAddress : {}
-                                    var parts = []
-                                    if (a.district) parts.push(a.district)
-                                    if (a.village) parts.push(a.village)
-                                    return parts.join(" · ")
-                                }
-                                color: root.mutedColor
-                                font.pixelSize: 12
-                                elide: Text.ElideRight
-                            }
-
-                            RowLayout {
-                                Layout.fillWidth: true
-                                spacing: 8
-
-                                Button {
-                                    Layout.fillWidth: true
-                                    Layout.preferredHeight: 38
-                                    text: qsTr("Resend")
-
-                                    contentItem: Label {
-                                        text: parent.text
-                                        color: "#FFFFFF"
-                                        font.pixelSize: 13
-                                        font.bold: true
-                                        horizontalAlignment: Text.AlignHCenter
-                                        verticalAlignment: Text.AlignVCenter
-                                    }
-                                    background: Rectangle {
-                                        radius: 10
-                                        color: parent.down ? "#1D4ED8" : root.primaryColor
-                                    }
-                                    onClicked: root.resendRequested(modelData)
-                                }
-
-                                Button {
-                                    Layout.preferredHeight: 38
-                                    Layout.preferredWidth: 72
-                                    text: qsTr("Delete")
-
-                                    contentItem: Label {
-                                        text: parent.text
-                                        color: "#B91C1C"
-                                        font.pixelSize: 13
-                                        horizontalAlignment: Text.AlignHCenter
-                                        verticalAlignment: Text.AlignVCenter
-                                    }
-                                    background: Rectangle {
-                                        radius: 10
-                                        color: parent.down ? "#FEE2E2" : "#FEF2F2"
-                                        border.color: "#FECACA"
-                                        border.width: 1
-                                    }
-                                    onClicked: root.deleteRequested(modelData)
-                                }
-                            }
-                        }
+                    delegate: DraftCardDelegate {
+                        draftKey: modelData
+                        draftTitle: (function(){ var d = root.draftsCache[modelData]; return (d && (d.title || "Untitled property")) }())
+                        propertyType: (function(){ var d = root.draftsCache[modelData]; return (d && d.propertyType) || "" }())
+                        locationVisible: (function(){ var d = root.draftsCache[modelData]; return d && (d.physicalAddress && (d.physicalAddress.district || d.physicalAddress.village)) }())
+                        locationText: (function() {
+                            var d = root.draftsCache[modelData]
+                            var a = d && d.physicalAddress ? d.physicalAddress : {}
+                            var parts = []
+                            if (a.district) parts.push(a.district)
+                            if (a.village) parts.push(a.village)
+                            return parts.join(" · ")
+                        }())
+                        onResendRequested: (key) => root.resendRequested(key)
+                        onDeleteRequested: (key) => root.deleteRequested(key)
                     }
                 }
             }

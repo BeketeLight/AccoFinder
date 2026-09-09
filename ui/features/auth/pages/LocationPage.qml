@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import "../../../components/inputs"
+import "../components"
 
 Item {
     id: root
@@ -43,40 +43,13 @@ Item {
             Layout.topMargin: -6
         }
 
-        Rectangle {
-            Layout.fillWidth: true
-            Layout.preferredHeight: 70
-            radius: 12
-            color: "#EFF6FF"
-            border.color: "#BFDBFE"
-
-            RowLayout {
-                anchors.fill: parent
-                anchors.margins: 14
-                spacing: 10
-
-                Rectangle {
-                    Layout.preferredWidth: 34
-                    Layout.preferredHeight: 34
-                    radius: 17
-                    color: root.primaryColor
-
-                    Text {
-                        anchors.centerIn: parent
-                        text: "i"
-                        color: "#FFFFFF"
-                        font.pixelSize: 14
-                    }
-                }
-
-                Label {
-                    text: "Use a suburb, town, or campus area you search around most often."
-                    color: "#1E40AF"
-                    font.pixelSize: 13
-                    wrapMode: Text.WordWrap
-                    Layout.fillWidth: true
-                }
-            }
+        AuthInfoCard {
+            cardColor: "#EFF6FF"
+            cardBorderColor: "#BFDBFE"
+            accentColor: root.primaryColor
+            message: "Use a suburb, town, or campus area you search around most often."
+            messageColor: "#1E40AF"
+            cardHeight: 70
         }
 
         ColumnLayout {
@@ -84,56 +57,20 @@ Item {
             Layout.topMargin: 8
             spacing: 7
 
-            AppTextInput {
+            AuthTextField {
                 id: locationField
                 label: "Your area"
                 placeholder: "e.g. Mzuzu, Zomba Town"
                 required: true
-                fieldHeight: 52
-                backgroundColor: root.surfaceColor
-                textColor: root.textColor
-                labelColor: root.textColor
-                placeholderColor: "#9CA3AF"
-                borderColor: root.borderColor
-                focusColor: root.primaryColor
-                errorColor: root.errorColor
-                Layout.fillWidth: true
-                Layout.preferredHeight: 76
-                Layout.topMargin: 12
             }
         }
 
-        Label {
+        AuthErrorLabel {
             id: errorText
-            visible: text.length > 0
-            text: ""
-            color: root.errorColor
-            font.pixelSize: 13
-            wrapMode: Text.WordWrap
-            Layout.fillWidth: true
         }
 
-        Button {
+        AuthContinueButton {
             id: continueButton
-            text: "Continue"
-            Layout.fillWidth: true
-            Layout.preferredHeight: 52
-            Layout.topMargin: 6
-
-            contentItem: Text {
-                text: continueButton.text
-                color: "#FFFFFF"
-                font.pixelSize: 15
-                font.bold: true
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-            }
-
-            background: Rectangle {
-                radius: 12
-                color: continueButton.down ? "#1D4ED8" : root.primaryColor
-            }
-
             onClicked: {
                 if (locationField.text.trim().length === 0) {
                     errorText.text = "Enter the area you want to search in.";

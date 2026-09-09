@@ -41,8 +41,11 @@ qt_add_qml_module(appAccoFinder
         ui/components/inputs/AppTextInput.qml
         ui/components/indicators/AppStatusIndicator.qml
         ui/components/indicators/AppSpinner.qml
+        ui/components/indicators/AppEmptyState.qml
+        ui/components/pages/AppScrollablePage.qml
         ui/components/cards/ContactCard.qml
         ui/components/navigations/AppBottomNavBar.qml
+        ui/components/navigations/AppNotificationBell.qml
         ui/components/navigations/AdminDrawer.qml
         ui/components/navigations/AgentDrawer.qml
 
@@ -130,7 +133,23 @@ qt_add_qml_module(appAccoFinder
         ui/features/dashboards/admins/screens/AgentApplicationDetailsScreen.qml
         ui/features/dashboards/admins/pages/AllPropertiesPage.qml
         ui/features/dashboards/admins/screens/AllPropertiesScreen.qml
+        ui/features/dashboards/admins/delegates/ActivityRowDelegate.qml
+        ui/features/dashboards/admins/delegates/AdminPropertyDelegate.qml
+        ui/features/dashboards/admins/delegates/AgentRowDelegate.qml
+        ui/features/dashboards/admins/delegates/AgentApplicationDelegate.qml
+        ui/features/dashboards/admins/delegates/DisputeCardDelegate.qml
+        ui/features/dashboards/admins/delegates/ApprovalRowDelegate.qml
+        ui/features/dashboards/admins/delegates/AdminNotificationDelegate.qml
+        ui/features/dashboards/admins/delegates/PaymentRowDelegate.qml
+        ui/features/dashboards/admins/delegates/CommissionRowDelegate.qml
+        ui/features/dashboards/admins/delegates/PayoutRowDelegate.qml
+        ui/features/dashboards/admins/delegates/UserRowDelegate.qml
         #======FEATURE-AUTH-GLOBAL======
+        ui/features/auth/components/AuthHeaderComponent.qml
+        ui/features/auth/components/AuthTextField.qml
+        ui/features/auth/components/AuthInfoCard.qml
+        ui/features/auth/components/AuthContinueButton.qml
+        ui/features/auth/components/AuthErrorLabel.qml
         ui/features/auth/screens/ForgotPasswordScreen.qml
         ui/features/auth/screens/OtpScree.qml
         ui/features/auth/screens/SignInScreen.qml
@@ -176,6 +195,7 @@ qt_add_qml_module(appAccoFinder
         ui/features/payments/screens/PaymentsScreen.qml
         #======FEATURE-PROPERTIES======
         ui/features/properties/components/StatCard.qml
+        ui/features/properties/components/StatSummaryBar.qml
         ui/features/properties/components/StatusChip.qml
         ui/features/properties/components/SectionHeader.qml
         ui/features/dashboards/models/AgentDashboardModel.qml
@@ -198,6 +218,9 @@ qt_add_qml_module(appAccoFinder
         ui/features/properties/pages/PropertyDetailsPage.qml
         ui/features/properties/pages/DraftsPage.qml
         ui/features/properties/pages/MyPropertiesSection.qml
+        ui/features/properties/delegates/PropertyCardDelegate.qml
+        ui/features/properties/delegates/DraftCardDelegate.qml
+        ui/features/properties/delegates/RoomCardDelegate.qml
         ui/features/properties/screens/PropertiesScreen.qml
         ui/features/properties/screens/AddPropertyScreen.qml
         ui/features/properties/screens/DraftsScreen.qml
@@ -208,6 +231,9 @@ qt_add_qml_module(appAccoFinder
         QML_FILES ui/components/navigations/AppHeader.qml
         QML_FILES ui/features/dashboards/Agets/pages/AgentsDashboardPage.qml
         QML_FILES ui/features/dashboards/Agets/screens/AgentsDashboardScreen.qml
+        QML_FILES ui/features/dashboards/Agets/delegates/AttentionRowDelegate.qml
+        QML_FILES ui/features/dashboards/Agets/delegates/BookingRowDelegate.qml
+        QML_FILES ui/features/dashboards/Agets/delegates/AgentDisputeRowDelegate.qml
 
     RESOURCES
         Rescources.qrc
