@@ -171,9 +171,9 @@ Item {
 
                     delegate: Rectangle {
                         required property var modelData
-                        width: amenityLabel.implicitWidth + 28
-                        height: 32
-                        radius: 16
+                        width: chipLabel.implicitWidth + 24
+                        height: 30
+                        radius: 15
                         color: root.selectedAmenities.indexOf(modelData.token) !== -1
                                ? root.primaryColor : root.surfaceColor
                         border.color: root.selectedAmenities.indexOf(modelData.token) !== -1
@@ -181,12 +181,12 @@ Item {
                         border.width: 1
 
                         Label {
-                            id: amenityLabel
+                            id: chipLabel
                             anchors.centerIn: parent
                             text: modelData.label
                             color: root.selectedAmenities.indexOf(modelData.token) !== -1
                                    ? "#FFFFFF" : root.mutedColor
-                            font.pixelSize: 12
+                            font.pixelSize: 11
                             font.bold: root.selectedAmenities.indexOf(modelData.token) !== -1
                         }
 

@@ -132,6 +132,17 @@ qt_add_qml_module(appAccoFinder
         ui/features/dashboards/admins/screens/AgentApplicationDetailsScreen.qml
         ui/features/dashboards/admins/pages/AllPropertiesPage.qml
         ui/features/dashboards/admins/screens/AllPropertiesScreen.qml
+        ui/features/dashboards/admins/delegates/ActivityRowDelegate.qml
+        ui/features/dashboards/admins/delegates/AdminPropertyDelegate.qml
+        ui/features/dashboards/admins/delegates/AgentRowDelegate.qml
+        ui/features/dashboards/admins/delegates/AgentApplicationDelegate.qml
+        ui/features/dashboards/admins/delegates/DisputeCardDelegate.qml
+        ui/features/dashboards/admins/delegates/ApprovalRowDelegate.qml
+        ui/features/dashboards/admins/delegates/AdminNotificationDelegate.qml
+        ui/features/dashboards/admins/delegates/PaymentRowDelegate.qml
+        ui/features/dashboards/admins/delegates/CommissionRowDelegate.qml
+        ui/features/dashboards/admins/delegates/PayoutRowDelegate.qml
+        ui/features/dashboards/admins/delegates/UserRowDelegate.qml
         #======FEATURE-AUTH-GLOBAL======
         ui/features/auth/components/AuthHeaderComponent.qml
         ui/features/auth/components/AuthTextField.qml
@@ -183,6 +194,7 @@ qt_add_qml_module(appAccoFinder
         ui/features/payments/screens/PaymentsScreen.qml
         #======FEATURE-PROPERTIES======
         ui/features/properties/components/StatCard.qml
+        ui/features/properties/components/StatSummaryBar.qml
         ui/features/properties/components/StatusChip.qml
         ui/features/properties/components/SectionHeader.qml
         ui/features/dashboards/models/AgentDashboardModel.qml
@@ -205,6 +217,9 @@ qt_add_qml_module(appAccoFinder
         ui/features/properties/pages/PropertyDetailsPage.qml
         ui/features/properties/pages/DraftsPage.qml
         ui/features/properties/pages/MyPropertiesSection.qml
+        ui/features/properties/delegates/PropertyCardDelegate.qml
+        ui/features/properties/delegates/DraftCardDelegate.qml
+        ui/features/properties/delegates/RoomCardDelegate.qml
         ui/features/properties/screens/PropertiesScreen.qml
         ui/features/properties/screens/AddPropertyScreen.qml
         ui/features/properties/screens/DraftsScreen.qml
@@ -215,6 +230,9 @@ qt_add_qml_module(appAccoFinder
         QML_FILES ui/components/navigations/AppHeader.qml
         QML_FILES ui/features/dashboards/Agets/pages/AgentsDashboardPage.qml
         QML_FILES ui/features/dashboards/Agets/screens/AgentsDashboardScreen.qml
+        QML_FILES ui/features/dashboards/Agets/delegates/AttentionRowDelegate.qml
+        QML_FILES ui/features/dashboards/Agets/delegates/BookingRowDelegate.qml
+        QML_FILES ui/features/dashboards/Agets/delegates/AgentDisputeRowDelegate.qml
 
     RESOURCES
         Rescources.qrc

@@ -34,7 +34,7 @@ Item {
     // broadcast to ALL are visible from the admin dashboard too.
     property Component rightComponentAction: Component {
         AppNotificationBell {
-            notificationScreen: Qt.resolvedUrl("../../../notifications/screens/NotificationsScreen.qml")
+            notificationScreen: Qt.resolvedUrl("../../notifications/screens/NotificationsScreen.qml")
         }
     }
 

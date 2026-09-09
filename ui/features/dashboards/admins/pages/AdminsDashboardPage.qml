@@ -5,6 +5,7 @@ import "../../models"
 import "../../../properties/components"
 import "../../../../components/indicators"
 import "../../../../utils/Utils.js" as Utils
+import "../delegates"
 
 Item {
     id: root
@@ -261,63 +262,11 @@ Item {
         Repeater {
             model: root.dashboardModel.pendingActivitiesModel
 
-            delegate: Rectangle {
-                id: activityRow
-                required property var model
-                required property int index
-                Layout.fillWidth: true
-                implicitHeight: activityContent.implicitHeight + 16
-                radius: 12
-                color: mouseArea.pressed ? root.softAmberColor : root.surfaceColor
-                border.color: root.borderColor
-                border.width: 1
-
-                RowLayout {
-                    id: activityContent
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.top: parent.top
-                    anchors.margins: 10
-                    spacing: 10
-
-                    Rectangle {
-                        Layout.preferredWidth: 4
-                        Layout.preferredHeight: 34
-                        radius: 2
-                        color: "#F59E0B"
-                    }
-
-                    ColumnLayout {
-                        Layout.fillWidth: true
-                        spacing: 2
-
-                        Label {
-                            Layout.fillWidth: true
-                            text: activityRow.model.title
-                            color: root.textColor
-                            font.pixelSize: 13
-                            font.bold: true
-                            elide: Text.ElideRight
-                        }
-
-                        Label {
-                            Layout.fillWidth: true
-                            text: activityRow.model.detail
-                            color: root.mutedColor
-                            font.pixelSize: 11
-                            elide: Text.ElideRight
-                        }
-                    }
-
-
-                }
-
-                MouseArea {
-                    id: mouseArea
-                    anchors.fill: parent
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: root.activityTriggered(activityRow.model.kind)
-                }
+            delegate: ActivityRowDelegate {
+                title: model.title
+                detail: model.detail
+                kind: model.kind
+                onClicked: (kind) => root.activityTriggered(kind)
             }
         }
 

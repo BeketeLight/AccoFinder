@@ -4,6 +4,7 @@ import QtQuick.Layouts
 import "../../../utils/NavigationUtils.js" as NavUtils
 import "../../../components/indicators"
 import "../../../components/pages"
+import "../delegates"
 
 Item {
     id: root
@@ -137,73 +138,12 @@ Item {
                     Repeater {
                         model: root.notificationsModel
 
-                        delegate: ColumnLayout {
-                            required property var model
-                            required property int index
-                            Layout.fillWidth: true
-                            spacing: 0
-
-                            Rectangle {
-                                Layout.fillWidth: true
-                                implicitHeight: notifRow.implicitHeight + 20
-                                color: model.unread ? root.softBlueColor : "transparent"
-
-                                MouseArea {
-                                    anchors.fill: parent
-                                    cursorShape: Qt.PointingHandCursor
-                                    onClicked: {
-                                        if (model.unread) {
-                                            NotificationViewModel.markRead(model.id)
-                                            Qt.callLater(function() {
-                                                NotificationViewModel.getNotifications()
-                                            })
-                                        }
-                                    }
-                                }
-
-                                RowLayout {
-                                    id: notifRow
-                                    anchors.fill: parent
-                                    anchors.margins: 10
-                                    spacing: 10
-
-                                    Rectangle {
-                                        Layout.preferredWidth: 8
-                                        Layout.preferredHeight: 8
-                                        radius: 4
-                                        color: model.unread ? root.primaryColor : "transparent"
-                                    }
-
-                                    ColumnLayout {
-                                        Layout.fillWidth: true
-                                        spacing: 1
-
-                                        Label {
-                                            Layout.fillWidth: true
-                                            text: model.title
-                                            color: root.textColor
-                                            font.pixelSize: 13
-                                            font.bold: model.unread
-                                            elide: Text.ElideRight
-                                        }
-
-                                        Label {
-                                            Layout.fillWidth: true
-                                            text: model.message
-                                            color: root.mutedColor
-                                            font.pixelSize: 11
-                                            elide: Text.ElideRight
-                                        }
-                                    }
-                                }
-                            }
-
-                            Rectangle {
-                                visible: index < root.notificationsModel.count - 1
-                                Layout.fillWidth: true
-                                Layout.preferredHeight: 1
-                                color: root.borderColor
-                            }
+                        delegate: NotificationDelegate {
+                            notificationId: model.id
+                            title: model.title
+                            message: model.message
+                            unread: model.unread
+                            showSeparator: index < root.notificationsModel.count - 1
                         }
                     }
                 }

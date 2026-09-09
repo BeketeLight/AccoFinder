@@ -3,7 +3,6 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Dialogs
 import "../../../components/inputs"
-import "../components"
 import "../../../utils/NavigationUtils.js" as NavUtils
 
 Item {

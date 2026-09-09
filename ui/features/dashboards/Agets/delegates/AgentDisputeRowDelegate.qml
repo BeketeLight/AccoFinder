@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import "../../properties/components"
+import "../../../properties/components"
 
 ColumnLayout {
     id: root
@@ -11,21 +11,13 @@ ColumnLayout {
     property string status: ""
     property bool showSeparator: true
 
+    property color dangerColor: "#DC2626"
+    property color softRedColor: "#FEF2F2"
     property color textColor: "#1F2937"
     property color mutedColor: "#6B7280"
     property color borderColor: "#E5E7EB"
 
-    function tintBg(s) {
-        if (String(s).toLowerCase() === "resolved") return "#ECFDF5"
-        if (String(s).toLowerCase() === "in review") return "#FFFBEB"
-        return "#FEF2F2"
-    }
-
-    function tintFg(s) {
-        if (String(s).toLowerCase() === "resolved") return "#166534"
-        if (String(s).toLowerCase() === "in review") return "#92400E"
-        return "#B91C1C"
-    }
+    signal clicked()
 
     Layout.fillWidth: true
     spacing: 0
@@ -45,12 +37,12 @@ ColumnLayout {
                 Layout.preferredWidth: 34
                 Layout.preferredHeight: 34
                 radius: 17
-                color: root.tintBg(root.status)
+                color: root.softRedColor
 
                 Label {
                     anchors.centerIn: parent
                     text: "?"
-                    color: root.tintFg(root.status)
+                    color: root.dangerColor
                     font.pixelSize: 15
                     font.bold: true
                 }
@@ -82,6 +74,12 @@ ColumnLayout {
                 textValue: root.status.length > 0 ? root.status : qsTr("Open")
                 variant: String(root.status).toLowerCase() === "resolved" ? "warning" : "danger"
             }
+        }
+
+        MouseArea {
+            anchors.fill: parent
+            cursorShape: Qt.PointingHandCursor
+            onClicked: root.clicked()
         }
     }
 

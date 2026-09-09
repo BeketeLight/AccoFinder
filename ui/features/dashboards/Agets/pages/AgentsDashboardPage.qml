@@ -5,6 +5,7 @@ import "../../models"
 import "../../../properties/components"
 import "../../../../components/indicators"
 import "../../../../utils/Utils.js" as Utils
+import "../delegates"
 
 Item {
     id: root
@@ -222,98 +223,15 @@ Item {
             }
         }
 
-        Rectangle {
+        StatSummaryBar {
             Layout.fillWidth: true
-            implicitHeight: bookingsSummaryRow.implicitHeight + 26
-            radius: 12
-            color: root.surfaceColor
-            border.color: root.borderColor
-            border.width: 1
-
-            RowLayout {
-                id: bookingsSummaryRow
-                anchors.fill: parent
-                anchors.margins: 13
-                spacing: 0
-
-                ColumnLayout {
-                    Layout.fillWidth: true
-                    spacing: 2
-                    Label {
-                        Layout.alignment: Qt.AlignHCenter
-                        text: String(root.dashboardModel.pendingBookings + root.dashboardModel.confirmedBookings + root.dashboardModel.cancelledBookings)
-                        font.pixelSize: 17
-                        font.bold: true
-                        color: root.textColor
-                    }
-                    Label {
-                        Layout.alignment: Qt.AlignHCenter
-                        text: qsTr("Bookings")
-                        font.pixelSize: 11
-                        color: root.mutedColor
-                    }
-                }
-
-                Rectangle { Layout.preferredWidth: 1; Layout.preferredHeight: parent.height - 26; color: root.borderColor }
-
-                ColumnLayout {
-                    Layout.fillWidth: true
-                    spacing: 2
-                    Label {
-                        Layout.alignment: Qt.AlignHCenter
-                        text: String(root.dashboardModel.pendingBookings)
-                        font.pixelSize: 17
-                        font.bold: true
-                        color: root.warningColor
-                    }
-                    Label {
-                        Layout.alignment: Qt.AlignHCenter
-                        text: qsTr("Pending")
-                        font.pixelSize: 11
-                        color: root.mutedColor
-                    }
-                }
-
-                Rectangle { Layout.preferredWidth: 1; Layout.preferredHeight: parent.height - 26; color: root.borderColor }
-
-                ColumnLayout {
-                    Layout.fillWidth: true
-                    spacing: 2
-                    Label {
-                        Layout.alignment: Qt.AlignHCenter
-                        text: String(root.dashboardModel.confirmedBookings)
-                        font.pixelSize: 17
-                        font.bold: true
-                        color: root.successColor
-                    }
-                    Label {
-                        Layout.alignment: Qt.AlignHCenter
-                        text: qsTr("Confirmed")
-                        font.pixelSize: 11
-                        color: root.mutedColor
-                    }
-                }
-
-                Rectangle { Layout.preferredWidth: 1; Layout.preferredHeight: parent.height - 26; color: root.borderColor }
-
-                ColumnLayout {
-                    Layout.fillWidth: true
-                    spacing: 2
-                    Label {
-                        Layout.alignment: Qt.AlignHCenter
-                        text: String(root.dashboardModel.cancelledBookings)
-                        font.pixelSize: 17
-                        font.bold: true
-                        color: root.dangerColor
-                    }
-                    Label {
-                        Layout.alignment: Qt.AlignHCenter
-                        text: qsTr("Cancelled")
-                        font.pixelSize: 11
-                        color: root.mutedColor
-                    }
-                }
-            }
+            margin: 13
+            model: [
+                { value: String(root.dashboardModel.pendingBookings + root.dashboardModel.confirmedBookings + root.dashboardModel.cancelledBookings), label: qsTr("Bookings"), color: root.textColor },
+                { value: String(root.dashboardModel.pendingBookings), label: qsTr("Pending"), color: root.warningColor },
+                { value: String(root.dashboardModel.confirmedBookings), label: qsTr("Confirmed"), color: root.successColor },
+                { value: String(root.dashboardModel.cancelledBookings), label: qsTr("Cancelled"), color: root.dangerColor }
+            ]
         }
 
         SectionHeader {
@@ -340,92 +258,14 @@ Item {
                 Repeater {
                     model: root.dashboardModel.attentionModel
 
-                    delegate: ColumnLayout {
-                        required property var model
-                        required property int index
-                        Layout.fillWidth: true
-                        spacing: 0
-
-                        Rectangle {
-                            Layout.fillWidth: true
-                            implicitHeight: attnRow.implicitHeight + 20
-                            color: attnMouse.pressed ? root.softAmberColor : "transparent"
-
-                            RowLayout {
-                                id: attnRow
-                                anchors.fill: parent
-                                anchors.margins: 12
-                                spacing: 12
-
-                                Rectangle {
-                                    Layout.preferredWidth: 4
-                                    Layout.preferredHeight: 36
-                                    radius: 2
-                                    color: "#F59E0B"
-                                }
-
-                                ColumnLayout {
-                                    Layout.fillWidth: true
-                                    spacing: 2
-
-                                    Label {
-                                        Layout.fillWidth: true
-                                        text: model.title
-                                        color: root.textColor
-                                        font.pixelSize: 13
-                                        font.bold: true
-                                        elide: Text.ElideRight
-                                    }
-
-                                    Label {
-                                        Layout.fillWidth: true
-                                        text: model.reason
-                                        color: root.mutedColor
-                                        font.pixelSize: 11
-                                        wrapMode: Text.WordWrap
-                                    }
-                                }
-
-                                Button {
-                                    id: attnActionButton
-                                    Layout.preferredHeight: 30
-                                    text: model.actionLabel
-
-                                    contentItem: Label {
-                                        text: attnActionButton.text
-                                        color: "#B45309"
-                                        font.pixelSize: 11
-                                        font.bold: true
-                                        horizontalAlignment: Text.AlignHCenter
-                                        verticalAlignment: Text.AlignVCenter
-                                    }
-
-                                    background: Rectangle {
-                                        radius: 15
-                                        color: attnActionButton.down ? "#FEF3C7" : "transparent"
-                                        border.color: "#FDE68A"
-                                        border.width: 1
-                                    }
-
-                                    onClicked: root.attentionClicked(model.kind, model.targetId)
-                                }
-                            }
-
-                            MouseArea {
-                                id: attnMouse
-                                anchors.fill: parent
-                                cursorShape: Qt.PointingHandCursor
-                                onClicked: root.attentionClicked(model.kind, model.targetId)
-                            }
-                        }
-
-                        Rectangle {
-                            visible: index < root.dashboardModel.attentionModel.count - 1
-                            Layout.fillWidth: true
-                            Layout.preferredHeight: 1
-                            Layout.leftMargin: 16
-                            color: root.borderColor
-                        }
+                    delegate: AttentionRowDelegate {
+                        title: model.title
+                        reason: model.reason
+                        actionLabel: model.actionLabel
+                        kind: model.kind
+                        targetId: model.targetId
+                        showSeparator: index < root.dashboardModel.attentionModel.count - 1
+                        onClicked: (kind, targetId) => root.attentionClicked(kind, targetId)
                     }
                 }
             }
@@ -466,90 +306,14 @@ Item {
                 Repeater {
                     model: root.dashboardModel.recentBookingsModel
 
-                    delegate: ColumnLayout {
-                        required property var model
-                        required property int index
-                        Layout.fillWidth: true
-                        spacing: 0
-
-                        Rectangle {
-                            Layout.fillWidth: true
-                            implicitHeight: bookingRow.implicitHeight + 20
-                            color: "transparent"
-
-                            RowLayout {
-                                id: bookingRow
-                                anchors.fill: parent
-                                anchors.margins: 10
-                                spacing: 10
-
-                                Rectangle {
-                                    Layout.preferredWidth: 38
-                                    Layout.preferredHeight: 38
-                                    radius: 19
-                                    color: root.softBlueColor
-
-                                    Label {
-                                        anchors.centerIn: parent
-                                        text: (model.bookingId || "?").length > 0
-                                              ? String(model.bookingId).charAt(String(model.bookingId).length - 1)
-                                              : "?"
-                                        color: root.primaryColor
-                                        font.pixelSize: 15
-                                        font.bold: true
-                                    }
-                                }
-
-                                ColumnLayout {
-                                    Layout.fillWidth: true
-                                    spacing: 1
-
-                                    Label {
-                                        Layout.fillWidth: true
-                                        text: qsTr("Booking %1 · Room %2")
-                                                .arg(model.bookingId || "—")
-                                                .arg(model.roomId || "—")
-                                        color: root.textColor
-                                        font.pixelSize: 13
-                                        font.bold: true
-                                        elide: Text.ElideRight
-                                    }
-
-                                    Label {
-                                        Layout.fillWidth: true
-                                        text: qsTr("%1 · %2")
-                                                .arg(model.bookingDate || "—")
-                                                .arg(Utils.formatCurrency(model.amount))
-                                        color: root.mutedColor
-                                        font.pixelSize: 11
-                                        elide: Text.ElideRight
-                                    }
-                                }
-
-                                StatusChip {
-                                    textValue: String(model.status).length > 0 ? model.status : qsTr("Pending")
-                                    variant: {
-                                        var st = String(model.status).toLowerCase()
-                                        if (st === "confirmed" || st === "paid") return "success"
-                                        if (st === "cancelled") return "danger"
-                                        return "warning"
-                                    }
-                                }
-                            }
-
-                            MouseArea {
-                                anchors.fill: parent
-                                cursorShape: Qt.PointingHandCursor
-                                onClicked: root.bookingClicked()
-                            }
-                        }
-
-                        Rectangle {
-                            visible: index < root.dashboardModel.recentBookingsModel.count - 1
-                            Layout.fillWidth: true
-                            Layout.preferredHeight: 1
-                            color: root.borderColor
-                        }
+                    delegate: BookingRowDelegate {
+                        bookingId: model.bookingId
+                        roomId: model.roomId
+                        bookingDate: model.bookingDate
+                        amount: model.amount
+                        status: model.status
+                        showSeparator: index < root.dashboardModel.recentBookingsModel.count - 1
+                        onClicked: root.bookingClicked()
                     }
                 }
             }
@@ -592,79 +356,12 @@ Item {
                 Repeater {
                     model: root.dashboardModel.disputesModel
 
-                    delegate: ColumnLayout {
-                        required property var model
-                        required property int index
-                        Layout.fillWidth: true
-                        spacing: 0
-
-                        Rectangle {
-                            Layout.fillWidth: true
-                            implicitHeight: disputeRow.implicitHeight + 20
-                            color: "transparent"
-
-                                RowLayout {
-                                    id: disputeRow
-                                    anchors.fill: parent
-                                    anchors.margins: 10
-                                    spacing: 10
-
-                                    Rectangle {
-                                        Layout.preferredWidth: 34
-                                        Layout.preferredHeight: 34
-                                        radius: 17
-                                        color: root.softRedColor
-
-                                        Label {
-                                            anchors.centerIn: parent
-                                            text: "?"
-                                            color: root.dangerColor
-                                            font.pixelSize: 15
-                                            font.bold: true
-                                        }
-                                    }
-
-                                    ColumnLayout {
-                                        Layout.fillWidth: true
-                                        spacing: 1
-
-                                        Label {
-                                            Layout.fillWidth: true
-                                            text: model.issue || qsTr("Dispute")
-                                            color: root.textColor
-                                            font.pixelSize: 13
-                                            font.bold: true
-                                            elide: Text.ElideRight
-                                        }
-
-                                        Label {
-                                            Layout.fillWidth: true
-                                            text: qsTr("Booking %1").arg(model.bookingId || "—")
-                                            color: root.mutedColor
-                                            font.pixelSize: 11
-                                            elide: Text.ElideRight
-                                        }
-                                    }
-
-                                    StatusChip {
-                                        textValue: String(model.status).length > 0 ? model.status : qsTr("Open")
-                                        variant: String(model.status).toLowerCase() === "resolved" ? "warning" : "danger"
-                                    }
-                                }
-
-                            MouseArea {
-                                anchors.fill: parent
-                                cursorShape: Qt.PointingHandCursor
-                                onClicked: root.disputeClicked()
-                            }
-                        }
-
-                        Rectangle {
-                            visible: index < root.dashboardModel.disputesModel.count - 1
-                            Layout.fillWidth: true
-                            Layout.preferredHeight: 1
-                            color: root.borderColor
-                        }
+                    delegate: AgentDisputeRowDelegate {
+                        issue: model.issue
+                        bookingId: model.bookingId
+                        status: model.status
+                        showSeparator: index < root.dashboardModel.disputesModel.count - 1
+                        onClicked: root.disputeClicked()
                     }
                 }
             }
