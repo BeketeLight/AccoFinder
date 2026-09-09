@@ -2,77 +2,41 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Effects
-import "../../../components/inputs"
-import "../components/"
-import "../../../utils/NavigationUtils.js" as NavUtils
 
 Page {
     id: root
 
-    // ========== HEADER CONTROL ==========
-    property string pageTitle: ""
-    property bool isSearchBar: true
-    property bool showBack: true
-    property bool showHeader: true
-    property bool searchReadOnly: false
-
     // ========== PROPERTY DATA ==========
-    property string propertyId: ""
+    property string roomId: ""
     property string propertyTitle: "Modern 2 Bedroom Apartment"
-    property string location: "Area 47, Lilongwe"
-    property real price: 450000
-    property string status: "Available"
-    property bool isVerified: true
-    property string description: "Spacious and well-lit apartment located in a quiet neighborhood. Close to shops, schools and public transport. Ideal for small families or professionals."
+    property string roomType: "Master Bedroom"
+    property string roomLocation: "Area 47, Lilongwe"
+    property real roomPrice: 250000
+    property bool roomAvailable: true
+    property string description: "Spacious master bedroom with en-suite bathroom and walk-in closet. Features large windows with natural light and a beautiful view of the garden."
     property int bedrooms: 2
     property int bathrooms: 1
-    property string size: "85 m²"
-    property string agentName: "John Banda"
-    property string agentPhone: "+265 999 123 456"
-    property string imageUrl: ""
-    property string imageUrls: ""
-    property var imageList: root.imageUrls ? root.imageUrls.split(",") : []
+    property string roomSize: "85 m²"
 
-    // ========== AGENT ==========
-    property string agentFirstName: "John"
-    property string agentLastName: "Banda"
+    // Agent information
+    property string agentFirstName: "Banda"
+    property string agentLastName: ""
+    property string agentPhone: "+265 999 123 456"
+    property string agentEmail: "john.banda@realtor.mw"
     property real agentRating: 4.6
     property int agentReviewCount: 28
+    // property var reviewsModel
 
-    // ========== ROOMS DATA ==========
-    property var roomsModel: [
-        {
-            roomId: "room1",
-            type: "Master Bedroom",
-            price: 250000,
-            available: true,
-            size: "20 m²",
-            imageUrl: ""
-        },
-        {
-            roomId: "room2",
-            type: "Second Bedroom",
-            price: 200000,
-            available: true,
-            size: "18 m²",
-            imageUrl: ""
-        },
-        {
-            roomId: "room3",
-            type: "Single Room",
-            price: 150000,
-            available: false,
-            size: "15 m²",
-            imageUrl: ""
-        }
-    ]
+    // Media - images and videos
+    property string roomImage: ""
+    property var mediaList: ["https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=600&h=400&fit=crop,https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=600&h=400&fit=crop,https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=600&h=400&fit=crop"]
 
-    // ========== REVIEWS ==========
+    // Reviews
     property var reviewsModel: [
         {
             name: "Mary Phiri",
             rating: 5,
-            comment: "Very clean and well maintained. Agent was helpful.",
+            comment: "Very clean and well maintained room. Agent was helpful.",
             date: "2 weeks ago"
         },
         {
@@ -93,39 +57,10 @@ Page {
     signal backRequested
     signal bookRequested
     signal contactRequested
-    signal favoriteToggled
-    signal searchRequested
-    signal roomClicked(string roomId, var roomData)
 
-    function onSearchBarTapped() {
-        root.searchRequested();
-    }
     function goBack() {
         root.backRequested();
         NavUtils.pop();
-    }
-
-    function navigateToRoom(roomData) {
-        // Emit signal with room data
-        root.roomClicked(roomData.roomId, roomData);
-        // Navigate to room details
-        NavUtils.push(Qt.resolvedUrl("./RoomDetailDelegate.qml"), {
-            roomId: roomData.roomId,
-            roomType: roomData.type,
-            roomPrice: roomData.price,
-            roomAvailable: roomData.available,
-            roomSize: roomData.size,
-            roomImage: roomData.imageUrl,
-            propertyTitle: root.propertyTitle,
-            roomLocation: root.location,
-            description: root.description,
-            agentPhone: root.agentPhone,
-            agentFirstName: root.agentFirstName,
-            agentLastName: root.agentLastName,
-            agentRating: root.agentRating,
-            agentReviewCount: root.agentReviewCount,
-            reviewsModel: root.reviewsModel
-        });
     }
 
     background: Rectangle {
@@ -146,41 +81,74 @@ Page {
             width: flickable.width
             spacing: 0
 
-            // ===== PROPERTY THUMBNAIL CAROUSEL =====
+            // ===== MEDIA CAROUSEL =====
             Item {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 300
 
                 SwipeView {
-                    id: imageSwipe
+                    id: mediaSwipe
                     anchors.fill: parent
                     clip: true
 
                     Repeater {
-                        model: root.imageList.length > 0 ? root.imageList : [root.imageUrl]
+                        id: mediaModel
+                        model: root.mediaList.length > 0 ? root.mediaList : []
 
-                        Image {
+                        Item {
                             required property var modelData
-                            source: modelData
-                            fillMode: Image.PreserveAspectCrop
-                            asynchronous: true
 
+                            // Check if it's a video URL (contains .mp4, .mov, etc.)
+                            property bool isVideo: modelData.match(/\.(mp4|mov|avi|mkv|webm)$/i) !== null
+
+                            Image {
+                                anchors.fill: parent
+                                source: isVideo ? "" : modelData
+                                fillMode: Image.PreserveAspectCrop
+                                asynchronous: true
+                                visible: !isVideo
+
+                                Rectangle {
+                                    anchors.fill: parent
+                                    color: "#F5F5F5"
+                                    visible: parent.status !== Image.Ready
+                                    Label {
+                                        anchors.centerIn: parent
+                                        text: "🖼️"
+                                        font.pixelSize: 40
+                                        opacity: 0.3
+                                    }
+                                }
+                            }
+
+                            // Video placeholder
                             Rectangle {
                                 anchors.fill: parent
-                                color: "#F5F5F5"
-                                visible: parent.status !== Image.Ready
+                                color: "#1A1A1A"
+                                visible: isVideo
+
                                 Label {
                                     anchors.centerIn: parent
-                                    text: "🏠"
-                                    font.pixelSize: 40
-                                    opacity: 0.3
+                                    text: "▶️"
+                                    font.pixelSize: 60
+                                    color: "white"
+                                }
+
+                                Label {
+                                    anchors.bottom: parent.bottom
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    anchors.margins: 20
+                                    text: "Video"
+                                    color: "white"
+                                    font.pixelSize: 14
+                                    opacity: 0.7
                                 }
                             }
                         }
                     }
                 }
 
-                // Image counter
+                // Media counter
                 Rectangle {
                     anchors.left: parent.left
                     anchors.bottom: parent.bottom
@@ -193,44 +161,51 @@ Page {
                     Label {
                         id: counterText
                         anchors.centerIn: parent
-                        text: (imageSwipe.currentIndex + 1) + " / " + Math.max(imageSwipe.count, 1)
+                        text: (mediaSwipe.currentIndex + 1) + " / " + Math.max(mediaSwipe.count, 1)
                         color: "white"
                         font.pixelSize: 12
                     }
                 }
 
-                // Property status badge
+                // Media type indicator
                 Rectangle {
-                    anchors.top: parent.top
                     anchors.right: parent.right
-                    anchors.margins: 16
-                    height: 28
-                    radius: 14
-                    width: statusText.width + 24
-                    color: root.status === "Available" ? "#22C55E" : "#EF4444"
+                    anchors.bottom: parent.bottom
+                    anchors.margins: 12
+                    height: 24
+                    radius: 12
+                    color: "#80000000"
+                    width: mediaTypeText.width + 16
 
                     Label {
-                        id: statusText
+                        id: mediaTypeText
                         anchors.centerIn: parent
-                        text: root.status === "Available" ? "✓ Available" : "✗ Booked"
+                        text: mediaSwipe.currentItem ? (mediaSwipe.currentItem.isVideo ? "🎥 Video" : "📷 Photo") : "📷 Photo"
                         color: "white"
-                        font.pixelSize: 13
-                        font.bold: true
+                        font.pixelSize: 12
                     }
                 }
             }
 
-            // ===== PROPERTY MAIN INFO =====
+            // ===== MAIN INFO =====
             ColumnLayout {
                 Layout.fillWidth: true
                 Layout.margins: 16
                 spacing: 8
 
                 Label {
-                    text: root.propertyTitle
+                    text: root.roomType
                     font.pixelSize: 22
                     font.weight: Font.DemiBold
                     color: "#1F2937"
+                    wrapMode: Text.WordWrap
+                    Layout.fillWidth: true
+                }
+
+                Label {
+                    text: root.propertyTitle
+                    font.pixelSize: 15
+                    color: "#6B7280"
                     wrapMode: Text.WordWrap
                     Layout.fillWidth: true
                 }
@@ -242,7 +217,7 @@ Page {
                         font.pixelSize: 14
                     }
                     Label {
-                        text: root.location
+                        text: root.roomLocation
                         font.pixelSize: 14
                         color: "#6B7280"
                         Layout.fillWidth: true
@@ -254,6 +229,23 @@ Page {
                     font.pixelSize: 26
                     font.bold: true
                     color: "#2563EB"
+                }
+
+                // Availability badge
+                Rectangle {
+                    height: 28
+                    radius: 14
+                    width: availabilityText.width + 24
+                    color: root.isAvailable ? "#22C55E" : "#EF4444"
+
+                    Label {
+                        id: availabilityText
+                        anchors.centerIn: parent
+                        text: root.isAvailable ? "✓ Available Now" : "✗ Currently Booked"
+                        color: "white"
+                        font.pixelSize: 13
+                        font.bold: true
+                    }
                 }
 
                 RowLayout {
@@ -270,15 +262,7 @@ Page {
                     }
                     SpecItem {
                         icon: "📐"
-                        label: root.size
-                    }
-
-                    Label {
-                        visible: root.isVerified
-                        text: "✓ Verified"
-                        font.pixelSize: 13
-                        font.bold: true
-                        color: "#22C55E"
+                        label: root.roomSize
                     }
                 }
             }
@@ -289,14 +273,14 @@ Page {
                 color: "#F5F5F5"
             }
 
-            // ===== PROPERTY DESCRIPTION =====
+            // ===== DESCRIPTION =====
             ColumnLayout {
                 Layout.fillWidth: true
                 Layout.margins: 16
                 spacing: 8
 
                 Label {
-                    text: "Description"
+                    text: "About This Room"
                     font.pixelSize: 16
                     font.weight: Font.DemiBold
                     color: "#1F2937"
@@ -335,15 +319,15 @@ Page {
                     spacing: 12
 
                     Rectangle {
-                        width: 48
-                        height: 48
-                        radius: 24
+                        width: 56
+                        height: 56
+                        radius: 28
                         color: "#DBEAFE"
 
                         Label {
                             anchors.centerIn: parent
-                            text: (root.agentFirstName.charAt(0) + root.agentLastName.charAt(0)).toUpperCase()
-                            font.pixelSize: 16
+                            text: root.agentFirstName.toUpperCase() + "" + root.agentLastName.toUpperCase()
+                            font.pixelSize: 18
                             font.bold: true
                             color: "#2563EB"
                         }
@@ -355,7 +339,7 @@ Page {
 
                         Label {
                             text: root.agentFirstName + " " + root.agentLastName
-                            font.pixelSize: 15
+                            font.pixelSize: 16
                             font.weight: Font.Medium
                             color: "#1F2937"
                         }
@@ -374,7 +358,7 @@ Page {
                                 color: "#F59E0B"
                             }
                             Label {
-                                text: "(" + root.agentReviewCount + ")"
+                                text: "(" + root.agentReviewCount + " reviews)"
                                 font.pixelSize: 12
                                 color: "#9CA3AF"
                             }
@@ -398,65 +382,6 @@ Page {
                             font.pixelSize: 13
                             font.bold: true
                             horizontalAlignment: Text.AlignHCenter
-                        }
-                    }
-                }
-            }
-
-            Rectangle {
-                Layout.fillWidth: true
-                height: 8
-                color: "#F5F5F5"
-            }
-
-            // ===== ROOMS GRID =====
-            ColumnLayout {
-                id: roomsSection
-                Layout.fillWidth: true
-                Layout.margins: 16
-                spacing: 12
-
-                RowLayout {
-                    Layout.fillWidth: true
-                    Label {
-                        text: "Available Rooms"
-                        font.pixelSize: 16
-                        font.weight: Font.DemiBold
-                        color: "#1F2937"
-                        Layout.fillWidth: true
-                    }
-                    Label {
-                        text: root.roomsModel.length + " rooms"
-                        font.pixelSize: 13
-                        color: "#6B7280"
-                    }
-                }
-
-                // Grid of room cards
-                GridView {
-                    id: roomsGridView
-                    Layout.fillWidth: true
-                    height: roomsGridView.contentHeight
-                    cellWidth: (width - 8) / 2
-                    cellHeight: 180
-                    clip: true
-                    interactive: false
-                    model: root.roomsModel
-
-                    delegate: RoomComponent {
-                        width: roomsGridView.cellWidth - 4
-                        height: roomsGridView.cellHeight - 4
-                        roomId: modelData.roomId
-                        roomType: modelData.type
-                        price: modelData.price
-                        isAvailable: modelData.available
-                        roomSize: modelData.size
-                        imageUrl: modelData.imageUrl || root.imageList[0] || ""
-                        propertyTitle: root.propertyTitle
-                        location: root.location
-
-                        onClicked: {
-                            root.navigateToRoom(modelData);
                         }
                     }
                 }
@@ -513,14 +438,14 @@ Page {
                                 spacing: 8
 
                                 Rectangle {
-                                    width: 32
-                                    height: 32
-                                    radius: 16
+                                    width: 36
+                                    height: 36
+                                    radius: 18
                                     color: "#E0E7FF"
                                     Label {
                                         anchors.centerIn: parent
                                         text: modelData.name.charAt(0)
-                                        font.pixelSize: 13
+                                        font.pixelSize: 14
                                         font.bold: true
                                         color: "#4338CA"
                                     }
@@ -530,7 +455,7 @@ Page {
                                     spacing: 1
                                     Label {
                                         text: modelData.name
-                                        font.pixelSize: 13
+                                        font.pixelSize: 14
                                         font.weight: Font.Medium
                                         color: "#1F2937"
                                     }
@@ -565,7 +490,7 @@ Page {
                 }
             }
 
-            // Space for footer
+            // Bottom spacer
             Item {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 100
@@ -618,10 +543,10 @@ Page {
             Button {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                text: "Book Now"
+                text: root.roomAvailable ? "Book Now" : "Notify Me"
                 background: Rectangle {
                     radius: 12
-                    color: "#2563EB"
+                    color: root.roomAvailable ? "#2563EB" : "#6B7280"
                 }
                 contentItem: Label {
                     text: parent.text
@@ -636,7 +561,7 @@ Page {
         }
     }
 
-    // ========== HELPER COMPONENTS ==========
+    // ========== HELPER ==========
     component SpecItem: RowLayout {
         property string icon
         property string label

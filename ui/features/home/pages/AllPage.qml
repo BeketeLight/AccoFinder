@@ -18,12 +18,13 @@ Item {
         Column {
             id: col
             width: parent.width
-            spacing: 0
+            spacing: 3
 
             SuperDeals {
                 width: parent.width
                 cardWidth: 190
-                cardHeight: 150
+                cardHeight: 140
+                infoSectionVisible: false
                 model: PropertyListModel {}
             }
 
@@ -36,8 +37,8 @@ Item {
             SuperDeals {
                 title: "Near You"
                 width: parent.width
-                cardWidth: 130
-                cardHeight: 160
+                cardWidth: 190
+                cardHeight: 140
                 model: PropertyListModel {}
             }
 

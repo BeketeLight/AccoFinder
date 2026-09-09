@@ -208,6 +208,8 @@ qt_add_qml_module(appAccoFinder
 
     RESOURCES
         Rescources.qrc
+        QML_FILES ui/features/home/delegates/RoomDetailDelegate.qml
+        QML_FILES ui/features/home/components/RoomComponent.qml
 
 )
 

@@ -1,22 +1,20 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import QtQuick.Effects
 import "../delegates"
 
 Item {
     id: root
+
     width: 355
     height: 190
-
     Layout.alignment: Qt.AlignHCenter
-    // ========== DUMMY DATA ==========
-    // Fixed card width
+
     property int cardWidth: 220
     property int cardHeight: 130
-    property alias model: dealsList.model
-    readonly property int cardSpacing: 12
+    property alias model: dealsView.model
     property string title: ""
+    property bool infoSectionVisible
 
     ColumnLayout {
         anchors.fill: parent
@@ -37,24 +35,38 @@ Item {
             }
         }
 
-        // Horizontal ListView with peek effect
-        ListView {
-            id: dealsList
+        // Circular carousel
+        PathView {
+            id: dealsView
             Layout.fillWidth: true
             Layout.preferredHeight: root.cardHeight + 10
-            orientation: ListView.Horizontal
-            spacing: 12
             clip: true
 
-            // === This creates the peek effect ===
-            preferredHighlightBegin: (width - root.cardWidth) / 2
-            preferredHighlightEnd: (width - root.cardWidth) / 2 /*+ root.cardWidth*/
-            highlightRangeMode: ListView.StrictlyEnforceRange
-            highlightMoveDuration: 250
-            snapMode: ListView.SnapToItem
+            pathItemCount: 3
+            preferredHighlightBegin: 0.5
+            preferredHighlightEnd: 0.5
+            highlightRangeMode: PathView.StrictlyEnforceRange
+            snapMode: PathView.SnapToItem
+
+            // Card ~58% of width → real side peeks + gaps
+            property real visualCardWidth: width * 0.58
+
+            path: Path {
+                startX: 0
+                startY: dealsView.height / 2
+                PathLine {
+                    x: dealsView.width
+                    y: dealsView.height / 2
+                }
+            }
+
             delegate: Item {
-                width: root.cardWidth
+                width: dealsView.visualCardWidth
                 height: root.cardHeight
+
+                scale: PathView.isCurrentItem ? 1.0 : 0.94
+                opacity: PathView.isCurrentItem ? 1.0 : 0.9
+                z: PathView.isCurrentItem ? 1 : 0
 
                 PropertyCardDelegate {
                     anchors.centerIn: parent
@@ -62,11 +74,9 @@ Item {
                     height: parent.height
 
                     propertyId: model.propertyId
-                    title: model.title
-                    location: model.location
-                    price: model.price
+                    isInfoSectionVisible: root.infoSectionVisible
                     imageUrl: model.imageUrl
-                    imageUrls: model.imageUrls   // add if available in dummy data
+                    imageUrls: model.imageUrls
                     isVerified: model.isVerified
                 }
             }
