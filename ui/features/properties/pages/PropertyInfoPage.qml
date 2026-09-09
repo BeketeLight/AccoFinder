@@ -294,7 +294,7 @@ Item {
             TextArea {
                 id: descriptionArea
                 Layout.fillWidth: true
-                Layout.preferredHeight: 110
+                Layout.preferredHeight: Math.max(descriptionArea.contentHeight + 36, 110)
                 placeholderText: ""
                 color: root.textColor
                 font.pixelSize: 14
@@ -302,9 +302,17 @@ Item {
                 selectByMouse: true
                 leftPadding: 14
                 rightPadding: 14
-                topPadding: descriptionArea.activeFocus || descriptionArea.text.length > 0 ? 26 : 14
-                bottomPadding: descriptionArea.activeFocus || descriptionArea.text.length > 0 ? 8 : 14
+                topPadding: descriptionArea.activeFocus || descriptionArea.text.length > 0 ? 30 : 14
+                bottomPadding: 10
+
+                property int maxLength: 2000
+
                 onTextChanged: {
+                    if (text.length > maxLength) {
+                        var cursorPos = cursorPosition
+                        text = text.substring(0, maxLength)
+                        cursorPosition = Math.min(cursorPos, text.length)
+                    }
                     if (descriptionError.visible && text.trim().length >= 10)
                         descriptionError.visible = false
                 }
@@ -333,7 +341,7 @@ Item {
                         width: parent.width - 28
                         elide: Text.ElideRight
 
-                        y: isFloating ? 7 : Math.round((parent.height - height) / 2)
+                        y: isFloating ? 8 : Math.round((parent.height - height) / 2)
 
                         Behavior on y {
                             NumberAnimation {
@@ -353,6 +361,19 @@ Item {
                             }
                         }
                     }
+                }
+            }
+
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: 8
+
+                Label {
+                    id: descriptionCount
+                    Layout.alignment: Qt.AlignRight
+                    text: qsTr("%L1 / %L2 characters").arg(descriptionArea.length).arg(descriptionArea.maxLength)
+                    color: descriptionArea.length >= descriptionArea.maxLength ? root.errorColor : "#9CA3AF"
+                    font.pixelSize: 11
                 }
             }
         }

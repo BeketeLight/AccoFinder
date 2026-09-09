@@ -128,7 +128,7 @@ Item {
                     TextArea {
                         id: messageArea
                         Layout.fillWidth: true
-                        Layout.preferredHeight: Math.min(Math.max(messageArea.contentHeight + 36, 110), 220)
+                        Layout.preferredHeight: Math.max(messageArea.contentHeight + 36, 110)
                         color: root.textColor
                         font.pixelSize: 14
                         wrapMode: TextEdit.Wrap

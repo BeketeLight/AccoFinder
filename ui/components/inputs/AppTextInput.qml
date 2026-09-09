@@ -20,6 +20,11 @@ Item {
     property int horizontalPadding: 14
     // Distance of the floating placeholder from the top edge of the field
     property int floatingLabelTopMargin: 5
+    // Pass-through knobs forwarded to the internal TextField
+    property int fontPixelSize: 15
+    property int inputMethodHints: Qt.ImhNone
+    property int maximumLength: 32767
+    property int horizontalAlignment: Text.AlignLeft
 
     // Colors
     property color backgroundColor: "#F1F3F4"
@@ -83,7 +88,10 @@ Item {
             enabled: root.enabled
             echoMode: root.password ? TextInput.Password : TextInput.Normal
             color: root.textColor
-            font.pixelSize: 15
+            font.pixelSize: root.fontPixelSize
+            inputMethodHints: root.inputMethodHints
+            maximumLength: root.maximumLength
+            horizontalAlignment: root.horizontalAlignment
             selectByMouse: true
 
             leftPadding: root.horizontalPadding

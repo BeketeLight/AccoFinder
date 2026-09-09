@@ -270,17 +270,20 @@ Item {
 
                 Label { text: qsTr("Commission rate (%)"); font.pixelSize: 12; font.bold: true; color: "#1F2937" }
 
-                TextField {
+                AppTextInput {
                     id: editRateInput
                     Layout.fillWidth: true
                     Layout.preferredHeight: 44
-                    font.pixelSize: 13
+                    fieldHeight: 44
+                    label: ""
+                    placeholder: ""
+                    fontPixelSize: 13
                     inputMethodHints: Qt.ImhDigitsOnly
-                    background: Rectangle {
-                        radius: 8
-                        border.color: editRateInput.activeFocus ? "#2563EB" : "#E5E7EB"
-                        border.width: 1
-                    }
+                    backgroundColor: "#FFFFFF"
+                    textColor: "#111827"
+                    borderColor: "#E5E7EB"
+                    focusColor: "#2563EB"
+                    errorColor: "#DC2626"
                 }
 
                 Label { id: editError; visible: text.length > 0; text: ""; color: "#DC2626"; font.pixelSize: 11 }
@@ -389,20 +392,23 @@ Item {
 
                 Label { text: qsTr("Commission rate (%)"); font.pixelSize: 12; font.bold: true; color: "#1F2937" }
 
-                TextField {
+                AppTextInput {
                     id: commissionRateInput
                     Layout.fillWidth: true
                     Layout.preferredHeight: 44
-                    font.pixelSize: 13
+                    fieldHeight: 44
+                    label: ""
+                    placeholder: ""
                     text: root.agentsModel.agentsModel.count > 0
                           ? String(root.agentsModel.averageCommission)
                           : "10"
+                    fontPixelSize: 13
                     inputMethodHints: Qt.ImhDigitsOnly
-                    background: Rectangle {
-                        radius: 8
-                        border.color: commissionRateInput.activeFocus ? "#2563EB" : "#E5E7EB"
-                        border.width: 1
-                    }
+                    backgroundColor: "#FFFFFF"
+                    textColor: "#111827"
+                    borderColor: "#E5E7EB"
+                    focusColor: "#2563EB"
+                    errorColor: "#DC2626"
                 }
 
                 Label { id: commissionError; visible: text.length > 0; text: ""; color: "#DC2626"; font.pixelSize: 11 }

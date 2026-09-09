@@ -1,6 +1,4 @@
 import QtQuick
-import QtQuick.Controls
-import QtQuick.Layouts
 
 Item {
     id: root
@@ -33,7 +31,7 @@ Item {
         anchors.horizontalCenter: parent.horizontalCenter
 
         // ---- Loading State ----
-        Spinner {
+        AppSpinner {
             anchors.fill: parent
             running: root.status === "loading"
             color: root.loadingColor

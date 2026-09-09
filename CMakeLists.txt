@@ -91,14 +91,10 @@ qt_add_qml_module(appAccoFinder
         ui/features/home/models/PropertyCategoryModel.qml
         ui/features/home/models/PropertyListModel.qml
         ui/features/home/pages/SuperDeals.qml
-        ui/features/home/screens/PropertiesScreen.qml
-        ui/features/home/screens/PropertyDetailScreen.qml
-        ui/features/home/screens/SearchPropertiesScreen.qml
         ui/features/home/components/PropertyEmptyState.qml
         ui/features/home/components/PropertyFilterBar.qml
         ui/features/home/components/PropertyLoadingSkeleton.qml
         ui/features/home/components/StickyActionBar.qml
-        ui/features/home/models/PropertyListModel.qml
         ui/features/home/pages/AllPage.qml
         ui/features/home/pages/HostelsPage.qml
         ui/features/home/pages/RoomsPage.qml

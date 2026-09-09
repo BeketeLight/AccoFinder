@@ -20,6 +20,9 @@ Item {
     readonly property color primaryColor: "#2563EB"
     readonly property color successColor: "#16A34A"
     readonly property color dangerColor: "#DC2626"
+    readonly property color mutedColor: "#6B7280"
+    readonly property color borderColor: "#E5E7EB"
+    readonly property color textColor: "#111827"
 
     property var pendingRejectId: ""
     property var pendingRejectTitle: ""
@@ -165,28 +168,84 @@ Item {
                 color: "#374151"
             }
 
-            Rectangle {
+            TextArea {
+                id: rejectReasonField
                 Layout.fillWidth: true
-                implicitHeight: 96
-                radius: 8
-                color: "#FFFFFF"
-                border.color: rejectReasonField.activeFocus || rejectError.visible ? root.primaryColor
-                                      : "#E5E7EB"
-                border.width: rejectReasonField.activeFocus || rejectError.visible ? 2 : 1
+                Layout.preferredHeight: Math.max(rejectReasonField.contentHeight + 36, 96)
+                placeholderText: ""
+                color: "#111827"
+                font.pixelSize: 12
+                wrapMode: TextEdit.Wrap
+                selectByMouse: true
+                leftPadding: 14
+                rightPadding: 14
+                topPadding: rejectReasonField.activeFocus || rejectReasonField.text.length > 0 ? 30 : 12
+                bottomPadding: 8
 
-                TextArea {
-                    id: rejectReasonField
-                    anchors.fill: parent
-                    anchors.margins: 10
-                    placeholderText: qsTr("Reason for rejection...")
-                    wrapMode: TextArea.Wrap
-                    font.pixelSize: 12
-                    color: "#111827"
-                    background: Item {}
-                    onTextChanged: {
-                        rejectError.visible = false
+                property int maxLength: 500
+
+                onTextChanged: {
+                    if (text.length > maxLength) {
+                        var cursorPos = cursorPosition
+                        text = text.substring(0, maxLength)
+                        cursorPosition = Math.min(cursorPos, text.length)
+                    }
+                    rejectError.visible = false
+                }
+
+                background: Item {
+                    Rectangle {
+                        anchors.fill: parent
+                        radius: 8
+                        color: "#FFFFFF"
+                        border.width: rejectReasonField.activeFocus || rejectError.visible ? 2 : 1
+                        border.color: rejectError.visible ? root.dangerColor
+                                     : rejectReasonField.activeFocus ? root.primaryColor
+                                     : "#E5E7EB"
+                    }
+
+                    Text {
+                        id: rejectFloating
+                        readonly property bool isFloating: rejectReasonField.activeFocus || rejectReasonField.text.length > 0
+                        text: qsTr("Reason for rejection...")
+                        color: rejectError.visible ? root.dangerColor
+                               : rejectReasonField.activeFocus ? root.primaryColor
+                               : "#6B7280"
+                        font.pixelSize: isFloating ? 11 : 12
+                        font.weight: isFloating ? Font.Medium : Font.Normal
+                        x: 14
+                        width: parent.width - 28
+                        elide: Text.ElideRight
+
+                        y: isFloating ? 8 : Math.round((parent.height - height) / 2)
+
+                        Behavior on y {
+                            NumberAnimation {
+                                duration: 140
+                                easing.type: Easing.OutCubic
+                            }
+                        }
+                        Behavior on font.pixelSize {
+                            NumberAnimation {
+                                duration: 140
+                                easing.type: Easing.OutCubic
+                            }
+                        }
+                        Behavior on color {
+                            ColorAnimation {
+                                duration: 140
+                            }
+                        }
                     }
                 }
+            }
+
+            Label {
+                Layout.fillWidth: true
+                horizontalAlignment: Text.AlignRight
+                text: qsTr("%L1 / %L2 characters").arg(rejectReasonField.length).arg(rejectReasonField.maxLength)
+                color: rejectReasonField.length >= rejectReasonField.maxLength ? root.dangerColor : root.mutedColor
+                font.pixelSize: 10
             }
 
             Label {
