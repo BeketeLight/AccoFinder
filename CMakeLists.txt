@@ -41,8 +41,11 @@ qt_add_qml_module(appAccoFinder
         ui/components/inputs/AppTextInput.qml
         ui/components/indicators/AppStatusIndicator.qml
         ui/components/indicators/AppSpinner.qml
+        ui/components/indicators/AppEmptyState.qml
+        ui/components/pages/AppScrollablePage.qml
         ui/components/cards/ContactCard.qml
         ui/components/navigations/AppBottomNavBar.qml
+        ui/components/navigations/AppNotificationBell.qml
         ui/components/navigations/AdminDrawer.qml
         ui/components/navigations/AgentDrawer.qml
 
@@ -130,6 +133,11 @@ qt_add_qml_module(appAccoFinder
         ui/features/dashboards/admins/pages/AllPropertiesPage.qml
         ui/features/dashboards/admins/screens/AllPropertiesScreen.qml
         #======FEATURE-AUTH-GLOBAL======
+        ui/features/auth/components/AuthHeaderComponent.qml
+        ui/features/auth/components/AuthTextField.qml
+        ui/features/auth/components/AuthInfoCard.qml
+        ui/features/auth/components/AuthContinueButton.qml
+        ui/features/auth/components/AuthErrorLabel.qml
         ui/features/auth/screens/ForgotPasswordScreen.qml
         ui/features/auth/screens/OtpScree.qml
         ui/features/auth/screens/SignInScreen.qml

@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import "../../models"
 import "../../../properties/components"
+import "../../../../components/indicators"
 import "../../../../utils/Utils.js" as Utils
 
 Item {
@@ -429,45 +430,15 @@ Item {
                 }
             }
         }
-        ColumnLayout {
+        AppEmptyState {
             visible: root.dashboardModel.recentBookingsModel.count === 0
-            Layout.alignment: Qt.AlignHCenter
+            Layout.fillWidth: true
             Layout.topMargin: 2
-            spacing: 6
-
-            Rectangle {
-                Layout.alignment: Qt.AlignHCenter
-                Layout.preferredWidth: 40
-                Layout.preferredHeight: 40
-                radius: 20
-                color: root.softBlueColor
-                border.color: "#BFDBFE"
-                border.width: 1
-
-                Image {
-                    anchors.centerIn: parent
-                    source: "qrc:/ui/assets/bookings-icon.svg"
-                    sourceSize.width: 20
-                    sourceSize.height: 20
-                }
-            }
-
-            Label {
-                Layout.alignment: Qt.AlignHCenter
-                text: qsTr("Nothing yet")
-                color: root.textColor
-                font.pixelSize: 13
-                font.bold: true
-            }
-
-            Label {
-                Layout.alignment: Qt.AlignHCenter
-                text: qsTr("All properties are in good standing.")
-                color: root.mutedColor
-                font.pixelSize: 11
-                horizontalAlignment: Text.AlignHCenter
-                wrapMode: Text.WordWrap
-            }
+            iconSource: "qrc:/ui/assets/bookings-icon.svg"
+            iconBgColor: root.softBlueColor
+            iconBorderColor: "#BFDBFE"
+            title: qsTr("Nothing yet")
+            subtitle: qsTr("All properties are in good standing.")
         }
 
         SectionHeader {
@@ -584,45 +555,15 @@ Item {
             }
         }
 
-        ColumnLayout {
+        AppEmptyState {
             visible: root.dashboardModel.recentBookingsModel.count === 0
-            Layout.alignment: Qt.AlignHCenter
+            Layout.fillWidth: true
             Layout.topMargin: 2
-            spacing: 6
-
-            Rectangle {
-                Layout.alignment: Qt.AlignHCenter
-                Layout.preferredWidth: 40
-                Layout.preferredHeight: 40
-                radius: 20
-                color: root.softBlueColor
-                border.color: "#BFDBFE"
-                border.width: 1
-
-                Image {
-                    anchors.centerIn: parent
-                    source: "qrc:/ui/assets/bookings-icon.svg"
-                    sourceSize.width: 20
-                    sourceSize.height: 20
-                }
-            }
-
-            Label {
-                Layout.alignment: Qt.AlignHCenter
-                text: qsTr("No bookings yet")
-                color: root.textColor
-                font.pixelSize: 13
-                font.bold: true
-            }
-
-            Label {
-                Layout.alignment: Qt.AlignHCenter
-                text: qsTr("Bookings for your listed properties will show here.")
-                color: root.mutedColor
-                font.pixelSize: 11
-                horizontalAlignment: Text.AlignHCenter
-                wrapMode: Text.WordWrap
-            }
+            iconSource: "qrc:/ui/assets/bookings-icon.svg"
+            iconBgColor: root.softBlueColor
+            iconBorderColor: "#BFDBFE"
+            title: qsTr("No bookings yet")
+            subtitle: qsTr("Bookings for your listed properties will show here.")
         }
 
         SectionHeader {
@@ -729,45 +670,15 @@ Item {
             }
         }
 
-        ColumnLayout {
+        AppEmptyState {
             visible: root.dashboardModel.disputesModel.count === 0
-            Layout.alignment: Qt.AlignHCenter
+            Layout.fillWidth: true
             Layout.topMargin: 2
-            spacing: 6
-
-            Rectangle {
-                Layout.alignment: Qt.AlignHCenter
-                Layout.preferredWidth: 40
-                Layout.preferredHeight: 40
-                radius: 20
-                color: "#FEF2F2"
-                border.color: "#FECACA"
-                border.width: 1
-
-                Image {
-                    anchors.centerIn: parent
-                    source: "qrc:/ui/assets/disputes-icon.svg"
-                    sourceSize.width: 20
-                    sourceSize.height: 20
-                }
-            }
-
-            Label {
-                Layout.alignment: Qt.AlignHCenter
-                text: qsTr("No open disputes")
-                color: root.textColor
-                font.pixelSize: 13
-                font.bold: true
-            }
-
-            Label {
-                Layout.alignment: Qt.AlignHCenter
-                text: qsTr("All clear — no disputes on your listings.")
-                color: root.mutedColor
-                font.pixelSize: 11
-                horizontalAlignment: Text.AlignHCenter
-                wrapMode: Text.WordWrap
-            }
+            iconSource: "qrc:/ui/assets/disputes-icon.svg"
+            iconBgColor: "#FEF2F2"
+            iconBorderColor: "#FECACA"
+            title: qsTr("No open disputes")
+            subtitle: qsTr("All clear — no disputes on your listings.")
         }
     }
 }

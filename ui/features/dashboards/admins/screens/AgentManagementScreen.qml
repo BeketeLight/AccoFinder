@@ -1,9 +1,8 @@
 import QtQuick
-import QtQuick.Controls
 import QtQuick.Layouts
 import "../pages"
 import "../../../../utils/NavigationUtils.js" as NavUtils
-import "../../../../components/indicators"
+import "../../../../components/pages"
 
 Item {
     id: root
@@ -16,42 +15,16 @@ Item {
 
     signal agentUpdated(var agentId)
 
-    Page {
+    AppScrollablePage {
         anchors.fill: parent
-        background: Rectangle { color: "#F8FAFC" }
+        loading: AgentViewModel.isLoading
 
+        AgentManagementPage {
+            id: agentsPage
+            Layout.fillWidth: true
 
-        Flickable {
-            id: flick
-            anchors.fill: parent
-            contentWidth: width
-            contentHeight: agentsPage.implicitHeight + 48
-            clip: true
-
-            ScrollBar.vertical: ScrollBar { }
-
-            AgentManagementPage {
-                id: agentsPage
-
-                Component.onCompleted: Qt.callLater(function() {console.log("AGSZ", "agentsPage", "root=" + root.width + "x" + root.height + " flick=" + flick.width + " page=" + width + " x=" + x) })
-                anchors.horizontalCenter: parent.horizontalCenter
-                y: 24
-                width: flick.width > 48 ? Math.min(flick.width - 24, 520) : implicitWidth
-
-                onPromoteAgentRequested: NavUtils.push(Qt.resolvedUrl("UserManagementScreen.qml"))
-                onAgentUpdated: (agentId) => root.agentUpdated(agentId)
-            }
-        }
-
-        // Non-blocking spinner while the agent list is being fetched.
-        AppSpinner {
-            visible: AgentViewModel.isLoading
-            anchors.centerIn: parent
-            z: 20
-            size: 32
-            lineWidth: 3
-            color: "#2563EB"
-            running: AgentViewModel.isLoading
+            onPromoteAgentRequested: NavUtils.push(Qt.resolvedUrl("UserManagementScreen.qml"))
+            onAgentUpdated: (agentId) => root.agentUpdated(agentId)
         }
     }
 }

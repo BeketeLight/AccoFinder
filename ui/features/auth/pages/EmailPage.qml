@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import "../../../components/inputs"
+import "../components"
 
 Item {
     id: root
@@ -57,100 +57,35 @@ Item {
             Layout.topMargin: 12
             spacing: 7
 
-            AppTextInput {
+            AuthTextField {
                 id: emailField
                 label: "Email address"
                 placeholder: "name@example.com"
                 required: true
                 enabled: !root.busy
-                fieldHeight: 52
-                backgroundColor: root.surfaceColor
-                textColor: root.textColor
-                labelColor: root.textColor
-                placeholderColor: "#9CA3AF"
-                borderColor: root.borderColor
-                focusColor: root.primaryColor
-                errorColor: root.errorColor
-                Layout.fillWidth: true
-                Layout.preferredHeight: 76
-                Layout.topMargin: 12
-            }
-
-        }
-
-        Rectangle {
-            Layout.fillWidth: true
-            Layout.preferredHeight: 60
-            radius: 12
-            color: "#EFF6FF"
-            border.color: "#BFDBFE"
-            border.width: 1
-
-            RowLayout {
-                anchors.fill: parent
-                anchors.margins: 14
-                spacing: 12
-
-                Rectangle {
-                    Layout.preferredWidth: 36
-                    Layout.preferredHeight: 36
-                    radius: 18
-                    color: root.primaryColor
-
-                    Text {
-                        anchors.centerIn: parent
-                        text: "i"
-                        color: "#FFFFFF"
-                        font.pixelSize: 18
-                        font.bold: true
-                    }
-                }
-
-                Label {
-                    text: "Use a working email"
-                    color: "#1E40AF"
-                    font.pixelSize: 13
-                    lineHeight: 1.1
-                    wrapMode: Text.WordWrap
-                    Layout.fillWidth: true
-                }
             }
         }
 
-        Label {
+        AuthInfoCard {
+            cardColor: "#EFF6FF"
+            cardBorderColor: "#BFDBFE"
+            accentColor: root.primaryColor
+            message: "Use a working email"
+            messageColor: "#1E40AF"
+            circleSize: 36
+            iconPixelSize: 18
+            cardHeight: 60
+            cardBorderWidth: 1
+        }
+
+        AuthErrorLabel {
             id: errorText
-            visible: text.length > 0
-            text: ""
-            color: root.errorColor
-            font.pixelSize: 13
-            wrapMode: Text.WordWrap
-            Layout.fillWidth: true
         }
 
-        Button {
+        AuthContinueButton {
             id: continueButton
-            text: root.busy ? "Checking email..." : "Continue"
-            enabled: !root.busy
-            Layout.fillWidth: true
-            Layout.preferredHeight: 52
-            Layout.topMargin: 6
-
-            contentItem: Text {
-                text: continueButton.text
-                color: "#FFFFFF"
-                font.pixelSize: 15
-                font.bold: true
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-            }
-
-            background: Rectangle {
-                radius: 12
-                color: !continueButton.enabled ? "#93C5FD"
-                       : continueButton.down ? "#1D4ED8"
-                       : root.primaryColor
-            }
-
+            busy: root.busy
+            busyText: "Checking email..."
             onClicked: {
                 if (emailField.text.trim().length === 0 || emailField.text.indexOf("@") === -1) {
                     errorText.text = "Enter a valid email address.";
