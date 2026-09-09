@@ -159,21 +159,55 @@ Page {
                     Repeater {
                         model: root.imageList.length > 0 ? root.imageList : [root.imageUrl]
 
-                        Image {
+                        Item {
                             required property var modelData
-                            source: modelData
-                            fillMode: Image.PreserveAspectCrop
-                            asynchronous: true
 
-                            Rectangle {
+                            // Main image
+                            Image {
+                                id: pageImage
                                 anchors.fill: parent
-                                color: "#F5F5F5"
-                                visible: parent.status !== Image.Ready
-                                Label {
-                                    anchors.centerIn: parent
-                                    text: "🏠"
-                                    font.pixelSize: 40
-                                    opacity: 0.3
+                                source: modelData
+                                fillMode: Image.PreserveAspectCrop
+                                asynchronous: true
+                                cache: true
+                                opacity: status === Image.Ready ? 1 : 0
+
+                                Behavior on opacity {
+                                    NumberAnimation {
+                                        duration: 200
+                                    }
+                                }
+                            }
+
+                            // Skeleton + shimmer while loading
+                            Rectangle {
+                                id: skeleton
+                                anchors.fill: parent
+                                visible: pageImage.status !== Image.Ready
+                                color: "#E5E7EB"
+                                clip: true
+
+                                Rectangle {
+                                    id: shimmer
+                                    width: parent.width * 0.45
+                                    height: parent.height
+                                    color: "#F9FAFB"
+                                    opacity: 0.7
+                                    x: -width
+
+                                    SequentialAnimation on x {
+                                        loops: Animation.Infinite
+                                        running: skeleton.visible
+                                        NumberAnimation {
+                                            from: -shimmer.width
+                                            to: skeleton.width
+                                            duration: 1000
+                                            easing.type: Easing.InOutQuad
+                                        }
+                                        PauseAnimation {
+                                            duration: 200
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -254,32 +288,6 @@ Page {
                     font.pixelSize: 26
                     font.bold: true
                     color: "#2563EB"
-                }
-
-                RowLayout {
-                    spacing: 16
-                    Layout.topMargin: 4
-
-                    SpecItem {
-                        icon: "🛏"
-                        label: root.bedrooms + " Beds"
-                    }
-                    SpecItem {
-                        icon: "🛁"
-                        label: root.bathrooms + " Baths"
-                    }
-                    SpecItem {
-                        icon: "📐"
-                        label: root.size
-                    }
-
-                    Label {
-                        visible: root.isVerified
-                        text: "✓ Verified"
-                        font.pixelSize: 13
-                        font.bold: true
-                        color: "#22C55E"
-                    }
                 }
             }
 

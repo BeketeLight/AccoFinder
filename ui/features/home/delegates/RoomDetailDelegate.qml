@@ -102,6 +102,7 @@ Page {
                             property bool isVideo: modelData.match(/\.(mp4|mov|avi|mkv|webm)$/i) !== null
 
                             Image {
+                                id: pageImage
                                 anchors.fill: parent
                                 source: isVideo ? "" : modelData
                                 fillMode: Image.PreserveAspectCrop
@@ -117,6 +118,37 @@ Page {
                                         text: "🖼️"
                                         font.pixelSize: 40
                                         opacity: 0.3
+                                    }
+                                }
+                            }
+                            // Shimmer while photo loads
+                            Rectangle {
+                                id: skeleton
+                                anchors.fill: parent
+                                visible: !isVideo && pageImage.status !== Image.Ready
+                                color: "#E5E7EB"
+                                clip: true
+
+                                Rectangle {
+                                    id: shimmer
+                                    width: parent.width * 0.45
+                                    height: parent.height
+                                    color: "#F9FAFB"
+                                    opacity: 0.7
+                                    x: -width
+
+                                    SequentialAnimation on x {
+                                        loops: Animation.Infinite
+                                        running: skeleton.visible
+                                        NumberAnimation {
+                                            from: -shimmer.width
+                                            to: skeleton.width
+                                            duration: 1000
+                                            easing.type: Easing.InOutQuad
+                                        }
+                                        PauseAnimation {
+                                            duration: 200
+                                        }
                                     }
                                 }
                             }
