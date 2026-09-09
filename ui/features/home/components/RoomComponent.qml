@@ -8,7 +8,7 @@ Rectangle {
     property string roomId: ""
     property string roomType: ""
     property real price: 0
-    property bool isAvailable: true
+    property bool isRoomAvailable: true
     property string roomSize: ""
     property string imageUrl: ""
     property string propertyTitle: ""
@@ -72,12 +72,12 @@ Rectangle {
                 height: 18
                 radius: 9
                 width: availText.width + 10
-                color: roomCard.isAvailable ? "#22C55E" : "#EF4444"
+                color: roomCard.isRoomAvailable ? "#22C55E" : "#EF4444"
 
                 Label {
                     id: availText
                     anchors.centerIn: parent
-                    text: roomCard.isAvailable ? "Open" : "Booked"
+                    text: roomCard.isRoomAvailable ? "Open" : "Booked"
                     color: "white"
                     font.pixelSize: 9
                     font.bold: true

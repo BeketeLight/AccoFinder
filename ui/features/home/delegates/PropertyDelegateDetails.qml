@@ -18,6 +18,7 @@ Page {
 
     // ========== PROPERTY DATA ==========
     property string propertyId: ""
+    property bool favouriteChecked: false
     property string propertyTitle: "Modern 2 Bedroom Apartment"
     property string location: "Area 47, Lilongwe"
     property real price: 450000
@@ -113,7 +114,7 @@ Page {
             roomId: roomData.roomId,
             roomType: roomData.type,
             roomPrice: roomData.price,
-            roomAvailable: roomData.available,
+            isRoomAvailable: roomData.available,
             roomSize: roomData.size,
             roomImage: roomData.imageUrl,
             propertyTitle: root.propertyTitle,
@@ -233,24 +234,48 @@ Page {
                     }
                 }
 
-                // Property status badge
-                Rectangle {
+                // Property favourite/save badge
+                // Rectangle {
+                //     anchors.top: parent.top
+                //     anchors.right: parent.right
+                //     anchors.margins: 16
+                //     height: 28
+                //     radius: 14
+                //     width: statusText.width + 24
+                //     color: root.status === "Available" ? "#22C55E" : "#EF4444"
+
+                Image {
+                    id: favouriteImg
+                    source: root.favouriteChecked ? "qrc:/ui/assets/favorite-filled.svg" : "qrc:/ui/assets/favorite-outline.svg"
+                    Layout.preferredWidth: 22
+                    Layout.preferredHeight: 22
+                    sourceSize.width: 48
+                    sourceSize.height: 48
+                    fillMode: Image.PreserveAspectFit
+                    antialiasing: true
+                    smooth: true
+
                     anchors.top: parent.top
                     anchors.right: parent.right
-                    anchors.margins: 16
-                    height: 28
-                    radius: 14
-                    width: statusText.width + 24
-                    color: root.status === "Available" ? "#22C55E" : "#EF4444"
+                    anchors.margins: 8
 
-                    Label {
-                        id: statusText
-                        anchors.centerIn: parent
-                        text: root.status === "Available" ? "✓ Available" : "✗ Booked"
-                        color: "white"
-                        font.pixelSize: 13
-                        font.bold: true
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            root.favoriteToggled();
+                            root.favouriteChecked = !root.favouriteChecked;
+                        }
                     }
+                    // }
+
+                    // Label {
+                    //     id: statusText
+                    //     anchors.centerIn: parent
+                    //     text: root.status === "Available" ? "✓ Available" : "✗ Booked"
+                    //     color: "white"
+                    //     font.pixelSize: 13
+                    //     font.bold: true
+                    // }
                 }
             }
 
@@ -457,7 +482,7 @@ Page {
                         roomId: modelData.roomId
                         roomType: modelData.type
                         price: modelData.price
-                        isAvailable: modelData.available
+                        isRoomAvailable: modelData.available
                         roomSize: modelData.size
                         imageUrl: modelData.imageUrl || root.imageList[0] || ""
                         propertyTitle: root.propertyTitle
@@ -626,7 +651,7 @@ Page {
             Button {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                text: "Book Now"
+                text: "Check Reviews"
                 background: Rectangle {
                     radius: 12
                     color: "#2563EB"

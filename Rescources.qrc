@@ -25,5 +25,7 @@
         <file>ui/assets/close-icon.svg</file>
         <file>ui/assets/photo-camera-icon.svg</file>
         <file>ui/assets/upload-icon.svg</file>
+        <file>ui/assets/favorite-filled.svg</file>
+        <file>ui/assets/favorite-outline.svg</file>
     </qresource>
 </RCC>

@@ -12,7 +12,7 @@ Page {
     property string roomType: "Master Bedroom"
     property string roomLocation: "Area 47, Lilongwe"
     property real roomPrice: 250000
-    property bool roomAvailable: true
+    property bool isRoomAvailable: true
     property string description: "Spacious master bedroom with en-suite bathroom and walk-in closet. Features large windows with natural light and a beautiful view of the garden."
     property int bedrooms: 2
     property int bathrooms: 1
@@ -203,7 +203,8 @@ Page {
                 Rectangle {
                     anchors.right: parent.right
                     anchors.bottom: parent.bottom
-                    anchors.margins: 12
+                    anchors.rightMargin: 20
+                    anchors.bottomMargin: 12
                     height: 24
                     radius: 12
                     color: "#80000000"
@@ -257,7 +258,7 @@ Page {
                 }
 
                 Label {
-                    text: "MWK " + Number(root.price).toLocaleString(Qt.locale(), "f", 0)
+                    text: "MWK " + Number(root.roomPrice).toLocaleString(Qt.locale(), "f", 0)
                     font.pixelSize: 26
                     font.bold: true
                     color: "#2563EB"
@@ -268,33 +269,15 @@ Page {
                     height: 28
                     radius: 14
                     width: availabilityText.width + 24
-                    color: root.isAvailable ? "#22C55E" : "#EF4444"
+                    color: root.isRoomAvailable ? "#22C55E" : "#EF4444"
 
                     Label {
                         id: availabilityText
                         anchors.centerIn: parent
-                        text: root.isAvailable ? "✓ Available Now" : "✗ Currently Booked"
+                        text: root.isRoomAvailable ? "✓ Available Now" : "✗ Currently Booked"
                         color: "white"
                         font.pixelSize: 13
                         font.bold: true
-                    }
-                }
-
-                RowLayout {
-                    spacing: 16
-                    Layout.topMargin: 4
-
-                    SpecItem {
-                        icon: "🛏"
-                        label: root.bedrooms + " Beds"
-                    }
-                    SpecItem {
-                        icon: "🛁"
-                        label: root.bathrooms + " Baths"
-                    }
-                    SpecItem {
-                        icon: "📐"
-                        label: root.roomSize
                     }
                 }
             }
@@ -350,19 +333,12 @@ Page {
                 RowLayout {
                     spacing: 12
 
+                    // profile picture
                     Rectangle {
                         width: 56
                         height: 56
                         radius: 28
                         color: "#DBEAFE"
-
-                        Label {
-                            anchors.centerIn: parent
-                            text: root.agentFirstName.toUpperCase() + "" + root.agentLastName.toUpperCase()
-                            font.pixelSize: 18
-                            font.bold: true
-                            color: "#2563EB"
-                        }
                     }
 
                     ColumnLayout {
@@ -390,7 +366,7 @@ Page {
                                 color: "#F59E0B"
                             }
                             Label {
-                                text: "(" + root.agentReviewCount + " reviews)"
+                                text: "(" + root.agentReviewCount + ")"
                                 font.pixelSize: 12
                                 color: "#9CA3AF"
                             }
@@ -575,10 +551,10 @@ Page {
             Button {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                text: root.roomAvailable ? "Book Now" : "Notify Me"
+                text: root.isRoomAvailable ? "Book Now" : "Notify Me"
                 background: Rectangle {
                     radius: 12
-                    color: root.roomAvailable ? "#2563EB" : "#6B7280"
+                    color: root.isRoomAvailable ? "#2563EB" : "#6B7280"
                 }
                 contentItem: Label {
                     text: parent.text
