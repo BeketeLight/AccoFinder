@@ -29,6 +29,14 @@ void UserRepositoryImpl::signIn(
             if(success){
                 QJsonObject data = response["data"].toObject();
 
+                // Check if account is suspended before proceeding
+                bool isActive = data["isActive"].toBool(true);
+                if (!isActive) {
+                    qDebug() << "=== ACCOUNT SUSPENDED ===";
+                    emit accountSuspended();
+                    return;
+                }
+
                 // Parse user fields from backend
                 QString userId = data["_id"].toString();
                 QString fullName = data["firstName"].toString() + " " + data["surname"].toString();
@@ -103,6 +111,15 @@ void UserRepositoryImpl::signIn(
                     qDebug() << "Email:" << email;
                     qDebug() << "Emitting emailVerificationRequired signal";
                     emit emailVerificationRequired(email);
+                    return;
+                }
+
+                // Account suspended / deactivated - show the suspension notice
+                if (errorLower.contains("deactivated") ||
+                    errorLower.contains("suspended") ||
+                    errorLower.contains("blocked")) {
+                    qDebug() << "=== ACCOUNT SUSPENDED (login rejected) ===";
+                    emit accountSuspended();
                     return;
                 }
 
@@ -305,6 +322,16 @@ void UserRepositoryImpl::handleGoogleAuthUrl(const QString &url)
         return;
     }
 
+    // Check if account is suspended before proceeding
+    bool isActive = query.queryItemValue("isActive").isEmpty()
+        ? true
+        : (query.queryItemValue("isActive").toLower() == "true");
+    if (!isActive) {
+        qDebug() << "=== GOOGLE ACCOUNT SUSPENDED ===";
+        emit accountSuspended();
+        return;
+    }
+
     QString fullName = (firstName + " " + surname).trimmed();
 
     User* user = new User(userId, fullName, email, "", role, this);
@@ -344,6 +371,14 @@ void UserRepositoryImpl::fetchProfile()
             }
 
             const QJsonObject obj = response.value("data").toObject();
+
+            // Check if account was suspended after login
+            const bool isActive = obj.value("isActive").toBool(true);
+            if (!isActive) {
+                qDebug() << "=== ACCOUNT SUSPENDED (detected via profile fetch) ===";
+                emit accountSuspended();
+                return;
+            }
 
             const QString firstName = obj.value("firstName").toString();
             const QString surname = obj.value("surname").toString();

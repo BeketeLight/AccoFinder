@@ -23,6 +23,11 @@ AuthController::AuthController(QObject *parent)
         stopLoading();
         emit emailVerificationRequired(email);
     });
+    connect(m_userRepository, &UserRepositoryImpl::accountSuspended, this,
+            [this, stopLoading]() {
+        stopLoading();
+        emit accountSuspended();
+    });
     connect(m_userRepository, &UserRepositoryImpl::signUpSucceded, this,
             [this, stopLoading](User* user) {
         stopLoading();

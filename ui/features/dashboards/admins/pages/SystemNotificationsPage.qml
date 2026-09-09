@@ -4,6 +4,7 @@ import QtQuick.Layouts
 import "../../../properties/components"
 import "../../../../components/inputs"
 import "../../models"
+import "../delegates"
 
 Item {
     id: root
@@ -127,7 +128,7 @@ Item {
                     TextArea {
                         id: messageArea
                         Layout.fillWidth: true
-                        Layout.preferredHeight: Math.min(Math.max(messageArea.contentHeight + 36, 110), 220)
+                        Layout.preferredHeight: Math.max(messageArea.contentHeight + 36, 110)
                         color: root.textColor
                         font.pixelSize: 14
                         wrapMode: TextEdit.Wrap
@@ -286,70 +287,12 @@ Item {
         Repeater {
             model: root.notificationsModel.notificationsModel
 
-            delegate: Rectangle {
-                id: historyRow
-                required property var model
-                required property int index
-                Layout.fillWidth: true
-                implicitHeight: historyContent.implicitHeight + 20
-                radius: 12
-                color: "#FFFFFF"
-                border.color: root.borderColor
-                border.width: 1
-
-                ColumnLayout {
-                    id: historyContent
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.top: parent.top
-                    anchors.margins: 12
-                    spacing: 4
-
-                    RowLayout {
-                        Layout.fillWidth: true
-                        spacing: 8
-
-                        Label {
-                            Layout.fillWidth: true
-                            text: historyRow.model.title
-                            color: "#111827"
-                            font.pixelSize: 13
-                            font.bold: true
-                            elide: Text.ElideRight
-                        }
-
-                        Rectangle {
-                            implicitHeight: 20
-                            implicitWidth: audienceLabel.implicitWidth + 14
-                            radius: 10
-                            color: "#EFF6FF"
-
-                            Label {
-                                id: audienceLabel
-                                anchors.centerIn: parent
-                                text: historyRow.model.audience
-                                color: root.primaryColor
-                                font.pixelSize: 10
-                                font.bold: true
-                            }
-                        }
-                    }
-
-                    Label {
-                        Layout.fillWidth: true
-                        text: historyRow.model.message
-                        color: root.mutedColor
-                        font.pixelSize: 11
-                        wrapMode: Text.WordWrap
-                    }
-
-                    Label {
-                        Layout.fillWidth: true
-                        text: historyRow.model.date + " \u00B7 " + qsTr("delivered to %1 users").arg(historyRow.model.delivered)
-                        color: "#9CA3AF"
-                        font.pixelSize: 10
-                    }
-                }
+            delegate: AdminNotificationDelegate {
+                title: model.title
+                message: model.message
+                audience: model.audience
+                date: model.date
+                delivered: model.delivered
             }
         }
 

@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import "../../../components/inputs"
+import "../components"
 
 Item {
     id: root
@@ -55,41 +55,14 @@ Item {
             Layout.topMargin: -6
         }
 
-        Rectangle {
-            Layout.fillWidth: true
-            Layout.preferredHeight: 70
-            radius: 12
-            color: "#EFF6FF"
-            border.color: "#BFDBFE"
-
-            RowLayout {
-                anchors.fill: parent
-                anchors.margins: 14
-                spacing: 10
-
-                Rectangle {
-                    Layout.preferredWidth: 34
-                    Layout.preferredHeight: 34
-                    radius: 17
-                    color: root.primaryColor
-
-                    Text {
-                        anchors.centerIn: parent
-                        text: "+265"
-                        color: "#FFFFFF"
-                        font.pixelSize: 10
-                        font.bold: true
-                    }
-                }
-
-                Label {
-                    text: "Use a number you can answer when arranging viewings or confirmations."
-                    color: "#1E40AF"
-                    font.pixelSize: 13
-                    wrapMode: Text.WordWrap
-                    Layout.fillWidth: true
-                }
-            }
+        AuthInfoCard {
+            cardColor: "#EFF6FF"
+            cardBorderColor: "#BFDBFE"
+            accentColor: root.primaryColor
+            iconText: "+265"
+            iconPixelSize: 10
+            message: "Use a number you can answer when arranging viewings or confirmations."
+            messageColor: "#1E40AF"
         }
 
         ColumnLayout {
@@ -97,57 +70,22 @@ Item {
             Layout.topMargin: 8
             spacing: 7
 
-            AppTextInput {
+            AuthTextField {
                 id: phoneField
                 label: "Phone number"
                 placeholder: "e.g. +265 999 123 456"
                 required: true
-                fieldHeight: 52
-                backgroundColor: root.surfaceColor
-                textColor: root.textColor
-                labelColor: root.textColor
-                placeholderColor: "#9CA3AF"
-                borderColor: root.borderColor
-                focusColor: root.primaryColor
-                errorColor: root.errorColor
                 helperText: "Include the country code when possible."
-                Layout.fillWidth: true
                 Layout.preferredHeight: 94
-                Layout.topMargin: 12
             }
         }
 
-        Label {
+        AuthErrorLabel {
             id: errorText
-            visible: text.length > 0
-            text: ""
-            color: root.errorColor
-            font.pixelSize: 13
-            wrapMode: Text.WordWrap
-            Layout.fillWidth: true
         }
 
-        Button {
+        AuthContinueButton {
             id: continueButton
-            text: "Continue"
-            Layout.fillWidth: true
-            Layout.preferredHeight: 52
-            Layout.topMargin: 6
-
-            contentItem: Text {
-                text: continueButton.text
-                color: "#FFFFFF"
-                font.pixelSize: 15
-                font.bold: true
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-            }
-
-            background: Rectangle {
-                radius: 12
-                color: continueButton.down ? "#1D4ED8" : root.primaryColor
-            }
-
             onClicked: {
                 const value = root.normalizedPhone();
                 const digits = value.replace(/\D/g, "");

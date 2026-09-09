@@ -2,9 +2,11 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import "../components"
+import "../delegates"
 import "../../dashboards/Agets/pages"
 import "../../../components/inputs"
 import "../../../components/indicators"
+import "../../../components/scrollbars"
 
 Page {
     id: root
@@ -51,15 +53,6 @@ Page {
     ListModel { id: filterChipsModel }
 
     ListModel { id: allPropertiesModel }
-
-    function prettyStatus(s) {
-        var v = String(s).toUpperCase()
-        if (v === "VERIFIED") return qsTr("Verified")
-        if (v === "PENDING") return qsTr("Pending")
-        if (v === "REJECTED") return qsTr("Rejected")
-        if (v === "DRAFT") return qsTr("Draft")
-        return v.length > 0 ? v : qsTr("Draft")
-    }
 
     function rowMatches(row) {
         var wanted = root.statusFilter === "All" ? "" : root.statusFilter.toUpperCase()
@@ -266,7 +259,7 @@ Page {
         contentHeight: contentColumn.implicitHeight + 96
         clip: true
 
-        ScrollBar.vertical: ScrollBar { }
+        ScrollBar.vertical: AppScrollBar { }
 
         onContentYChanged: root.armIfPulled()
         onDragEnded: root.handlePullRelease()
@@ -301,9 +294,9 @@ Page {
 
         ColumnLayout {
             id: contentColumn
-            x: Math.max(16, (flick.width - 560) / 2)
+            x: Math.max(12, (flick.width - width) / 2)
             y: 20
-            width: Math.min(flick.width - 32, 560)
+            width: flick.width > 48 ? Math.min(flick.width - 24, 520) : 520
             spacing: 14
 
             AgentsDashboardPage {
@@ -401,31 +394,6 @@ Page {
                 }
             }
 
-            // Inline loading state shown while the server list is fetching, on
-            // first load and during pull-to-refresh (drafts still render under).
-            ColumnLayout {
-                visible: root.loading || root.refreshing
-                Layout.fillWidth: true
-                Layout.topMargin: 4
-                spacing: 4
-
-                AppSpinner {
-                    Layout.alignment: Qt.AlignHCenter
-                    size: 28
-                    lineWidth: 3
-                    color: root.primaryColor
-                    running: root.loading || root.refreshing
-                }
-
-                Label {
-                    Layout.fillWidth: true
-                    text: root.refreshing ? qsTr("Refreshing properties…") : qsTr("Loading properties…")
-                    color: root.mutedColor
-                    font.pixelSize: 12
-                    horizontalAlignment: Text.AlignHCenter
-                }
-            }
-
             ColumnLayout {
                 visible: root.resultCount > 0
                 Layout.fillWidth: true
@@ -434,124 +402,25 @@ Page {
                 Repeater {
                     model: allPropertiesModel
 
-                    delegate: Rectangle {
-                        required property var model
-                        Layout.fillWidth: true
-                        implicitHeight: propRow.implicitHeight + 24
-                        radius: 12
-                        color: propCardMouse.pressed ? root.softBlueColor : root.surfaceColor
-                        border.color: propCardMouse.pressed ? "#BFDBFE" : root.borderColor
-                        border.width: 1
-                        visible: model.matches
-
-                        RowLayout {
-                            id: propRow
-                            anchors.fill: parent
-                            anchors.margins: 12
-                            spacing: 12
-
-                            Rectangle {
-                                Layout.preferredWidth: 42
-                                Layout.preferredHeight: 42
-                                radius: 12
-                                color: root.softBlueColor
-
-                                Label {
-                                    anchors.centerIn: parent
-                                    text: String(model.title).charAt(0)
-                                    color: root.primaryColor
-                                    font.pixelSize: 17
-                                    font.bold: true
+                    delegate: AgentPropertyCardDelegate {
+                        title: model.title
+                        district: model.district
+                        village: model.village
+                        price: model.price
+                        verificationStatus: model.verificationStatus
+                        rejectionReason: model.rejectionReason
+                        source: model.source
+                        propertyId: model.propertyId
+                        matches: model.matches
+                        onOpened: (propertyId, source) => {
+                            if (source === "draft") {
+                                var d = DraftViewModel.getDraft(propertyId)
+                                if (d) {
+                                    d.draftKey = propertyId
+                                    root.draftClicked(d)
                                 }
-                            }
-
-                            ColumnLayout {
-                                Layout.fillWidth: true
-                                spacing: 2
-
-                                Label {
-                                    Layout.fillWidth: true
-                                    text: model.title
-                                    color: root.textColor
-                                    font.pixelSize: 14
-                                    font.bold: true
-                                    elide: Text.ElideRight
-                                }
-
-                                Label {
-                                    Layout.fillWidth: true
-                                    text: (model.district ? model.district + " · " : "") +
-                                          (model.village ? model.village + " · " : "") +
-                                          qsTr("MK %1").arg(Number(model.price).toLocaleString()) + qsTr("/mo")
-                                    color: root.mutedColor
-                                    font.pixelSize: 11
-                                    elide: Text.ElideRight
-                                }
-                            }
-
-                            StatusChip {
-                                textValue: root.prettyStatus(model.verificationStatus)
-                                variant: {
-                                    var s = String(model.verificationStatus).toUpperCase()
-                                    if (s === "VERIFIED") return "success"
-                                    if (s === "PENDING") return "warning"
-                                    if (s === "REJECTED") return "danger"
-                                    return "neutral"
-                                }
-                            }
-
-                            Label {
-                                visible: String(model.verificationStatus || "").toUpperCase() === "REJECTED"
-                                       && model.rejectionReason && String(model.rejectionReason).length > 0
-                                Layout.fillWidth: true
-                                text: qsTr("Reason: %1").arg(model.rejectionReason)
-                                color: "#B91C1C"
-                                font.pixelSize: 11
-                                elide: Text.ElideRight
-                            }
-
-                            Item {
-                                Layout.preferredWidth: 9
-                                Layout.preferredHeight: 16
-
-                                Rectangle {
-                                    width: 10
-                                    height: 1.8
-                                    radius: 0.9
-                                    color: root.mutedColor
-                                    rotation: 45
-                                    transformOrigin: Item.Left
-                                    x: 0
-                                    y: 2.5
-                                }
-
-                                Rectangle {
-                                    width: 10
-                                    height: 1.8
-                                    radius: 0.9
-                                    color: root.mutedColor
-                                    rotation: -45
-                                    transformOrigin: Item.Left
-                                    x: 0
-                                    y: 13.5
-                                }
-                            }
-                        }
-
-                        MouseArea {
-                            id: propCardMouse
-                            anchors.fill: parent
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: {
-                                if (model.source === "draft") {
-                                    var d = DraftViewModel.getDraft(model.propertyId)
-                                    if (d) {
-                                        d.draftKey = model.propertyId
-                                        root.draftClicked(d)
-                                    }
-                                } else {
-                                    root.propertyClicked(model.propertyId)
-                                }
+                            } else {
+                                root.propertyClicked(propertyId)
                             }
                         }
                     }
@@ -617,6 +486,19 @@ Page {
                 horizontalAlignment: Text.AlignHCenter
             }
         }
+    }
+
+    // Centered non-blocking spinner shown while the server list (and the
+    // embedded dashboard sections) are loading, mirroring the admin
+    // dashboard's AppScrollablePage loader during first load and refresh.
+    AppSpinner {
+        visible: root.loading || root.refreshing
+        anchors.centerIn: parent
+        z: 20
+        size: 32
+        lineWidth: 3
+        color: root.primaryColor
+        running: root.loading || root.refreshing
     }
 
     Rectangle {

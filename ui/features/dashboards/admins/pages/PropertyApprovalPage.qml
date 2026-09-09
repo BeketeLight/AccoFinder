@@ -4,6 +4,7 @@ import QtQuick.Layouts
 import "../../../properties/models"
 import "../../../properties/components"
 import "../../../../utils/Utils.js" as Utils
+import "../delegates"
 
 Item {
     id: root
@@ -19,6 +20,9 @@ Item {
     readonly property color primaryColor: "#2563EB"
     readonly property color successColor: "#16A34A"
     readonly property color dangerColor: "#DC2626"
+    readonly property color mutedColor: "#6B7280"
+    readonly property color borderColor: "#E5E7EB"
+    readonly property color textColor: "#111827"
 
     property var pendingRejectId: ""
     property var pendingRejectTitle: ""
@@ -113,137 +117,24 @@ Item {
         Repeater {
             model: queueModel
 
-            delegate: Rectangle {
-                id: approvalRow
-                required property var model
-                required property int index
-                Layout.fillWidth: true
-                implicitHeight: approvalContent.implicitHeight + 20
-                radius: 12
-                color: "#FFFFFF"
-                border.color: "#E5E7EB"
-                border.width: 1
-
-                ColumnLayout {
-                    id: approvalContent
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.top: parent.top
-                    anchors.margins: 12
-                    spacing: 8
-
-                    Label {
-                        Layout.fillWidth: true
-                        text: approvalRow.model.title
-                        color: "#111827"
-                        font.pixelSize: 14
-                        font.bold: true
-                        elide: Text.ElideRight
-                    }
-
-                    Label {
-                        Layout.fillWidth: true
-                        text: approvalRow.model.district + " · " + approvalRow.model.village
-                              + " · " + Utils.formatCurrency(approvalRow.model.price) + "/mo"
-                        color: "#6B7280"
-                        font.pixelSize: 11
-                        elide: Text.ElideRight
-                    }
-
-                    Label {
-                        Layout.fillWidth: true
-                        text: qsTr("Landlord: %1").arg(approvalRow.model.landlord)
-                        color: "#6B7280"
-                        font.pixelSize: 11
-                        elide: Text.ElideRight
-                    }
-
-                    Button {
-                        id: reviewButton
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: 38
-                        text: qsTr("Review & decide")
-
-                        contentItem: Label {
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
-                            text: reviewButton.text
-                            color: "#2563EB"
-                            font.pixelSize: 12
-                            font.bold: true
-                        }
-
-                        background: Rectangle {
-                            radius: 19
-                            color: reviewButton.down ? "#DBEAFE" : "#EFF6FF"
-                            border.color: "#BFDBFE"
-                            border.width: 1
-                        }
-
-                        onClicked: root.reviewRequested(approvalRow.model.propertyId)
-                    }
-
-                    RowLayout {
-                        Layout.fillWidth: true
-                        spacing: 10
-
-                        Button {
-                            id: approveButton
-                            Layout.fillWidth: true
-                            Layout.preferredHeight: 36
-                            text: qsTr("Approve")
-
-                            contentItem: Label {
-                                horizontalAlignment: Text.AlignHCenter
-                                verticalAlignment: Text.AlignVCenter
-                                text: approveButton.text
-                                color: "#FFFFFF"
-                                font.pixelSize: 12
-                                font.bold: true
-                            }
-
-                            background: Rectangle {
-                                radius: 18
-                                color: approveButton.down ? "#15803D" : root.successColor
-                            }
-
-                            onClicked: {
-                                root.listingsModel.setPropertyStatus(approvalRow.model.propertyId, "VERIFIED")
-                                // Persist the decision on the backend so it survives a
-                                // refresh. setPropertyStatus only edits the local list.
-                                PropertyViewModel.updatePropertyStatus(approvalRow.model.propertyId, "VERIFIED")
-                                console.log("Approval:", approvalRow.model.propertyId, "-> VERIFIED")
-                                root.decisionMade(approvalRow.model.propertyId, approvalRow.model.title, true)
-                                root.refreshQueue()
-                            }
-                        }
-
-                        Button {
-                            id: rejectButton
-                            Layout.fillWidth: true
-                            Layout.preferredHeight: 36
-                            text: qsTr("Reject")
-
-                            contentItem: Label {
-                                horizontalAlignment: Text.AlignHCenter
-                                verticalAlignment: Text.AlignVCenter
-                                text: rejectButton.text
-                                color: "#B91C1C"
-                                font.pixelSize: 12
-                                font.bold: true
-                            }
-
-                            background: Rectangle {
-                                radius: 18
-                                color: rejectButton.down ? "#FEE2E2" : "#FEF2F2"
-                                border.color: "#FECACA"
-                                border.width: 1
-                            }
-
-                            onClicked: root.confirmReject(approvalRow.model.propertyId, approvalRow.model.title)
-                        }
-                    }
+            delegate: ApprovalRowDelegate {
+                propertyId: model.propertyId
+                title: model.title
+                district: model.district
+                village: model.village
+                price: model.price
+                landlord: model.landlord
+                onReviewRequested: (propertyId) => root.reviewRequested(propertyId)
+                onApproveRequested: (propertyId, title) => {
+                    root.listingsModel.setPropertyStatus(propertyId, "VERIFIED")
+                    // Persist the decision on the backend so it survives a
+                    // refresh. setPropertyStatus only edits the local list.
+                    PropertyViewModel.updatePropertyStatus(propertyId, "VERIFIED")
+                    console.log("Approval:", propertyId, "-> VERIFIED")
+                    root.decisionMade(propertyId, title, true)
+                    root.refreshQueue()
                 }
+                onRejectRequested: (propertyId, title) => root.confirmReject(propertyId, title)
             }
         }
 
@@ -277,28 +168,84 @@ Item {
                 color: "#374151"
             }
 
-            Rectangle {
+            TextArea {
+                id: rejectReasonField
                 Layout.fillWidth: true
-                implicitHeight: 96
-                radius: 8
-                color: "#FFFFFF"
-                border.color: rejectReasonField.activeFocus || rejectError.visible ? root.primaryColor
-                                      : "#E5E7EB"
-                border.width: rejectReasonField.activeFocus || rejectError.visible ? 2 : 1
+                Layout.preferredHeight: Math.max(rejectReasonField.contentHeight + 36, 96)
+                placeholderText: ""
+                color: "#111827"
+                font.pixelSize: 12
+                wrapMode: TextEdit.Wrap
+                selectByMouse: true
+                leftPadding: 14
+                rightPadding: 14
+                topPadding: rejectReasonField.activeFocus || rejectReasonField.text.length > 0 ? 30 : 12
+                bottomPadding: 8
 
-                TextArea {
-                    id: rejectReasonField
-                    anchors.fill: parent
-                    anchors.margins: 10
-                    placeholderText: qsTr("Reason for rejection...")
-                    wrapMode: TextArea.Wrap
-                    font.pixelSize: 12
-                    color: "#111827"
-                    background: Item {}
-                    onTextChanged: {
-                        rejectError.visible = false
+                property int maxLength: 500
+
+                onTextChanged: {
+                    if (text.length > maxLength) {
+                        var cursorPos = cursorPosition
+                        text = text.substring(0, maxLength)
+                        cursorPosition = Math.min(cursorPos, text.length)
+                    }
+                    rejectError.visible = false
+                }
+
+                background: Item {
+                    Rectangle {
+                        anchors.fill: parent
+                        radius: 8
+                        color: "#FFFFFF"
+                        border.width: rejectReasonField.activeFocus || rejectError.visible ? 2 : 1
+                        border.color: rejectError.visible ? root.dangerColor
+                                     : rejectReasonField.activeFocus ? root.primaryColor
+                                     : "#E5E7EB"
+                    }
+
+                    Text {
+                        id: rejectFloating
+                        readonly property bool isFloating: rejectReasonField.activeFocus || rejectReasonField.text.length > 0
+                        text: qsTr("Reason for rejection...")
+                        color: rejectError.visible ? root.dangerColor
+                               : rejectReasonField.activeFocus ? root.primaryColor
+                               : "#6B7280"
+                        font.pixelSize: isFloating ? 11 : 12
+                        font.weight: isFloating ? Font.Medium : Font.Normal
+                        x: 14
+                        width: parent.width - 28
+                        elide: Text.ElideRight
+
+                        y: isFloating ? 8 : Math.round((parent.height - height) / 2)
+
+                        Behavior on y {
+                            NumberAnimation {
+                                duration: 140
+                                easing.type: Easing.OutCubic
+                            }
+                        }
+                        Behavior on font.pixelSize {
+                            NumberAnimation {
+                                duration: 140
+                                easing.type: Easing.OutCubic
+                            }
+                        }
+                        Behavior on color {
+                            ColorAnimation {
+                                duration: 140
+                            }
+                        }
                     }
                 }
+            }
+
+            Label {
+                Layout.fillWidth: true
+                horizontalAlignment: Text.AlignRight
+                text: qsTr("%L1 / %L2 characters").arg(rejectReasonField.length).arg(rejectReasonField.maxLength)
+                color: rejectReasonField.length >= rejectReasonField.maxLength ? root.dangerColor : root.mutedColor
+                font.pixelSize: 10
             }
 
             Label {

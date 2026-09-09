@@ -5,6 +5,8 @@ import "../../../utils/NavigationUtils.js" as NavUtils
 import "../../properties/components"
 import "../../../components/dialogs"
 import "../../../components/indicators"
+import "../../../components/scrollbars"
+import "../../../components/inputs"
 
 Page {
     id: root
@@ -21,6 +23,7 @@ Page {
     property color textColor: "#111827"
     property color mutedColor: "#6B7280"
     property color borderColor: "#E5E7EB"
+    property color errorColor: "#DC2626"
 
     property bool editMode: false
     property string profileName: ""
@@ -91,6 +94,7 @@ Page {
         contentHeight: contentColumn.implicitHeight + 36
         boundsBehavior: Flickable.StopAtBounds
         clip: true
+        ScrollBar.vertical: AppScrollBar { }
 
         ColumnLayout {
             id: contentColumn
@@ -377,7 +381,7 @@ Page {
                     status: "Not started"
                     progress: 0.0
                     statusColor: root.mutedColor
-                    detail: "Your booked items and booking progress will appear here after you make a booking."
+                    detail: "Your booking progress will appear here after you make a booking."
                 }
 
                 Button {
@@ -413,76 +417,58 @@ Page {
                     spacing: 8
                     visible: root.passwordChangeMode
 
-                    Label {
-                        text: "Current password"
-                        color: root.mutedColor
-                        font.pixelSize: 12
-                        font.bold: true
-                    }
-
-                    TextField {
+                    AppTextInput {
                         id: currentPassField
                         Layout.fillWidth: true
-                        Layout.preferredHeight: 44
-                        placeholderText: "Enter current password"
-                        echoMode: TextInput.Password
-                        font.pixelSize: 13
-                        color: root.textColor
-                        onTextChanged: root.currentPassword = text
-
-                        background: Rectangle {
-                            radius: 8
-                            color: "#FFFFFF"
-                            border.color: currentPassField.activeFocus ? root.primaryColor : root.borderColor
-                        }
+                        Layout.preferredHeight: 76
+                        label: "Current password"
+                        placeholder: "Enter current password"
+                        password: true
+                        fieldHeight: 52
+                        backgroundColor: "#FFFFFF"
+                        textColor: root.textColor
+                        labelColor: root.mutedColor
+                        placeholderColor: "#9CA3AF"
+                        borderColor: root.borderColor
+                        focusColor: root.primaryColor
+                        errorColor: root.errorColor
+                        onTextEdited: root.currentPassword = text
                     }
 
-                    Label {
-                        text: "New password"
-                        color: root.mutedColor
-                        font.pixelSize: 12
-                        font.bold: true
-                    }
-
-                    TextField {
+                    AppTextInput {
                         id: newPassField
                         Layout.fillWidth: true
-                        Layout.preferredHeight: 44
-                        placeholderText: "Enter new password"
-                        echoMode: TextInput.Password
-                        font.pixelSize: 13
-                        color: root.textColor
-                        onTextChanged: root.newPassword = text
-
-                        background: Rectangle {
-                            radius: 8
-                            color: "#FFFFFF"
-                            border.color: newPassField.activeFocus ? root.primaryColor : root.borderColor
-                        }
+                        Layout.preferredHeight: 76
+                        label: "New password"
+                        placeholder: "Enter new password"
+                        password: true
+                        fieldHeight: 52
+                        backgroundColor: "#FFFFFF"
+                        textColor: root.textColor
+                        labelColor: root.mutedColor
+                        placeholderColor: "#9CA3AF"
+                        borderColor: root.borderColor
+                        focusColor: root.primaryColor
+                        errorColor: root.errorColor
+                        onTextEdited: root.newPassword = text
                     }
 
-                    Label {
-                        text: "Confirm new password"
-                        color: root.mutedColor
-                        font.pixelSize: 12
-                        font.bold: true
-                    }
-
-                    TextField {
+                    AppTextInput {
                         id: confirmPassField
                         Layout.fillWidth: true
-                        Layout.preferredHeight: 44
-                        placeholderText: "Re-enter new password"
-                        echoMode: TextInput.Password
-                        font.pixelSize: 13
-                        color: root.textColor
-                        onTextChanged: root.confirmPassword = text
-
-                        background: Rectangle {
-                            radius: 8
-                            color: "#FFFFFF"
-                            border.color: confirmPassField.activeFocus ? root.primaryColor : root.borderColor
-                        }
+                        Layout.preferredHeight: 76
+                        label: "Confirm new password"
+                        placeholder: "Re-enter new password"
+                        password: true
+                        fieldHeight: 52
+                        backgroundColor: "#FFFFFF"
+                        textColor: root.textColor
+                        labelColor: root.mutedColor
+                        placeholderColor: "#9CA3AF"
+                        borderColor: root.borderColor
+                        focusColor: root.primaryColor
+                        errorColor: root.errorColor
+                        onTextEdited: root.confirmPassword = text
                     }
 
                     Label {
@@ -712,7 +698,6 @@ Page {
         property string value: ""
         property string placeholder: ""
         property bool editable: false
-        property int floatingLabelTopMargin: 5
         signal edited(string value)
 
         Layout.fillWidth: true
@@ -726,88 +711,38 @@ Page {
             font.bold: true
         }
 
-        TextField {
+        AppTextInput {
             id: fieldInput
             Layout.fillWidth: true
             Layout.preferredHeight: 46
+            fieldHeight: 46
+            label: ""
+            placeholder: field.editable ? field.placeholder : ""
             text: field.value
             enabled: field.editable
-            placeholderText: ""
-            selectByMouse: true
-            color: root.textColor
-            font.pixelSize: 14
+            fontPixelSize: 14
+            backgroundColor: field.editable ? "#FFFFFF" : "#F9FAFB"
+            textColor: root.textColor
+            placeholderColor: root.mutedColor
+            borderColor: root.borderColor
+            focusColor: root.primaryColor
+            errorColor: root.errorColor
             onTextEdited: field.edited(text)
+        }
 
-            readonly property bool isFloating: activeFocus || text.length > 0
-            readonly property bool showNotSet: !field.editable && (field.value === "" || field.value === undefined || field.value === null)
-
-            // Adjust padding to make room for floating label
-            leftPadding: 12
-            rightPadding: 12
-            topPadding: isFloating ? floatingLabelTopMargin + 14 : 0
-            bottomPadding: isFloating ? 8 : 0
+        // "Not set" text for read-only mode
+        Text {
+            visible: !field.editable
+                     && (field.value === "" || field.value === undefined || field.value === null)
+            anchors.fill: fieldInput
+            anchors.leftMargin: 14
+            anchors.rightMargin: 14
             verticalAlignment: Text.AlignVCenter
-
-            // Custom floating placeholder
-            Text {
-                id: floatingLabel
-                text: field.placeholder
-                visible: field.editable && field.placeholder.length > 0
-                color: {
-                    if (fieldInput.activeFocus)
-                        return root.primaryColor
-                    return root.mutedColor
-                }
-                font.pixelSize: fieldInput.isFloating ? 11 : 14
-                font.weight: fieldInput.isFloating ? Font.Medium : Font.Normal
-
-                x: 12
-                width: parent.width - 24
-                elide: Text.ElideRight
-
-                y: fieldInput.isFloating
-                   ? floatingLabelTopMargin
-                   : Math.round((parent.height - height) / 2)
-
-                Behavior on y {
-                    NumberAnimation {
-                        duration: 140
-                        easing.type: Easing.OutCubic
-                    }
-                }
-                Behavior on font.pixelSize {
-                    NumberAnimation {
-                        duration: 140
-                        easing.type: Easing.OutCubic
-                    }
-                }
-                Behavior on color {
-                    ColorAnimation {
-                        duration: 140
-                    }
-                }
-            }
-
-            // "Not set" text for read-only mode
-            Text {
-                anchors.fill: parent
-                anchors.leftMargin: 12
-                anchors.rightMargin: 12
-                verticalAlignment: Text.AlignVCenter
-                horizontalAlignment: Text.AlignLeft
-                text: "Not set"
-                color: root.mutedColor
-                font.pixelSize: 14
-                visible: fieldInput.showNotSet
-                elide: Text.ElideRight
-            }
-
-            background: Rectangle {
-                radius: 8
-                color: field.editable ? "#FFFFFF" : "#F9FAFB"
-                border.color: field.editable && parent.activeFocus ? root.primaryColor : root.borderColor
-                border.width: field.editable && parent.activeFocus ? 2 : 1
-            }
+            horizontalAlignment: Text.AlignLeft
+            text: "Not set"
+            color: root.mutedColor
+            font.pixelSize: 14
+            elide: Text.ElideRight
         }
     }
     component BookingProgressRow: Rectangle {

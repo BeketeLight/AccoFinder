@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import "../../../components/inputs"
+import "../components"
 
 
 Item {
@@ -54,42 +54,12 @@ Item {
             Layout.topMargin: -6
         }
 
-        Rectangle {
-            Layout.fillWidth: true
-            Layout.preferredHeight: 64
-            radius: 12
-            color: "#ECFDF5"
-            border.color: "#BBF7D0"
-            border.width: 1
-
-            RowLayout {
-                anchors.fill: parent
-                anchors.margins: 14
-                spacing: 10
-
-                Rectangle {
-                    Layout.preferredWidth: 34
-                    Layout.preferredHeight: 34
-                    radius: 17
-                    color: root.secondaryColor
-
-                    Text {
-                        anchors.centerIn: parent
-                        text: "8+"
-                        color: "#FFFFFF"
-                        font.pixelSize: 12
-                        font.bold: true
-                    }
-                }
-
-                Label {
-                    text: "Use at least 8 characters. Longer passwords are easier to protect."
-                    color: "#166534"
-                    font.pixelSize: 13
-                    wrapMode: Text.WordWrap
-                    Layout.fillWidth: true
-                }
-            }
+        AuthInfoCard {
+            iconText: "8+"
+            iconPixelSize: 12
+            cardHeight: 64
+            cardBorderWidth: 1
+            message: "Use at least 8 characters. Longer passwords are easier to protect."
         }
 
         ColumnLayout {
@@ -97,82 +67,33 @@ Item {
             Layout.topMargin: 8
             spacing: 7
 
-            AppTextInput {
+            AuthTextField {
                 id: passwordField
                 label: "Password"
                 placeholder: "Create password"
                 password: true
                 required: true
                 enabled: !root.busy
-                fieldHeight: 52
-                backgroundColor: root.surfaceColor
-                textColor: root.textColor
-                labelColor: root.textColor
-                placeholderColor: "#9CA3AF"
-                borderColor: root.borderColor
-                focusColor: root.primaryColor
-                errorColor: root.errorColor
-                Layout.fillWidth: true
-                Layout.preferredHeight: 76
-                Layout.topMargin: 12
             }
 
-            AppTextInput {
+            AuthTextField {
                 id: confirmPasswordField
                 label: "Confirm password"
                 placeholder: "Repeat password"
                 password: true
                 required: true
                 enabled: !root.busy
-                fieldHeight: 52
-                backgroundColor: root.surfaceColor
-                textColor: root.textColor
-                labelColor: root.textColor
-                placeholderColor: "#9CA3AF"
-                borderColor: root.borderColor
-                focusColor: root.primaryColor
-                errorColor: root.errorColor
-                Layout.fillWidth: true
-                Layout.preferredHeight: 76
-                Layout.topMargin: 12
             }
-
         }
 
-        Label {
+        AuthErrorLabel {
             id: errorText
-            visible: text.length > 0
-            text: ""
-            color: root.errorColor
-            font.pixelSize: 13
-            wrapMode: Text.WordWrap
-            Layout.fillWidth: true
         }
 
-        Button {
+        AuthContinueButton {
             id: continueButton
-            text: root.busy ? "Creating account..." : "Continue"
-            enabled: !root.busy
-            Layout.fillWidth: true
-            Layout.preferredHeight: 52
-            Layout.topMargin: 6
-
-            contentItem: Text {
-                text: continueButton.text
-                color: "#FFFFFF"
-                font.pixelSize: 15
-                font.bold: true
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-            }
-
-            background: Rectangle {
-                radius: 12
-                color: !continueButton.enabled ? "#93C5FD"
-                       : continueButton.down ? "#1D4ED8"
-                       : root.primaryColor
-            }
-
+            busy: root.busy
+            busyText: "Creating account..."
             onClicked: {
                 if (passwordField.text.length < 8) {
                     errorText.text = "Password should be at least 8 characters.";
