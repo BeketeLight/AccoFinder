@@ -5,6 +5,7 @@ import "../../../utils/NavigationUtils.js" as NavUtils
 import "../../properties/components"
 import "../../../components/dialogs"
 import "../../../components/indicators"
+import "../../../components/scrollbars"
 
 Page {
     id: root
@@ -91,6 +92,7 @@ Page {
         contentHeight: contentColumn.implicitHeight + 36
         boundsBehavior: Flickable.StopAtBounds
         clip: true
+        ScrollBar.vertical: AppScrollBar { }
 
         ColumnLayout {
             id: contentColumn
