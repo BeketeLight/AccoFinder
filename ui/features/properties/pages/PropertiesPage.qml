@@ -402,7 +402,7 @@ Page {
                 Repeater {
                     model: allPropertiesModel
 
-                    delegate: PropertyCardDelegate {
+                    delegate: AgentPropertyCardDelegate {
                         title: model.title
                         district: model.district
                         village: model.village

@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import QtQuick.Shapes
 import "../../../components/navigations"
 import "../../../utils" as UtilsModule
 Page{
@@ -141,15 +142,78 @@ Page{
             Layout.alignment: Qt.AlignHCenter
             //font.bold: currentIndex === 2
          }
-      }
+}
 
-         ColumnLayout{
-            Layout.preferredHeight: 0
-            Layout.fillHeight: true
-            Layout.minimumWidth: 0
-            spacing: 0
-            ToolButton{
-               icon.name: "Bookings-icon"
+          // Compact accommodation-safety badge for non-admin footers: a primary-blue
+          // rounded shield whose "resize" (breathing) animation keeps the
+          // footer narrow, so the tabs stay within the left/right margins.
+          Rectangle {
+             id: safetyBadge
+             Layout.preferredWidth: 22
+             Layout.preferredHeight: 22
+             Layout.alignment: Qt.AlignVCenter
+             visible: !footerPageId.isAdminUser
+             radius: 7
+             color: "#2563EB"
+             antialiasing: true
+
+             Rectangle {
+                id: safetyRing
+                anchors.fill: parent
+                radius: 7
+                color: "transparent"
+                border.color: "#BFDBFE"
+                border.width: 1.5
+                opacity: 0.6
+
+                SequentialAnimation {
+                   running: parent.parent.visible
+                   loops: Animation.Infinite
+                   ParallelAnimation {
+                      NumberAnimation { target: safetyRing; property: "scale"; from: 1.0; to: 1.45; duration: 1000 }
+                      NumberAnimation { target: safetyRing; property: "opacity"; from: 0.6; to: 0.0; duration: 1000 }
+                   }
+                   PauseAnimation { duration: 300 }
+                }
+             }
+
+             Shape {
+                anchors.centerIn: parent
+                width: 12
+                height: 14
+                antialiasing: true
+                ShapePath {
+                   fillColor: "#FFFFFF"
+                   strokeColor: "transparent"
+                   startX: 6
+                   startY: 1
+                   PathLine { x: 11; y: 2 }
+                   PathLine { x: 11; y: 6 }
+                   PathLine { x: 6; y: 13 }
+                   PathLine { x: 1; y: 6 }
+                   PathLine { x: 1; y: 2 }
+                   PathLine { x: 6; y: 1 }
+                }
+             }
+
+             // Scales in place around its center — a pure "resize" animation,
+             // so the layout footprint (and hence the margins) never change.
+             SequentialAnimation {
+                running: parent.visible
+                loops: Animation.Infinite
+                NumberAnimation { target: safetyBadge; property: "scale"; from: 1.0; to: 0.87; duration: 900; easing.type: Easing.InOutSine }
+                NumberAnimation { target: safetyBadge; property: "scale"; from: 0.87; to: 1.0; duration: 900; easing.type: Easing.InOutSine }
+                PauseAnimation { duration: 300 }
+             }
+          }
+
+          ColumnLayout{
+             Layout.preferredHeight: 0
+             Layout.fillHeight: true
+             Layout.minimumWidth: 0
+             spacing: 0
+             ToolButton{
+                icon.name: "Bookings-icon"
                icon.source:"qrc:/ui/assets/bookings-icon.svg"
                icon.height: 24
                icon.width: 24

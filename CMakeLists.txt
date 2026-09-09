@@ -219,7 +219,7 @@ qt_add_qml_module(appAccoFinder
         ui/features/properties/pages/PropertyDetailsPage.qml
         ui/features/properties/pages/DraftsPage.qml
         ui/features/properties/pages/MyPropertiesSection.qml
-        ui/features/properties/delegates/PropertyCardDelegate.qml
+        ui/features/properties/delegates/AgentPropertyCardDelegate.qml
         ui/features/properties/delegates/DraftCardDelegate.qml
         ui/features/properties/delegates/RoomCardDelegate.qml
         ui/features/properties/screens/PropertiesScreen.qml
