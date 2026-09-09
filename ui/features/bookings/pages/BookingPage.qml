@@ -8,64 +8,12 @@ import "../../../components/cards"
 Page {
     id: root
     anchors.fill: parent
-    // property string title: "My Bookings"
-    // property bool showHeader: true
-    // property bool showBack: true
-    // property bool showBackButton: false
-    // property bool isSearchBar: false
     readonly property color primaryColor: "#2563EB"
     readonly property color primaryDarkColor: "#1D4ED8"
     readonly property color  easyBlueColor: "#EEF2FF"
     readonly property color  textColor: "#0F172A"
     readonly property color  helloCardBgColor: "#E0F2FE"
     readonly property color  cardBgColor: "#EEF2FF"
-
-    // ColumnLayout {
-    //     anchors.fill: parent
-    //     spacing: 0
-
-    //     // ===== FIXED RED BAR (not scrollable) =====
-    //     Rectangle {
-    //        Layout.fillWidth: true
-    //        Layout.leftMargin: 16
-    //        Layout.rightMargin: 16
-    //        Layout.topMargin: 16
-    //        Layout.preferredHeight: 80
-    //        color: root.primaryColor
-    //        radius: 4
-
-    //        RowLayout{
-    //            anchors.fill: parent
-    //            anchors.topMargin: 8
-    //            anchors.leftMargin: 16
-    //            anchors.rightMargin: 16
-    //            ColumnLayout{
-    //                spacing: 4
-    //                Layout.fillWidth: true
-    //                Layout.alignment: Qt.AlignTop
-    //                RowLayout{
-    //                    spacing: 10
-    //                    Layout.alignment: Qt.AlignTop
-    //                    // Text{
-
-    //                    //     //Layout.alignment: Qt.AlignHCenter
-    //                    //     text: "Hello, Accofinder"
-    //                    //     font.pointSize: 18
-    //                    //     font.bold: true
-    //                    //     color: root.textColor
-    //                    // }
-    //                }
-    //                Text {
-    //                    text: qsTr("Here is the overview of your bookings")
-    //                    color: root.helloCardBgColor
-    //                    font.pointSize: 16
-    //                    font.bold: true
-    //                }
-    //            }
-    //        }
-    //   }
-
-        //}
 
         // ===== SCROLLABLE CONTENT =====
         ScrollView {
@@ -98,6 +46,15 @@ Page {
                         RowLayout{
                             Layout.fillWidth: true
                             spacing: 0
+                            Rectangle {
+                                Layout.preferredWidth: 5
+                                Layout.leftMargin:4
+                                Layout.rightMargin: 0
+                                Layout.topMargin: 0
+                                Layout.preferredHeight: 40
+                                color: root.primaryColor
+                                radius: 4
+                            }
                             Text{
                                 text: qsTr("My Bookings")
                                 font.pointSize: 18
@@ -181,13 +138,27 @@ Page {
                     ColumnLayout{
                         Layout.fillWidth: true
                         spacing: 10
-                        Text{
-                            text: qsTr("Bookings disputes")
-                            font.pointSize: 18
-                            font.bold: true
-                            color: "#1E293B"
-                            Layout.leftMargin: 10
+                        RowLayout{
+                            Layout.fillWidth: true
+                            spacing: 0
+                            Rectangle {
+                                Layout.preferredWidth: 5
+                                Layout.leftMargin:4
+                                Layout.rightMargin: 0
+                                Layout.topMargin: 0
+                                Layout.preferredHeight: 40
+                                color: root.primaryColor
+                                radius: 4
+                            }
+                            Text{
+                                text: qsTr("Bookings disputes")
+                                font.pointSize: 18
+                                font.bold: true
+                                color: "#1E293B"
+                                Layout.leftMargin: 10
+                            }
                         }
+
                         RowLayout{
                             spacing: 2
                             BookingsStatusCard {
