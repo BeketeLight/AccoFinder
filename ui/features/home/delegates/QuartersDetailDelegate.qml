@@ -5,6 +5,12 @@ import QtQuick.Effects
 
 Page {
     id: root
+    // ========== HEADER CONTROL ==========
+    property string pageTitle: ""
+    property bool isSearchBar: true
+    property bool showBack: true
+    property bool showHeader: true
+    property bool searchReadOnly: false
 
     // ========== PROPERTY DATA ==========
     property string quarterId: ""
@@ -436,38 +442,13 @@ Page {
             anchors.fill: parent
             anchors.margins: 12
             spacing: 12
-
-            Button {
-                Layout.preferredWidth: 120
-                Layout.fillHeight: true
-                text: "Contact"
-                background: Rectangle {
-                    radius: 12
-                    color: "#FFFFFF"
-                    border.color: "#2563EB"
-                    border.width: 1.5
-                }
-                contentItem: Label {
-                    text: parent.text
-                    color: "#2563EB"
-                    font.pixelSize: 15
-                    font.bold: true
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                }
-                onClicked: {
-                    if (root.agentPhone.length > 0)
-                        Qt.openUrlExternally("tel:" + root.agentPhone);
-                }
-            }
-
             Button {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                text: root.isRoomAvailable ? "Book Now" : "Notify Me"
+                text: root.isquarterAvailable ? "Book Now" : "Notify Me"
                 background: Rectangle {
                     radius: 12
-                    color: root.isRoomAvailable ? "#2563EB" : "#6B7280"
+                    color: root.isquarterAvailable ? "#2563EB" : "#6B7280"
                 }
                 contentItem: Label {
                     text: parent.text

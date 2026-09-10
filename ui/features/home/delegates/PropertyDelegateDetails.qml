@@ -111,21 +111,14 @@ Page {
         root.roomClicked(roomData.roomId, roomData);
         // Navigate to room details
         NavUtils.push(Qt.resolvedUrl("./QuartersDetailDelegate.qml"), {
-            roomId: roomData.roomId,
-            roomType: roomData.type,
-            roomPrice: roomData.price,
-            isRoomAvailable: roomData.available,
-            roomSize: roomData.size,
+            quarterId: roomData.roomId,
+            quarterType: roomData.type,
+            quarterPrice: roomData.price,
+            isquarterAvailable: roomData.available,
             roomImage: roomData.imageUrl,
-            propertyTitle: root.propertyTitle,
-            roomLocation: root.location,
-            description: root.description,
-            agentPhone: root.agentPhone,
-            agentFirstName: root.agentFirstName,
-            agentLastName: root.agentLastName,
-            agentRating: root.agentRating,
-            agentReviewCount: root.agentReviewCount,
-            reviewsModel: root.reviewsModel
+            quarterTitle: root.propertyTitle,
+            location: root.location,
+            description: root.description
         });
     }
 
@@ -234,16 +227,6 @@ Page {
                     }
                 }
 
-                // Property favourite/save badge
-                // Rectangle {
-                //     anchors.top: parent.top
-                //     anchors.right: parent.right
-                //     anchors.margins: 16
-                //     height: 28
-                //     radius: 14
-                //     width: statusText.width + 24
-                //     color: root.status === "Available" ? "#22C55E" : "#EF4444"
-
                 Image {
                     id: favouriteImg
                     source: root.favouriteChecked ? "qrc:/ui/assets/favorite-filled.svg" : "qrc:/ui/assets/favorite-outline.svg"
@@ -266,84 +249,8 @@ Page {
                             root.favouriteChecked = !root.favouriteChecked;
                         }
                     }
-                    // }
-
-                    // Label {
-                    //     id: statusText
-                    //     anchors.centerIn: parent
-                    //     text: root.status === "Available" ? "✓ Available" : "✗ Booked"
-                    //     color: "white"
-                    //     font.pixelSize: 13
-                    //     font.bold: true
-                    // }
                 }
             }
-
-            // ===== PROPERTY MAIN INFO =====
-            // ColumnLayout {
-            //     Layout.fillWidth: true
-            //     Layout.margins: 16
-            //     spacing: 8
-
-            //     Label {
-            //         text: root.propertyTitle
-            //         font.pixelSize: 22
-            //         font.weight: Font.DemiBold
-            //         color: "#1F2937"
-            //         wrapMode: Text.WordWrap
-            //         Layout.fillWidth: true
-            //     }
-
-            //     RowLayout {
-            //         spacing: 4
-            //         Label {
-            //             text: "📍"
-            //             font.pixelSize: 14
-            //         }
-            //         Label {
-            //             text: root.location
-            //             font.pixelSize: 14
-            //             color: "#6B7280"
-            //             Layout.fillWidth: true
-            //         }
-            //     }
-
-            //     Label {
-            //         text: "MWK " + Number(root.price).toLocaleString(Qt.locale(), "f", 0)
-            //         font.pixelSize: 26
-            //         font.bold: true
-            //         color: "#2563EB"
-            //     }
-            // }
-
-            // Rectangle {
-            //     Layout.fillWidth: true
-            //     height: 8
-            //     color: "#F5F5F5"
-            // }
-
-            // ===== PROPERTY DESCRIPTION =====
-            // ColumnLayout {
-            //     Layout.fillWidth: true
-            //     Layout.margins: 16
-            //     spacing: 8
-
-            //     Label {
-            //         text: "Description"
-            //         font.pixelSize: 16
-            //         font.weight: Font.DemiBold
-            //         color: "#1F2937"
-            //     }
-
-            //     Label {
-            //         text: root.description
-            //         font.pixelSize: 14
-            //         color: "#4B5563"
-            //         wrapMode: Text.WordWrap
-            //         Layout.fillWidth: true
-            //         lineHeight: 1.35
-            //     }
-            // }
 
             Rectangle {
                 Layout.fillWidth: true
@@ -532,31 +439,6 @@ Page {
             anchors.fill: parent
             anchors.margins: 12
             spacing: 12
-
-            Button {
-                Layout.preferredWidth: 120
-                Layout.fillHeight: true
-                text: "Contact"
-                background: Rectangle {
-                    radius: 12
-                    color: "#FFFFFF"
-                    border.color: "#2563EB"
-                    border.width: 1.5
-                }
-                contentItem: Label {
-                    text: parent.text
-                    color: "#2563EB"
-                    font.pixelSize: 15
-                    font.bold: true
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                }
-                onClicked: {
-                    if (root.agentPhone.length > 0)
-                        Qt.openUrlExternally("tel:" + root.agentPhone);
-                }
-            }
-
             Button {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
