@@ -12,6 +12,7 @@ Item {
     property var pendingMediaIds: []
     property int pendingMediaTotal: 0
     property string pendingPropertyId: ""
+    property var pendingRooms: []
     property var deferredPayload: null
 
     function goBack() {
@@ -37,9 +38,27 @@ Item {
                                            photo.path,
                                            "image",
                                            photo.isPrimary,
-                                           String(photo.roomId !== undefined ? photo.roomId : -1))
+                                           realRoomIdFor(photo.roomId))
             }
         }
+    }
+
+    // The wizard numbers rooms locally (1, 2, 3...) but the backend mints its
+    // own ObjectIds when it creates them inline with the property. Resolve a
+    // photo's local room number to the actual backend room id so media.roomId
+    // references a real room document; -1 means "whole property / common areas".
+    function realRoomIdFor(seq) {
+        var n = Number(seq)
+        if (isNaN(n) || n < 0)
+            return "-1"
+        var idx = n - 1
+        var rooms = pendingRooms || []
+        if (idx >= 0 && idx < rooms.length) {
+            var r = rooms[idx]
+            if (r && r._id)
+                return String(r._id)
+        }
+        return "-1"
     }
 
     // The payload built by the wizard lacks the backend property id (it is only
@@ -108,7 +127,8 @@ Item {
 
     Connections {
         target: PropertyViewModel
-        function onPropertyCreatedSignal(id, title) {
+        function onPropertyCreatedSignal(id, title, rooms) {
+            addItemdId.pendingRooms = rooms || []
             addItemdId.createRoomsAndMedia(id)
         }
     }

@@ -103,11 +103,12 @@ void PropertyViewModel::updateProperty(int index, const QString &houseId, const 
     m_propertyController->updateProperty(houseId, title, description, price, district, village, amenities, landlord, landlordPhone, verificationStatus, isActive);
 }
 
-void PropertyViewModel::updatePropertyStatus(const QString &houseId, const QString &status, const QString &reason)
+void PropertyViewModel::updatePropertyStatus(const QString &houseId, const QString &status, const QString &reason,
+                                              const QString &approvedById, const QString &approvedByName)
 {
     m_index = indexOfProperty(houseId);
     setLoading(true);
-    m_propertyController->updatePropertyStatus(houseId, status, reason);
+    m_propertyController->updatePropertyStatus(houseId, status, reason, approvedById, approvedByName);
 }
 
 void PropertyViewModel::createProperty(const QString &title, const QString &description, double price, const QString &propertyType, const QString &district, const QString &village, const QStringList &amenities, const QString &landlord, const QString &landlordPhone, const QString &verificationStatus, bool isActive, const QJsonArray &rooms)
@@ -153,7 +154,9 @@ void PropertyViewModel::onCreateProperty(Property *property)
     setLoading(false);
     if (property) {
         m_propertyListModel->appendProperty(property);
-        emit propertyCreatedSignal(property->getId(), property->getTitle());
+        emit propertyCreatedSignal(property->getId(),
+                                   property->getTitle(),
+                                   property->getCreatedRooms().toVariantList());
     }
 }
 

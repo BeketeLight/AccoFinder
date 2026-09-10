@@ -124,6 +124,7 @@ Item {
                 landlord: model.landlord
                 status: model.status
                 statusText: root.propertiesModel.prettyStatus(model.status)
+                approvedByName: model.approvedByName
                 matches: model.matches
                 onPropertyClicked: (propertyId) => root.propertyClicked(propertyId)
             }

@@ -104,7 +104,8 @@ void PropertyRepositoryImpl::updateProperty(const QString& houseId, const QStrin
 
 }
 
-void PropertyRepositoryImpl::updatePropertyStatus(const QString &houseId, const QString &status, const QString &reason)
+void PropertyRepositoryImpl::updatePropertyStatus(const QString &houseId, const QString &status, const QString &reason,
+                                                  const QString &approvedById, const QString &approvedByName)
 {
     if (houseId.isEmpty()) {
         emit propertyError(QStringLiteral("houseId cannot be empty"));
@@ -123,6 +124,16 @@ void PropertyRepositoryImpl::updatePropertyStatus(const QString &houseId, const 
     payload["verificationStatus"] = normalized;
     if (normalized == QStringLiteral("REJECTED"))
         payload["verificationReason"] = reason.trimmed();
+
+    // Record who approved this listing.
+    // NOTE: the backend's property-update schema must accept `approvedBy`
+    // (and `approvedByName`) or the approve call will 400 with
+    // "Not authorized to perform this action" style validation.
+    if (normalized == QStringLiteral("VERIFIED") && !approvedById.isEmpty()) {
+        payload["approvedBy"] = approvedById;
+        if (!approvedByName.isEmpty())
+            payload["approvedByName"] = approvedByName;
+    }
 
     APIClient::instance().put(
         "/house-listing/" + houseId,

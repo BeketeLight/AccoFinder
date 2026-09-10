@@ -118,6 +118,8 @@ PropertyDto PropertyDto::fromJson(
         dto.agentId = ownerObj["_id"].toString();
         dto.firstname = ownerObj["firstName"].toString();
         dto.secondName = ownerObj["lastName"].toString();
+        if (dto.secondName.isEmpty())
+            dto.secondName = ownerObj["surname"].toString();
         dto.agentPhone = ownerObj["phone"].toString();
     } else if (owner.isString()) {
         dto.agentId = owner.toString();
@@ -153,6 +155,36 @@ PropertyDto PropertyDto::fromJson(
     dto.propertyType = json["propertyType"].toString();
     dto.verificationStatus = json["verificationStatus"].toString();
     dto.verificationReason = json["verificationReason"].toString();
+
+    // The backend may store the approver as a bare userId string or as an
+    // embedded {_id, firstName, lastName, surname} object. Prefer the flat
+    // approvedByName (the full name stamped at approval time) when present,
+    // then fall back to composing it from the embedded user fields.
+    const QString flatApprovedByName = json["approvedByName"].toString();
+    if (!flatApprovedByName.isEmpty())
+        dto.approvedByName = flatApprovedByName;
+    const QJsonValue approver = json["approvedBy"];
+    if (approver.isObject()) {
+        const QJsonObject approverObj = approver.toObject();
+        dto.approvedById = approverObj["_id"].toString();
+        if (dto.approvedByName.isEmpty()) {
+            QString approverName = approverObj["firstName"].toString();
+            QString approverLast = approverObj["lastName"].toString();
+            if (approverLast.isEmpty())
+                approverLast = approverObj["surname"].toString();
+            if (!approverLast.isEmpty()) {
+                if (!approverName.isEmpty())
+                    approverName += " ";
+                approverName += approverLast;
+            }
+            dto.approvedByName = approverName;
+        }
+    } else if (approver.isString()) {
+        dto.approvedById = approver.toString();
+    }
+    if (dto.approvedById.isEmpty())
+        dto.approvedById = json["approvedById"].toString();
+
     dto.isActive = json["isActive"].toBool(true);
     dto.rooms = json["rooms"].toArray();
 
@@ -193,6 +225,11 @@ QJsonObject PropertyDto::toJson() const
     json["verificationReason"] = verificationReason;
     json["isActive"] = isActive;
 
+    if (!approvedById.isEmpty())
+        json["approvedBy"] = approvedById;
+    if (!approvedByName.isEmpty())
+        json["approvedByName"] = approvedByName;
+
     if (!rooms.isEmpty())
         json["rooms"] = rooms;
 
@@ -227,8 +264,11 @@ Property* PropertyDto::toDomainModel() const
     property->setPropertyType(propertyType);
     property->setVerificationStatus(verificationStatus);
     property->setVerificationReason(verificationReason);
+    property->setApprovedById(approvedById);
+    property->setApprovedByName(approvedByName);
     property->setActive(isActive);
     property->setRoomCount(rooms.size());
+    property->setCreatedRooms(rooms);
 
     return property;
 }

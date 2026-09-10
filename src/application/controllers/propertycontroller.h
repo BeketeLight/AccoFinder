@@ -38,7 +38,10 @@ public:
                                     const QString& landlordPhone,
                                     const QString& verificationStatus,
                                     bool isActive);
-    Q_INVOKABLE void updatePropertyStatus(const QString& houseId, const QString& status, const QString& reason = QString());
+    Q_INVOKABLE void updatePropertyStatus(const QString& houseId, const QString& status,
+                                          const QString& reason = QString(),
+                                          const QString& approvedById = QString(),
+                                          const QString& approvedByName = QString());
     Q_INVOKABLE void deleteProperty(const QString& houseId);
     Q_INVOKABLE void attachMedia(const QString& houseId, const QStringList& mediaIds);
 

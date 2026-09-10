@@ -5,6 +5,7 @@
 #include <QString>
 #include <QStringList>
 #include <QDateTime>
+#include <QJsonArray>
 #include "core/utils/EPropertyStatus.h"
 
 class Property : public QObject
@@ -64,8 +65,22 @@ public:
     QString getVerificationReason() const;
     void setVerificationReason(const QString &reason);
 
+    // The admin user who approved (VERIFIED) this listing. Stores the userId
+    // plus a human-readable name so "approved by" can be shown without an extra
+    // users round-trip. Updated whenever an admin approves a property.
+    QString getApprovedById() const;
+    void setApprovedById(const QString &approvedById);
+    QString getApprovedByName() const;
+    void setApprovedByName(const QString &approvedByName);
+
     int getRoomCount() const;
     void setRoomCount(int roomCount);
+
+    // Raw rooms embedded in the create/get response. Each entry carries the
+    // real backend room _id, which the client uses to link media.roomId to an
+    // actual room document (wizard room numbers are only local sequences).
+    QJsonArray getCreatedRooms() const;
+    void setCreatedRooms(const QJsonArray& rooms);
 
 private:
     QString m_id;
@@ -86,8 +101,11 @@ private:
     QString m_propertyType;
     QString m_verificationStatus;
     QString m_verificationReason;
+    QString m_approvedById;
+    QString m_approvedByName;
     bool m_active = false;
     int m_roomCount = 0;
+    QJsonArray m_createdRooms;
     QDateTime m_createdAt;
 signals:
     void propertyVerfied();

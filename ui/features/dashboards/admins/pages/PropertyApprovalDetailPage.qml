@@ -50,6 +50,10 @@ Item {
     property var propPhotos: []
     property string propStatus: propertyPayload ? String(propertyPayload.verificationStatus || "").toUpperCase() : "PENDING"
 
+    // Admin who approved this listing (VERIFIED). Read from the payload's
+    // approvedBy so reviewers can see who verified a property.
+    property string propApprovedBy: propertyPayload ? String(propertyPayload.approvedByName || "") : ""
+
     readonly property bool hasPrice: root.propPrice > 0
 
     // Rooms live in the separate /rooms/ collection keyed by propertyId, so
@@ -211,6 +215,14 @@ Item {
                                 color: Qt.rgba(1, 1, 1, 0.9)
                                 font.pixelSize: 11
                                 font.bold: true
+                            }
+
+                            Label {
+                                visible: root.propStatus === "VERIFIED" && root.propApprovedBy.length > 0
+                                text: qsTr("by %1").arg(root.propApprovedBy)
+                                color: Qt.rgba(1, 1, 1, 0.75)
+                                font.pixelSize: 11
+                                elide: Text.ElideRight
                             }
                         }
                     }
@@ -627,7 +639,7 @@ Item {
                             root.listingsModel.setPropertyStatus(root.propertyId, "VERIFIED")
                         // Persist the decision on the backend so it survives a
                         // refresh. setPropertyStatus only edits the local list.
-                        PropertyViewModel.updatePropertyStatus(root.propertyId, "VERIFIED")
+                        PropertyViewModel.updatePropertyStatus(root.propertyId, "VERIFIED", "", AppSettings.userId(), AppSettings.userName())
                         console.log("Approval:", root.propertyId, "-> VERIFIED")
                         root.decisionMade(root.propertyId, root.propTitle, true)
                         root.goBackRequested()

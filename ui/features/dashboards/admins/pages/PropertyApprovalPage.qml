@@ -129,7 +129,7 @@ Item {
                     root.listingsModel.setPropertyStatus(propertyId, "VERIFIED")
                     // Persist the decision on the backend so it survives a
                     // refresh. setPropertyStatus only edits the local list.
-                    PropertyViewModel.updatePropertyStatus(propertyId, "VERIFIED")
+                    PropertyViewModel.updatePropertyStatus(propertyId, "VERIFIED", "", AppSettings.userId(), AppSettings.userName())
                     console.log("Approval:", propertyId, "-> VERIFIED")
                     root.decisionMade(propertyId, title, true)
                     root.refreshQueue()
