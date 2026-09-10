@@ -91,7 +91,7 @@ Page {
                 }
 
                 // Page 2 - Rooms
-                RoomsPage {
+                QuartersPage {
                     width: contentSwipe.width
                     height: contentSwipe.height
                 }

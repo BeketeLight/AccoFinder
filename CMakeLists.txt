@@ -97,9 +97,10 @@ qt_add_qml_module(appAccoFinder
         ui/features/home/components/StickyActionBar.qml
         ui/features/home/pages/AllPage.qml
         ui/features/home/pages/HostelsPage.qml
-        ui/features/home/pages/RoomsPage.qml
+        ui/features/home/pages/QuartersPage.qml
         ui/features/home/pages/HousesPage.qml
-        ui/features/home/pages/StudiosPage.qml
+        ui/features/home/delegates/QuartersDetailDelegate.qml
+       ui/features/home/components/QuartersComponent.qml
         #======FEATURE-NOTIFICATIONS=====
         ui/features/notifications/components/NotificationItem.qml
         ui/features/notifications/delegates/NotificationDelegate.qml
@@ -234,8 +235,6 @@ qt_add_qml_module(appAccoFinder
 
     RESOURCES
         Rescources.qrc
-        QML_FILES ui/features/home/delegates/RoomDetailDelegate.qml
-        QML_FILES ui/features/home/components/RoomComponent.qml
 
 )
 

@@ -2,16 +2,17 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Effects
+import "../../../utils/NavigationUtils.js" as NavUtils
 
 Rectangle {
     id: roomCard
-    property string roomId: ""
-    property string roomType: ""
-    property real price: 0
-    property bool isRoomAvailable: true
-    property string roomSize: ""
+    property string quartersId: ""
+    property string quartersType: ""
+    property real quartersPrice: 0
+    property bool isQuartersAvailable: true
     property string imageUrl: ""
-    property string propertyTitle: ""
+    property var imageUrls: []
+    property string quartersTitle: ""
     property string location: ""
 
     signal clicked
@@ -72,12 +73,12 @@ Rectangle {
                 height: 18
                 radius: 9
                 width: availText.width + 10
-                color: roomCard.isRoomAvailable ? "#22C55E" : "#EF4444"
+                color: roomCard.isQuartersAvailable ? "#22C55E" : "#EF4444"
 
                 Label {
                     id: availText
                     anchors.centerIn: parent
-                    text: roomCard.isRoomAvailable ? "Open" : "Booked"
+                    text: roomCard.isQuartersAvailable ? "Open" : "Booked"
                     color: "white"
                     font.pixelSize: 9
                     font.bold: true
@@ -121,7 +122,7 @@ Rectangle {
 
         // Room type
         Label {
-            text: roomCard.roomType
+            text: roomCard.quartersType
             font.pixelSize: 13
             font.weight: Font.DemiBold
             color: "#1F2937"
@@ -132,27 +133,10 @@ Rectangle {
 
         // Price
         Label {
-            text: "MWK " + Number(roomCard.price).toLocaleString(Qt.locale(), "f", 0)
+            text: "MWK " + Number(roomCard.quartersPrice).toLocaleString(Qt.locale(), "f", 0)
             font.pixelSize: 14
             font.bold: true
             color: "#2563EB"
-        }
-
-        // Size
-        RowLayout {
-            spacing: 4
-            Label {
-                text: "📐"
-                font.pixelSize: 10
-            }
-            Label {
-                text: roomCard.roomSize || "N/A"
-                font.pixelSize: 10
-                color: "#6B7280"
-            }
-            Item {
-                Layout.fillWidth: true
-            }
         }
     }
 

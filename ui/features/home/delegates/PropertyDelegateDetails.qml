@@ -106,11 +106,11 @@ Page {
         NavUtils.pop();
     }
 
-    function navigateToRoom(roomData) {
+    function navigateToQuarters(roomData) {
         // Emit signal with room data
         root.roomClicked(roomData.roomId, roomData);
         // Navigate to room details
-        NavUtils.push(Qt.resolvedUrl("./RoomDetailDelegate.qml"), {
+        NavUtils.push(Qt.resolvedUrl("./QuartersDetailDelegate.qml"), {
             roomId: roomData.roomId,
             roomType: roomData.type,
             roomPrice: roomData.price,
@@ -385,20 +385,20 @@ Page {
                     interactive: false
                     model: root.roomsModel
 
-                    delegate: RoomComponent {
+                    delegate: QuartersComponent {
                         width: roomsGridView.cellWidth - 4
                         height: roomsGridView.cellHeight - 4
-                        roomId: modelData.roomId
-                        roomType: modelData.type
-                        price: modelData.price
-                        isRoomAvailable: modelData.available
-                        roomSize: modelData.size
+                        quartersId: modelData.roomId
+                        quartersType: modelData.type
+                        quartersPrice: modelData.price
+                        isQuartersAvailable: modelData.available
                         imageUrl: modelData.imageUrl || root.imageList[0] || ""
-                        propertyTitle: root.propertyTitle
+                        imageUrls: root.imageList
+                        quartersTitle: root.propertyTitle
                         location: root.location
 
                         onClicked: {
-                            root.navigateToRoom(modelData);
+                            root.navigateToQuarters(modelData);
                         }
                     }
                 }

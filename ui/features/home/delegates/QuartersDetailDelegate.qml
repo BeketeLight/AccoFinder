@@ -7,16 +7,13 @@ Page {
     id: root
 
     // ========== PROPERTY DATA ==========
-    property string roomId: ""
-    property string propertyTitle: "Modern 2 Bedroom Apartment"
-    property string roomType: "Master Bedroom"
-    property string roomLocation: "Area 47, Lilongwe"
-    property real roomPrice: 250000
-    property bool isRoomAvailable: true
-    property string description: "Spacious master bedroom with en-suite bathroom and walk-in closet. Features large windows with natural light and a beautiful view of the garden."
-    property int bedrooms: 2
-    property int bathrooms: 1
-    property string roomSize: "85 m²"
+    property string quarterId: ""
+    property string quarterTitle: "Modern quarter"
+    property string quarterType: "Master Bedroom"
+    property string location: "Area 47, Lilongwe"
+    property real quarterPrice: 250000
+    property bool isquarterAvailable: true
+    property string description: "Spacious quarter with en-suite bathroom and walk-in closet. Features large windows with natural light and a beautiful view of the garden."
 
     // Agent information
     property string agentFirstName: "Banda"
@@ -227,7 +224,7 @@ Page {
                 spacing: 8
 
                 Label {
-                    text: root.roomType
+                    text: root.quarterType
                     font.pixelSize: 22
                     font.weight: Font.DemiBold
                     color: "#1F2937"
@@ -236,7 +233,7 @@ Page {
                 }
 
                 Label {
-                    text: root.propertyTitle
+                    text: root.quarterTitle
                     font.pixelSize: 15
                     color: "#6B7280"
                     wrapMode: Text.WordWrap
@@ -250,7 +247,7 @@ Page {
                         font.pixelSize: 14
                     }
                     Label {
-                        text: root.roomLocation
+                        text: root.location
                         font.pixelSize: 14
                         color: "#6B7280"
                         Layout.fillWidth: true
@@ -258,7 +255,7 @@ Page {
                 }
 
                 Label {
-                    text: "MWK " + Number(root.roomPrice).toLocaleString(Qt.locale(), "f", 0)
+                    text: "MWK " + Number(root.quarterPrice).toLocaleString(Qt.locale(), "f", 0)
                     font.pixelSize: 26
                     font.bold: true
                     color: "#2563EB"
@@ -269,12 +266,12 @@ Page {
                     height: 28
                     radius: 14
                     width: availabilityText.width + 24
-                    color: root.isRoomAvailable ? "#22C55E" : "#EF4444"
+                    color: root.isquarterAvailable ? "#22C55E" : "#EF4444"
 
                     Label {
                         id: availabilityText
                         anchors.centerIn: parent
-                        text: root.isRoomAvailable ? "✓ Available Now" : "✗ Currently Booked"
+                        text: root.isquarterAvailable ? "✓ Available Now" : "✗ Currently Booked"
                         color: "white"
                         font.pixelSize: 13
                         font.bold: true

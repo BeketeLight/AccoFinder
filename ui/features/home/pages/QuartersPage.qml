@@ -4,9 +4,24 @@ import QtQuick.Layouts
 import "../components"
 import "../delegates"
 import "../models"
+import "../../../utils/NavigationUtils.js" as NavUtils
 
 Item {
     id: root
+
+    function navigateToQuarters(quartersData) {
+        //console.log(JSON.stringify(quartersData));
+        NavUtils.push(Qt.resolvedUrl("../delegates/QuartersDetailDelegate.qml"), {
+            quarterId: quartersData.propertyId,
+            quarterTitle: quartersData.title,
+            quarterType: quartersData.propertyType,
+            location: quartersData.location,
+            quarterPrice: quartersData.price,
+            isquarterAvailable: quartersData.isActive,
+            description: quartersData.description,
+            roomImage: quartersData.imageUrl
+        });
+    }
 
     Flickable {
         anchors.fill: parent
@@ -20,35 +35,8 @@ Item {
             width: parent.width
             spacing: 0
 
-            // SuperDeals {
-            //     width: parent.width
-            //     cardWidth: 190
-            //     cardHeight: 150
-            //     model: PropertyListModel {}
-            // }
-
-            // Rectangle {
-            //     width: parent.width
-            //     height: 8
-            //     color: "#F5F5F5"
-            // }
-
-            // SuperDeals {
-            //     title: "Near You"
-            //     width: parent.width
-            //     cardWidth: 130
-            //     cardHeight: 160
-            //     model: PropertyListModel {}
-            // }
-
-            // Rectangle {
-            //     width: parent.width
-            //     height: 8
-            //     color: "#F5F5F5"
-            // }
-
             Label {
-                text: "All Properties"
+                text: "Quarters"
                 font.pixelSize: 16
                 font.bold: true
                 color: "#1F2937"
@@ -66,17 +54,20 @@ Item {
 
                 Repeater {
                     model: PropertyListModel {}
-                    PropertyCardDelegate {
+                    QuartersComponent {
                         width: (flow.width - 24 - 16) / 3
                         height: width * 1.25
-                        propertyId: model.propertyId
-                        title: model.title
+                        quartersId: model.propertyId
+                        quartersType: model.propertyType
+                        quartersTitle: model.title
                         location: model.location
-                        price: model.price
+                        quartersPrice: model.price
                         imageUrl: model.imageUrl
                         imageUrls: model.imageUrls
-                        status: model.status
-                        isVerified: model.isVerified
+                        isQuartersAvailable: model.isActive
+                        onClicked: {
+                            root.navigateToQuarters(model);
+                        }
                     }
                 }
             }
