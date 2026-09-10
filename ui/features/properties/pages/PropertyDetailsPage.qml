@@ -37,6 +37,10 @@ Page {
     // verificationStatus mirrors the backend enum: PENDING / VERIFIED / REJECTED ("" = local draft)
     property string verificationStatus: "PENDING"
     property string rejectionReason: ""
+    // Admin who approved this listing (VERIFIED). Populated from the property
+    // payload's approvedBy via applyPayload so the owner can see who verified it.
+    property string approvedById: ""
+    property string approvedByName: ""
     property string descriptionTextValue: qsTr("Modern three-bedroom house with spacious rooms, tiled floors and a perimeter fence. Close to shops and public transport.")
     property string landlordName: qsTr("Bryan Phiri")
     property string landlordPhone: qsTr("+265 999 123 456")
@@ -192,6 +196,10 @@ Page {
             root.verificationStatus = String(p.verificationStatus)
         if (p.rejectionReason !== undefined)
             root.rejectionReason = String(p.rejectionReason)
+        if (p.approvedByName !== undefined)
+            root.approvedByName = String(p.approvedByName)
+        if (p.approvedById !== undefined)
+            root.approvedById = String(p.approvedById)
         if (p.draftKey !== undefined)
             root.draftKey = String(p.draftKey)
         root.loadRooms()
@@ -1031,6 +1039,17 @@ Page {
                                 font.pixelSize: 11
                             }
                         }
+                    }
+
+                    Label {
+                        visible: !root.editMode
+                            && String(root.verificationStatus).toUpperCase() === "VERIFIED"
+                            && root.approvedByName.length > 0
+                        Layout.fillWidth: true
+                        text: qsTr("Approved by %1").arg(root.approvedByName)
+                        color: Qt.rgba(1, 1, 1, 0.85)
+                        font.pixelSize: 12
+                        elide: Text.ElideRight
                     }
                 }
             }

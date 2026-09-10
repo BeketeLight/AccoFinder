@@ -42,7 +42,10 @@ public:
                                     bool isActive);
     // Minimal status update used by the admin approve/reject flow. Persists the
     // new verificationStatus on the backend (not just the local list).
-    Q_INVOKABLE void updatePropertyStatus(const QString& houseId, const QString& status, const QString& reason = QString());
+    Q_INVOKABLE void updatePropertyStatus(const QString& houseId, const QString& status,
+                                          const QString& reason = QString(),
+                                          const QString& approvedById = QString(),
+                                          const QString& approvedByName = QString());
     Q_INVOKABLE void createProperty(const QString& title,
                                     const QString& description,
                                     double price,
@@ -77,7 +80,9 @@ private slots:
 signals:
     void isLoadingChanged(bool isLoading);
     void propertyError(const QString& error);
-    void propertyCreatedSignal(const QString& id, const QString& title);
+    // `rooms` carries the rooms created atomically with the property (each with
+    // the real backend _id) so callers can map wizard room numbers to real ids.
+    void propertyCreatedSignal(const QString& id, const QString& title, const QVariant& rooms = QVariant());
     void propertyUpdatedSignal(const QString& id);
     void propertyDeletedSignal(const QString& id);
 };
