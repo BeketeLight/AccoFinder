@@ -34,20 +34,6 @@ Item {
                 color: "#F5F5F5"
             }
 
-            SuperDeals {
-                title: "Near You"
-                width: parent.width
-                cardWidth: 190
-                cardHeight: 140
-                model: PropertyListModel {}
-            }
-
-            Rectangle {
-                width: parent.width
-                height: 8
-                color: "#F5F5F5"
-            }
-
             Label {
                 text: "All Properties"
                 font.pixelSize: 16
