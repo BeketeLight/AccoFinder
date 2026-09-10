@@ -280,70 +280,70 @@ Page {
             }
 
             // ===== PROPERTY MAIN INFO =====
-            ColumnLayout {
-                Layout.fillWidth: true
-                Layout.margins: 16
-                spacing: 8
+            // ColumnLayout {
+            //     Layout.fillWidth: true
+            //     Layout.margins: 16
+            //     spacing: 8
 
-                Label {
-                    text: root.propertyTitle
-                    font.pixelSize: 22
-                    font.weight: Font.DemiBold
-                    color: "#1F2937"
-                    wrapMode: Text.WordWrap
-                    Layout.fillWidth: true
-                }
+            //     Label {
+            //         text: root.propertyTitle
+            //         font.pixelSize: 22
+            //         font.weight: Font.DemiBold
+            //         color: "#1F2937"
+            //         wrapMode: Text.WordWrap
+            //         Layout.fillWidth: true
+            //     }
 
-                RowLayout {
-                    spacing: 4
-                    Label {
-                        text: "📍"
-                        font.pixelSize: 14
-                    }
-                    Label {
-                        text: root.location
-                        font.pixelSize: 14
-                        color: "#6B7280"
-                        Layout.fillWidth: true
-                    }
-                }
+            //     RowLayout {
+            //         spacing: 4
+            //         Label {
+            //             text: "📍"
+            //             font.pixelSize: 14
+            //         }
+            //         Label {
+            //             text: root.location
+            //             font.pixelSize: 14
+            //             color: "#6B7280"
+            //             Layout.fillWidth: true
+            //         }
+            //     }
 
-                Label {
-                    text: "MWK " + Number(root.price).toLocaleString(Qt.locale(), "f", 0)
-                    font.pixelSize: 26
-                    font.bold: true
-                    color: "#2563EB"
-                }
-            }
+            //     Label {
+            //         text: "MWK " + Number(root.price).toLocaleString(Qt.locale(), "f", 0)
+            //         font.pixelSize: 26
+            //         font.bold: true
+            //         color: "#2563EB"
+            //     }
+            // }
 
-            Rectangle {
-                Layout.fillWidth: true
-                height: 8
-                color: "#F5F5F5"
-            }
+            // Rectangle {
+            //     Layout.fillWidth: true
+            //     height: 8
+            //     color: "#F5F5F5"
+            // }
 
             // ===== PROPERTY DESCRIPTION =====
-            ColumnLayout {
-                Layout.fillWidth: true
-                Layout.margins: 16
-                spacing: 8
+            // ColumnLayout {
+            //     Layout.fillWidth: true
+            //     Layout.margins: 16
+            //     spacing: 8
 
-                Label {
-                    text: "Description"
-                    font.pixelSize: 16
-                    font.weight: Font.DemiBold
-                    color: "#1F2937"
-                }
+            //     Label {
+            //         text: "Description"
+            //         font.pixelSize: 16
+            //         font.weight: Font.DemiBold
+            //         color: "#1F2937"
+            //     }
 
-                Label {
-                    text: root.description
-                    font.pixelSize: 14
-                    color: "#4B5563"
-                    wrapMode: Text.WordWrap
-                    Layout.fillWidth: true
-                    lineHeight: 1.35
-                }
-            }
+            //     Label {
+            //         text: root.description
+            //         font.pixelSize: 14
+            //         color: "#4B5563"
+            //         wrapMode: Text.WordWrap
+            //         Layout.fillWidth: true
+            //         lineHeight: 1.35
+            //     }
+            // }
 
             Rectangle {
                 Layout.fillWidth: true
