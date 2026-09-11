@@ -16,8 +16,18 @@ Item {
     // per Home session. Without this, every reload() would re-fire N calls.
     property var _mediaRequested: ({})
 
+    property int _coverTicksWithoutChange: 0
+
     ListModel {
         id: propertiesModelId
+    }
+
+    Timer {
+        id: coverRefreshTimer
+        interval: 400
+        repeat: true
+        running: false
+        onTriggered: root.refreshCovers()
     }
 
     function reload() {
@@ -90,6 +100,7 @@ Item {
     // life of this model. Because MediaListModel is a shared C++ singleton,
     // any other screen (detail page etc.) will benefit from the same cache.
     function scheduleMediaFetches() {
+        var fired = 0;
         for (var i = 0; i < propertiesModelId.count; i++) {
             var pid = String(propertiesModelId.get(i).propertyId || "");
             if (pid.length === 0)
@@ -98,13 +109,17 @@ Item {
                 continue;
             _mediaRequested[pid] = true;
             MediaViewModel.getMediaByProperty(pid);
+            fired++;
         }
+        if (fired > 0)
+            coverRefreshTimer.restart();
     }
 
-    // Read whatever media the shared MediaListModel already has for each
-    // row, pick the primary (or the first), and write it into imageUrl.
-    // Called whenever the media model settles.
+    // // Read whatever media the shared MediaListModel already has for each
+    // // row, pick the primary (or the first), and write it into imageUrl.
+    // // Called whenever the media model settles.
     function refreshCovers() {
+        var withCover = 0;
         for (var i = 0; i < propertiesModelId.count; i++) {
             var pid = String(propertiesModelId.get(i).propertyId || "");
             if (pid.length === 0)
@@ -123,32 +138,18 @@ Item {
                 cover = String(pick.url || pick.path || "");
             }
 
+            console.log("  pid:", pid, "| media count:", media ? media.length : -1, "| cover:", cover.length > 0 ? cover.substring(0, 60) + "..." : "(none)");
+
             if (String(propertiesModelId.get(i).imageUrl) !== cover)
                 propertiesModelId.setProperty(i, "imageUrl", cover);
+            if (cover.length > 0)
+                withCover++;
         }
+        console.log("refreshCovers: rows with cover =", withCover, "of", propertiesModelId.count);
     }
     Component.onCompleted: {
         reload();
         PropertyViewModel.getProperties();
-    }
-
-    Connections {
-        target: PropertyViewModel.propertyListModel
-        function onCountChanged() {
-            root.reload();
-        }
-        function onDataChanged() {
-            root.reload();
-        }
-        function onModelReset() {
-            root.reload();
-        }
-        function onRowsInserted() {
-            root.reload();
-        }
-        function onRowsRemoved() {
-            root.reload();
-        }
     }
 
     // MediaViewModel.isLoading flips false once the last in-flight media
@@ -178,6 +179,31 @@ Item {
         }
         function onRowsRemoved() {
             root.reload();
+        }
+    }
+
+    Connections {
+        target: coverRefreshTimer
+        function onTriggered() {
+            var before = 0;
+            for (var i = 0; i < propertiesModelId.count; i++)
+                if (String(propertiesModelId.get(i).imageUrl).length > 0)
+                    before++;
+
+            root.refreshCovers();
+
+            var after = 0;
+            for (var j = 0; j < propertiesModelId.count; j++)
+                if (String(propertiesModelId.get(j).imageUrl).length > 0)
+                    after++;
+
+            if (after === before) {
+                root._coverTicksWithoutChange++;
+                if (root._coverTicksWithoutChange >= 4)
+                    coverRefreshTimer.stop();
+            } else {
+                root._coverTicksWithoutChange = 0;
+            }
         }
     }
 }
