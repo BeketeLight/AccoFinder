@@ -3,7 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 Rectangle{
     id: root
-
+    //anchors.fill: parent
     property string  title: "Status"
     property double values: 0
     property string iconSource: ""
@@ -20,8 +20,8 @@ Rectangle{
 
     radius: 10
     color: isSelected ? Qt.lighter(cardBgColor, 1.05) : cardBgColor
-    //border.color : "#06B6D4"
-    //border.width: 1
+    border.color : "#FFFFFF"
+    border.width: 2
     //animation
     scale: cardMouseArea.pressed ? 0.96 : 1.0
         Behavior on scale {
@@ -29,31 +29,32 @@ Rectangle{
         }
     MouseArea{
         id: cardMouseArea
-        anchors.fill: parent
+        anchors.fill: root
         onClicked: root.clicked()
     }
     //Alignment in of componenets in cardBgColor:
     ColumnLayout{
         anchors.fill: parent
-            anchors.leftMargin: 12
-            anchors.rightMargin: 12
-            anchors.topMargin: 10
-            //anchors.bottomMargin: 10
-            spacing: 2
+        anchors.leftMargin: 12
+         anchors.rightMargin: 12
+        anchors.topMargin: 0
+        //anchors.bottomMargin: 10
+        spacing: 2
 
         Rectangle{
             id: iconRect
             width: 34
             height: 34
             radius: 17
-            color: root.iconBgColor
+            color: "white"//root.iconBgColor
             Layout.alignment: Qt.AlignHCenter
             ToolButton{
                 anchors.centerIn: parent
                 icon.source: root.iconSource
-                icon.height: 20
-                icon.width: 20
+                icon.height: 24
+                icon.width: 24
                 icon.color: "#6366F1"
+                Layout.alignment: Qt.AlignHCenter
             }
         }
         //card Label

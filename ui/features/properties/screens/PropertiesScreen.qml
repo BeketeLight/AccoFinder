@@ -41,6 +41,31 @@ Item {
                 icon.source: "qrc:/ui/assets/notification.svg"
                 onClicked: NavUtils.navigateToNotifications()
             }
+
+            // Unread badge on the agent dashboard bell (matches the admin
+            // dashboard): announcements broadcast to ALL land in the shared
+            // account-level list, so their unread count is shown here too.
+            Rectangle {
+                visible: NotificationViewModel.notificationListModel.unreadCount > 0
+                width: 16
+                height: 16
+                radius: 8
+                anchors.top: parent.top
+                anchors.right: parent.right
+                color: "#DC2626"
+                border.color: "#FFFFFF"
+                border.width: 1
+
+                Label {
+                    anchors.centerIn: parent
+                    text: NotificationViewModel.notificationListModel.unreadCount > 99
+                          ? "99+"
+                          : String(NotificationViewModel.notificationListModel.unreadCount)
+                    color: "#FFFFFF"
+                    font.pixelSize: 9
+                    font.bold: true
+                }
+            }
         }
     }
 

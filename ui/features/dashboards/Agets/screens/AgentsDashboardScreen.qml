@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import "../pages"
 import "../../../../components/indicators"
+import "../../../../utils/NavigationUtils.js" as NavUtils
 
 Item {
     id: root
@@ -10,6 +11,47 @@ Item {
     property string pageTitle: qsTr("Agent Dashboard")
     property bool showHeader: true
     property bool showBack: true
+
+    // Header bell (mirrors the admin dashboard): opens the account-level
+    // notification list, so announcements broadcast to ALL are visible from
+    // the agent dashboard too (an admin using it can see their own copy).
+    property Component rightComponentAction: Component {
+        Item {
+            implicitWidth: 36
+            implicitHeight: 36
+
+            ToolButton {
+                anchors.centerIn: parent
+                icon.color: "#1F2937"
+                icon.height: 24
+                icon.width: 24
+                icon.source: "qrc:/ui/assets/notification.svg"
+                onClicked: NavUtils.push(Qt.resolvedUrl("../../../notifications/screens/NotificationsScreen.qml"))
+            }
+
+            Rectangle {
+                visible: NotificationViewModel.notificationListModel.unreadCount > 0
+                width: 16
+                height: 16
+                radius: 8
+                anchors.top: parent.top
+                anchors.right: parent.right
+                color: "#DC2626"
+                border.color: "#FFFFFF"
+                border.width: 1
+
+                Label {
+                    anchors.centerIn: parent
+                    text: NotificationViewModel.notificationListModel.unreadCount > 99
+                          ? "99+"
+                          : String(NotificationViewModel.notificationListModel.unreadCount)
+                    color: "#FFFFFF"
+                    font.pixelSize: 9
+                    font.bold: true
+                }
+            }
+        }
+    }
 
     signal goBack()
     signal addPropertyRequested()

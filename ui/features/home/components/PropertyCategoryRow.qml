@@ -12,6 +12,14 @@ Item {
 
     height: 48
 
+    onCurrentIndexChanged: {
+        if (listView.count === 0)
+            return;
+
+        // Center the selected chip (MovieBox style)
+        listView.positionViewAtIndex(currentIndex, ListView.Center);
+    }
+
     ListView {
         id: listView
         anchors.fill: parent
@@ -27,6 +35,8 @@ Item {
         footer: Item {
             width: 16
         }
+        currentIndex: root.currentIndex
+        highlightRangeMode: ListView.NoHighlightRange
 
         delegate: Item {
             id: delegateRoot
