@@ -51,12 +51,44 @@ QHash<int, QByteArray> MediaListModel::roleNames() const
 
 void MediaListModel::setMedia(const QList<QSharedPointer<Media>>& newMedia)
 {
-    beginResetModel();
-    m_media.clear();
-    m_media.reserve(newMedia.size());
-    for (const QSharedPointer<Media>& media : newMedia)
-        m_media.append(media);
-    endResetModel();
+    // Merge by mediaId instead of wiping. MediaViewModel calls this once per
+    // /media?propertyId=X response, and each response only carries one
+    // property's media. If we cleared the whole vector each time, previously
+    // loaded properties' media would disappear — which is exactly what was
+    // happening when Home fetched media for multiple properties in parallel.
+    //
+    // New rows are appended; rows whose id already exists are replaced in
+    // place. The model grows to hold everys property's media, and
+    // mediaForProperty(pid) keeps working for all of them.
+
+    QHash<QString, int> indexById;
+    indexById.reserve(m_media.size());
+    for (int i = 0; i < m_media.size(); ++i) {
+        if (m_media[i])
+            indexById.insert(m_media[i]->getId(), i);
+    }
+
+    for (const QSharedPointer<Media>& incoming : newMedia) {
+        if (!incoming)
+            continue;
+
+        const QString id = incoming->getId();
+
+        if (indexById.contains(id)) {
+            // Row already exists: replace it in place and notify.
+            const int row = indexById.value(id);
+            m_media[row] = incoming;
+            const QModelIndex idx = index(row, 0);
+            emit dataChanged(idx, idx);
+        } else {
+            // New media id: append.
+            const int row = m_media.size();
+            beginInsertRows(QModelIndex(), row, row);
+            m_media.append(incoming);
+            endInsertRows();
+            indexById.insert(id, row);
+        }
+    }
 }
 
 void MediaListModel::appendMedia(const QSharedPointer<Media>& media)
