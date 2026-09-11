@@ -9,6 +9,9 @@ import "../../../utils/NavigationUtils.js" as NavUtils
 Item {
     id: root
 
+    // Injected by HomePage — the one shared PropertiesModel.
+    property var propertiesModelRef: null
+
     function navigateToQuarters(quartersData) {
         //console.log(JSON.stringify(quartersData));
         NavUtils.push(Qt.resolvedUrl("../delegates/QuartersDetailDelegate.qml"), {
@@ -53,7 +56,7 @@ Item {
                 spacing: 8
 
                 Repeater {
-                    model: PropertyListModel {}
+                    model: root.propertiesModelRef ? root.propertiesModelRef.propertiesModel : null
                     QuartersComponent {
                         width: (flow.width - 24 - 16) / 3
                         height: width * 1.25

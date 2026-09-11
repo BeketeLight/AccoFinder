@@ -48,7 +48,7 @@ Rectangle {
             Image {
                 id: roomImg
                 anchors.fill: parent
-                source: roomCard.imageUrl || "../../assets/images/placeholder.png"
+                source: roomCard.imageUrl
                 fillMode: Image.PreserveAspectCrop
                 asynchronous: true
 

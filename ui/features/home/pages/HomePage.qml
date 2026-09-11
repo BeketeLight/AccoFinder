@@ -11,6 +11,10 @@ Page {
         color: "#FFFFFF"
     }
 
+    // ONE shared model for all four tabs.
+    PropertiesModel {
+        id: sharedProperties
+    }
     // ===== Header as overlay (not using Page.header) =====
     HeaderComponent {
         id: headerComponent
@@ -76,30 +80,35 @@ Page {
                 // When user swipes → update chips
                 onCurrentIndexChanged: {
                     categoryRow.currentIndex = currentIndex;
+                    homePageId.applyTabFilter(currentIndex);
                 }
 
                 // Page 0 - All
                 AllPage {
                     width: contentSwipe.width
                     height: contentSwipe.height
+                    propertiesModelRef: sharedProperties
                 }
 
                 // Page 1 - Hostels
                 HostelsPage {
                     width: contentSwipe.width
                     height: contentSwipe.height
+                    propertiesModelRef: sharedProperties
                 }
 
                 // Page 2 - Rooms
                 QuartersPage {
                     width: contentSwipe.width
                     height: contentSwipe.height
+                    propertiesModelRef: sharedProperties
                 }
 
                 // Page 3 - Houses
                 HousesPage {
                     width: contentSwipe.width
                     height: contentSwipe.height
+                    propertiesModelRef: sharedProperties
                 }
             }
             Item {
@@ -109,5 +118,23 @@ Page {
                 // height: 48 + 48
             }
         }
+    }
+
+    // Maps a tab index to its propertyType filter.
+    function applyTabFilter(index) {
+        var t = "ALL";
+        if (index === 1)
+            t = "HOSTEL";
+        else if (index === 2)
+            t = "QUARTER";
+        else if (index === 3)
+            t = "WHOLE";
+        sharedProperties.setFilter(t);
+    }
+
+    Component.onCompleted: {
+        // SwipeView doesn't emit currentIndexChanged for its initial value,
+        // so seed the filter explicitly.
+        applyTabFilter(contentSwipe.currentIndex);
     }
 }

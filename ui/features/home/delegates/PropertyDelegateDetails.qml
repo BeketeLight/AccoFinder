@@ -33,12 +33,77 @@ Page {
     property string imageUrl: ""
     property string imageUrls: ""
     property var imageList: root.imageUrls ? root.imageUrls.split(",") : []
+    property var amenities: []
 
     // ========== AGENT ==========
     property string agentFirstName: "John"
     property string agentLastName: "Banda"
     property real agentRating: 4.6
     property int agentReviewCount: 28
+
+    function amenityTokens() {
+        var src = root.amenities;
+        if (!src)
+            return [];
+        if (Array.isArray(src))
+            return src;
+        if (typeof src === "string")
+            return src.split("|").filter(function (s) {
+                return s.length > 0;
+            });
+        // last-ditch fallback for QQmlListModel if any caller still passes one
+        if (src.count !== undefined && typeof src.get === "function") {
+            var out = [];
+            for (var i = 0; i < src.count; i++) {
+                var row = src.get(i);
+                var v = (row && row.modelData !== undefined) ? row.modelData : row;
+                if (v !== null && v !== undefined && String(v).length > 0)
+                    out.push(String(v));
+            }
+            return out;
+        }
+        return [];
+    }
+
+    function amenityLabel(token) {
+        var map = {
+            "WIFI": "Wi-Fi",
+            "PARKING": "Parking",
+            "SECURITY": "Security",
+            "WATER": "Water",
+            "ELECTRICITY": "Electricity",
+            "FURNISHED": "Furnished",
+            "AC": "A/C",
+            "GARDEN": "Garden",
+            "BALCONY": "Balcony",
+            "BOREHOLE": "Borehole",
+            "COOKER": "Cooker"
+        };
+        var key = String(token).toUpperCase();
+        console.log("amenityLabel key if avaialabe");
+        console.log(key);
+        return map[key] !== undefined ? map[key] : key;
+    }
+
+    function amenityIcon(token) {
+        var map = {
+            "WIFI": "📶",
+            "PARKING": "🅿️",
+            "SECURITY": "🔒",
+            "WATER": "💧",
+            "ELECTRICITY": "⚡",
+            "FURNISHED": "🛋️",
+            "AC": "❄️",
+            "GARDEN": "🌳",
+            "BALCONY": "🌅",
+            "BOREHOLE": "🚰",
+            "COOKER": "🍳"
+        };
+        var key = String(token).toUpperCase();
+        console.log("amenityIcon key if avaialabe");
+        console.log(key);
+        return map[key] !== undefined ? map[key] : "✓";
+    }
 
     // ========== ROOMS DATA ==========
     property var roomsModel: [
@@ -252,6 +317,76 @@ Page {
                 }
             }
 
+            Rectangle {
+                Layout.fillWidth: true
+                height: 8
+                color: "#F5F5F5"
+            }
+
+            // ===== AMENITIES SECTION =====
+            ColumnLayout {
+                id: amenitiesSection
+                Layout.fillWidth: true
+                Layout.margins: 10
+                spacing: 12
+
+                RowLayout {
+                    Layout.fillWidth: true
+
+                    Label {
+                        text: "Amenities"
+                        font.pixelSize: 16
+                        font.weight: Font.DemiBold
+                        color: "#1F2937"
+                        Layout.fillWidth: true
+                    }
+                }
+
+                // Amenities grid
+                Flow {
+                    id: amenitiesFlow
+                    Layout.fillWidth: true
+                    spacing: 8
+
+                    Repeater {
+                        model: root.amenityTokens()
+
+                        delegate: Rectangle {
+                            required property string modelData          // ← the amenity token
+
+                            width: (amenitiesFlow.width - amenitiesFlow.spacing * 2) / 3
+                            height: 50
+                            radius: 10
+                            color: "#F0FDF4"
+                            border.color: "#BBF7D0"
+                            border.width: 1
+
+                            ColumnLayout {
+                                anchors.centerIn: parent
+                                spacing: 4
+
+                                Label {
+                                    text: root.amenityIcon(modelData)
+                                    font.pixelSize: 22
+                                    horizontalAlignment: Text.AlignHCenter
+                                    Layout.alignment: Qt.AlignHCenter
+                                }
+
+                                Label {
+                                    text: root.amenityLabel(modelData)
+                                    font.pixelSize: 11
+                                    color: "#166534"
+                                    font.weight: Font.Medium
+                                    horizontalAlignment: Text.AlignHCenter
+                                    Layout.alignment: Qt.AlignHCenter
+                                    Layout.maximumWidth: parent.width
+                                    // elide: Text.ElideRight
+                                }
+                            }
+                        }
+                    }
+                }
+            }
             Rectangle {
                 Layout.fillWidth: true
                 height: 8

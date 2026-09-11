@@ -16,6 +16,7 @@ Item {
     property string status: "PENDING"
     property bool isVerified: false
     property bool isInfoSectionVisible: true
+    property var amenities: []
 
     property real rating: 4.5          // e.g. 4.5
     property int reviewCount: 12       // e.g. 12 reviews
@@ -42,11 +43,12 @@ Item {
             radius: 16
             clip: true
 
-            Image {
+            RemoteImage {
                 id: img
                 anchors.fill: parent
                 anchors.margins: borderRect.border.width
-                source: root.imageUrl
+                remoteUrl: root.imageUrl
+                // Everything below is identical to before.
                 fillMode: Image.PreserveAspectCrop
                 asynchronous: true
                 cache: true
@@ -157,23 +159,9 @@ Item {
 
                 // Simple star display
                 Label {
-                    text: "★".repeat(Math.floor(root.rating)) + (root.rating % 1 >= 0.5 ? "½" : "")
+                    text: root.title
                     font.pixelSize: 11
                     color: "#F59E0B"          // amber/gold
-                }
-
-                Label {
-                    text: root.rating.toFixed(1)
-                    font.pixelSize: 10
-                    color: "#6B7280"
-                    anchors.verticalCenter: parent.verticalCenter
-                }
-
-                Label {
-                    text: "(" + root.reviewCount + ")"
-                    font.pixelSize: 10
-                    color: "#9CA3AF"
-                    anchors.verticalCenter: parent.verticalCenter
                 }
             }
         }
@@ -197,6 +185,8 @@ Item {
         anchors.fill: parent
         cursorShape: Qt.PointingHandCursor
         onClicked: {
+            console.log("cjecking ifthe amenenites are avalaiba from propertydelefate");
+            console.log(root.amenities[0]);
             NavUtils.push(Qt.resolvedUrl("./PropertyDelegateDetails.qml"), {
                 propertyId: root.propertyId,
                 propertyTitle: root.title,
@@ -205,7 +195,7 @@ Item {
                 status: root.status,
                 isVerified: root.isVerified,
                 imageUrl: root.imageUrl,
-                imageUrls: root.imageUrls
+                amenities: root.amenities
             });
             root.clicked();
         }

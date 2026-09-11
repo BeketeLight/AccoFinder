@@ -68,6 +68,7 @@ void RoomListModel::setRooms(QList<QSharedPointer<Room>> newRooms)
     beginResetModel();
     m_rooms = newRooms;
     endResetModel();
+    emit countChanged(m_rooms.size());
 }
 
 void RoomListModel::apppendRoom(QSharedPointer<Room> room)
@@ -80,6 +81,7 @@ void RoomListModel::apppendRoom(QSharedPointer<Room> room)
     m_rooms.append(room);
 
     endInsertRows();
+    emit countChanged(m_rooms.size());
 }
 
 void RoomListModel::upsertRoom(QSharedPointer<Room> room)
@@ -106,6 +108,7 @@ void RoomListModel::removeRoom(const QString& roomId)
             return;
         }
     }
+    emit countChanged(m_rooms.size());
 }
 
 int RoomListModel::availableCount() const

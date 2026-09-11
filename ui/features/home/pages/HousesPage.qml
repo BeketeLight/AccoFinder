@@ -8,6 +8,9 @@ import "../models"
 Item {
     id: root
 
+    // Injected by HomePage — the one shared PropertiesModel.
+    property var propertiesModelRef: null
+
     Flickable {
         anchors.fill: parent
         contentWidth: width
@@ -65,7 +68,7 @@ Item {
                 spacing: 8
 
                 Repeater {
-                    model: PropertyListModel {}
+                    model: root.propertiesModelRef ? root.propertiesModelRef.propertiesModel : null
                     PropertyCardDelegate {
                         width: (flow.width - 24 - 16) / 3
                         height: width * 1.25
@@ -74,7 +77,6 @@ Item {
                         location: model.location
                         price: model.price
                         imageUrl: model.imageUrl
-                        imageUrls: model.imageUrls
                         status: model.status
                         isVerified: model.isVerified
                     }

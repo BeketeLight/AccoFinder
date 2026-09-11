@@ -47,6 +47,9 @@ public:
     // {roomId, roomType, price, available} maps.
     QVariantList roomsForProperty(const QString& propertyId) const;
 
+signals:
+    void countChanged(int newCount);
+
 private:
     QVector<QSharedPointer<Room>> m_rooms;
 };

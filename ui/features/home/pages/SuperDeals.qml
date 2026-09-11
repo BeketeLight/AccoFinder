@@ -20,6 +20,8 @@ Item {
 
     // How many times we repeat the model for looping
     readonly property int loopCopies: 3
+    // Injected by HomePage — the one shared PropertiesModel.
+    property var propertiesModelRef: null
 
     ListModel {
         id: loopModel
