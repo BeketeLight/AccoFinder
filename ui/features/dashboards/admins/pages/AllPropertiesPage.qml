@@ -5,6 +5,7 @@ import "../../../properties/models"
 import "../../../properties/components"
 import "../../../../components/inputs"
 import "../../../../utils/Utils.js" as Utils
+import "../delegates"
 
 Item {
     id: root
@@ -115,104 +116,17 @@ Item {
         Repeater {
             model: root.propertiesModel.propertiesModel
 
-            delegate: Rectangle {
-                id: propCard
-                required property var model
-                required property int index
-                Layout.fillWidth: true
-                implicitHeight: propRow.implicitHeight + 24
-                radius: 12
-                color: propMouse.pressed ? root.softBlueColor : root.surfaceColor
-                border.color: root.borderColor
-                border.width: 1
-                visible: model.matches
-
-                RowLayout {
-                    id: propRow
-                    anchors.fill: parent
-                    anchors.margins: 12
-                    spacing: 12
-
-                    Rectangle {
-                        Layout.preferredWidth: 42
-                        Layout.preferredHeight: 42
-                        radius: 12
-                        color: root.softBlueColor
-
-                        Label {
-                            anchors.centerIn: parent
-                            text: propCard.model.title.charAt(0)
-                            color: root.primaryColor
-                            font.pixelSize: 17
-                            font.bold: true
-                        }
-                    }
-
-                    ColumnLayout {
-                        Layout.fillWidth: true
-                        spacing: 2
-
-                        Label {
-                            Layout.fillWidth: true
-                            text: propCard.model.title
-                            color: root.textColor
-                            font.pixelSize: 14
-                            font.bold: true
-                            elide: Text.ElideRight
-                        }
-
-                        Label {
-                            Layout.fillWidth: true
-                            text: propCard.model.district + " \u00B7 " + propCard.model.village
-                            color: root.mutedColor
-                            font.pixelSize: 11
-                            elide: Text.ElideRight
-                        }
-
-                        Label {
-                            Layout.fillWidth: true
-                            text: qsTr("Landlord: %1").arg(propCard.model.landlord)
-                            color: root.mutedColor
-                            font.pixelSize: 10
-                            elide: Text.ElideRight
-                        }
-                    }
-
-                    Rectangle {
-                        implicitHeight: 22
-                        implicitWidth: statusLabel.implicitWidth + 14
-                        radius: 11
-                        color: {
-                            var s = String(propCard.model.status).toUpperCase()
-                            if (s === "VERIFIED") return "#ECFDF5"
-                            if (s === "PENDING") return "#FFFBEB"
-                            if (s === "REJECTED") return "#FEF2F2"
-                            return "#F3F4F6"
-                        }
-
-                        Label {
-                            id: statusLabel
-                            anchors.centerIn: parent
-                            text: root.propertiesModel.prettyStatus(propCard.model.status)
-                            color: {
-                                var s = String(propCard.model.status).toUpperCase()
-                                if (s === "VERIFIED") return "#166534"
-                                if (s === "PENDING") return "#B45309"
-                                if (s === "REJECTED") return "#B91C1C"
-                                return "#6B7280"
-                            }
-                            font.pixelSize: 10
-                            font.bold: true
-                        }
-                    }
-                }
-
-                MouseArea {
-                    id: propMouse
-                    anchors.fill: parent
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: root.propertyClicked(propCard.model.propertyId)
-                }
+            delegate: AdminPropertyDelegate {
+                propertyId: model.propertyId
+                title: model.title
+                district: model.district
+                village: model.village
+                landlord: model.landlord
+                status: model.status
+                statusText: root.propertiesModel.prettyStatus(model.status)
+                approvedByName: model.approvedByName
+                matches: model.matches
+                onPropertyClicked: (propertyId) => root.propertyClicked(propertyId)
             }
         }
 

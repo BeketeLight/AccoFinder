@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import "../pages"
 import "../../../utils/NavigationUtils.js" as NavUtils
+import "../../../components/navigations"
 
 Item {
     id: root
@@ -29,43 +30,8 @@ Item {
     }
 
     property Component rightComponentAction: Component {
-        Item {
-            implicitWidth: 36
-            implicitHeight: 36
-
-            ToolButton {
-                anchors.centerIn: parent
-                icon.color: "#1F2937"
-                icon.height: 24
-                icon.width: 24
-                icon.source: "qrc:/ui/assets/notification.svg"
-                onClicked: NavUtils.navigateToNotifications()
-            }
-
-            // Unread badge on the agent dashboard bell (matches the admin
-            // dashboard): announcements broadcast to ALL land in the shared
-            // account-level list, so their unread count is shown here too.
-            Rectangle {
-                visible: NotificationViewModel.notificationListModel.unreadCount > 0
-                width: 16
-                height: 16
-                radius: 8
-                anchors.top: parent.top
-                anchors.right: parent.right
-                color: "#DC2626"
-                border.color: "#FFFFFF"
-                border.width: 1
-
-                Label {
-                    anchors.centerIn: parent
-                    text: NotificationViewModel.notificationListModel.unreadCount > 99
-                          ? "99+"
-                          : String(NotificationViewModel.notificationListModel.unreadCount)
-                    color: "#FFFFFF"
-                    font.pixelSize: 9
-                    font.bold: true
-                }
-            }
+        AppNotificationBell {
+            notificationScreen: Qt.resolvedUrl("../../notifications/screens/NotificationsScreen.qml")
         }
     }
 

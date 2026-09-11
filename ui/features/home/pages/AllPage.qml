@@ -18,26 +18,13 @@ Item {
         Column {
             id: col
             width: parent.width
-            spacing: 0
+            spacing: 3
 
             SuperDeals {
                 width: parent.width
                 cardWidth: 190
-                cardHeight: 150
-                model: PropertyListModel {}
-            }
-
-            Rectangle {
-                width: parent.width
-                height: 8
-                color: "#F5F5F5"
-            }
-
-            SuperDeals {
-                title: "Near You"
-                width: parent.width
-                cardWidth: 130
-                cardHeight: 160
+                cardHeight: 140
+                infoSectionVisible: false
                 model: PropertyListModel {}
             }
 

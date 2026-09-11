@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import "../../properties/components"
+import "../delegates"
 
 Item {
     id: root
@@ -63,73 +63,11 @@ Item {
                 Repeater {
                     model: root.disputesModel
 
-                    delegate: ColumnLayout {
-                        required property var model
-                        required property int index
-                        Layout.fillWidth: true
-                        spacing: 0
-
-                        Rectangle {
-                            Layout.fillWidth: true
-                            implicitHeight: disputeRow.implicitHeight + 20
-                            color: "transparent"
-
-                            RowLayout {
-                                id: disputeRow
-                                anchors.fill: parent
-                                anchors.margins: 10
-                                spacing: 10
-
-                                Rectangle {
-                                    Layout.preferredWidth: 34
-                                    Layout.preferredHeight: 34
-                                    radius: 17
-                                    color: root.tintBg(model.status)
-
-                                    Label {
-                                        anchors.centerIn: parent
-                                        text: "?"
-                                        color: root.tintFg(model.status)
-                                        font.pixelSize: 15
-                                        font.bold: true
-                                    }
-                                }
-
-                                ColumnLayout {
-                                    Layout.fillWidth: true
-                                    spacing: 1
-
-                                    Label {
-                                        Layout.fillWidth: true
-                                        text: model.issue || qsTr("Dispute")
-                                        color: root.textColor
-                                        font.pixelSize: 13
-                                        font.bold: true
-                                        elide: Text.ElideRight
-                                    }
-
-                                    Label {
-                                        Layout.fillWidth: true
-                                        text: qsTr("Booking %1").arg(model.bookingId || "—")
-                                        color: root.mutedColor
-                                        font.pixelSize: 11
-                                        elide: Text.ElideRight
-                                    }
-                                }
-
-                                StatusChip {
-                                    textValue: String(model.status).length > 0 ? model.status : qsTr("Open")
-                                    variant: String(model.status).toLowerCase() === "resolved" ? "warning" : "danger"
-                                }
-                            }
-                        }
-
-                        Rectangle {
-                            visible: index < root.disputesModel.count - 1
-                            Layout.fillWidth: true
-                            Layout.preferredHeight: 1
-                            color: root.borderColor
-                        }
+                    delegate: DisputeDelegate {
+                        issue: model.issue
+                        bookingId: model.bookingId
+                        status: model.status
+                        showSeparator: index < root.disputesModel.count - 1
                     }
                 }
             }

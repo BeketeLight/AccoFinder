@@ -166,6 +166,16 @@ ApplicationWindow {
                 loader.source = "./ui/features/auth/pages/CreateAccountPage.qml"
                 bottomNavBar.currentIndex = 4
             }
+            function onAccountSuspended() {
+                // Force logout of an already-signed-in user whose account was
+                // suspended (detected mid-session via fetchProfile). During a
+                // fresh login attempt the user is not logged in yet, so the
+                // SignInPage handler simply shows the suspension message.
+                if (!AppSettings.isLoggedIn())
+                    return
+                AuthController.logOut()
+                NavUtils.resetToSignIn()
+            }
             function onSignInSucceded(user) {
                 mainStack.stackView.clear()
                 var role = AppSettings.userType()

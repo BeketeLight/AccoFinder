@@ -168,14 +168,26 @@ public:
     Q_INVOKABLE void setRecentRoomId(const QString &value);
     Q_INVOKABLE QString recentRoomId() const;
 
+    // =========================
+    // CAMERA (transient, in-memory)
+    // =========================
+    // Stores the path of the photo just captured by the full-screen camera
+    // page so the caller can pick it up after the page is popped. Not persisted.
+    Q_INVOKABLE void setCapturedPhotoPath(const QString &value);
+    Q_INVOKABLE QString capturedPhotoPath() const;
+
 signals:
     // Emitted whenever login state, role or user identity changes so that
     // QML views with non-reactive Q_INVOKABLE bindings (e.g. the footer)
     // can refresh themselves.
     void userSessionChanged();
 
+    // Emitted when the camera page stores a freshly captured photo path.
+    void capturedPhotoPathChanged();
+
 private:
     QSettings m_settings;
+    QString m_capturedPhotoPath;
 };
 
 #endif // APPSETTINGS_H

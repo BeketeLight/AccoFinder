@@ -211,6 +211,26 @@ void Property::setVerificationReason(const QString &reason)
     m_verificationReason = reason;
 }
 
+QString Property::getApprovedById() const
+{
+    return m_approvedById;
+}
+
+void Property::setApprovedById(const QString &approvedById)
+{
+    m_approvedById = approvedById;
+}
+
+QString Property::getApprovedByName() const
+{
+    return m_approvedByName;
+}
+
+void Property::setApprovedByName(const QString &approvedByName)
+{
+    m_approvedByName = approvedByName;
+}
+
 int Property::getRoomCount() const
 {
     return m_roomCount;
@@ -219,6 +239,16 @@ int Property::getRoomCount() const
 void Property::setRoomCount(int roomCount)
 {
     m_roomCount = roomCount;
+}
+
+QJsonArray Property::getCreatedRooms() const
+{
+    return m_createdRooms;
+}
+
+void Property::setCreatedRooms(const QJsonArray &rooms)
+{
+    m_createdRooms = rooms;
 }
 
 QString Property::firstName() const

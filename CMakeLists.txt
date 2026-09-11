@@ -12,6 +12,7 @@ list(APPEND CMAKE_PREFIX_PATH "/opt/Qt/6.11.1/gcc_64")
 find_package(Qt6 REQUIRED COMPONENTS Quick Core Network Gui)
 find_package(Qt6 REQUIRED COMPONENTS QuickControls2)
 find_package(Qt6 REQUIRED COMPONENTS WebSockets)
+find_package(Qt6 REQUIRED COMPONENTS Multimedia)
 
 qt_standard_project_setup(REQUIRES 6.10)
 
@@ -22,6 +23,7 @@ qt_add_executable(appAccoFinder
 qt_add_qml_module(appAccoFinder
     URI AccoFinder
     VERSION 1.0
+    IMPORTS QtMultimedia
     QML_FILES
         Main.qml
         ui/app/MainStackview.qml
@@ -30,6 +32,7 @@ qt_add_qml_module(appAccoFinder
         ui/components/dialogs/AppLoadingDialog.qml
         ui/components/dialogs/AppConfirmationDialog.qml
         ui/components/dialogs/AppImageLightbox.qml
+        ui/components/pages/CameraCapturePage.qml
         ui/components/buttons/AppIconButton.qml
         ui/components/buttons/AppPrimaryButton.qml
         ui/components/buttons/AppSecondaryButton.qml
@@ -38,8 +41,12 @@ qt_add_qml_module(appAccoFinder
         ui/components/inputs/AppTextInput.qml
         ui/components/indicators/AppStatusIndicator.qml
         ui/components/indicators/AppSpinner.qml
+        ui/components/indicators/AppEmptyState.qml
+        ui/components/pages/AppScrollablePage.qml
+        ui/components/scrollbars/AppScrollBar.qml
         ui/components/cards/ContactCard.qml
         ui/components/navigations/AppBottomNavBar.qml
+        ui/components/navigations/AppNotificationBell.qml
         ui/components/navigations/AdminDrawer.qml
         ui/components/navigations/AgentDrawer.qml
 
@@ -84,19 +91,16 @@ qt_add_qml_module(appAccoFinder
         ui/features/home/models/PropertyCategoryModel.qml
         ui/features/home/models/PropertyListModel.qml
         ui/features/home/pages/SuperDeals.qml
-        ui/features/home/screens/PropertiesScreen.qml
-        ui/features/home/screens/PropertyDetailScreen.qml
-        ui/features/home/screens/SearchPropertiesScreen.qml
         ui/features/home/components/PropertyEmptyState.qml
         ui/features/home/components/PropertyFilterBar.qml
         ui/features/home/components/PropertyLoadingSkeleton.qml
         ui/features/home/components/StickyActionBar.qml
-        ui/features/home/models/PropertyListModel.qml
         ui/features/home/pages/AllPage.qml
         ui/features/home/pages/HostelsPage.qml
-        ui/features/home/pages/RoomsPage.qml
+        ui/features/home/pages/QuartersPage.qml
         ui/features/home/pages/HousesPage.qml
-        ui/features/home/pages/StudiosPage.qml
+        ui/features/home/delegates/QuartersDetailDelegate.qml
+       ui/features/home/components/QuartersComponent.qml
         #======FEATURE-NOTIFICATIONS=====
         ui/features/notifications/components/NotificationItem.qml
         ui/features/notifications/delegates/NotificationDelegate.qml
@@ -127,7 +131,23 @@ qt_add_qml_module(appAccoFinder
         ui/features/dashboards/admins/screens/AgentApplicationDetailsScreen.qml
         ui/features/dashboards/admins/pages/AllPropertiesPage.qml
         ui/features/dashboards/admins/screens/AllPropertiesScreen.qml
+        ui/features/dashboards/admins/delegates/ActivityRowDelegate.qml
+        ui/features/dashboards/admins/delegates/AdminPropertyDelegate.qml
+        ui/features/dashboards/admins/delegates/AgentRowDelegate.qml
+        ui/features/dashboards/admins/delegates/AgentApplicationDelegate.qml
+        ui/features/dashboards/admins/delegates/DisputeCardDelegate.qml
+        ui/features/dashboards/admins/delegates/ApprovalRowDelegate.qml
+        ui/features/dashboards/admins/delegates/AdminNotificationDelegate.qml
+        ui/features/dashboards/admins/delegates/PaymentRowDelegate.qml
+        ui/features/dashboards/admins/delegates/CommissionRowDelegate.qml
+        ui/features/dashboards/admins/delegates/PayoutRowDelegate.qml
+        ui/features/dashboards/admins/delegates/UserRowDelegate.qml
         #======FEATURE-AUTH-GLOBAL======
+        ui/features/auth/components/AuthHeaderComponent.qml
+        ui/features/auth/components/AuthTextField.qml
+        ui/features/auth/components/AuthInfoCard.qml
+        ui/features/auth/components/AuthContinueButton.qml
+        ui/features/auth/components/AuthErrorLabel.qml
         ui/features/auth/screens/ForgotPasswordScreen.qml
         ui/features/auth/screens/OtpScree.qml
         ui/features/auth/screens/SignInScreen.qml
@@ -173,6 +193,7 @@ qt_add_qml_module(appAccoFinder
         ui/features/payments/screens/PaymentsScreen.qml
         #======FEATURE-PROPERTIES======
         ui/features/properties/components/StatCard.qml
+        ui/features/properties/components/StatSummaryBar.qml
         ui/features/properties/components/StatusChip.qml
         ui/features/properties/components/SectionHeader.qml
         ui/features/dashboards/models/AgentDashboardModel.qml
@@ -195,6 +216,9 @@ qt_add_qml_module(appAccoFinder
         ui/features/properties/pages/PropertyDetailsPage.qml
         ui/features/properties/pages/DraftsPage.qml
         ui/features/properties/pages/MyPropertiesSection.qml
+        ui/features/properties/delegates/AgentPropertyCardDelegate.qml
+        ui/features/properties/delegates/DraftCardDelegate.qml
+        ui/features/properties/delegates/RoomCardDelegate.qml
         ui/features/properties/screens/PropertiesScreen.qml
         ui/features/properties/screens/AddPropertyScreen.qml
         ui/features/properties/screens/DraftsScreen.qml
@@ -205,6 +229,9 @@ qt_add_qml_module(appAccoFinder
         QML_FILES ui/components/navigations/AppHeader.qml
         QML_FILES ui/features/dashboards/Agets/pages/AgentsDashboardPage.qml
         QML_FILES ui/features/dashboards/Agets/screens/AgentsDashboardScreen.qml
+        QML_FILES ui/features/dashboards/Agets/delegates/AttentionRowDelegate.qml
+        QML_FILES ui/features/dashboards/Agets/delegates/BookingRowDelegate.qml
+        QML_FILES ui/features/dashboards/Agets/delegates/AgentDisputeRowDelegate.qml
 
     RESOURCES
         Rescources.qrc
@@ -333,7 +360,7 @@ target_include_directories(AccoFinderLogic
 )
 
 target_link_libraries(AccoFinderLogic
-    PUBLIC Qt6::Core Qt6::Network Qt6::Gui Qt6::Quick Qt6::WebSockets
+    PUBLIC Qt6::Core Qt6::Network Qt6::Gui Qt6::Quick Qt6::WebSockets Qt6::Multimedia
 )
 
 # ─────────────────────────────────────────────────────────────
@@ -546,6 +573,7 @@ set_target_properties(appAccoFinder PROPERTIES
 target_link_libraries(appAccoFinder
     PRIVATE Qt6::Quick Qt6::Core
     PRIVATE Qt6::QuickControls2
+    PRIVATE Qt6::Multimedia
     PRIVATE AccoFinderLogic
 )
 

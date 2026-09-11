@@ -91,6 +91,12 @@ QVariant PropertyListModel::data(const QModelIndex &index, int role) const
         case RejectionReasonRole:
             return property->getVerificationReason();
 
+        case ApprovedByIdRole:
+            return property->getApprovedById();
+
+        case ApprovedByNameRole:
+            return property->getApprovedByName();
+
     }
 
     // FIXME: Implement me!
@@ -120,7 +126,9 @@ QHash<int, QByteArray> PropertyListModel::roleNames() const
         {IsActiveRole, "isActive"},
         {PropertyTypeRole, "propertyType"},
         {RoomCountRole, "roomCount"},
-        {RejectionReasonRole, "rejectionReason"}
+        {RejectionReasonRole, "rejectionReason"},
+        {ApprovedByIdRole, "approvedById"},
+        {ApprovedByNameRole, "approvedByName"}
     };
     return mapping;
 }
@@ -213,6 +221,8 @@ QVariantMap PropertyListModel::at(int index) const
     row["active"] = data(idx, IsActiveRole);
     row["roomCount"] = data(idx, RoomCountRole);
     row["rejectionReason"] = data(idx, RejectionReasonRole);
+    row["approvedById"] = data(idx, ApprovedByIdRole);
+    row["approvedByName"] = data(idx, ApprovedByNameRole);
     return row;
 }
 

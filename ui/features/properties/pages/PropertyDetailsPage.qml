@@ -5,6 +5,7 @@ import QtQuick.Dialogs
 import "../components"
 import "../../../components/inputs"
 import "../../../components/indicators"
+import "../../../components/scrollbars"
 import "../../../components/cards"
 import "../../../components/dialogs"
 import "../../../utils" as UtilsModule
@@ -36,6 +37,10 @@ Page {
     // verificationStatus mirrors the backend enum: PENDING / VERIFIED / REJECTED ("" = local draft)
     property string verificationStatus: "PENDING"
     property string rejectionReason: ""
+    // Admin who approved this listing (VERIFIED). Populated from the property
+    // payload's approvedBy via applyPayload so the owner can see who verified it.
+    property string approvedById: ""
+    property string approvedByName: ""
     property string descriptionTextValue: qsTr("Modern three-bedroom house with spacious rooms, tiled floors and a perimeter fence. Close to shops and public transport.")
     property string landlordName: qsTr("Bryan Phiri")
     property string landlordPhone: qsTr("+265 999 123 456")
@@ -191,6 +196,10 @@ Page {
             root.verificationStatus = String(p.verificationStatus)
         if (p.rejectionReason !== undefined)
             root.rejectionReason = String(p.rejectionReason)
+        if (p.approvedByName !== undefined)
+            root.approvedByName = String(p.approvedByName)
+        if (p.approvedById !== undefined)
+            root.approvedById = String(p.approvedById)
         if (p.draftKey !== undefined)
             root.draftKey = String(p.draftKey)
         root.loadRooms()
@@ -852,7 +861,7 @@ Page {
         contentHeight: detailsColumn.implicitHeight + 32
         clip: true
 
-        ScrollBar.vertical: ScrollBar { }
+        ScrollBar.vertical: AppScrollBar { }
 
         ColumnLayout {
             id: detailsColumn
@@ -1030,6 +1039,17 @@ Page {
                                 font.pixelSize: 11
                             }
                         }
+                    }
+
+                    Label {
+                        visible: !root.editMode
+                            && String(root.verificationStatus).toUpperCase() === "VERIFIED"
+                            && root.approvedByName.length > 0
+                        Layout.fillWidth: true
+                        text: qsTr("Approved by %1").arg(root.approvedByName)
+                        color: Qt.rgba(1, 1, 1, 0.85)
+                        font.pixelSize: 12
+                        elide: Text.ElideRight
                     }
                 }
             }
@@ -1618,20 +1638,21 @@ Page {
                                         font.bold: true
                                     }
 
-                                    TextField {
+                                    AppTextInput {
                                         id: roomPriceField
                                         Layout.fillWidth: true
                                         Layout.preferredHeight: 40
+                                        fieldHeight: 40
+                                        label: ""
+                                        placeholder: ""
                                         text: String(modelData.price !== undefined ? Math.round(modelData.price) : "")
-                                        font.pixelSize: 13
-                                        color: root.textColor
+                                        fontPixelSize: 13
                                         inputMethodHints: Qt.ImhDigitsOnly
-                                        background: Rectangle {
-                                            radius: 8
-                                            color: root.pageColor
-                                            border.color: roomPriceField.activeFocus ? root.primaryColor : root.borderColor
-                                            border.width: 1
-                                        }
+                                        backgroundColor: root.pageColor
+                                        textColor: root.textColor
+                                        borderColor: root.borderColor
+                                        focusColor: root.primaryColor
+                                        errorColor: root.dangerColor
                                     }
                                 }
                             }
@@ -1833,21 +1854,21 @@ Page {
                             Layout.fillWidth: true
                             spacing: 8
 
-                            TextField {
+                            AppTextInput {
                                 id: newRoomPrice
                                 Layout.fillWidth: true
                                 Layout.preferredHeight: 38
-                                placeholderText: qsTr("Price (MK/mo)")
-                                placeholderTextColor: root.mutedColor
-                                font.pixelSize: 12
-                                color: root.textColor
+                                fieldHeight: 38
+                                label: ""
+                                placeholder: qsTr("Price (MK/mo)")
+                                fontPixelSize: 12
                                 inputMethodHints: Qt.ImhDigitsOnly
-                                background: Rectangle {
-                                    radius: 8
-                                    color: "#FFFFFF"
-                                    border.color: newRoomPrice.activeFocus ? root.primaryColor : root.borderColor
-                                    border.width: 1
-                                }
+                                backgroundColor: "#FFFFFF"
+                                textColor: root.textColor
+                                placeholderColor: root.mutedColor
+                                borderColor: root.borderColor
+                                focusColor: root.primaryColor
+                                errorColor: root.dangerColor
                             }
 
                             ComboBox {
@@ -1948,10 +1969,14 @@ Page {
 
             Rectangle {
                 Layout.fillWidth: true
-                implicitHeight: root.editMode ? Math.max(descriptionArea.implicitHeight + 24, 120) : aboutLabel.implicitHeight + 28
+                implicitHeight: root.editMode
+                               ? Math.max(descriptionArea.contentHeight + 44, 130)
+                               : aboutLabel.implicitHeight + 28
                 radius: 12
                 color: root.surfaceColor
-                border.color: root.editMode ? root.primaryColor : root.borderColor
+                border.color: root.editMode
+                              ? (descriptionArea.activeFocus ? root.primaryColor : root.borderColor)
+                              : root.borderColor
                 border.width: 1
 
                 Label {
@@ -1966,22 +1991,81 @@ Page {
                     wrapMode: Text.WordWrap
                 }
 
-                ScrollView {
+                TextArea {
+                    id: descriptionArea
                     visible: root.editMode
-                    anchors.fill: parent
-                    anchors.margins: 10
-
-                    TextArea {
-                        id: descriptionArea
-                        text: root.editDescriptionValue
-                        onTextChanged: root.editDescriptionValue = text
-                        color: root.textColor
-                        placeholderText: qsTr("Describe this property")
-                        placeholderTextColor: root.mutedColor
-                        font.pixelSize: 13
-                        wrapMode: TextArea.Wrap
-                        background: null
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.top: parent.top
+                    anchors.bottom: descriptionCount.top
+                    text: root.editDescriptionValue
+                    onTextChanged: {
+                        root.editDescriptionValue = text
+                        if (text.length > maxLength) {
+                            var cursorPos = cursorPosition
+                            text = text.substring(0, maxLength)
+                            cursorPosition = Math.min(cursorPos, text.length)
+                        }
                     }
+                    color: root.textColor
+                    font.pixelSize: 13
+                    wrapMode: TextEdit.Wrap
+                    selectByMouse: true
+                    leftPadding: 14
+                    rightPadding: 14
+                    topPadding: activeFocus || text.length > 0 ? 30 : 12
+                    bottomPadding: 8
+
+                    property int maxLength: 2000
+
+                    background: Item {
+                        Text {
+                            id: descriptionFloating
+                            readonly property bool isFloating: descriptionArea.activeFocus || descriptionArea.text.length > 0
+                            text: qsTr("Describe this property")
+                            color: descriptionArea.activeFocus ? root.primaryColor : root.mutedColor
+                            font.pixelSize: isFloating ? 11 : 13
+                            font.weight: isFloating ? Font.Medium : Font.Normal
+                            x: 14
+                            width: parent.width - 28
+                            elide: Text.ElideRight
+
+                            y: isFloating ? 8 : Math.round((parent.height - height) / 2)
+
+                            Behavior on y {
+                                NumberAnimation {
+                                    duration: 140
+                                    easing.type: Easing.OutCubic
+                                }
+                            }
+                            Behavior on font.pixelSize {
+                                NumberAnimation {
+                                    duration: 140
+                                    easing.type: Easing.OutCubic
+                                }
+                            }
+                            Behavior on color {
+                                ColorAnimation {
+                                    duration: 140
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Label {
+                    id: descriptionCount
+                    visible: root.editMode
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.bottom: parent.bottom
+                    anchors.leftMargin: 14
+                    anchors.rightMargin: 14
+                    anchors.bottomMargin: 6
+                    horizontalAlignment: Text.AlignRight
+                    text: qsTr("%L1 / %L2 characters").arg(descriptionArea.length).arg(descriptionArea.maxLength)
+                    color: descriptionArea.length >= descriptionArea.maxLength ? root.dangerColor : root.mutedColor
+                    font.pixelSize: 10
                 }
             }
 

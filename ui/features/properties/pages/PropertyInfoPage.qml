@@ -118,6 +118,7 @@ Item {
                 borderColor: districtError.visible ? root.errorColor : root.borderColor
                 focusBorderColor: root.primaryColor
                 textColor: root.textColor
+                onActivated: districtError.visible = false
             }
         }
 
@@ -131,9 +132,13 @@ Item {
             textColor: root.textColor
             labelColor: root.textColor
             placeholderColor: "#9CA3AF"
-            borderColor: root.borderColor
+            borderColor: districtError.visible ? root.errorColor : root.borderColor
             focusColor: root.primaryColor
             errorColor: root.errorColor
+            onTextEdited: {
+                if (districtError.visible && text.trim().length > 0)
+                    districtError.visible = false
+            }
             Layout.fillWidth: true
             Layout.preferredHeight: 76
         }
@@ -166,9 +171,9 @@ Item {
 
                     delegate: Rectangle {
                         required property var modelData
-                        width: amenityLabel.implicitWidth + 28
-                        height: 32
-                        radius: 16
+                        width: chipLabel.implicitWidth + 24
+                        height: 30
+                        radius: 15
                         color: root.selectedAmenities.indexOf(modelData.token) !== -1
                                ? root.primaryColor : root.surfaceColor
                         border.color: root.selectedAmenities.indexOf(modelData.token) !== -1
@@ -176,12 +181,12 @@ Item {
                         border.width: 1
 
                         Label {
-                            id: amenityLabel
+                            id: chipLabel
                             anchors.centerIn: parent
                             text: modelData.label
                             color: root.selectedAmenities.indexOf(modelData.token) !== -1
                                    ? "#FFFFFF" : root.mutedColor
-                            font.pixelSize: 12
+                            font.pixelSize: 11
                             font.bold: root.selectedAmenities.indexOf(modelData.token) !== -1
                         }
 
@@ -208,6 +213,10 @@ Item {
             borderColor: landlordError.visible ? root.errorColor : root.borderColor
             focusColor: root.primaryColor
             errorColor: root.errorColor
+            onTextEdited: {
+                if (landlordError.visible && text.trim().length > 0)
+                    landlordError.visible = false
+            }
             Layout.fillWidth: true
             Layout.preferredHeight: 76
         }
@@ -225,6 +234,10 @@ Item {
             borderColor: landlordError.visible ? root.errorColor : root.borderColor
             focusColor: root.primaryColor
             errorColor: root.errorColor
+            onTextEdited: {
+                if (landlordError.visible && text.trim().length >= 7)
+                    landlordError.visible = false
+            }
             Layout.fillWidth: true
             Layout.preferredHeight: 76
         }
@@ -254,9 +267,15 @@ Item {
             textColor: root.textColor
             labelColor: root.textColor
             placeholderColor: "#9CA3AF"
-            borderColor: root.borderColor
+            borderColor: priceError.visible ? root.errorColor : root.borderColor
             focusColor: root.primaryColor
             errorColor: root.errorColor
+            error: priceError.visible
+            helperText: priceError.visible ? qsTr("Enter a valid price greater than 0") : ""
+            onTextEdited: {
+                if (priceError.visible && parseFloat(text) > 0)
+                    priceError.visible = false
+            }
             Layout.fillWidth: true
             Layout.preferredHeight: 76
         }
@@ -275,7 +294,7 @@ Item {
             TextArea {
                 id: descriptionArea
                 Layout.fillWidth: true
-                Layout.preferredHeight: 110
+                Layout.preferredHeight: Math.max(descriptionArea.contentHeight + 36, 110)
                 placeholderText: ""
                 color: root.textColor
                 font.pixelSize: 14
@@ -283,8 +302,20 @@ Item {
                 selectByMouse: true
                 leftPadding: 14
                 rightPadding: 14
-                topPadding: descriptionArea.activeFocus || descriptionArea.text.length > 0 ? 26 : 14
-                bottomPadding: descriptionArea.activeFocus || descriptionArea.text.length > 0 ? 8 : 14
+                topPadding: descriptionArea.activeFocus || descriptionArea.text.length > 0 ? 30 : 14
+                bottomPadding: 10
+
+                property int maxLength: 2000
+
+                onTextChanged: {
+                    if (text.length > maxLength) {
+                        var cursorPos = cursorPosition
+                        text = text.substring(0, maxLength)
+                        cursorPosition = Math.min(cursorPos, text.length)
+                    }
+                    if (descriptionError.visible && text.trim().length >= 10)
+                        descriptionError.visible = false
+                }
 
                 background: Item {
                     Rectangle {
@@ -310,7 +341,7 @@ Item {
                         width: parent.width - 28
                         elide: Text.ElideRight
 
-                        y: isFloating ? 7 : Math.round((parent.height - height) / 2)
+                        y: isFloating ? 8 : Math.round((parent.height - height) / 2)
 
                         Behavior on y {
                             NumberAnimation {
@@ -332,12 +363,34 @@ Item {
                     }
                 }
             }
+
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: 8
+
+                Label {
+                    id: descriptionCount
+                    Layout.alignment: Qt.AlignRight
+                    text: qsTr("%L1 / %L2 characters").arg(descriptionArea.length).arg(descriptionArea.maxLength)
+                    color: descriptionArea.length >= descriptionArea.maxLength ? root.errorColor : "#9CA3AF"
+                    font.pixelSize: 11
+                }
+            }
         }
 
         Label {
             id: districtError
             visible: false
             text: qsTr("Select the district and enter the village or area")
+            color: root.errorColor
+            font.pixelSize: 12
+            Layout.fillWidth: true
+        }
+
+        Label {
+            id: priceError
+            visible: false
+            text: qsTr("Enter a valid price for the property")
             color: root.errorColor
             font.pixelSize: 12
             Layout.fillWidth: true
@@ -422,10 +475,16 @@ Item {
             errorText.text = qsTr("Complete the highlighted fields to continue.")
             return
         }
+        if (root.isWholeProperty && root.priceValue <= 0) {
+            priceError.visible = true
+            errorText.text = qsTr("Enter a valid price for the property.")
+            return
+        }
 
         districtError.visible = false
         landlordError.visible = false
         descriptionError.visible = false
+        priceError.visible = false
         root.nextRequested()
     }
 }

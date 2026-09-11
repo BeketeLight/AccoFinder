@@ -3,6 +3,8 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import "../../../utils/NavigationUtils.js" as NavUtils
 import "../../../components/indicators"
+import "../../../components/pages"
+import "../delegates"
 
 Item {
     id: root
@@ -64,21 +66,6 @@ Item {
         }
     }
 
-    property bool pullArmed: false
-
-    function armIfPulled() {
-        if (flick.dragging && flick.contentY <= -56)
-            root.pullArmed = true
-    }
-
-    function handlePullRelease() {
-        if (root.pullArmed && !root.refreshing && !root.loading) {
-            root.refresh()
-            flick.returnToBounds()
-        }
-        root.pullArmed = false
-    }
-
     function goBack() {
         NavUtils.pop()
     }
@@ -90,204 +77,86 @@ Item {
         function onIsLoadingChanged(loading) { root.onRequestsSettled() }
     }
 
-    Rectangle {
+    AppScrollablePage {
         anchors.fill: parent
-        color: root.pageColor
+        pullEnabled: true
+        refreshing: root.refreshing
+        loading: root.loading || root.refreshing
+        contentTopMargin: 20
+        onRefreshRequested: root.refresh()
 
-        Flickable {
-            id: flick
-            anchors.fill: parent
-            contentWidth: width
-            contentHeight: contentColumn.implicitHeight + 48
-            clip: true
-            boundsBehavior: Flickable.DragAndOvershootBounds
+        ColumnLayout {
+            Layout.fillWidth: true
+            spacing: 16
 
-            onContentYChanged: root.armIfPulled()
-            onDragEnded: root.handlePullRelease()
-
-            ScrollBar.vertical: ScrollBar { }
-
-            ColumnLayout {
-                id: contentColumn
-                x: Math.max(12, (flick.width - 520) / 2)
-                y: 20
-                width: Math.min(flick.width - 24, 520)
-                spacing: 16
-
-                Rectangle {
-                    visible: root.notificationsModel.count > 0
-                    Layout.fillWidth: true
-                    implicitHeight: notifCol.implicitHeight
-                    radius: 12
-                    color: root.surfaceColor
-                    border.color: root.borderColor
-                    border.width: 1
-
-                    ColumnLayout {
-                        id: notifCol
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                        anchors.top: parent.top
-                        spacing: 0
-
-                        Button {
-                            visible: root.notificationsModel.unreadCount > 0
-                            Layout.fillWidth: true
-                            Layout.preferredHeight: 36
-                            text: qsTr("Mark all as read")
-                            flat: true
-
-                            contentItem: Label {
-                                horizontalAlignment: Text.AlignHCenter
-                                verticalAlignment: Text.AlignVCenter
-                                text: qsTr("Mark all as read")
-                                color: root.primaryColor
-                                font.pixelSize: 12
-                                font.bold: true
-                            }
-
-                            background: Rectangle {
-                                color: root.softBlueColor
-                            }
-
-                            onClicked: {
-                                NotificationViewModel.markAllRead()
-                                // Give the backend a beat to persist, then pull
-                                // the fresh list so the badge and rows update.
-                                Qt.callLater(function() {
-                                    NotificationViewModel.getNotifications()
-                                })
-                            }
-                        }
-
-                        Repeater {
-                            model: root.notificationsModel
-
-                            delegate: ColumnLayout {
-                                required property var model
-                                required property int index
-                                Layout.fillWidth: true
-                                spacing: 0
-
-                                Rectangle {
-                                    Layout.fillWidth: true
-                                    implicitHeight: notifRow.implicitHeight + 20
-                                    color: model.unread ? root.softBlueColor : "transparent"
-
-                                    MouseArea {
-                                        anchors.fill: parent
-                                        cursorShape: Qt.PointingHandCursor
-                                        onClicked: {
-                                            if (model.unread) {
-                                                NotificationViewModel.markRead(model.id)
-                                                Qt.callLater(function() {
-                                                    NotificationViewModel.getNotifications()
-                                                })
-                                            }
-                                        }
-                                    }
-
-                                    RowLayout {
-                                        id: notifRow
-                                        anchors.fill: parent
-                                        anchors.margins: 10
-                                        spacing: 10
-
-                                        Rectangle {
-                                            Layout.preferredWidth: 8
-                                            Layout.preferredHeight: 8
-                                            radius: 4
-                                            color: model.unread ? root.primaryColor : "transparent"
-                                        }
-
-                                        ColumnLayout {
-                                            Layout.fillWidth: true
-                                            spacing: 1
-
-                                            Label {
-                                                Layout.fillWidth: true
-                                                text: model.title
-                                                color: root.textColor
-                                                font.pixelSize: 13
-                                                font.bold: model.unread
-                                                elide: Text.ElideRight
-                                            }
-
-                                            Label {
-                                                Layout.fillWidth: true
-                                                text: model.message
-                                                color: root.mutedColor
-                                                font.pixelSize: 11
-                                                elide: Text.ElideRight
-                                            }
-                                        }
-                                    }
-                                }
-
-                                Rectangle {
-                                    visible: index < root.notificationsModel.count - 1
-                                    Layout.fillWidth: true
-                                    Layout.preferredHeight: 1
-                                    color: root.borderColor
-                                }
-                            }
-                        }
-                    }
-                }
+            Rectangle {
+                visible: root.notificationsModel.count > 0
+                Layout.fillWidth: true
+                implicitHeight: notifCol.implicitHeight
+                radius: 12
+                color: root.surfaceColor
+                border.color: root.borderColor
+                border.width: 1
 
                 ColumnLayout {
-                    visible: root.notificationsModel.count === 0
-                    Layout.alignment: Qt.AlignHCenter
-                    Layout.topMargin: 20
-                    spacing: 6
+                    id: notifCol
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.top: parent.top
+                    spacing: 0
 
-                    Rectangle {
-                        Layout.alignment: Qt.AlignHCenter
-                        Layout.preferredWidth: 40
-                        Layout.preferredHeight: 40
-                        radius: 20
-                        color: root.softBlueColor
-                        border.color: "#BFDBFE"
-                        border.width: 1
+                    Button {
+                        visible: root.notificationsModel.unreadCount > 0
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: 36
+                        text: qsTr("Mark all as read")
+                        flat: true
 
-                        Image {
-                            anchors.centerIn: parent
-                            source: "qrc:/ui/assets/notification.svg"
-                            sourceSize.width: 20
-                            sourceSize.height: 20
+                        contentItem: Label {
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                            text: qsTr("Mark all as read")
+                            color: root.primaryColor
+                            font.pixelSize: 12
+                            font.bold: true
+                        }
+
+                        background: Rectangle {
+                            color: root.softBlueColor
+                        }
+
+                        onClicked: {
+                            NotificationViewModel.markAllRead()
+                            // Give the backend a beat to persist, then pull
+                            // the fresh list so the badge and rows update.
+                            Qt.callLater(function() {
+                                NotificationViewModel.getNotifications()
+                            })
                         }
                     }
 
-                    Label {
-                        Layout.alignment: Qt.AlignHCenter
-                        text: qsTr("No notifications")
-                        color: root.textColor
-                        font.pixelSize: 13
-                        font.bold: true
-                    }
+                    Repeater {
+                        model: root.notificationsModel
 
-                    Label {
-                        Layout.alignment: Qt.AlignHCenter
-                        text: qsTr("You're all caught up for now.")
-                        color: root.mutedColor
-                        font.pixelSize: 11
-                        horizontalAlignment: Text.AlignHCenter
-                        wrapMode: Text.WordWrap
+                        delegate: NotificationDelegate {
+                            notificationId: model.id
+                            title: model.title
+                            message: model.message
+                            unread: model.unread
+                            showSeparator: index < root.notificationsModel.count - 1
+                        }
                     }
                 }
             }
-        }
 
-        // Non-blocking spinner centered on the page, shown on first load and
-        // whenever a pull-to-refresh triggers a backend call.
-        AppSpinner {
-            visible: root.loading || root.refreshing
-            anchors.centerIn: parent
-            z: 20
-            size: 32
-            lineWidth: 3
-            color: root.primaryColor
-            running: root.loading || root.refreshing
+            AppEmptyState {
+                visible: root.notificationsModel.count === 0
+                Layout.alignment: Qt.AlignHCenter
+                Layout.topMargin: 20
+                iconSource: "qrc:/ui/assets/notification.svg"
+                title: qsTr("No notifications")
+                subtitle: qsTr("You're all caught up for now.")
+            }
         }
     }
 }

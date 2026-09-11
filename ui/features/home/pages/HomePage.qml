@@ -53,22 +53,13 @@ Page {
                         name: "All"
                     }
                     ListElement {
-                        name: "Apartments"
+                        name: "Hostels"
                     }
                     ListElement {
-                        name: "Houses"
+                        name: "Quarters"
                     }
                     ListElement {
-                        name: "Rooms"
-                    }
-                    ListElement {
-                        name: "Studios"
-                    }
-                    ListElement {
-                        name: "Shared"
-                    }
-                    ListElement {
-                        name: "Luxury"
+                        name: "House"
                     }
                 }
                 onCategoryClicked: function (index, name) {
@@ -100,7 +91,7 @@ Page {
                 }
 
                 // Page 2 - Rooms
-                RoomsPage {
+                QuartersPage {
                     width: contentSwipe.width
                     height: contentSwipe.height
                 }
@@ -110,14 +101,6 @@ Page {
                     width: contentSwipe.width
                     height: contentSwipe.height
                 }
-
-                // Page 4 - Studios
-                StudiosPage {
-                    width: contentSwipe.width
-                    height: contentSwipe.height
-                }
-
-                // ... Shared, Luxury
             }
             Item {
                 width: 1

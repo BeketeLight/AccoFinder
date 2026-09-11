@@ -35,7 +35,9 @@ public:
         IsActiveRole,
         PropertyTypeRole,
         RoomCountRole,
-        RejectionReasonRole
+        RejectionReasonRole,
+        ApprovedByIdRole,
+        ApprovedByNameRole
     };
     explicit PropertyListModel(QObject *parent = nullptr);
 

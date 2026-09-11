@@ -2,7 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import "../../../components/inputs"
-import "../components"
+import "../delegates"
 
 Item {
     id: root
@@ -205,122 +205,19 @@ Item {
                     id: roomsModelId
                 }
 
-                delegate: Rectangle {
-                    required property var model
-                    required property int index
-                    Layout.fillWidth: true
-                    implicitHeight: roomCardCol.implicitHeight + 22
-                    radius: 12
-                    color: "#EFF6FF"
-                    border.color: "#BFDBFE"
-                    border.width: 1
-
-                    ColumnLayout {
-                        id: roomCardCol
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                        anchors.top: parent.top
-                        anchors.margins: 11
-                        spacing: 8
-
-                        RowLayout {
-                            Layout.fillWidth: true
-                            spacing: 10
-
-                            ColumnLayout {
-                                Layout.fillWidth: true
-                                spacing: 2
-
-                                Label {
-                                    Layout.fillWidth: true
-                                    text: qsTr("Room %1 · %2").arg(model.roomId).arg(model.roomType) + (model.available ? "" : qsTr(" · unavailable"))
-                                    color: root.textColor
-                                    font.pixelSize: 13
-                                    font.bold: true
-                                    elide: Text.ElideRight
-                                }
-
-                                Label {
-                                    text: qsTr("MK %1 / month").arg(Number(model.price).toLocaleString())
-                                    color: root.primaryColor
-                                    font.pixelSize: 12
-                                    font.bold: true
-                                }
-                            }
-
-                            StatusChip {
-                                textValue: model.available ? qsTr("Available") : qsTr("Unavailable")
-                                variant: model.available ? "success" : "neutral"
-                            }
-                        }
-
-                        RowLayout {
-                            Layout.fillWidth: true
-                            spacing: 6
-
-                            Item { Layout.fillWidth: true }
-
-                            Button {
-                                id: editRoomButton
-                                Layout.preferredHeight: 32
-
-                                contentItem: Label {
-                                    text: qsTr("Edit")
-                                    color: editRoomButton.pressed ? "#1D4ED8" : root.primaryColor
-                                    font.pixelSize: 11
-                                    font.bold: true
-                                    horizontalAlignment: Text.AlignHCenter
-                                    verticalAlignment: Text.AlignVCenter
-                                }
-
-                                background: Rectangle {
-                                    radius: 8
-                                    color: editRoomButton.pressed ? "#DBEAFE" : "transparent"
-                                }
-
-                                onClicked: root.editRoom(index)
-                            }
-
-                            Button {
-                                id: removeRoomButton
-                                Layout.preferredHeight: 32
-
-                                contentItem: Label {
-                                    text: removeRoomButton.down ? qsTr("Sure?") : qsTr("Remove")
-                                    color: root.errorColor
-                                    font.pixelSize: 11
-                                    font.bold: true
-                                    horizontalAlignment: Text.AlignHCenter
-                                    verticalAlignment: Text.AlignVCenter
-                                }
-
-                                background: Rectangle {
-                                    radius: 8
-                                    color: removeRoomButton.down ? "#FEE2E2" : "transparent"
-                                    border.color: "#FECACA"
-                                    border.width: removeRoomButton.down ? 1 : 0
-                                }
-
-                                onClicked: {
-                                    if (!removeRoomButton.down) {
-                                        removeRoomButton.down = true
-                                        roomRemoveTimer.restart()
-                                    } else {
-                                        roomsModelId.remove(index)
-                                        if (roomEditingIndex === index)
-                                            root.resetRoomEditor()
-                                        else if (roomEditingIndex > index)
-                                            roomEditingIndex--
-                                    }
-                                }
-
-                                Timer {
-                                    id: roomRemoveTimer
-                                    interval: 2500
-                                    onTriggered: removeRoomButton.down = false
-                                }
-                            }
-                        }
+                delegate: RoomCardDelegate {
+                    roomId: model.roomId
+                    roomType: model.roomType
+                    price: model.price
+                    available: model.available
+                    index: index
+                    onEditRequested: (i) => root.editRoom(i)
+                    onRemoveRequested: (i) => {
+                        roomsModelId.remove(i)
+                        if (roomEditingIndex === i)
+                            root.resetRoomEditor()
+                        else if (roomEditingIndex > i)
+                            roomEditingIndex--
                     }
                 }
             }

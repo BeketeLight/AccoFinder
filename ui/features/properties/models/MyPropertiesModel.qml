@@ -138,6 +138,8 @@ Item {
                 landlordPhone: item.landlordPhone || "",
                 ownerName: item.ownerName || "",
                 ownerPhone: item.ownerPhone || "",
+                approvedByName: item.approvedByName || "",
+                approvedById: item.approvedById || "",
                 description: item.description || "",
                 roomsData: pid ? RoomViewModel.roomsForProperty(pid) : [], photosData: []
             })
