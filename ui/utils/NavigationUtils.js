@@ -69,6 +69,9 @@ function navigateToPendingBookings(){
 function navigateToCancelleddBookings(){
     push("../features/bookings/pages/CancelledBookingsPage.qml")
 }
+function navigateToBookingView(){
+    push("../features/bookings/pages/BookingView.qml")
+}
 function  navigateToConfirmedBookings(){
     push("../features/bookings/pages/ConfirmedBokingsPage.qml")
 }
@@ -194,6 +197,6 @@ var Navigation = {
     navigateToPaymentStatus:  navigateToPaymentStatus,
     navigateToPendingBookings: navigateToPendingBookings,
     navigateToCancelleddBookings: navigateToCancelleddBookings,
-    navigateToConfirmedBookings: navigateToConfirmedBookings
-
+    navigateToConfirmedBookings: navigateToConfirmedBookings,
+    navigateToBookingView: navigateToBookingView
 }

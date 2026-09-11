@@ -141,7 +141,7 @@ Rectangle {
                                     MouseArea{
                                         anchors.fill: parent
                                         onClicked: {
-                                            NavUtils.navigateToPendingBookings()
+                                            NavUtils.navigateToBookingView()
                                         }
                                     }
                                 }
@@ -356,6 +356,7 @@ Rectangle {
                                Layout.leftMargin: 10
                                MouseArea{
                                    anchors.fill: parent
+                                   onClicked: NavUtils.navigateToSignIn()
                                }
                            }
                        }
@@ -370,7 +371,7 @@ Rectangle {
                                cardBgColor: "white"
                                iconSource: "qrc:/ui/assets/pending-icon.svg"
                                //isSelected: statusGrid.activeFilter === "pending"
-                               //onClicked: statusGrid.activeFilter = "pending"
+                               onClicked: NavUtils.navigateToSignIn()
                                Layout.leftMargin:4
                                Layout.rightMargin: 10
                                Layout.alignment: Qt.AlignHCenter
@@ -383,7 +384,7 @@ Rectangle {
                                cardBgColor: "white"
                                iconSource: "qrc:/ui/assets/good-standing-icon.svg"
                                //isSelected: statusGrid.activeFilter === "confirmed"
-                              // onClicked: statusGrid.activeFilter = "confirmed"
+                              onClicked: NavUtils.navigateToSignIn()
                                Layout.leftMargin: 4
                                Layout.rightMargin: 10
                                Layout.alignment: Qt.AlignHCenter
@@ -396,7 +397,7 @@ Rectangle {
                                cardBgColor: "white"
                                iconSource: "qrc:/ui/assets/cancelled-icon.svg"
                                //isSelected: statusGrid.activeFilter === "cancelled"
-                               //onClicked: statusGrid.activeFilter = "cancelled"
+                               onClicked: NavUtils.navigateToSignIn()
                                Layout.leftMargin:4
                                Layout.rightMargin: 10
                                Layout.alignment: Qt.AlignHCenter
@@ -438,48 +439,6 @@ Rectangle {
                                     anchors.fill: parent
                                     onClicked: NavUtils.navigateToSignIn()
                                 }
-                            }
-                        }
-                        RowLayout{
-                            Layout.fillWidth: true
-                            spacing: 30
-                            Layout.leftMargin: 16
-
-                            IconCard{
-                                iconSource: "qrc:/ui/assets/pending-icon.svg"
-                                title: "Pending"
-                                iconCardHeight: 50
-                                iconCardWidth: 50
-                                onClicked: {
-                                    NavUtils.navigateToSignIn()
-                                }
-                            }
-                            IconCard{
-                                iconSource: "qrc:/ui/assets/good-standing-icon.svg"
-                                title: "Confirmed"
-                                iconCardHeight: 50
-                                iconCardWidth: 50
-                                //onClicked: console.log("Confirmed Clicked")
-                                onClicked: {
-                                    NavUtils.navigateToSignIn()
-                                }
-                            }
-                            IconCard{
-                                iconSource: "qrc:/ui/assets/cancel.svg"
-                                title: "Cancelled"
-                                iconCardHeight: 50
-                                iconCardWidth: 50
-                                 //iconColor: "red"
-                                onClicked: {
-                                    //NavUtils.navigateToSignIn()
-                                    NavUtils.navigateToCancelleddBookings()
-                                }
-                            }
-                            IconCard{
-                                iconSource: "qrc:/ui/assets/save-icon.svg"
-                                title: "Saved"
-                                iconCardHeight: 50
-                                iconCardWidth: 50
                             }
                         }
                        }

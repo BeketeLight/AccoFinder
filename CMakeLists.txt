@@ -241,6 +241,8 @@ qt_add_qml_module(appAccoFinder
         QML_FILES ui/features/bookings/pages/PendingBookingsPage.qml
         QML_FILES ui/features/bookings/pages/ConfirmedBookingsPage.qml
         QML_FILES ui/features/bookings/pages/CancelledBookingsPage.qml
+        QML_FILES ui/features/bookings/components/FilterComponent.qml
+        QML_FILES ui/features/bookings/pages/BookingView.qml
 )
 
 # ─────────────────────────────────────────────────────────────
