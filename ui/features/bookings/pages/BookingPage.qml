@@ -1,168 +1,486 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import "../../../utils" as UtilsModule
+import "../../../utils/NavigationUtils.js" as NavUtils
 import "../../home/components"
-Page{
-    id:homePageId
+import "../../../components/cards"
+import "../../home/delegates"
+import "../components"
+
+Rectangle {
+    id: root
     anchors.fill: parent
-    // header:ToolBar{
-    //     background: Rectangle{
-    //         color: "white"
-    //     }
-    //     RowLayout{
-    //         anchors.fill: parent
-    //         Button{
-    //             id:searchbarId
-    //             implicitHeight: 40
-    //             Layout.preferredWidth: 300
-    //             Text{
-    //                 text: qsTr("My Bookings")
-    //                 font{
-    //                     pointSize: 18
-    //                     bold: true
-    //                 }
+    readonly property color primaryColor: "#2563EB"
+    readonly property color primaryDarkColor: "#1D4ED8"
+    readonly property color  easyBlueColor: "#EEF2FF"
+    readonly property color  textColor: "#0F172A"
+    readonly property color  helloCardBgColor: "#E0F2FE"
+    readonly property color  cardBgColor: "#EEF2FF"
+    property bool  isLoggedIn: AppSettings.isLoggedIn()
+    readonly property bool  isGuest: !AppSettings.isLoggedIn()
+    readonly property bool  isClient: AppSettings.isLoggedIn() && AppSettings.userType() === "CLIENT"
+    readonly property bool  isAgent: AppSettings.isLoggedIn() && AppSettings.userType() === "AGENT"
+    //readonly property color primaryColor: "#2563EB"
+    color: "#EEF2FF"//"#F8F9FA"
+        // ===== SCROLLABLE CONTENT =====
 
-    //             }
-    //             background: Rectangle{
-    //                 color: "white"
-    //                 radius: 10
-    //             }
+    //Helper function for Navigation based on user
 
-    //         }
-
-    //         Image{
-    //             id:notifications
-    //             fillMode: Image.PreserveAspectFit
-    //             source: "qrc:/ui/assets/notification.png"
-    //             width: 24
-    //             height: 24
-    //             MouseArea{
-    //                 anchors.fill: parent
-    //                 onClicked: UtilsModule.NavigationUtils.navigateToNotifications()
-    //             }
-    //         }
-    //     }
-    // }
-    header: ToolBar {
-        background: Rectangle {
-            color: "white"
+    function handleClick(category){
+        console.log("Agent initiated")
+        console.log("Landloard initiated")
+        console.log("HandleClicked initiated")
+        if(root.isGuest){
+            NavUtils.navigateToSignIn()
+            return
         }
+        var cat = category.toLowerCase()
+        if(root.isClient){
+            switch(category){
+                case "pending":
+                    NavUtils.navigateToPendingBookings()
+                    //NavUtils.push("/ui/features/bookings/pages/PendingBookingsPage.qml")
+                    break
+                case "confirmed":
+                    NavUtils.navigateToConfirmedBookings()
+                    break
+                case "cancelled":
+                    NavUtils.navigateToCancelleddBookings()
+                    break
+            }
+            return
+        }
+        // if(root.isAgent){
+        //     switch(category){
+        //     case "pending":
+        //         //NavUtils.navigateToPendingBookings()
+        //         NavUtils.push("PendingBookingsPage.qml")
+        //         break
+        //     case "Confirmed":
+        //         NavUtils.navigateToConfirmedBookings()
+        //         break
+        //     case "cancelled":
+        //         NavUtils.navigateToCancelleddBookings()
+        //         break
+        //     }
+        //     return
+        // }
+    }
+    Component.onCompleted: {
+       root.isLoggedIn = AppSettings.isLoggedIn()
+    }
+    Connections{
+        target: AppSettings
+        function onUserSessionChanged(){
+                 root.isLoggedIn = AppSettings.isLoggedIn()
+        }
+    }
+     Loader{
+       anchors.fill: parent
+       sourceComponent: root.isLoggedIn ? loggedInUser : guestUser
+    }
 
-        contentHeight: 20
+    Component{
+       id: loggedInUser
 
-        RowLayout {
+        ScrollView {
             anchors.fill: parent
-            anchors.leftMargin: 8
-            anchors.rightMargin: 16
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            contentWidth: availableWidth
+            clip: true
 
-            // Back Button
-            ToolButton {
+            ColumnLayout {
+                width: root.width
+                spacing: 16
+                Rectangle {
+                    Layout.fillWidth: true
+                    Layout.leftMargin: 16
+                    Layout.rightMargin: 16
+                    Layout.topMargin: 0
+                    Layout.preferredHeight: 2
+                    color: root.primaryColor
+                    radius: 4
+                }
+                ColumnLayout{
+                    Layout.fillWidth: true
+                    spacing: 10
 
-                // Image {
-                //     id: home
-                //     width: 24
-                //     height: 24
-                //     source: "qrc:/ui/assets/back.png"
-                //     fillMode: Image.PreserveAspectFit
-                //     Layout.alignment: Qt.AlignHCenter
+                    RowLayout{
+                        Layout.fillWidth: true
+                        spacing: 0
+                        Rectangle {
+                            Layout.preferredWidth: 5
+                            Layout.leftMargin:4
+                            Layout.rightMargin: 0
+                            Layout.topMargin: 0
+                            Layout.preferredHeight: 40
+                            color: root.primaryColor
+                            radius: 4
+                        }
+                        ColumnLayout{
+                            spacing: 8
+                            RowLayout{
+                                spacing: 0
+                                Text{
+                                    text: qsTr("My Bookings")
+                                    font.pointSize: 18
+                                    font.bold: true
+                                    color: "#1E293B"
+                                    Layout.leftMargin: 10
+                                }
+                                Item{
+                                    Layout.preferredWidth: 180
+                                }
+                                Text{
+                                    text: qsTr("View all")
+                                    font.pointSize: 14
+                                    font.bold: true
+                                    color: "#4F46E5"
+                                    Layout.leftMargin: 10
+                                    MouseArea{
+                                        anchors.fill: parent
+                                        onClicked: {
+                                            NavUtils.navigateToBookingView()
+                                        }
+                                    }
+                                }
+                            }
 
-                //     MouseArea{
-                //         anchors.fill: parent
-                //         onClicked: UtilsModule.NavigationUtils.pop()
-                //     }
-                // }
-                Label{
-                    text: "My Bookings"
-                    font{
-                        bold: true
-                        pointSize: 24
-                    }
-                    color: "black"
-                    MouseArea{
-                        anchors.fill: parent
+                            RowLayout{
+                                spacing: 2
+                                BookingsStatusCard {
+                                    Layout.fillWidth: true
+                                    cardHeight: 80
+                                    title: "Pending"
+                                    iconBgColor: "#F59E0B"
+                                    cardBgColor: "white"
+                                    iconSource: "qrc:/ui/assets/pending-icon.svg"
+                                    //isSelected: statusGrid.activeFilter = "pending"
+                                    onClicked: {
+                                        //statusGrid.activeFilter === "pending"
+                                        console.log("Pending clicked..")
+                                        root.handleClick("pending")
+                                    }
+                                    Layout.leftMargin:4
+                                    Layout.rightMargin: 10
+                                    Layout.alignment: Qt.AlignHCenter
+
+                                }
+                                BookingsStatusCard {
+                                    Layout.fillWidth: true
+                                    cardHeight: 80
+                                    title: "Confirmed"
+                                    iconBgColor: "#10B981"
+                                    cardBgColor: "white"
+                                    iconSource: "qrc:/ui/assets/good-standing-icon.svg"
+                                    //isSelected: statusGrid.activeFilter === "confirmed"
+                                    //onClicked: statusGrid.activeFilter = "confirmed"
+                                    Layout.leftMargin: 4
+                                    Layout.rightMargin: 10
+                                    Layout.alignment: Qt.AlignHCenter
+                                }
+                                BookingsStatusCard {
+                                    Layout.fillWidth: true
+                                    cardHeight: 80
+                                    title: "Cancelled"
+                                    iconBgColor: "#EF4444"
+                                    cardBgColor: "white"
+                                    iconSource: "qrc:/ui/assets/cancelled-icon.svg"
+                                    //isSelected: statusGrid.activeFilter === "cancelled"
+                                   // onClicked: statusGrid.activeFilter = "cancelled"
+                                    onClicked: NavUtils.navigateToCancelleddBookings()
+                                    Layout.leftMargin:4
+                                    Layout.rightMargin: 10
+                                    Layout.alignment: Qt.AlignHCenter
+                                    //Layout.alignment: Qt.AlignTop
+                                }
+                            }
+                        }
+
                     }
                 }
+                Rectangle {
+                    Layout.preferredWidth: 80
+                    Layout.leftMargin: 16
+                    Layout.rightMargin: 16
+                    Layout.topMargin: 0
+                    Layout.preferredHeight: 2
+                    Layout.alignment: Qt.AlignHCenter
+                    color: root.primaryColor
+                    radius: 4
+                }
 
-                onClicked: UtilsModule.NavigationUtils.pop()
+                ColumnLayout{
+                    Layout.fillWidth: true
+                    spacing: 10
+                    RowLayout{
+                        Layout.fillWidth: true
+                        spacing: 0
+                        ColumnLayout{
+                            spacing: 8
+                            Text{
+                                text: qsTr("Booking disputes")
+                                font.pointSize: 18
+                                font.bold: true
+                                color: "#1E293B"
+                                Layout.leftMargin: 10
+                            }
+                            BookingsStatusCard {
+                                cardWidth: 370
+                                //Layout.fillWidth: true
+                                cardHeight: 80
+                                title: "Active disputes"
+                                iconBgColor: "#06B6D4"
+                                cardBgColor:"#FFFFFF"/* root.cardBgColor*/
+                                iconSource: "qrc:/ui/assets/disputes-icon.svg"
+                                //isSelected: statusGrid.activeFilter === "pending"
+                               // onClicked: statusGrid.activeFilter = "pending"
+                                //onClicked: NavUtils.
+                                Layout.leftMargin:6
+                                Layout.rightMargin: 10
+                                //Layout.alignment: Qt.AlignHCenter
+                            }
+
+                        }
+
+                    }
+                }
+                Rectangle {
+                    Layout.preferredWidth: 80
+                    Layout.leftMargin: 16
+                    Layout.rightMargin: 16
+                    Layout.topMargin: 0
+                    Layout.preferredHeight: 2
+                    Layout.alignment: Qt.AlignHCenter
+                    color: root.primaryColor
+                    radius: 4
+                }
+
             }
 
-            Item { Layout.fillWidth: true }  // Spacer
         }
     }
 
+    Component{
+       id: guestUser
+       Flickable {
+           id: scrollArea
+           anchors.fill: parent
+           contentHeight: contentColumn.height
+           clip: true
 
-    RowLayout {
-        anchors {
-            top: parent.top
-            left: parent.left
-            right: parent.right
-            topMargin: 40
-            leftMargin: 10
-            rightMargin: 0
-        }
-        spacing: 20
+           ColumnLayout {
+               id: contentColumn
+               width: scrollArea.width
+               spacing: 16
 
-        Label {
-            text: "Completed"
-            font.pixelSize: 16
-            font.bold: true
-            color: "#1a1a1a"
-            //Layout.fillWidth: true
-        }
+               // --- HERO WELCOME BANNER (Guest Only) ---
+               Rectangle {
+                   id: guestBanner
+                   Layout.fillWidth: true
+                   Layout.preferredHeight: 180
+                   //visible: !pageRoot.isLoggedIn
+                   color: "#2563EB"
+                   visible: root.isGuest //visible when its guest
+                  // Layout.visible: visible
 
-        Label {
-            text: "Cancelled"
-            font.pixelSize: 16
-            font.bold: true
-            color: "#1a1a1a"
-            Layout.fillWidth: true
-        }
+                   ColumnLayout {
+                       anchors.fill: parent
+                       anchors.margins: 16
+                       spacing: 12
 
-        // TextField{
-        //     id: email
-        //     placeholderText: "Email"
-        //     Layout.fillWidth: true
+                       Text {
+                           text: qsTr("Welcome to AccoFinder")
+                           font.pixelSize: 24
+                           font.bold: true
+                           color: "#FFFFFF"
+                       }
 
-        // }
+                       Text {
+                           text: qsTr("Find your ideal place or accommodation near your preferred location.")
+                           font.pixelSize: 13
+                           color: "#E0F2FE"
+                           Layout.fillWidth: true
+                           wrapMode: Text.WordWrap
+                       }
 
-        // TextField{
-        //     id: password
-        //     placeholderText: "Password"
-        //     Layout.fillWidth: true
-        // }
-        // Button{
-        //     id: signinButtonId
-        //     text: "SIGN IN"
-        //     Layout.fillWidth: true
-        //     Layout.preferredHeight: 50
-        //     background: Rectangle{
-        //         color: "#2563EB"
-        //         radius: 10
-        //     }
-        // }
-        // Item{
-        //     Layout.preferredHeight: 40
-        // }
-        // Label{
-        //     text: "Sign Up"
-        //     color: "#2563EB"
-        //     font{
-        //         pointSize: 12
-        //         bold: true
-        //     }
-        //     Layout.alignment: Qt.AlignHCenter
-        //     MouseArea{
-        //         anchors.fill: parent
-        //         onClicked: UtilsModule.NavigationUtils.navigateToSignUp()
-        //     }
-        // }
+                       Button {
+                           Layout.preferredWidth: 160
+                           Layout.preferredHeight: 40
 
-        // ... rest of your phone input + buttons
+                           background: Rectangle {
+                               color: parent.down ? "#1D4ED8" : "#FFFFFF"
+                               radius: 20
+                           }
+
+                           contentItem: Text {
+                               text: qsTr("Sign in / Register")
+                               color: "#2563EB"
+                               font.bold: true
+                               horizontalAlignment: Text.AlignHCenter
+                               verticalAlignment: Text.AlignVCenter
+                            }
+                           onClicked: NavUtils.navigateToSignIn()
+                       }
+                   }
+                   Rectangle{
+                    //backgrorundrect
+                   id: statusRect1
+                   anchors.topMargin: 6
+                   width: root.width
+                   height: 120
+                   color: "#EEF2FF"
+                   anchors.top: guestBanner.bottom
+
+                   ColumnLayout{
+                       //anchors.top: guestBanner.bottom
+                       spacing: 8
+                       RowLayout{
+                           spacing: 0
+                           Text{
+                               text: qsTr("My Bookings")
+                               font.pointSize: 18
+                               font.bold: true
+                               color: "#1E293B"
+                               Layout.leftMargin: 10
+                           }
+                           Item{
+                               Layout.preferredWidth: 180
+                           }
+                           Text{
+                               text: qsTr("View all")
+                               font.pointSize: 14
+                               font.bold: true
+                               color: "#4F46E5"
+                               Layout.leftMargin: 10
+                               MouseArea{
+                                   anchors.fill: parent
+                                   onClicked: NavUtils.navigateToSignIn()
+                               }
+                           }
+                       }
+
+                       RowLayout{
+                           spacing: 2
+                           BookingsStatusCard {
+                               Layout.fillWidth: true
+                               cardHeight: 80
+                               title: "Pending"
+                               iconBgColor: "#F59E0B"
+                               cardBgColor: "white"
+                               iconSource: "qrc:/ui/assets/pending-icon.svg"
+                               //isSelected: statusGrid.activeFilter === "pending"
+                               onClicked: NavUtils.navigateToSignIn()
+                               Layout.leftMargin:4
+                               Layout.rightMargin: 10
+                               Layout.alignment: Qt.AlignHCenter
+                           }
+                           BookingsStatusCard {
+                               Layout.fillWidth: true
+                               cardHeight: 80
+                               title: "Confirmed"
+                               iconBgColor: "#10B981"
+                               cardBgColor: "white"
+                               iconSource: "qrc:/ui/assets/good-standing-icon.svg"
+                               //isSelected: statusGrid.activeFilter === "confirmed"
+                              onClicked: NavUtils.navigateToSignIn()
+                               Layout.leftMargin: 4
+                               Layout.rightMargin: 10
+                               Layout.alignment: Qt.AlignHCenter
+                           }
+                           BookingsStatusCard {
+                               Layout.fillWidth: true
+                               cardHeight: 80
+                               title: "Cancelled"
+                               iconBgColor: "#EF4444"
+                               cardBgColor: "white"
+                               iconSource: "qrc:/ui/assets/cancelled-icon.svg"
+                               //isSelected: statusGrid.activeFilter === "cancelled"
+                               onClicked: NavUtils.navigateToSignIn()
+                               Layout.leftMargin:4
+                               Layout.rightMargin: 10
+                               Layout.alignment: Qt.AlignHCenter
+                               //Layout.alignment: Qt.AlignTop
+                           }
+                       }
+                   }
+                   }
+
+
+                    Rectangle{
+                     //backgrorundrect
+                    id: statusRect
+                    anchors.topMargin: 6
+                    width: root.width
+                    height: 110
+                    color: "#EEF2FF"
+                    anchors.top: statusRect1.bottom
+
+                    ColumnLayout{
+                        Layout.fillWidth: true
+                        spacing: 10
+                        RowLayout{
+                            Layout.leftMargin: 10
+                            Text{
+                                text: qsTr("My Booking")
+                                font.pointSize: 16
+                                font.bold:true
+                            }
+                            Item{
+                                Layout.preferredWidth: 200
+                            }
+                            Text{
+                                text: qsTr("view all")
+                                font.pointSize: 12
+                                color: "#64748B"
+
+                                MouseArea{
+                                    anchors.fill: parent
+                                    onClicked: NavUtils.navigateToSignIn()
+                                }
+                            }
+                        }
+                       }
+                    }
+
+                    Rectangle{
+                        anchors.top: statusRect.bottom
+                        anchors.topMargin: 6
+                        width: root.width
+                        color: "#FFFFFF"
+                        height: 100
+                        visible: root.isAgent || root.isClient
+                        //Layout.visible: visible
+                        ColumnLayout{
+                            Layout.fillWidth: true
+                            spacing: 10
+
+                            Text {
+                                text: qsTr("Disputes")
+                                font.pointSize: 16
+                                font.bold:true
+                                Layout.leftMargin: 10
+                            }
+                            BookingsStatusCard {
+                                cardWidth: 350
+                                cardHeight: 60
+                                title: "Active disputes"
+                                iconBgColor: "#06B6D4"
+                                cardBgColor: "white"
+                                iconSource: "qrc:/ui/assets/disputes-icon.svg"
+                                isSelected: statusGrid.activeFilter === "pending"
+                                onClicked: statusGrid.activeFilter = "pending"
+                                Layout.leftMargin:16
+                                Layout.rightMargin: 10
+                            }
+                        }
+                    }
+                }
+            }
+       }
     }
-    // footer: FooterComponent{
-    //     currentIndex: 3
-    // }
-
-
 }
+
+
+

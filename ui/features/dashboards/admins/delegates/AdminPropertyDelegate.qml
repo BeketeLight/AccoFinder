@@ -12,6 +12,7 @@ Rectangle {
     property string landlord: ""
     property string status: ""
     property string statusText: ""
+    property string approvedByName: ""
     property bool matches: true
 
     property color primaryColor: "#2563EB"
@@ -108,6 +109,16 @@ Rectangle {
                 font.pixelSize: 10
                 font.bold: true
             }
+        }
+
+        Label {
+            visible: String(root.status).toUpperCase() === "VERIFIED"
+                     && root.approvedByName.length > 0
+            Layout.maximumWidth: 110
+            text: qsTr("by %1").arg(root.approvedByName)
+            color: root.mutedColor
+            font.pixelSize: 10
+            elide: Text.ElideRight
         }
     }
 

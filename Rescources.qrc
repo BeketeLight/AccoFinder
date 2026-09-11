@@ -22,6 +22,11 @@
         <file>ui/assets/dashboard-icon.svg</file>
         <file>ui/assets/hamburger-icon.svg</file>
         <file>ui/assets/disputes-icon.svg</file>
+        <file>ui/assets/good-standing-icon.svg</file>
+        <file>ui/assets/pending-icon.svg</file>
+        <file>ui/assets/cancelled-icon.svg</file>
+        <file>ui/assets/your-bookings-icon.svg</file>
+        <file>ui/assets/amount-icon.svg</file>
         <file>ui/assets/close-icon.svg</file>
         <file>ui/assets/photo-camera-icon.svg</file>
         <file>ui/assets/upload-icon.svg</file>

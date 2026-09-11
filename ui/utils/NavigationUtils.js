@@ -63,6 +63,18 @@ function pop() {
 function navigateToBookings(){
     push("../features/bookings/screens/BookingsScreen.qml")
 }
+function navigateToPendingBookings(){
+    push("../features/bookings/pages/PendingBookingsPage.qml")
+}
+function navigateToCancelleddBookings(){
+    push("../features/bookings/pages/CancelledBookingsPage.qml")
+}
+function navigateToBookingView(){
+    push("../features/bookings/pages/BookingView.qml")
+}
+function  navigateToConfirmedBookings(){
+    push("../features/bookings/pages/ConfirmedBokingsPage.qml")
+}
 function navigateToDisputes(){
     push("../features/disputes/screens/DisputesScreen.qml")
 }
@@ -182,5 +194,9 @@ var Navigation = {
     navigateToBookings: navigateToBookings,
     navigateToPropertyDetails: navigateToPropertyDetails,
     navigateToPayments: navigateToPayments,
-    navigateToPaymentStatus:  navigateToPaymentStatus
+    navigateToPaymentStatus:  navigateToPaymentStatus,
+    navigateToPendingBookings: navigateToPendingBookings,
+    navigateToCancelleddBookings: navigateToCancelleddBookings,
+    navigateToConfirmedBookings: navigateToConfirmedBookings,
+    navigateToBookingView: navigateToBookingView
 }

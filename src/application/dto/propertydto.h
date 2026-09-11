@@ -76,6 +76,8 @@ public:
     QString propertyType;
     QString verificationStatus;
     QString verificationReason;
+    QString approvedById;
+    QString approvedByName;
     QJsonArray rooms;
     bool isActive = false;
     const QString costCategory;
