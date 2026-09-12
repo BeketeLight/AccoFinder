@@ -23,8 +23,22 @@ void NotificationViewModel::setLoading(bool loading)
 
 void NotificationViewModel::getNotifications()
 {
+    m_lastRole.clear();
     setLoading(true);
     m_service->getUserNotifications();
+}
+
+void NotificationViewModel::getNotificationsByRole(const QString &role)
+{
+    m_lastRole = role;
+    setLoading(true);
+    m_service->getUserNotifications(role);
+}
+
+void NotificationViewModel::refreshCurrent()
+{
+    setLoading(true);
+    m_service->getUserNotifications(m_lastRole);
 }
 
 void NotificationViewModel::markAllRead()

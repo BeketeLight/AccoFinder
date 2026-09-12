@@ -16,6 +16,15 @@ function cachedImage(src) {
     return s
 }
 
+// Determine which notification feed scope the current viewer should use on the
+// agent dashboard. The dashboard always surfaces agent-addressed notifications
+// plus announcements that were delivered to everyone: an admin acting as an
+// agent sees the same agent feed (never their admin-targeted notifications).
+// The backend matches this by returning recipientRole=AGENT OR announcement.
+function notificationRoleForViewer() {
+    return "AGENT"
+}
+
 // Tell the CachedImageProvider to forget one or more remote URLs after the
 // underlying image was deleted server-side, so a stale copy is not served
 // later. Accepts a single string or an array of strings/objects with .url.
