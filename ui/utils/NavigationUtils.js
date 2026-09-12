@@ -173,6 +173,11 @@ function navigateToDashboard(role){
     }
 
 }
+function navigateToBookingsView(filter){
+    push("../features/bookings/pages/BookingView.qml",{
+        activeFilter:  filter || "All"
+    })
+}
 
 var Navigation = {
     init: init,
@@ -198,5 +203,6 @@ var Navigation = {
     navigateToPendingBookings: navigateToPendingBookings,
     navigateToCancelleddBookings: navigateToCancelleddBookings,
     navigateToConfirmedBookings: navigateToConfirmedBookings,
-    navigateToBookingView: navigateToBookingView
+    navigateToBookingView: navigateToBookingView,
+    navigateToBookingsView: navigateToBookingsView
 }

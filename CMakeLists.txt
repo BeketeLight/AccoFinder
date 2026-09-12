@@ -238,14 +238,9 @@ qt_add_qml_module(appAccoFinder
         QML_FILES ui/features/home/models/PropertiesModel.qml
         QML_FILES ui/features/home/models/RoomsModel.qml
         QML_FILES ui/features/home/delegates/RemoteImage.qml
-
-        QML_FILES ui/components/cards/BookingsStatusCard.qml
-        QML_FILES ui/features/bookings/components/IconCard.qml
-        QML_FILES ui/features/bookings/pages/PendingBookingsPage.qml
-        QML_FILES ui/features/bookings/pages/ConfirmedBookingsPage.qml
-        QML_FILES ui/features/bookings/pages/CancelledBookingsPage.qml
         QML_FILES ui/features/bookings/components/FilterComponent.qml
         QML_FILES ui/features/bookings/pages/BookingView.qml
+        QML_FILES ui/features/bookings/components/BookingsCard.qml
 )
 
 # ─────────────────────────────────────────────────────────────

@@ -32,5 +32,9 @@
         <file>ui/assets/upload-icon.svg</file>
         <file>ui/assets/favorite-filled.svg</file>
         <file>ui/assets/favorite-outline.svg</file>
+        <file>ui/assets/disputes-warning-icon.svg</file>
+        <file>ui/assets/bookingcard-icon.svg</file>
+        <file>ui/assets/confirmed-icon.svg</file>
+        <file>ui/assets/dispute-active-icon.svg</file>
     </qresource>
 </RCC>
