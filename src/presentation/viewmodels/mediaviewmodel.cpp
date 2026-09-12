@@ -70,7 +70,13 @@ void MediaViewModel::onMediaLoaded(const QList<QSharedPointer<Media>> &media)
 {
     setLoading(false);
     if (m_mediaListModel)
-        m_mediaListModel->setMedia(media);
+        m_mediaListModel->upsertMedia(media);
+}
+
+void MediaViewModel::clearMedia()
+{
+    if (m_mediaListModel)
+        m_mediaListModel->clearMedia();
 }
 
 void MediaViewModel::onMediaDeleted(const QString &mediaId)

@@ -26,6 +26,7 @@ public:
     Q_INVOKABLE void getMediaByProperty(const QString& propertyId);
     Q_INVOKABLE void deleteMedia(const QString& mediaId);
     Q_INVOKABLE void updateMediaPrimary(const QString& mediaId, bool isPrimary);
+    Q_INVOKABLE void clearMedia();
 
     // Media belonging to the given property id, shaped for QML display as
     // {mediaId, path, url, isPrimary, roomId, mediaType} maps.
