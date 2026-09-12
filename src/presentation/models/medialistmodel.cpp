@@ -54,16 +54,72 @@ void MediaListModel::setMedia(const QList<QSharedPointer<Media>>& newMedia)
     beginResetModel();
     m_media.clear();
     m_media.reserve(newMedia.size());
-    for (const QSharedPointer<Media>& media : newMedia)
-        m_media.append(media);
+    for (const QSharedPointer<Media>& media : newMedia) {
+        if (media)
+            m_media.append(media);
+    }
     endResetModel();
+    emitCountIfChanged(m_media.size());
+}
+
+void MediaListModel::upsertMedia(const QList<QSharedPointer<Media>>& newMedia)
+{
+    QHash<QString, int> indexById;
+    indexById.reserve(m_media.size());
+    for (int i = 0; i < m_media.size(); ++i) {
+        const QSharedPointer<Media>& media = m_media.at(i);
+        if (media && !media->getId().isEmpty())
+            indexById.insert(media->getId(), i);
+    }
+
+    int changed = 0;
+    for (const QSharedPointer<Media>& incoming : newMedia) {
+        if (!incoming)
+            continue;
+
+        const QString id = incoming->getId();
+        if (id.isEmpty()) {
+            // Without a stable id there is nothing to de-duplicate against;
+            // keep the old append behaviour so the media is not dropped.
+            const int row = m_media.size();
+            beginInsertRows(QModelIndex(), row, row);
+            m_media.append(incoming);
+            endInsertRows();
+            ++changed;
+            continue;
+        }
+
+        const QHash<QString, int>::iterator it = indexById.find(id);
+        if (it != indexById.end()) {
+            // Row already exists: replace it in place and notify.
+            const int row = it.value();
+            m_media[row] = incoming;
+            const QModelIndex idx = index(row, 0);
+            emit dataChanged(idx, idx);
+            ++changed;
+        } else {
+            // New media id: append.
+            const int row = m_media.size();
+            beginInsertRows(QModelIndex(), row, row);
+            m_media.append(incoming);
+            endInsertRows();
+            indexById.insert(id, row);
+            ++changed;
+        }
+    }
+
+    if (changed > 0)
+        emitCountIfChanged(m_media.size());
 }
 
 void MediaListModel::appendMedia(const QSharedPointer<Media>& media)
 {
+    if (!media)
+        return;
     beginInsertRows(QModelIndex(), m_media.size(), m_media.size());
     m_media.append(media);
     endInsertRows();
+    emitCountIfChanged(m_media.size());
 }
 
 void MediaListModel::removeMedia(const QString &mediaId)
@@ -74,6 +130,7 @@ void MediaListModel::removeMedia(const QString &mediaId)
         beginRemoveRows(QModelIndex(), i, i);
         m_media.removeAt(i);
         endRemoveRows();
+        emitCountIfChanged(m_media.size());
         return;
     }
 }
@@ -115,9 +172,20 @@ void MediaListModel::setMediaPrimary(const QString &mediaId, bool isPrimary)
 
 void MediaListModel::clearMedia()
 {
+    if (m_media.isEmpty())
+        return;
     beginResetModel();
     m_media.clear();
     endResetModel();
+    emitCountIfChanged(0);
+}
+
+void MediaListModel::emitCountIfChanged(int newCount)
+{
+    if (newCount != m_lastEmittedCount) {
+        m_lastEmittedCount = newCount;
+        emit countChanged(newCount);
+    }
 }
 
 QVariantList MediaListModel::mediaForProperty(const QString &propertyId) const
