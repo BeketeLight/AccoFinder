@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import "../../../../components/pages"
 import "../../../../components/navigations"
+import "../../../../utils/Utils.js" as Utils
 import "../pages"
 
 Item {
@@ -13,11 +14,13 @@ Item {
     property bool showBack: true
 
     // Header bell (mirrors the admin dashboard): opens the account-level
-    // notification list, so announcements broadcast to ALL are visible from
-    // the agent dashboard too (an admin using it can see their own copy).
+    // notification list scoped to the viewer's role, so an agent sees
+    // agent-addressed notifications and an admin using this dashboard sees
+    // admin-targeted ones (never an empty AGENT-filtered feed).
     property Component rightComponentAction: Component {
         AppNotificationBell {
             notificationScreen: Qt.resolvedUrl("../../../notifications/screens/NotificationsScreen.qml")
+            notificationRole: Utils.notificationRoleForViewer()
         }
     }
 

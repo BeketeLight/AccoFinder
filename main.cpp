@@ -165,7 +165,7 @@ int main(int argc, char *argv[])
         socketIOClient.stop();
     });
     QObject::connect(&socketIOClient, &SocketIOClient::notificationReceived,
-                     &notificationViewModel, &NotificationViewModel::getNotifications);
+                     &notificationViewModel, &NotificationViewModel::refreshCurrent);
     QObject::connect(&appSettings, &AppSettings::userSessionChanged,
                      &app, startSocketForCurrentUser);
     QObject::connect(&socketIOClient, &SocketIOClient::errorOccurred,
@@ -186,7 +186,7 @@ int main(int argc, char *argv[])
     });
     // Forward FCM foreground notifications to refresh the notification list
     QObject::connect(&fcmService, &FcmService::notificationReceived,
-                     &notificationViewModel, &NotificationViewModel::getNotifications);
+                     &notificationViewModel, &NotificationViewModel::refreshCurrent);
 
     // Shared, session-scoped lists must never leak from one user into the
     // next (or into the logged-out state). Reset them whenever the active
