@@ -6,6 +6,7 @@ import "../delegates"
 import "../../../components/inputs"
 import "../../../components/scrollbars"
 import "../../../components/indicators"
+import "../../../utils/Utils.js" as Utils
 
 Item {
     id: root
@@ -178,7 +179,7 @@ Item {
         // Fetch only the current user's listings.
         PropertyViewModel.getProperties(AppSettings.userId())
         BookingViewModel.fetchBookings()
-        NotificationViewModel.getNotifications()
+        NotificationViewModel.getNotificationsByRole(Utils.notificationRoleForViewer())
         DisputesListViewModel.getDisputes()
     }
 
@@ -201,7 +202,13 @@ Item {
         filterChipsModel.append([{ label: "All" }, { label: "Verified" },
                                  { label: "Pending" }, { label: "Draft" },
                                  { label: "Rejected" }])
+        // Fetch only the current user's listings, plus the dashboard sections'
+        // data (bookings, agent-scoped notifications, disputes). Without this
+        // the bell badge keeps the previous screen's count until a refresh.
         PropertyViewModel.getProperties(AppSettings.userId())
+        BookingViewModel.fetchBookings()
+        NotificationViewModel.getNotificationsByRole(Utils.notificationRoleForViewer())
+        DisputesListViewModel.getDisputes()
         root.refreshAll()
     }
 

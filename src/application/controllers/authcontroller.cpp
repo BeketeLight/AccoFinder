@@ -1,12 +1,28 @@
 #include "authcontroller.h"
 #include "core/utils/ERegistrationPurpose.h"
 #include "services/apiclient.h"
+#include <QTimer>
 
 AuthController::AuthController(QObject *parent)
     : QObject(parent)
     , m_userRepository(new UserRepositoryImpl(this))
+    , m_googleAuthTimeout(new QTimer(this))
 {
-    auto stopLoading = [this]() { setLoading(false); };
+    // The deep-link redirect account for OAuth terminates the flow (whether
+    // it succeeds or fails). A watchdog stops the loading state when the user
+    // cancels the browser flow and the redirect never arrives — otherwise the
+    // spinner would hang forever until the app is restarted.
+    m_googleAuthTimeout->setSingleShot(true);
+    m_googleAuthTimeout->setInterval(60000);
+    connect(m_googleAuthTimeout, &QTimer::timeout, this, [this]() {
+        if (m_googleAuthPending)
+            cancelGoogleAuth();
+    });
+
+    auto stopLoading = [this]() {
+        setLoading(false);
+        clearGooglePending();
+    };
 
     connect(m_userRepository, &UserRepositoryImpl::signInSucceded, this,
             [this, stopLoading](User* user) {
@@ -208,14 +224,37 @@ void AuthController::signInWithGoogle(const QString &authUrl)
         ? googleAuthUrl()
         : authUrl;
 
+    m_googleAuthPending = true;
+    emit googleAuthPendingChanged(true);
     setLoading(true);
+    m_googleAuthTimeout->start();
     m_userRepository->signInWithGoogle(url);
 }
 
 void AuthController::handleGoogleAuthUrl(const QString &url)
 {
+    clearGooglePending();
     setLoading(true);
     m_userRepository->handleGoogleAuthUrl(url);
+}
+
+void AuthController::cancelGoogleAuth()
+{
+    if (!m_googleAuthPending)
+        return;
+    clearGooglePending();
+    setLoading(false);
+    emit signInFailed("Google sign in was cancelled or did not complete. Please try again.");
+}
+
+void AuthController::clearGooglePending()
+{
+    if (!m_googleAuthPending)
+        return;
+    m_googleAuthPending = false;
+    if (m_googleAuthTimeout && m_googleAuthTimeout->isActive())
+        m_googleAuthTimeout->stop();
+    emit googleAuthPendingChanged(false);
 }
 
 void AuthController::fetchProfile()
