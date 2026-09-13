@@ -86,7 +86,7 @@ ApplicationWindow {
         running: true
         onTriggered: {
             if (AppSettings.isLoggedIn())
-                NotificationViewModel.getNotifications()
+                NotificationViewModel.refreshCurrent()
         }
     }
 

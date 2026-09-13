@@ -24,6 +24,7 @@ public:
     Q_INVOKABLE int pendingPropertiesCount() const;
     Q_INVOKABLE int verifiedPropertiesCount() const;
     Q_INVOKABLE void getProperties(const QString& owner = QString());
+    Q_INVOKABLE void getPropertiesByStatus(const QString& status);
     Q_INVOKABLE void getPropertyById(const QString& houseId);
     // Row index of the property with the given backend id in the list model
     // (-1 when the property is not currently in the model).

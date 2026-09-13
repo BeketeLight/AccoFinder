@@ -58,6 +58,12 @@ void PropertyViewModel::getProperties(const QString &owner)
     m_propertyController->getProperties(owner);
 }
 
+void PropertyViewModel::getPropertiesByStatus(const QString &status)
+{
+    setLoading(true);
+    m_propertyController->getPropertiesByStatus(status);
+}
+
 QVariantList PropertyViewModel::propertiesForView() const
 {
     QVariantList list;

@@ -15,7 +15,7 @@ public:
     explicit NotificationServiceImpl(QObject *parent = nullptr);
     void createNotification(QString id,QString message,QString type, QString status) override;
     void getNotification(const QString& id) override;
-    void getUserNotifications() override;
+    void getUserNotifications(const QString& role = QString()) override;
     void markReadNotification(const QString& id, QString& status) override;
     void markAllReadNotification() override;
 private:

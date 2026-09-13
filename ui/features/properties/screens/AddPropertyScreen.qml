@@ -43,15 +43,29 @@ Item {
         }
     }
 
-    // The wizard numbers rooms locally (1, 2, 3...) but the backend mints its
-    // own ObjectIds when it creates them inline with the property. Resolve a
-    // photo's local room number to the actual backend room id so media.roomId
-    // references a real room document; -1 means "whole property / common areas".
+    // The wizard numbers rooms locally (1, 2, 3...) but deleting a room can
+    // leave gaps, while the backend mints its own ObjectIds for whichever
+    // rooms survive. Map by the room's wizard-model position (payload.rooms is
+    // built in wizard order and the backend creates rooms in that same order),
+    // so media.roomId always references the real room document even when the
+    // local numbering is non-contiguous; -1 means "whole property / common areas".
     function realRoomIdFor(seq) {
         var n = Number(seq)
         if (isNaN(n) || n < 0)
             return "-1"
-        var idx = n - 1
+        var idx = -1
+        var payload = pendingPayload
+        if (payload && payload.rooms) {
+            for (var i = 0; i < payload.rooms.length; i++) {
+                var entry = payload.rooms[i]
+                if (entry && Number(entry.roomId) === n) {
+                    idx = i
+                    break
+                }
+            }
+        } else {
+            idx = n - 1
+        }
         var rooms = pendingRooms || []
         if (idx >= 0 && idx < rooms.length) {
             var r = rooms[idx]

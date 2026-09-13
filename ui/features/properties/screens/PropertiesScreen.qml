@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import "../pages"
 import "../../../utils/NavigationUtils.js" as NavUtils
+import "../../../utils/Utils.js" as Utils
 import "../../../components/navigations"
 
 Item {
@@ -32,6 +33,7 @@ Item {
     property Component rightComponentAction: Component {
         AppNotificationBell {
             notificationScreen: Qt.resolvedUrl("../../notifications/screens/NotificationsScreen.qml")
+            notificationRole: Utils.notificationRoleForViewer()
         }
     }
 
@@ -71,7 +73,7 @@ Item {
                           { initialPayload: payload || {} })
         }
         onBookingClicked: NavUtils.navigateToBookings()
-        onNotificationClicked: NavUtils.navigateToNotifications()
+        onNotificationClicked: NavUtils.push(Qt.resolvedUrl("../../notifications/screens/NotificationsScreen.qml"), { notificationRole: Utils.notificationRoleForViewer() })
         onDisputeClicked: NavUtils.navigateToDisputes()
         onDraftsClicked: NavUtils.navigateToDrafts()
     }

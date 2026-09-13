@@ -60,8 +60,11 @@ Page {
         }
 
         // Keep the agent's own commission rate in sync with the backend so the
-        // profile shows the value actually stored in the user's record.
-        AgentViewModel.getMyCommission();
+        // profile shows the value actually stored in the user's record. This is
+        // an agent-only call — clients have no URL and must not hit it.
+        var role = String(AppSettings.userType()).toUpperCase()
+        if (role === "AGENT" || role === "ADMIN" || role === "SUPER_ADMIN")
+            AgentViewModel.getMyCommission();
         loadProfile();
         // Also pull the latest bank/payment details from the backend (they may
         // differ from the locally cached values, e.g. when changed on another

@@ -11,6 +11,11 @@ Item {
     // Path to the notifications screen (URL or qrc string). On click the bell
     // emits activated() then navigates here if a path is provided.
     property url notificationScreen: ""
+    // Role scope applied to the notification feed when it is pushed (e.g.
+    // "AGENT"). The agent dashboard passes "AGENT" so an admin's bell shows
+    // agent-addressed notifications only, never admin-targeted ones. Empty
+    // means the account-level feed (all notifications).
+    property string notificationRole: ""
     // Unread count; defaults to the shared NotificationViewModel's model.
     property int unreadCount: NotificationViewModel.notificationListModel.unreadCount
     property color badgeColor: "#DC2626"
@@ -29,7 +34,8 @@ Item {
         onClicked: {
             root.activated()
             if (root.notificationScreen.toString().length > 0)
-                NavUtils.push(Qt.resolvedUrl(root.notificationScreen))
+                NavUtils.push(Qt.resolvedUrl(root.notificationScreen),
+                              { notificationRole: root.notificationRole })
         }
     }
 

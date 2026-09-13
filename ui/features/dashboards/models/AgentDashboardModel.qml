@@ -1,4 +1,5 @@
 import QtQuick 2.15
+import "../../../utils/Utils.js" as Utils
 
 Item {
     id: root
@@ -302,7 +303,7 @@ Item {
         PropertyViewModel.getProperties()
         RoomViewModel.loadRooms()
         BookingViewModel.fetchBookings()
-        NotificationViewModel.getNotifications()
+        NotificationViewModel.getNotificationsByRole(Utils.notificationRoleForViewer())
         DisputesListViewModel.getDisputes()
     }
 

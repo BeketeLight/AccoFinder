@@ -165,7 +165,7 @@ int main(int argc, char *argv[])
         socketIOClient.stop();
     });
     QObject::connect(&socketIOClient, &SocketIOClient::notificationReceived,
-                     &notificationViewModel, &NotificationViewModel::getNotifications);
+                     &notificationViewModel, &NotificationViewModel::refreshCurrent);
     QObject::connect(&appSettings, &AppSettings::userSessionChanged,
                      &app, startSocketForCurrentUser);
     QObject::connect(&socketIOClient, &SocketIOClient::errorOccurred,
@@ -186,7 +186,34 @@ int main(int argc, char *argv[])
     });
     // Forward FCM foreground notifications to refresh the notification list
     QObject::connect(&fcmService, &FcmService::notificationReceived,
-                     &notificationViewModel, &NotificationViewModel::getNotifications);
+                     &notificationViewModel, &NotificationViewModel::refreshCurrent);
+
+    // Shared, session-scoped lists must never leak from one user into the
+    // next (or into the logged-out state). Reset them whenever the active
+    // session changes.
+    auto resetSharedModels = [&propertyListModel, &mediaViewModel]() {
+        propertyListModel.clear();
+        mediaViewModel.clearMedia();
+    };
+    QObject::connect(&authController, &AuthController::userLoggedOut,
+                     &app, resetSharedModels);
+    QObject::connect(&authController, &AuthController::signInSucceded,
+                     &app, resetSharedModels);
+
+    // A Google sign-in opens the device browser. If the user cancels there,
+    // the OAuth redirect deep link never arrives, so AuthController would stay
+    // "loading" forever. When the app is brought back to the foreground, give
+    // the deep-link poll a short grace window, then cancel the sign-in and
+    // clear the spinner instead of hanging.
+    QObject::connect(&app, &QGuiApplication::applicationStateChanged,
+                     &app, [&authController](Qt::ApplicationState state) {
+        if (state == Qt::ApplicationActive && authController.isGoogleAuthPending()) {
+            QTimer::singleShot(6000, [&authController]() {
+                if (authController.isGoogleAuthPending() && authController.isLoading())
+                    authController.cancelGoogleAuth();
+            });
+        }
+    });
     QObject::connect(
         &engine,
         &QQmlApplicationEngine::objectCreationFailed,

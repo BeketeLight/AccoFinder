@@ -7,6 +7,7 @@ import "../../dashboards/Agets/pages"
 import "../../../components/inputs"
 import "../../../components/indicators"
 import "../../../components/scrollbars"
+import "../../../utils/Utils.js" as Utils
 
 Page {
     id: root
@@ -197,7 +198,7 @@ Page {
         RoomViewModel.loadRooms()
         // Also refresh the dashboard sections' data from their C++ view models.
         BookingViewModel.fetchBookings()
-        NotificationViewModel.getNotifications()
+        NotificationViewModel.getNotificationsByRole(Utils.notificationRoleForViewer())
         DisputesListViewModel.getDisputes()
     }
 
@@ -222,9 +223,15 @@ Page {
         filterChipsModel.append([{ label: "All" }, { label: "Verified" },
                                  { label: "Pending" }, { label: "Draft" },
                                  { label: "Rejected" }])
-        // Fetch only the current user's listings on the agent dashboard.
+        // Fetch only the current user's listings on the agent dashboard, plus
+        // the dashboard sections' data (bookings, agent-scoped notifications,
+        // disputes). Without this the bell badge keeps the previous screen's
+        // count until the user manually pulls to refresh.
         PropertyViewModel.getProperties(AppSettings.userId())
         RoomViewModel.loadRooms()
+        BookingViewModel.fetchBookings()
+        NotificationViewModel.getNotificationsByRole(Utils.notificationRoleForViewer())
+        DisputesListViewModel.getDisputes()
         root.refreshAll()
     }
 

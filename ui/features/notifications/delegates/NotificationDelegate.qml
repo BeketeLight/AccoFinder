@@ -34,7 +34,7 @@ ColumnLayout {
                     // Give the backend a beat to persist, then pull the fresh
                     // list so the badge and rows update.
                     Qt.callLater(function() {
-                        NotificationViewModel.getNotifications()
+                        NotificationViewModel.refreshCurrent()
                     })
                 }
             }

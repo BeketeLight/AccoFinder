@@ -5,16 +5,20 @@
 #include <QString>
 #include "repositories/impl/userrepositoryimpl.h"
 
+class QTimer;
+
 class User;
 
 class AuthController : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(bool isLoading READ isLoading NOTIFY isLoadingChanged)
+    Q_PROPERTY(bool googleAuthPending READ isGoogleAuthPending NOTIFY googleAuthPendingChanged)
 public:
     explicit AuthController(QObject *parent = nullptr);
 
     bool isLoading() const { return m_isLoading; }
+    bool isGoogleAuthPending() const { return m_googleAuthPending; }
 
     Q_INVOKABLE void signIn(const QString& email, const QString& password);
     Q_INVOKABLE void signUp(const QString& fistName,
@@ -31,6 +35,9 @@ public:
     Q_INVOKABLE void resetPassword(const QString& email, const QString& newPassword);
     Q_INVOKABLE void signInWithGoogle(const QString& authUrl);
     Q_INVOKABLE void handleGoogleAuthUrl(const QString& url);
+    // Aborts an in-flight Google sign-in (browser canceled / timed out) and
+    // clears the stuck loading state, emitting signInFailed.
+    Q_INVOKABLE void cancelGoogleAuth();
     Q_INVOKABLE void fetchProfile();
     Q_INVOKABLE void saveProfile(const QString& bankName,
                                  const QString& bankAccountNumber,
@@ -53,12 +60,16 @@ signals:
     void profileFetchFailed(const QString& error);
     void profileSaved(bool status);
     void isLoadingChanged(bool isLoading);
+    void googleAuthPendingChanged(bool pending);
 
 private:
     void setLoading(bool loading);
+    void clearGooglePending();
 
     UserRepositoryImpl* m_userRepository = nullptr;
+    QTimer* m_googleAuthTimeout = nullptr;
     bool m_isLoading = false;
+    bool m_googleAuthPending = false;
 };
 
 #endif // AUTHCONTROLLER_H

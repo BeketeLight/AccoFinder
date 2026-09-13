@@ -26,6 +26,11 @@ Item {
     property int titleFontSize: 15
     property bool showBottomBorder: false
 
+    // Role scope of this feed, passed in by the bell that opened it (e.g.
+    // "AGENT"). Empty means the account-level feed. Kept so refreshes within
+    // this screen reuse the same scope instead of reverting to "all".
+    property string notificationRole: ""
+
     readonly property var notificationsModel: NotificationViewModel.notificationListModel
 
     property bool refreshing: false
@@ -48,7 +53,10 @@ Item {
         root._refreshStart = Date.now()
         root.refreshing = true
         root.loading = true
-        NotificationViewModel.getNotifications()
+        if (root.notificationRole.length > 0)
+            NotificationViewModel.getNotificationsByRole(root.notificationRole)
+        else
+            NotificationViewModel.getNotifications()
     }
 
     function onRequestsSettled() {
@@ -127,10 +135,13 @@ Item {
 
                         onClicked: {
                             NotificationViewModel.markAllRead()
-                            // Give the backend a beat to persist, then pull
-                            // the fresh list so the badge and rows update.
+                            // Give the backend a beat to persist, then pull the
+                            // fresh list so the badge and rows update.
                             Qt.callLater(function() {
-                                NotificationViewModel.getNotifications()
+                                if (root.notificationRole.length > 0)
+                                    NotificationViewModel.getNotificationsByRole(root.notificationRole)
+                                else
+                                    NotificationViewModel.getNotifications()
                             })
                         }
                     }

@@ -155,7 +155,7 @@ void PropertyRepositoryImpl::updatePropertyStatus(const QString &houseId, const 
 void PropertyRepositoryImpl::getPropertiesByStatus(const QString &status)
 {
     APIClient::instance().get(
-        "/house-listing/?status=" + status,
+        "/house-listing/?verificationStatus=" + status,
         [this] (bool success, const QJsonObject& response)
         {
             QList<Property*> properties;
