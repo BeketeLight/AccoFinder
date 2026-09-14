@@ -241,6 +241,8 @@ qt_add_qml_module(appAccoFinder
         QML_FILES ui/features/bookings/components/FilterComponent.qml
         QML_FILES ui/features/bookings/pages/BookingView.qml
         QML_FILES ui/features/bookings/components/BookingsCard.qml
+        QML_FILES ui/features/home/models/PropertyDetailsModel.qml
+        QML_FILES ui/utils/ImageUtils.js
 )
 
 # ─────────────────────────────────────────────────────────────

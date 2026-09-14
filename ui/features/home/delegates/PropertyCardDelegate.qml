@@ -185,8 +185,6 @@ Item {
         anchors.fill: parent
         cursorShape: Qt.PointingHandCursor
         onClicked: {
-            console.log("cjecking ifthe amenenites are avalaiba from propertydelefate");
-            console.log(root.amenities[0]);
             NavUtils.push(Qt.resolvedUrl("./PropertyDelegateDetails.qml"), {
                 propertyId: root.propertyId,
                 propertyTitle: root.title,
@@ -194,7 +192,6 @@ Item {
                 price: root.price,
                 status: root.status,
                 isVerified: root.isVerified,
-                imageUrl: root.imageUrl,
                 amenities: root.amenities
             });
             root.clicked();

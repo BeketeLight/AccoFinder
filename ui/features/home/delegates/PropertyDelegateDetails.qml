@@ -4,7 +4,9 @@ import QtQuick.Layouts
 import QtQuick.Effects
 import "../../../components/inputs"
 import "../components/"
+import "../models"
 import "../../../utils/NavigationUtils.js" as NavUtils
+import "../../../utils/ImageUtils.js" as ImageUtils
 
 Page {
     id: root
@@ -16,31 +18,35 @@ Page {
     property bool showHeader: true
     property bool searchReadOnly: false
 
-    // ========== PROPERTY DATA ==========
+    // ========== PROPERTY DATA (from navigation) ==========
     property string propertyId: ""
     property bool favouriteChecked: false
-    property string propertyTitle: "Modern 2 Bedroom Apartment"
-    property string location: "Area 47, Lilongwe"
-    property real price: 450000
-    property string status: "Available"
+    property string propertyTitle: ""
+    property string location: ""
+    property real price: 0
+    property string status: ""
     property bool isVerified: true
-    property string description: "Spacious and well-lit apartment located in a quiet neighborhood. Close to shops, schools and public transport. Ideal for small families or professionals."
-    property int bedrooms: 2
-    property int bathrooms: 1
-    property string size: "85 m²"
-    property string agentName: "John Banda"
-    property string agentPhone: "+265 999 123 456"
-    property string imageUrl: ""
-    property string imageUrls: ""
-    property var imageList: root.imageUrls ? root.imageUrls.split(",") : []
+    property string description: ""
+    property int bedrooms: 0
+    property int bathrooms: 0
+    property string size: ""
+    property string agentName: ""
+    property string agentPhone: ""
     property var amenities: []
 
     // ========== AGENT ==========
-    property string agentFirstName: "John"
-    property string agentLastName: "Banda"
-    property real agentRating: 4.6
-    property int agentReviewCount: 28
+    property string agentFirstName: ""
+    property string agentLastName: ""
+    property real agentRating: 0
+    property int agentReviewCount: 0
 
+    // ========== DETAILS MODEL (media + rooms) ==========
+    PropertyDetailsModel {
+        id: detailsModel
+        propertyId: root.propertyId
+    }
+
+    // ========== AMENITIES HELPERS ==========
     function amenityTokens() {
         var src = root.amenities;
         if (!src)
@@ -51,7 +57,6 @@ Page {
             return src.split("|").filter(function (s) {
                 return s.length > 0;
             });
-        // last-ditch fallback for QQmlListModel if any caller still passes one
         if (src.count !== undefined && typeof src.get === "function") {
             var out = [];
             for (var i = 0; i < src.count; i++) {
@@ -80,60 +85,28 @@ Page {
             "COOKER": "Cooker"
         };
         var key = String(token).toUpperCase();
-        console.log("amenityLabel key if avaialabe");
-        console.log(key);
         return map[key] !== undefined ? map[key] : key;
     }
 
     function amenityIcon(token) {
         var map = {
-            "WIFI": "📶",
-            "PARKING": "🅿️",
-            "SECURITY": "🔒",
-            "WATER": "💧",
-            "ELECTRICITY": "⚡",
-            "FURNISHED": "🛋️",
-            "AC": "❄️",
-            "GARDEN": "🌳",
-            "BALCONY": "🌅",
-            "BOREHOLE": "🚰",
-            "COOKER": "🍳"
+            "WIFI": "qrc:/ui/assets/amenities/wifi.svg",
+            "PARKING": "qrc:/ui/assets/amenities/parking.svg",
+            "SECURITY": "qrc:/ui/assets/amenities/security.svg",
+            "WATER": "qrc:/ui/assets/amenities/water.svg",
+            "ELECTRICITY": "qrc:/ui/assets/amenities/electricity.svg",
+            "FURNISHED": "qrc:/ui/assets/amenities/furnished.svg",
+            "AC": "qrc:/ui/assets/amenities/ac.svg",
+            "GARDEN": "qrc:/ui/assets/amenities/garden.svg",
+            "BALCONY": "qrc:/ui/assets/amenities/balcony.svg",
+            "BOREHOLE": "qrc:/ui/assets/amenities/borehole.svg",
+            "COOKER": "qrc:/ui/assets/amenities/cooker.svg"
         };
         var key = String(token).toUpperCase();
-        console.log("amenityIcon key if avaialabe");
-        console.log(key);
-        return map[key] !== undefined ? map[key] : "✓";
+        return map[key] !== undefined ? map[key] : "";
     }
 
-    // ========== ROOMS DATA ==========
-    property var roomsModel: [
-        {
-            roomId: "room1",
-            type: "Master Bedroom",
-            price: 250000,
-            available: true,
-            size: "20 m²",
-            imageUrl: ""
-        },
-        {
-            roomId: "room2",
-            type: "Second Bedroom",
-            price: 200000,
-            available: true,
-            size: "18 m²",
-            imageUrl: ""
-        },
-        {
-            roomId: "room3",
-            type: "Single Room",
-            price: 150000,
-            available: false,
-            size: "15 m²",
-            imageUrl: ""
-        }
-    ]
-
-    // ========== REVIEWS ==========
+    // ========== REVIEWS (placeholder until API exists) ==========
     property var reviewsModel: [
         {
             name: "Mary Phiri",
@@ -166,15 +139,14 @@ Page {
     function onSearchBarTapped() {
         root.searchRequested();
     }
+
     function goBack() {
         root.backRequested();
         NavUtils.pop();
     }
 
     function navigateToQuarters(roomData) {
-        // Emit signal with room data
         root.roomClicked(roomData.roomId, roomData);
-        // Navigate to room details
         NavUtils.push(Qt.resolvedUrl("./QuartersDetailDelegate.qml"), {
             quarterId: roomData.roomId,
             quarterType: roomData.type,
@@ -205,7 +177,7 @@ Page {
             width: flickable.width
             spacing: 0
 
-            // ===== PROPERTY THUMBNAIL CAROUSEL =====
+            // ===== PROPERTY GALLERY =====
             Item {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 300
@@ -216,21 +188,21 @@ Page {
                     clip: true
 
                     Repeater {
-                        model: root.imageList.length > 0 ? root.imageList : [root.imageUrl]
+                        model: detailsModel.imageListModel
 
                         Item {
-                            required property var modelData
+                            // ListModel roles injected as required properties
+                            required property string url
+                            required property int index
 
-                            // Main image
                             Image {
                                 id: pageImage
                                 anchors.fill: parent
-                                source: modelData
+                                source: ImageUtils.cachedSource(url)
                                 fillMode: Image.PreserveAspectCrop
                                 asynchronous: true
                                 cache: true
                                 opacity: status === Image.Ready ? 1 : 0
-
                                 Behavior on opacity {
                                     NumberAnimation {
                                         duration: 200
@@ -238,7 +210,6 @@ Page {
                                 }
                             }
 
-                            // Skeleton + shimmer while loading
                             Rectangle {
                                 id: skeleton
                                 anchors.fill: parent
@@ -253,7 +224,6 @@ Page {
                                     color: "#F9FAFB"
                                     opacity: 0.7
                                     x: -width
-
                                     SequentialAnimation on x {
                                         loops: Animation.Infinite
                                         running: skeleton.visible
@@ -273,7 +243,19 @@ Page {
                     }
                 }
 
-                // Image counter
+                // Empty gallery placeholder
+                Rectangle {
+                    anchors.fill: parent
+                    color: "#F3F4F6"
+                    visible: detailsModel.imageCount === 0
+                    Label {
+                        anchors.centerIn: parent
+                        text: detailsModel.loading ? "Loading photos…" : "No photos"
+                        color: "#9CA3AF"
+                        font.pixelSize: 14
+                    }
+                }
+
                 Rectangle {
                     anchors.left: parent.left
                     anchors.bottom: parent.bottom
@@ -282,11 +264,12 @@ Page {
                     radius: 12
                     color: "#80000000"
                     width: counterText.width + 16
+                    visible: detailsModel.imageCount > 0
 
                     Label {
                         id: counterText
                         anchors.centerIn: parent
-                        text: (imageSwipe.currentIndex + 1) + " / " + Math.max(imageSwipe.count, 1)
+                        text: (imageSwipe.currentIndex + 1) + " / " + Math.max(detailsModel.imageCount, 1)
                         color: "white"
                         font.pixelSize: 12
                     }
@@ -295,14 +278,13 @@ Page {
                 Image {
                     id: favouriteImg
                     source: root.favouriteChecked ? "qrc:/ui/assets/favorite-filled.svg" : "qrc:/ui/assets/favorite-outline.svg"
-                    Layout.preferredWidth: 22
-                    Layout.preferredHeight: 22
+                    width: 22
+                    height: 22
                     sourceSize.width: 48
                     sourceSize.height: 48
                     fillMode: Image.PreserveAspectFit
                     antialiasing: true
                     smooth: true
-
                     anchors.top: parent.top
                     anchors.right: parent.right
                     anchors.margins: 8
@@ -323,26 +305,20 @@ Page {
                 color: "#F5F5F5"
             }
 
-            // ===== AMENITIES SECTION =====
+            // ===== AMENITIES =====
             ColumnLayout {
-                id: amenitiesSection
                 Layout.fillWidth: true
                 Layout.margins: 10
                 spacing: 12
+                visible: root.amenityTokens().length > 0
 
-                RowLayout {
-                    Layout.fillWidth: true
-
-                    Label {
-                        text: "Amenities"
-                        font.pixelSize: 16
-                        font.weight: Font.DemiBold
-                        color: "#1F2937"
-                        Layout.fillWidth: true
-                    }
+                Label {
+                    text: "Amenities"
+                    font.pixelSize: 16
+                    font.weight: Font.DemiBold
+                    color: "#1F2937"
                 }
 
-                // Amenities grid
                 Flow {
                     id: amenitiesFlow
                     Layout.fillWidth: true
@@ -351,9 +327,8 @@ Page {
                     Repeater {
                         model: root.amenityTokens()
 
-                        delegate: Rectangle {
-                            required property string modelData          // ← the amenity token
-
+                        Rectangle {
+                            required property string modelData
                             width: (amenitiesFlow.width - amenitiesFlow.spacing * 2) / 3
                             height: 50
                             radius: 10
@@ -365,10 +340,13 @@ Page {
                                 anchors.centerIn: parent
                                 spacing: 4
 
-                                Label {
-                                    text: root.amenityIcon(modelData)
-                                    font.pixelSize: 22
-                                    horizontalAlignment: Text.AlignHCenter
+                                Image {
+                                    source: root.amenityIcon(modelData)
+                                    width: 18
+                                    height: 18
+                                    sourceSize.width: 20
+                                    sourceSize.height: 20
+                                    fillMode: Image.PreserveAspectFit
                                     Layout.alignment: Qt.AlignHCenter
                                 }
 
@@ -379,29 +357,29 @@ Page {
                                     font.weight: Font.Medium
                                     horizontalAlignment: Text.AlignHCenter
                                     Layout.alignment: Qt.AlignHCenter
-                                    Layout.maximumWidth: parent.width
-                                    // elide: Text.ElideRight
                                 }
                             }
                         }
                     }
                 }
             }
+
             Rectangle {
                 Layout.fillWidth: true
                 height: 8
                 color: "#F5F5F5"
+                visible: root.amenityTokens().length > 0
             }
 
-            // ===== ROOMS GRID =====
+            // ===== ROOMS =====
             ColumnLayout {
-                id: roomsSection
                 Layout.fillWidth: true
                 Layout.margins: 16
                 spacing: 12
 
                 RowLayout {
                     Layout.fillWidth: true
+
                     Label {
                         text: "Available Rooms"
                         font.pixelSize: 16
@@ -409,38 +387,53 @@ Page {
                         color: "#1F2937"
                         Layout.fillWidth: true
                     }
+
                     Label {
-                        text: root.roomsModel.length + " rooms"
+                        text: detailsModel.roomCount + " rooms"
                         font.pixelSize: 13
                         color: "#6B7280"
                     }
                 }
 
-                // Grid of room cards
+                Label {
+                    visible: detailsModel.roomCount === 0
+                    text: detailsModel.loading ? "Loading rooms…" : "No rooms listed"
+                    font.pixelSize: 13
+                    color: "#9CA3AF"
+                }
+
                 GridView {
                     id: roomsGridView
                     Layout.fillWidth: true
-                    height: roomsGridView.contentHeight
+                    height: Math.ceil(Math.max(detailsModel.roomCount, 0) / 2) * cellHeight
                     cellWidth: (width - 8) / 2
                     cellHeight: 180
                     clip: true
                     interactive: false
-                    model: root.roomsModel
+                    model: detailsModel.roomsModel
 
+                    // ListModel roles via model.* — avoids required-property clash
+                    // with QuartersComponent's own imageUrl property
                     delegate: QuartersComponent {
                         width: roomsGridView.cellWidth - 4
                         height: roomsGridView.cellHeight - 4
-                        quartersId: modelData.roomId
-                        quartersType: modelData.type
-                        quartersPrice: modelData.price
-                        isQuartersAvailable: modelData.available
-                        imageUrl: modelData.imageUrl || root.imageList[0] || ""
-                        imageUrls: root.imageList
+
+                        quartersId: model.roomId
+                        quartersType: model.type
+                        quartersPrice: model.price
+                        isQuartersAvailable: model.available
+                        imageUrl: ImageUtils.cachedSource(model.imageUrl)
                         quartersTitle: root.propertyTitle
                         location: root.location
 
                         onClicked: {
-                            root.navigateToQuarters(modelData);
+                            root.navigateToQuarters({
+                                roomId: model.roomId,
+                                type: model.type,
+                                price: model.price,
+                                available: model.available,
+                                imageUrl: model.imageUrl
+                            });
                         }
                     }
                 }
@@ -460,6 +453,7 @@ Page {
 
                 RowLayout {
                     Layout.fillWidth: true
+
                     Label {
                         text: "Reviews"
                         font.pixelSize: 16
@@ -467,6 +461,7 @@ Page {
                         color: "#1F2937"
                         Layout.fillWidth: true
                     }
+
                     Label {
                         text: root.agentReviewCount + " reviews"
                         font.pixelSize: 13
@@ -478,6 +473,7 @@ Page {
                     model: root.reviewsModel
 
                     Rectangle {
+                        required property var modelData
                         Layout.fillWidth: true
                         radius: 12
                         color: "#F9FAFB"
@@ -503,7 +499,7 @@ Page {
                                     color: "#E0E7FF"
                                     Label {
                                         anchors.centerIn: parent
-                                        text: modelData.name.charAt(0)
+                                        text: String(modelData.name).charAt(0)
                                         font.pixelSize: 13
                                         font.bold: true
                                         color: "#4338CA"
@@ -549,7 +545,6 @@ Page {
                 }
             }
 
-            // Space for footer
             Item {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 100
@@ -574,6 +569,7 @@ Page {
             anchors.fill: parent
             anchors.margins: 12
             spacing: 12
+
             Button {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
@@ -592,22 +588,6 @@ Page {
                 }
                 onClicked: root.bookRequested()
             }
-        }
-    }
-
-    // ========== HELPER COMPONENTS ==========
-    component SpecItem: RowLayout {
-        property string icon
-        property string label
-        spacing: 4
-        Label {
-            text: icon
-            font.pixelSize: 14
-        }
-        Label {
-            text: label
-            font.pixelSize: 13
-            color: "#4B5563"
         }
     }
 }

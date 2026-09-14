@@ -60,7 +60,8 @@ Item {
                 roomCount: item.roomCount || 0,
                 rejectionReason: item.rejectionReason || "",
                 matches: true,
-                imageUrl: ""
+                imageUrl: "",
+                imageUrls: []
             });
         }
 
@@ -129,6 +130,7 @@ Item {
             if (media && media.length > 0) {
                 var primary = null;
                 for (var k = 0; k < media.length; k++) {
+                    // console.log("index", k, "availabe images for cover image and room image", media[k].isPrimary);
                     if (media[k] && media[k].isPrimary) {
                         primary = media[k];
                         break;
@@ -138,7 +140,7 @@ Item {
                 cover = String(pick.url || pick.path || "");
             }
 
-            console.log("  pid:", pid, "| media count:", media ? media.length : -1, "| cover:", cover.length > 0 ? cover.substring(0, 60) + "..." : "(none)");
+            // console.log("  pid:", pid, "| media count:", media ? media.length : -1, "| cover:", cover.length > 0 ? cover.substring(0, 60) + "..." : "(none)");
 
             if (String(propertiesModelId.get(i).imageUrl) !== cover)
                 propertiesModelId.setProperty(i, "imageUrl", cover);

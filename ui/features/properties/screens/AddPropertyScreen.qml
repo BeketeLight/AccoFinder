@@ -16,29 +16,23 @@ Item {
     property var deferredPayload: null
 
     function goBack() {
-        addPropertyPage.goBack()
+        addPropertyPage.goBack();
     }
 
     function createRoomsAndMedia(propertyId) {
-        var payload = pendingPayload
+        var payload = pendingPayload;
         if (!payload)
-            return
-
-        pendingPropertyId = propertyId
-        pendingMediaIds = []
-        pendingMediaTotal = payload.photos ? payload.photos.length : 0
+            return;
+        pendingPropertyId = propertyId;
+        pendingMediaIds = [];
+        pendingMediaTotal = payload.photos ? payload.photos.length : 0;
 
         if (pendingMediaTotal === 0)
-            return
-
+            return;
         if (payload.photos) {
             for (var j = 0; j < payload.photos.length; j++) {
-                var photo = payload.photos[j]
-                MediaViewModel.createMedia(propertyId,
-                                           photo.path,
-                                           "image",
-                                           photo.isPrimary,
-                                           realRoomIdFor(photo.roomId))
+                var photo = payload.photos[j];
+                MediaViewModel.createMedia(propertyId, photo.path, "imaage", photo.isPrimary, realRoomIdFor(photo.roomId));
             }
         }
     }
@@ -50,29 +44,29 @@ Item {
     // so media.roomId always references the real room document even when the
     // local numbering is non-contiguous; -1 means "whole property / common areas".
     function realRoomIdFor(seq) {
-        var n = Number(seq)
+        var n = Number(seq);
         if (isNaN(n) || n < 0)
-            return "-1"
-        var idx = -1
-        var payload = pendingPayload
+            return "-1";
+        var idx = -1;
+        var payload = pendingPayload;
         if (payload && payload.rooms) {
             for (var i = 0; i < payload.rooms.length; i++) {
-                var entry = payload.rooms[i]
+                var entry = payload.rooms[i];
                 if (entry && Number(entry.roomId) === n) {
-                    idx = i
-                    break
+                    idx = i;
+                    break;
                 }
             }
         } else {
-            idx = n - 1
+            idx = n - 1;
         }
-        var rooms = pendingRooms || []
+        var rooms = pendingRooms || [];
         if (idx >= 0 && idx < rooms.length) {
-            var r = rooms[idx]
+            var r = rooms[idx];
             if (r && r._id)
-                return String(r._id)
+                return String(r._id);
         }
-        return "-1"
+        return "-1";
     }
 
     // The payload built by the wizard lacks the backend property id (it is only
@@ -80,25 +74,25 @@ Item {
     // screen opens — this lets it fetch rooms and photos for that property.
     function payloadWithPropertyId(payload) {
         if (payload && pendingPropertyId.length > 0 && !payload.propertyId)
-            payload.propertyId = pendingPropertyId
-        return payload
+            payload.propertyId = pendingPropertyId;
+        return payload;
     }
 
     function onMediaUploaded(mediaId) {
         if (!mediaId || mediaId.length === 0)
-            return
-        pendingMediaIds.push(mediaId)
+            return;
+        pendingMediaIds.push(mediaId);
         if (pendingMediaIds.length >= pendingMediaTotal && pendingPropertyId.length > 0) {
-            PropertyViewModel.attachMedia(pendingPropertyId, pendingMediaIds)
-            pendingMediaIds = []
-            pendingMediaTotal = 0
-            pendingPropertyId = ""
+            PropertyViewModel.attachMedia(pendingPropertyId, pendingMediaIds);
+            pendingMediaIds = [];
+            pendingMediaTotal = 0;
+            pendingPropertyId = "";
             // Property + every photo are now uploaded/attached. Tell the wizard
             // to stop the spinner and show the success state — its success
             // timer will emit registrationFinished, which performs the
             // (deferred) navigation. This keeps the loader visible during the
             // whole background upload instead of showing success prematurely.
-            addPropertyPage.completeSubmission()
+            addPropertyPage.completeSubmission();
         }
     }
 
@@ -107,11 +101,11 @@ Item {
     // spinner. The property itself was already created on the backend, so the
     // user is not blocked from proceeding.
     function onMediaFailure(error) {
-        navigationFallbackTimer.stop()
-        pendingMediaIds = []
-        pendingMediaTotal = 0
-        pendingPropertyId = ""
-        addPropertyPage.showError(qsTr("Some photos could not be uploaded: %1").arg(error))
+        navigationFallbackTimer.stop();
+        pendingMediaIds = [];
+        pendingMediaTotal = 0;
+        pendingPropertyId = "";
+        addPropertyPage.showError(qsTr("Some photos could not be uploaded: %1").arg(error));
     }
 
     // Moving on only once media have finished uploading and being attached.
@@ -120,14 +114,15 @@ Item {
     // the async uploads complete and the media would never be linked.
     function finishNavigation() {
         if (deferredPayload) {
-            var payload = payloadWithPropertyId(deferredPayload)
-            deferredPayload = null
-            navigationFallbackTimer.stop()
+            var payload = payloadWithPropertyId(deferredPayload);
+            deferredPayload = null;
+            navigationFallbackTimer.stop();
             // Safety-net navigation (e.g. a failed upload) — hide the wizard's
             // busy overlay so it doesn't linger over the next screen.
-            addPropertyPage.hideBusy()
-            NavUtils.replace("../features/properties/screens/PropertyDetailScreen.qml",
-                             { initialPayload: payload })
+            addPropertyPage.hideBusy();
+            NavUtils.replace("../features/properties/screens/PropertyDetailScreen.qml", {
+                initialPayload: payload
+            });
         }
     }
     // Safety net: if any upload fails (so onMediaUploaded never reaches the
@@ -142,34 +137,34 @@ Item {
     Connections {
         target: PropertyViewModel
         function onPropertyCreatedSignal(id, title, rooms) {
-            addItemdId.pendingRooms = rooms || []
-            addItemdId.createRoomsAndMedia(id)
+            addItemdId.pendingRooms = rooms || [];
+            addItemdId.createRoomsAndMedia(id);
         }
     }
 
     Connections {
         target: MediaViewModel
         function onMediaCreatedSignal(mediaId) {
-            addItemdId.onMediaUploaded(mediaId)
+            addItemdId.onMediaUploaded(mediaId);
         }
         function onMediaError(error) {
             // A photo upload failed (e.g. backend S3 error). Releasing the
             // spinner and showing the error beats leaving the user stuck on an
             // indefinite loader. The created property still exists on the
             // backend (minus the failed photo) and can be revisited.
-            addItemdId.onMediaFailure(error)
+            addItemdId.onMediaFailure(error);
         }
     }
 
     Connections {
         target: PropertyViewModel
         function onPropertyError(error) {
-            console.log("Property create error:", error)
+            console.log("Property create error:", error);
             // Persist the unsent property as a draft so the data survives an app
             // restart and can be resent later from the Drafts screen.
             if (pendingPayload)
-                DraftViewModel.saveDraft(pendingPayload)
-            pendingPayload = null
+                DraftViewModel.saveDraft(pendingPayload);
+            pendingPayload = null;
         }
     }
 
@@ -181,53 +176,40 @@ Item {
             if (payload) {
                 // Rooms are sent inline so the property and its rooms are
                 // created atomically in one request.
-                pendingPayload = payload
-                var roomsArr = []
+                pendingPayload = payload;
+                var roomsArr = [];
                 if (payload.rooms) {
                     for (var k = 0; k < payload.rooms.length; k++) {
-                        var r = payload.rooms[k]
+                        var r = payload.rooms[k];
                         roomsArr.push({
-                                          type: r.roomType !== undefined ? r.roomType : "Room",
-                                          price: r.price !== undefined ? r.price : 0,
-                                          available: r.available !== undefined ? r.available : true
-                                      })
+                            type: r.roomType !== undefined ? r.roomType : "Room",
+                            price: r.price !== undefined ? r.price : 0,
+                            available: r.available !== undefined ? r.available : true
+                        });
                     }
                 }
-                PropertyViewModel.createProperty(
-                    payload.title,
-                    payload.description,
-                    payload.price,
-                    payload.propertyType !== undefined && payload.propertyType.length > 0
-                        ? payload.propertyType : "WHOLE",
-                    payload.physicalAddress && payload.physicalAddress.district,
-                    payload.physicalAddress && payload.physicalAddress.village,
-                    payload.amenities,
-                    payload.landlord,
-                    payload.landlordPhone,
-                    payload.verificationStatus,
-                    payload.isActive !== undefined ? payload.isActive : true,
-                    roomsArr)
+                PropertyViewModel.createProperty(payload.title, payload.description, payload.price, payload.propertyType !== undefined && payload.propertyType.length > 0 ? payload.propertyType : "WHOLE", payload.physicalAddress && payload.physicalAddress.district, payload.physicalAddress && payload.physicalAddress.village, payload.amenities, payload.landlord, payload.landlordPhone, payload.verificationStatus, payload.isActive !== undefined ? payload.isActive : true, roomsArr);
             }
         }
 
         onDraftSaved: function (payload) {
-            console.log("Property draft saved:", JSON.stringify(payload))
+            console.log("Property draft saved:", JSON.stringify(payload));
             if (payload)
-                DraftViewModel.saveDraft(payload)
+                DraftViewModel.saveDraft(payload);
         }
 
         onRegistrationFinished: function (payload) {
             // If there are photos, hold navigation until they are all uploaded
             // and attached (see finishNavigation) so the media is persisted.
             if (addItemdId.pendingMediaTotal > 0) {
-                addItemdId.deferredPayload = payload
-                navigationFallbackTimer.restart()
-                console.log("Delaying navigation while", addItemdId.pendingMediaTotal,
-                            "photos are still uploading")
+                addItemdId.deferredPayload = payload;
+                navigationFallbackTimer.restart();
+                console.log("Delaying navigation while", addItemdId.pendingMediaTotal, "photos are still uploading");
             } else {
-                addItemdId.deferredPayload = null
-                NavUtils.replace("../features/properties/screens/PropertyDetailScreen.qml",
-                                 { initialPayload: addItemdId.payloadWithPropertyId(payload) })
+                addItemdId.deferredPayload = null;
+                NavUtils.replace("../features/properties/screens/PropertyDetailScreen.qml", {
+                    initialPayload: addItemdId.payloadWithPropertyId(payload)
+                });
             }
         }
     }

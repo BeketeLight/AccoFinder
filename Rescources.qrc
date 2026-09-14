@@ -36,5 +36,16 @@
         <file>ui/assets/bookingcard-icon.svg</file>
         <file>ui/assets/confirmed-icon.svg</file>
         <file>ui/assets/dispute-active-icon.svg</file>
+        <file>ui/assets/amenities/ac.svg</file>
+        <file>ui/assets/amenities/balcony.svg</file>
+        <file>ui/assets/amenities/borehole.svg</file>
+        <file>ui/assets/amenities/cooker.svg</file>
+        <file>ui/assets/amenities/electricity.svg</file>
+        <file>ui/assets/amenities/furnished.svg</file>
+        <file>ui/assets/amenities/garden.svg</file>
+        <file>ui/assets/amenities/parking.svg</file>
+        <file>ui/assets/amenities/security.svg</file>
+        <file>ui/assets/amenities/water.svg</file>
+        <file>ui/assets/amenities/wifi.svg</file>
     </qresource>
 </RCC>
