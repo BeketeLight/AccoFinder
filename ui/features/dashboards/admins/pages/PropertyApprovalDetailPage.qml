@@ -69,6 +69,35 @@ Item {
         rejectDialog.open()
     }
 
+    // Refresh the header status display after a decision so the UI reflects the
+    // change immediately (the payload snapshot itself is static until refetched).
+    function applyStatus(newStatus, approvedBy) {
+        root.propStatus = String(newStatus || "").toUpperCase()
+        root.propApprovedBy = (root.propStatus === "VERIFIED") ? (approvedBy || "") : ""
+        if (root.listingsModel)
+            root.listingsModel.setPropertyStatus(root.propertyId, root.propStatus)
+    }
+
+    function doApprove() {
+        root.applyStatus("VERIFIED", AppSettings.userName())
+        // Persist the decision on the backend so it survives a refresh.
+        // setPropertyStatus only edits the local list.
+        PropertyViewModel.updatePropertyStatus(root.propertyId, "VERIFIED", "", AppSettings.userId(), AppSettings.userName())
+        console.log("Approval:", root.propertyId, "-> VERIFIED")
+        root.decisionMade(root.propertyId, root.propTitle, true)
+        root.goBackRequested()
+    }
+
+    // Reverse an earlier decision (e.g. a property that was approved by mistake):
+    // put it back in the review queue as PENDING so it can be re-reviewed.
+    function doRevert() {
+        root.applyStatus("PENDING")
+        PropertyViewModel.updatePropertyStatus(root.propertyId, "PENDING")
+        console.log("Approval:", root.propertyId, "-> PENDING")
+        root.decisionMade(root.propertyId, root.propTitle, false)
+        root.goBackRequested()
+    }
+
     function doReject() {
         var reason = rejectReasonField.text.trim()
         if (reason.length < 5) {
@@ -76,8 +105,7 @@ Item {
             return
         }
         rejectError.visible = false
-        if (root.listingsModel)
-            root.listingsModel.setPropertyStatus(root.propertyId, "REJECTED", reason)
+        root.applyStatus("REJECTED")
         // Persist the decision (with the reason) on the backend so it survives a
         // refresh. setPropertyStatus only edits the local list.
         PropertyViewModel.updatePropertyStatus(root.propertyId, "REJECTED", reason)
@@ -612,13 +640,16 @@ Item {
                     }
 
                     onClicked: root.confirmReject()
-                    }
+                }
 
                 Button {
                     id: approveButton
                     Layout.fillWidth: true
                     Layout.preferredHeight: 46
-                    text: qsTr("Approve")
+                    // For a listing that is already VERIFIED the primary action
+                    // becomes "Revert to pending" so an admin can undo an
+                    // accidental approval; otherwise it is the approval itself.
+                    text: root.propStatus === "VERIFIED" ? qsTr("Revert to pending") : qsTr("Approve")
 
                     contentItem: Label {
                         horizontalAlignment: Text.AlignHCenter
@@ -635,14 +666,10 @@ Item {
                     }
 
                     onClicked: {
-                        if (root.listingsModel)
-                            root.listingsModel.setPropertyStatus(root.propertyId, "VERIFIED")
-                        // Persist the decision on the backend so it survives a
-                        // refresh. setPropertyStatus only edits the local list.
-                        PropertyViewModel.updatePropertyStatus(root.propertyId, "VERIFIED", "", AppSettings.userId(), AppSettings.userName())
-                        console.log("Approval:", root.propertyId, "-> VERIFIED")
-                        root.decisionMade(root.propertyId, root.propTitle, true)
-                        root.goBackRequested()
+                        if (root.propStatus === "VERIFIED")
+                            root.doRevert()
+                        else
+                            root.doApprove()
                     }
                 }
             }

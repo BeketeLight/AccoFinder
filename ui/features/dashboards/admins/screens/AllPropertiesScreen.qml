@@ -26,8 +26,11 @@ Item {
             onPropertyClicked: function(propertyId) {
                 var payload = allPropsPage.propertiesModel.registrationPayloadFor(propertyId, "propertyId")
                 if (payload)
-                    NavUtils.push(Qt.resolvedUrl("../../../properties/screens/PropertyDetailScreen.qml"),
-                                  { initialPayload: payload })
+                    NavUtils.push(Qt.resolvedUrl("PropertyApprovalDetailScreen.qml"), {
+                        propertyPayload: payload,
+                        propertyId: propertyId,
+                        listingsModel: allPropsPage.propertiesModel
+                    })
             }
         }
     }
