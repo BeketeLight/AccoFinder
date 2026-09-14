@@ -147,12 +147,28 @@ Page {
 
     function navigateToQuarters(roomData) {
         root.roomClicked(roomData.roomId, roomData);
+
+        // Extract images list from model, falling back to single imageUrl
+        var mediaArray = [];
+        if (roomData.images && roomData.images.count !== undefined) {
+            // If passed as QML ListModel/ListElement
+            for (var i = 0; i < roomData.images.count; i++) {
+                mediaArray.push(roomData.images.get(i).modelData || roomData.images.get(i));
+            }
+        } else if (Array.isArray(roomData.images) && roomData.images.length > 0) {
+            mediaArray = roomData.images;
+        } else if (roomData.imageUrl) {
+            mediaArray = [roomData.imageUrl];
+        }
+
         NavUtils.push(Qt.resolvedUrl("./QuartersDetailDelegate.qml"), {
             quarterId: roomData.roomId,
             quarterType: roomData.type,
             quarterPrice: roomData.price,
             isquarterAvailable: roomData.available,
-            roomImage: roomData.imageUrl,
+            roomImage: roomData.imageUrl || "",
+            mediaList: mediaArray // <--- Forward room images array
+            ,
             quarterTitle: root.propertyTitle,
             location: root.location,
             description: root.description
@@ -432,7 +448,8 @@ Page {
                                 type: model.type,
                                 price: model.price,
                                 available: model.available,
-                                imageUrl: model.imageUrl
+                                imageUrl: model.imageUrl,
+                                mediaList: imageUrl
                             });
                         }
                     }

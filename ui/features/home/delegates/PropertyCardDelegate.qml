@@ -73,7 +73,7 @@ Item {
                 id: mask
                 anchors.fill: parent
                 anchors.margins: borderRect.border.width
-                radius: 16
+                radius: 8
                 color: "black"
                 visible: false
                 layer.enabled: true
@@ -85,7 +85,7 @@ Item {
                 id: skeleton
                 anchors.fill: parent
                 anchors.margins: borderRect.border.width
-                radius: 16
+                radius: 8
                 visible: img.status !== Image.Ready
                 color: "#E5E7EB"
                 clip: true
@@ -96,7 +96,7 @@ Item {
                     width: parent.width * 0.45
                     height: parent.height
                     color: "#F9FAFB"
-                    radius: 16
+                    radius: 8
                     opacity: 0.7
                     x: -width
 

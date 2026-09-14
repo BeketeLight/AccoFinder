@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Effects
+import "../../../utils/ImageUtils.js" as ImageUtils
 
 Page {
     id: root
@@ -32,7 +33,19 @@ Page {
 
     // Media - images and videos
     property string roomImage: ""
-    property var mediaList: ["https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=600&h=400&fit=crop,https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=600&h=400&fit=crop,https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=600&h=400&fit=crop"]
+    property var mediaList: []
+
+    // Helper function to handle JS arrays, strings, or ListModels
+    function getMediaArray() {
+        if (Array.isArray(mediaList) && mediaList.length > 0) {
+            return mediaList;
+        } else if (typeof mediaList === "string" && mediaList.length > 0) {
+            return [mediaList];
+        } else if (roomImage.length > 0) {
+            return [roomImage];
+        }
+        return [];
+    }
 
     // Reviews
     property var reviewsModel: [
@@ -96,18 +109,16 @@ Page {
 
                     Repeater {
                         id: mediaModel
-                        model: root.mediaList.length > 0 ? root.mediaList : []
+                        model: root.getMediaArray()
 
                         Item {
                             required property var modelData
 
-                            // Check if it's a video URL (contains .mp4, .mov, etc.)
-                            property bool isVideo: modelData.match(/\.(mp4|mov|avi|mkv|webm)$/i) !== null
-
+                            property bool isVideo: typeof modelData === "string" && modelData.match(/\.(mp4|mov|avi|mkv|webm)$/i) !== null
                             Image {
                                 id: pageImage
                                 anchors.fill: parent
-                                source: isVideo ? "" : modelData
+                                source: isVideo ? "" : ImageUtils.cachedSource(modelData)
                                 fillMode: Image.PreserveAspectCrop
                                 asynchronous: true
                                 visible: !isVideo

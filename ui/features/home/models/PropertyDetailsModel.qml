@@ -137,21 +137,14 @@ Item {
         return media.isPrimary === true || media.isPrimary === 1 || media.isPrimary === "true";
     }
 
-    // Find Room Image
-
     /*
-     * Finds the image belonging to a specific room.
-     * Supports exact MongoDB ObjectId matching, numeric positional fallback (1-based index),
-     * and checks for primary image markers.
+     * Finds the primary image URL belonging to a specific room.
      */
     function findRoomImage(media, roomId, roomIndex) {
         var targetRoomId = String(roomId || "");
-        var targetIndexStr = String(roomIndex + 1); // e.g. Index 0 maps to "1", Index 1 to "2"
-
-        console.log("PropertyDetailsModel [IMAGE SEARCH]: Searching media for roomId =", targetRoomId, "| Index fallback =", targetIndexStr);
+        var targetIndexStr = String(roomIndex + 1);
 
         if (!media || media.length === undefined || media.length === 0) {
-            console.log("PropertyDetailsModel [IMAGE SEARCH]: Media array is invalid or empty. Returning empty image.");
             return "";
         }
 
@@ -165,7 +158,6 @@ Item {
 
             var mediaRoomId = String(item.roomId);
 
-            // Match exact MongoDB ObjectId OR positional index string (e.g., "1", "2")
             var isMatch = (mediaRoomId === targetRoomId && targetRoomId.length > 0) || (mediaRoomId === targetIndexStr);
 
             if (!isMatch)
@@ -175,20 +167,55 @@ Item {
             if (!url.length)
                 continue;
 
-            console.log("PropertyDetailsModel [IMAGE SEARCH]: Candidate found at index", i, "-> mediaRoomId =", mediaRoomId, "url =", url, "isPrimary =", isPrimaryMedia(item));
-
             if (!firstImage.length) {
                 firstImage = url;
             }
 
             if (isPrimaryMedia(item)) {
-                console.log("PropertyDetailsModel [IMAGE SEARCH]: Primary image matched for target =", targetRoomId, "url =", url);
                 return url;
             }
         }
 
-        console.log("PropertyDetailsModel [IMAGE SEARCH]: Final assigned image for target =", targetRoomId, "is:", (firstImage.length ? firstImage : "NONE (empty)"));
         return firstImage;
+    }
+
+    /*
+     * Collects ALL images belonging to a specific room.
+     */
+    function findRoomImages(media, roomId, roomIndex) {
+        var targetRoomId = String(roomId || "");
+        var targetIndexStr = String(roomIndex + 1);
+
+        if (!media || media.length === undefined || media.length === 0) {
+            return [];
+        }
+
+        var images = [];
+
+        for (var i = 0; i < media.length; i++) {
+            var item = media[i];
+
+            if (!item || item.roomId === undefined || item.roomId === null)
+                continue;
+
+            var mediaRoomId = String(item.roomId);
+            var isMatch = (mediaRoomId === targetRoomId && targetRoomId.length > 0) || (mediaRoomId === targetIndexStr);
+
+            if (!isMatch)
+                continue;
+
+            var url = mediaUrl(item);
+            if (!url.length)
+                continue;
+
+            if (isPrimaryMedia(item)) {
+                images.unshift(url);
+            } else {
+                images.push(url);
+            }
+        }
+
+        return images;
     }
 
     // Rebuild Property Gallery
@@ -275,10 +302,13 @@ Item {
             var roomAvailable = getRoomAvailability(room);
             var roomSize = (room.size !== undefined && room.size !== null) ? String(room.size) : "";
 
-            // Find the correct image using ID + positional index fallback
-            var roomImage = findRoomImage(media, roomId, i);
+            // 1. Get array of all images
+            var roomImages = findRoomImages(media, roomId, i);
 
-            console.log("PropertyDetailsModel [REBUILD ROOMS]: Assigning room to model ->", "roomId =", roomId, "type =", roomType, "price =", roomPrice, "available =", roomAvailable, "size =", roomSize, "imageUrl =", roomImage);
+            // 2. Cover image for single-image bindings
+            var primaryRoomImage = roomImages.length > 0 ? roomImages[0] : findRoomImage(media, roomId, i);
+
+            console.log("PropertyDetailsModel [REBUILD ROOMS]: Assigning room to model ->", "roomId =", roomId, "type =", roomType, "price =", roomPrice, "available =", roomAvailable, "size =", roomSize, "imageUrl =", primaryRoomImage);
 
             roomsModelId.append({
                 roomId: roomId,
@@ -286,7 +316,8 @@ Item {
                 price: roomPrice,
                 available: roomAvailable,
                 size: roomSize,
-                imageUrl: roomImage
+                imageUrl: primaryRoomImage,
+                images: roomImages
             });
         }
 

@@ -72,6 +72,7 @@ Item {
 
     function setFilter(type) {
         typeFilter = String(type || "ALL").toUpperCase();
+        console.log("the new category of proprty filter set is", typeFilter);
         applyFilter();
     }
 
