@@ -445,7 +445,7 @@ Page {
                         onClicked: {
                             // Not signed in → route to auth instead of details.
                             if (!AppSettings.isLoggedIn()) {
-                                NavUtils.push(Qt.resolvedUrl("../../auth/screens/SignInScreen.qml"));
+                                NavUtils.navigateToAccount();
                                 return;
                             }
                             root.navigateToQuarters({

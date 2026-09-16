@@ -69,6 +69,10 @@ Item {
                         imageUrls: model.imageUrls
                         isQuartersAvailable: model.isActive
                         onClicked: {
+                            if (!AppSettings.isLoggedIn()) {
+                                NavUtils.navigateToAccount();
+                                return;
+                            }
                             root.navigateToQuarters(model);
                         }
                     }

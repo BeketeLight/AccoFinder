@@ -144,6 +144,7 @@ Rectangle {
         anchors.fill: parent
         cursorShape: Qt.PointingHandCursor
         onClicked: {
+
             roomCard.clicked();
         }
     }
