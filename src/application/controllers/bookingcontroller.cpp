@@ -43,30 +43,34 @@ void BookingController::setLoading(bool loading)
     emit isLoadingChanged(m_isLoading);
 }
 
-void BookingController::createBooking(const QString &houseId, const QDateTime &startDate, const QDateTime &endDate, const QString &specialNotes)
+void BookingController::createBooking(const QString& roomId,
+                                      double amount,
+                                      double commissionAmount)
 {
-    if (houseId.isEmpty()) {
+    // Pull client id from AppSettings (single source of truth)
+    const QString clientId = AppSettings::instance().userId();
+    if (roomId.isEmpty()) {
         emit bookingError("House ID is required.");
         return;
     }
 
-    if (!startDate.isValid() || !endDate.isValid()) {
-        emit bookingError("Invalid booking dates.");
+    if (clientId.isEmpty()) {
+        emit bookingError("Invalid client Id");
         return;
     }
 
-    if (startDate < QDateTime::currentDateTime()) {
-        emit bookingError("Start date cannot be in the past.");
+    if (!amount) {
+        emit bookingError("Invalid amount");
         return;
     }
 
-    if (endDate <= startDate) {
-        emit bookingError("End date must be after the start date.");
+    if (!commissionAmount) {
+        emit bookingError("Invalid commissionAmount");
         return;
     }
 
     setLoading(true);
-    m_bookingRepository->createBooking(houseId, startDate, endDate, specialNotes);
+    m_bookingRepository->createBooking(roomId, clientId, amount, commissionAmount);
 }
 
 void BookingController::fetchBookings()

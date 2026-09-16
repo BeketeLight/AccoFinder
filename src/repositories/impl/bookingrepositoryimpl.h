@@ -12,10 +12,10 @@ public:
     explicit BookingRepositoryImpl(QObject *parent = nullptr);
 
     void createBooking(
-        const QString& houseId,
-        const QDateTime& startDate,
-        const QDateTime& endDate,
-        const QString& specialNotes
+        const QString& roomId,
+        const QString& clientId,
+        double amount,
+        double commissionAmount
     ) override;
     void getBooking() override;
     void cancelBooking(const QString& id) override;

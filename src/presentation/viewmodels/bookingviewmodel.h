@@ -18,10 +18,9 @@ public:
 
     BookingListModel *bookingListModel() const { return m_bookingListModel.data(); }
 
-    Q_INVOKABLE void createBooking(const QString& houseId,
-                             const QDateTime& startDate,
-                             const QDateTime& endDate,
-                             const QString& specialNotes);
+    Q_INVOKABLE void createBooking(const QString& roomId,
+                                   double amount,
+                                   double commissionAmount);
 
     Q_INVOKABLE void fetchBookings();
     Q_INVOKABLE void fetchBookingById(const QString& id);

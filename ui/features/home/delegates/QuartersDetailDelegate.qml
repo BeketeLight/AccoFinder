@@ -454,22 +454,45 @@ Page {
             anchors.margins: 12
             spacing: 12
             Button {
+                id: bookButton
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                text: root.isquarterAvailable ? "Book Now" : "Notify Me"
+                enabled: !BookingController.isLoading && root.isquarterAvailable
+                text: {
+                    if (BookingController.isLoading)
+                        return "Booking…";
+                    if (!root.isquarterAvailable)
+                        return "Currently Booked";
+                    return "Book Now";
+                }
+
                 background: Rectangle {
                     radius: 12
-                    color: root.isquarterAvailable ? "#2563EB" : "#6B7280"
+                    color: !bookButton.enabled ? "#9CA3AF" : "#2563EB"
                 }
+
                 contentItem: Label {
-                    text: parent.text
+                    text: bookButton.text
                     color: "#FFFFFF"
                     font.pixelSize: 16
                     font.bold: true
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                 }
-                onClicked: root.bookRequested()
+
+                onClicked: {
+                    if (!root.quarterId) {
+                        console.warn("Missing quarterId");
+                        return;
+                    }
+
+                    var commission = root.quarterPrice * 0.10;  // 10%
+
+                    BookingController.createBooking(root.quarterId      // roomId
+                    , root.quarterPrice   // amount
+                    , commission           // commissionAmount
+                    );
+                }
             }
         }
     }
@@ -487,6 +510,55 @@ Page {
             text: label
             font.pixelSize: 13
             color: "#4B5563"
+        }
+    }
+
+    // Connections
+    Connections {
+        target: BookingController
+
+        function onBookingCreated(booking) {
+            console.log("Booking OK:", booking.id, booking.roomId, booking.amount);
+            successDialog.bookingId = booking.id;
+            successDialog.open();
+        }
+
+        function onBookingError(error) {
+            console.warn("Booking error:", error);
+            errorDialog.errorText = error;
+            errorDialog.open();
+            bookButton.enabled = true;
+        }
+    }
+
+    Dialog {
+        id: successDialog
+        property string bookingId: ""
+        anchors.centerIn: parent
+        title: "Booking Confirmed"
+        modal: true
+        standardButtons: Dialog.Ok
+        Label {
+            text: "Your booking was created.\nBooking ID: " + successDialog.bookingId
+            wrapMode: Text.WordWrap
+        }
+    }
+
+    Dialog {
+        id: errorDialog
+        property string errorText: ""      // ← plain property, not an alias
+        anchors.centerIn: parent
+        title: "Booking Failed"
+        modal: true
+        standardButtons: Dialog.Ok
+
+        // Constrain the Dialog itself, not the inner label.
+        width: Math.min(parent ? parent.width - 48 : 320, 360)
+
+        contentItem: Label {
+            text: errorDialog.errorText
+            wrapMode: Text.WordWrap
+            // Let the Dialog manage width; don't hard-code 260 here.
         }
     }
 }

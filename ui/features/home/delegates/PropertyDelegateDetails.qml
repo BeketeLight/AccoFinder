@@ -443,6 +443,11 @@ Page {
                         location: root.location
 
                         onClicked: {
+                            // Not signed in → route to auth instead of details.
+                            if (!AppSettings.isLoggedIn()) {
+                                NavUtils.push(Qt.resolvedUrl("../../auth/screens/SignInScreen.qml"));
+                                return;
+                            }
                             root.navigateToQuarters({
                                 roomId: model.roomId,
                                 type: model.type,

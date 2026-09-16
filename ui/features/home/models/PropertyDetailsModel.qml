@@ -199,6 +199,8 @@ Item {
                 continue;
 
             var mediaRoomId = String(item.roomId);
+            console.log("comparing sought for room id ", targetIndexStr, " to found media room id ", mediaRoomId);
+            //console.log("comparing sought for room id ", roomId, " to found media room id ", item.roomId);
             var isMatch = (mediaRoomId === targetRoomId && targetRoomId.length > 0) || (mediaRoomId === targetIndexStr);
 
             if (!isMatch)
@@ -232,6 +234,8 @@ Item {
 
         for (var i = 0; i < media.length; i++) {
             var item = media[i];
+
+            console.log("the sought roomId for whole proprty pictures ", item.roomId);
 
             if (!item || !isPropertyLevel(item.roomId))
                 continue;
@@ -269,21 +273,21 @@ Item {
         }
 
         root.imageUrl = primaryImage;
-        console.log("PropertyDetailsModel [PROPERTY GALLERY]: Final imageListModel count =", imageListModelId.count, "| Cover imageUrl =", root.imageUrl);
+        //console.log("PropertyDetailsModel [PROPERTY GALLERY]: Final imageListModel count =", imageListModelId.count, "| Cover imageUrl =", root.imageUrl);
     }
 
     // Rebuild Rooms
 
     function rebuildRooms(rooms, media) {
-        console.log("PropertyDetailsModel [REBUILD ROOMS]: Clearing roomsModelId...");
+        //console.log("PropertyDetailsModel [REBUILD ROOMS]: Clearing roomsModelId...");
         roomsModelId.clear();
 
         if (!rooms) {
-            console.log("PropertyDetailsModel [REBUILD ROOMS]: Exiting early. Raw rooms is null/undefined");
+            // console.log("PropertyDetailsModel [REBUILD ROOMS]: Exiting early. Raw rooms is null/undefined");
             return;
         }
 
-        console.log("PropertyDetailsModel [REBUILD ROOMS]: Starting processing for", rooms.length, "raw room items.");
+        //console.log("PropertyDetailsModel [REBUILD ROOMS]: Starting processing for", rooms.length, "raw room items.");
 
         for (var i = 0; i < rooms.length; i++) {
             var room = rooms[i];
@@ -293,7 +297,7 @@ Item {
 
             var roomId = getRoomId(room);
             if (!roomId.length) {
-                console.log("PropertyDetailsModel [REBUILD ROOMS]: Skipping room index", i, "due to missing roomId.");
+                // console.log("PropertyDetailsModel [REBUILD ROOMS]: Skipping room index", i, "due to missing roomId.");
                 continue;
             }
 
@@ -308,7 +312,7 @@ Item {
             // 2. Cover image for single-image bindings
             var primaryRoomImage = roomImages.length > 0 ? roomImages[0] : findRoomImage(media, roomId, i);
 
-            console.log("PropertyDetailsModel [REBUILD ROOMS]: Assigning room to model ->", "roomId =", roomId, "type =", roomType, "price =", roomPrice, "available =", roomAvailable, "size =", roomSize, "imageUrl =", primaryRoomImage);
+            //console.log("PropertyDetailsModel [REBUILD ROOMS]: Assigning room to model ->", "roomId =", roomId, "type =", roomType, "price =", roomPrice, "available =", roomAvailable, "size =", roomSize, "imageUrl =", primaryRoomImage);
 
             roomsModelId.append({
                 roomId: roomId,
@@ -321,7 +325,7 @@ Item {
             });
         }
 
-        console.log("PropertyDetailsModel [REBUILD ROOMS]: Complete. Total rooms in model =", roomsModelId.count, "| Property roomCount =", root.roomCount);
+        //console.log("PropertyDetailsModel [REBUILD ROOMS]: Complete. Total rooms in model =", roomsModelId.count, "| Property roomCount =", root.roomCount);
     }
 
     // Main Rebuild
@@ -329,31 +333,31 @@ Item {
     function rebuild() {
         var pid = String(root.propertyId || "");
 
-        console.log("PropertyDetailsModel [REBUILD]: Triggered for propertyId =", pid);
+        //console.log("PropertyDetailsModel [REBUILD]: Triggered for propertyId =", pid);
 
         if (!pid.length) {
             imageListModelId.clear();
             roomsModelId.clear();
             root.imageUrl = "";
-            console.log("PropertyDetailsModel [REBUILD]: propertyId is empty, skipping.");
+            // console.log("PropertyDetailsModel [REBUILD]: propertyId is empty, skipping.");
             return;
         }
 
         var media = [];
         try {
             media = MediaViewModel.mediaForProperty(pid) || [];
-            console.log("PropertyDetailsModel: Managed to get media for", pid, "| Count =", media.length);
+            //console.log("PropertyDetailsModel: Managed to get media for", pid, "| Count =", media.length);
         } catch (error) {
-            console.log("PropertyDetailsModel: Failed to get media:", error);
+            //console.log("PropertyDetailsModel: Failed to get media:", error);
             media = [];
         }
 
         var rooms = [];
         try {
             rooms = RoomViewModel.roomsForProperty(pid) || [];
-            console.log("PropertyDetailsModel: Managed to get rooms for", pid, "| Count =", rooms.length);
+            //console.log("PropertyDetailsModel: Managed to get rooms for", pid, "| Count =", rooms.length);
         } catch (error2) {
-            console.log("PropertyDetailsModel: Failed to get rooms:", error2);
+            // console.log("PropertyDetailsModel: Failed to get rooms:", error2);
             rooms = [];
         }
 
@@ -373,13 +377,13 @@ Item {
         } catch (e) {}
 
         root.loading = mediaLoading || roomsLoading;
-        console.log("PropertyDetailsModel [LOADING]: State updated -> loading =", root.loading);
+        // console.log("PropertyDetailsModel [LOADING]: State updated -> loading =", root.loading);
     }
 
     function refresh() {
         var pid = String(root.propertyId || "");
 
-        console.log("PropertyDetailsModel [REFRESH]: Called for propertyId =", pid);
+        //  console.log("PropertyDetailsModel [REFRESH]: Called for propertyId =", pid);
 
         if (!pid.length) {
             rebuild();
@@ -389,21 +393,21 @@ Item {
         try {
             if (!_mediaFetchRequested) {
                 _mediaFetchRequested = true;
-                console.log("PropertyDetailsModel: Requesting media for property:", pid);
+                // console.log("PropertyDetailsModel: Requesting media for property:", pid);
                 MediaViewModel.getMediaByProperty(pid);
             }
         } catch (error) {
-            console.log("PropertyDetailsModel: Media request failed:", error);
+            //  console.log("PropertyDetailsModel: Media request failed:", error);
         }
 
         try {
             if (!_roomsFetchRequested) {
                 _roomsFetchRequested = true;
-                console.log("PropertyDetailsModel: Requesting rooms for property:", pid);
+                //  console.log("PropertyDetailsModel: Requesting rooms for property:", pid);
                 RoomViewModel.loadRooms();
             }
         } catch (error2) {
-            console.log("PropertyDetailsModel: Room request failed:", error2);
+            //  console.log("PropertyDetailsModel: Room request failed:", error2);
         }
 
         updateLoading();
@@ -411,14 +415,14 @@ Item {
     }
 
     onPropertyIdChanged: {
-        console.log("PropertyDetailsModel [EVENT]: propertyId changed ->", propertyId);
+        //console.log("PropertyDetailsModel [EVENT]: propertyId changed ->", propertyId);
         _roomsFetchRequested = false;
         _mediaFetchRequested = false;
         refresh();
     }
 
     Component.onCompleted: {
-        console.log("PropertyDetailsModel.qml started");
+        //console.log("PropertyDetailsModel.qml started");
         refresh();
     }
 

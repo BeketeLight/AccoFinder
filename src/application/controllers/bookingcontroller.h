@@ -8,6 +8,7 @@
 #include <QList>
 #include "models/booking.h"
 #include "repositories/impl/bookingrepositoryimpl.h"
+#include "../../AccoFinder/src/core/utils/appsettings.h"
 
 class BookingController : public QObject
 {
@@ -18,10 +19,9 @@ public:
 
     bool isLoading() const { return m_isLoading; }
 
-    Q_INVOKABLE void createBooking(const QString& houseId,
-                                  const QDateTime& startDate,
-                                  const QDateTime& endDate,
-                                  const QString& specialNotes);
+    Q_INVOKABLE void createBooking(const QString& roomId,
+                                   double amount,
+                                   double commissionAmount);
     Q_INVOKABLE void fetchBookings();
     Q_INVOKABLE void fetchBookingById(const QString& id);
     Q_INVOKABLE void cancelBooking(const QString& id);

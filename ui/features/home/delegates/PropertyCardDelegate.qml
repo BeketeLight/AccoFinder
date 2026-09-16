@@ -185,6 +185,11 @@ Item {
         anchors.fill: parent
         cursorShape: Qt.PointingHandCursor
         onClicked: {
+            // Not signed in → route to auth instead of details.
+            if (!AppSettings.isLoggedIn()) {
+                NavUtils.push(Qt.resolvedUrl("../../auth/screens/SignInScreen.qml"));
+                return;
+            }
             NavUtils.push(Qt.resolvedUrl("./PropertyDelegateDetails.qml"), {
                 propertyId: root.propertyId,
                 propertyTitle: root.title,

@@ -11,10 +11,10 @@ public:
     explicit IBookingRepository(QObject *parent = nullptr)
         : QObject(parent) {}
     virtual void createBooking(
-        const QString& houseId,
-        const QDateTime& startDate,
-        const QDateTime& endDate,
-        const QString& specialNotes ) = 0;
+        const QString& roomId,
+        const QString& clientId,
+        double amount,
+        double commissionAmount) = 0;
 
     virtual void getBooking() = 0;
     virtual void getBookingById(const QString& id) = 0;

@@ -25,13 +25,12 @@ BookingViewModel::BookingViewModel(QObject *parent)
     connect(m_bookingController.data(), &BookingController::bookingError,
         this,&BookingViewModel::onBookingError);                    
 }
-void BookingViewModel::createBooking(const QString& houseId,
-                             const QDateTime& startDate,
-                             const QDateTime& endDate,
-                             const QString& specialNotes)
+void BookingViewModel::createBooking(const QString& roomId,
+                                     double amount,
+                                     double commissionAmount)
 {   
     if(m_bookingController)
-    m_bookingController->createBooking(houseId,startDate,endDate,specialNotes);
+    m_bookingController->createBooking(roomId,amount,commissionAmount);
     
 }
 
@@ -105,7 +104,9 @@ bool BookingViewModel::isLoading() const
 
 void BookingViewModel::onBookingError(const QString& error)
 {
+    qDebug() << "called from bookingvewmodel booking was not created:" << error;
     emit errorOccurred(error);
+
 }
 
 int BookingViewModel::pendingBookingsCount() const
