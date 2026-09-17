@@ -17,9 +17,10 @@ QVariant MediaListModel::data(const QModelIndex &index, int role) const
     if (!index.isValid() || index.row() < 0 || index.row() >= m_media.size())
         return QVariant();
 
-    const QSharedPointer<Media>& media = m_media.at(index.row());
+    const QSharedPointer<Media> &media = m_media.at(index.row());
 
-    switch (role) {
+    switch (role)
+    {
     case IdRole:
         return media->getId();
     case PropertyIdRole:
@@ -49,12 +50,13 @@ QHash<int, QByteArray> MediaListModel::roleNames() const
     return roles;
 }
 
-void MediaListModel::setMedia(const QList<QSharedPointer<Media>>& newMedia)
+void MediaListModel::setMedia(const QList<QSharedPointer<Media>> &newMedia)
 {
     beginResetModel();
     m_media.clear();
     m_media.reserve(newMedia.size());
-    for (const QSharedPointer<Media>& media : newMedia) {
+    for (const QSharedPointer<Media> &media : newMedia)
+    {
         if (media)
             m_media.append(media);
     }
@@ -62,23 +64,26 @@ void MediaListModel::setMedia(const QList<QSharedPointer<Media>>& newMedia)
     emitCountIfChanged(m_media.size());
 }
 
-void MediaListModel::upsertMedia(const QList<QSharedPointer<Media>>& newMedia)
+void MediaListModel::upsertMedia(const QList<QSharedPointer<Media>> &newMedia)
 {
     QHash<QString, int> indexById;
     indexById.reserve(m_media.size());
-    for (int i = 0; i < m_media.size(); ++i) {
-        const QSharedPointer<Media>& media = m_media.at(i);
+    for (int i = 0; i < m_media.size(); ++i)
+    {
+        const QSharedPointer<Media> &media = m_media.at(i);
         if (media && !media->getId().isEmpty())
             indexById.insert(media->getId(), i);
     }
 
     int changed = 0;
-    for (const QSharedPointer<Media>& incoming : newMedia) {
+    for (const QSharedPointer<Media> &incoming : newMedia)
+    {
         if (!incoming)
             continue;
 
         const QString id = incoming->getId();
-        if (id.isEmpty()) {
+        if (id.isEmpty())
+        {
             // Without a stable id there is nothing to de-duplicate against;
             // keep the old append behaviour so the media is not dropped.
             const int row = m_media.size();
@@ -90,14 +95,17 @@ void MediaListModel::upsertMedia(const QList<QSharedPointer<Media>>& newMedia)
         }
 
         const QHash<QString, int>::iterator it = indexById.find(id);
-        if (it != indexById.end()) {
+        if (it != indexById.end())
+        {
             // Row already exists: replace it in place and notify.
             const int row = it.value();
             m_media[row] = incoming;
             const QModelIndex idx = index(row, 0);
             emit dataChanged(idx, idx);
             ++changed;
-        } else {
+        }
+        else
+        {
             // New media id: append.
             const int row = m_media.size();
             beginInsertRows(QModelIndex(), row, row);
@@ -112,7 +120,7 @@ void MediaListModel::upsertMedia(const QList<QSharedPointer<Media>>& newMedia)
         emitCountIfChanged(m_media.size());
 }
 
-void MediaListModel::appendMedia(const QSharedPointer<Media>& media)
+void MediaListModel::appendMedia(const QSharedPointer<Media> &media)
 {
     if (!media)
         return;
@@ -124,7 +132,8 @@ void MediaListModel::appendMedia(const QSharedPointer<Media>& media)
 
 void MediaListModel::removeMedia(const QString &mediaId)
 {
-    for (int i = 0; i < m_media.size(); ++i) {
+    for (int i = 0; i < m_media.size(); ++i)
+    {
         if (m_media.at(i)->getId() != mediaId)
             continue;
         beginRemoveRows(QModelIndex(), i, i);
@@ -141,18 +150,22 @@ void MediaListModel::setMediaPrimary(const QString &mediaId, bool isPrimary)
     // the same property before promoting the requested one.
     QString propertyId;
     int targetIndex = -1;
-    for (int i = 0; i < m_media.size(); ++i) {
-        const QSharedPointer<Media>& media = m_media.at(i);
-        if (media->getId() == mediaId) {
+    for (int i = 0; i < m_media.size(); ++i)
+    {
+        const QSharedPointer<Media> &media = m_media.at(i);
+        if (media->getId() == mediaId)
+        {
             targetIndex = i;
             propertyId = media->getPropertyId();
         }
     }
-    if (targetIndex >= 0 && !propertyId.isEmpty() && isPrimary) {
-        for (int i = 0; i < m_media.size(); ++i) {
+    if (targetIndex >= 0 && !propertyId.isEmpty() && isPrimary)
+    {
+        for (int i = 0; i < m_media.size(); ++i)
+        {
             if (i == targetIndex)
                 continue;
-            const QSharedPointer<Media>& media = m_media.at(i);
+            const QSharedPointer<Media> &media = m_media.at(i);
             if (media->getPropertyId() != propertyId || !media->getIsPrimary())
                 continue;
             media->setIsPrimary(false);
@@ -160,9 +173,11 @@ void MediaListModel::setMediaPrimary(const QString &mediaId, bool isPrimary)
             emit dataChanged(idx, idx, {IsPrimaryRole});
         }
     }
-    if (targetIndex >= 0) {
-        const QSharedPointer<Media>& target = m_media.at(targetIndex);
-        if (target->getIsPrimary() != isPrimary) {
+    if (targetIndex >= 0)
+    {
+        const QSharedPointer<Media> &target = m_media.at(targetIndex);
+        if (target->getIsPrimary() != isPrimary)
+        {
             target->setIsPrimary(isPrimary);
             const QModelIndex idx = index(targetIndex, 0);
             emit dataChanged(idx, idx, {IsPrimaryRole});
@@ -182,7 +197,8 @@ void MediaListModel::clearMedia()
 
 void MediaListModel::emitCountIfChanged(int newCount)
 {
-    if (newCount != m_lastEmittedCount) {
+    if (newCount != m_lastEmittedCount)
+    {
         m_lastEmittedCount = newCount;
         emit countChanged(newCount);
     }
@@ -191,7 +207,8 @@ void MediaListModel::emitCountIfChanged(int newCount)
 QVariantList MediaListModel::mediaForProperty(const QString &propertyId) const
 {
     QVariantList result;
-    for (const auto& media : std::as_const(m_media)) {
+    for (const auto &media : std::as_const(m_media))
+    {
         if (!media)
             continue;
         if (media->getPropertyId() != propertyId)

@@ -18,7 +18,7 @@ Rectangle {
     signal clicked
 
     width: 150
-    height: 170
+    height: 150
     radius: 12
     color: "#FFFFFF"
     border.color: "#E5E7EB"
@@ -144,6 +144,7 @@ Rectangle {
         anchors.fill: parent
         cursorShape: Qt.PointingHandCursor
         onClicked: {
+
             roomCard.clicked();
         }
     }

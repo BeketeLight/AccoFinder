@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Effects
+import "../../../utils/ImageUtils.js" as ImageUtils
 
 Page {
     id: root
@@ -32,7 +33,19 @@ Page {
 
     // Media - images and videos
     property string roomImage: ""
-    property var mediaList: ["https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=600&h=400&fit=crop,https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=600&h=400&fit=crop,https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=600&h=400&fit=crop"]
+    property var mediaList: []
+
+    // Helper function to handle JS arrays, strings, or ListModels
+    function getMediaArray() {
+        if (Array.isArray(mediaList) && mediaList.length > 0) {
+            return mediaList;
+        } else if (typeof mediaList === "string" && mediaList.length > 0) {
+            return [mediaList];
+        } else if (roomImage.length > 0) {
+            return [roomImage];
+        }
+        return [];
+    }
 
     // Reviews
     property var reviewsModel: [
@@ -96,18 +109,16 @@ Page {
 
                     Repeater {
                         id: mediaModel
-                        model: root.mediaList.length > 0 ? root.mediaList : []
+                        model: root.getMediaArray()
 
                         Item {
                             required property var modelData
 
-                            // Check if it's a video URL (contains .mp4, .mov, etc.)
-                            property bool isVideo: modelData.match(/\.(mp4|mov|avi|mkv|webm)$/i) !== null
-
+                            property bool isVideo: typeof modelData === "string" && modelData.match(/\.(mp4|mov|avi|mkv|webm)$/i) !== null
                             Image {
                                 id: pageImage
                                 anchors.fill: parent
-                                source: isVideo ? "" : modelData
+                                source: isVideo ? "" : ImageUtils.cachedSource(modelData)
                                 fillMode: Image.PreserveAspectCrop
                                 asynchronous: true
                                 visible: !isVideo
@@ -443,22 +454,45 @@ Page {
             anchors.margins: 12
             spacing: 12
             Button {
+                id: bookButton
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                text: root.isquarterAvailable ? "Book Now" : "Notify Me"
+                enabled: !BookingController.isLoading && root.isquarterAvailable
+                text: {
+                    if (BookingController.isLoading)
+                        return "Booking…";
+                    if (!root.isquarterAvailable)
+                        return "Currently Booked";
+                    return "Book Now";
+                }
+
                 background: Rectangle {
                     radius: 12
-                    color: root.isquarterAvailable ? "#2563EB" : "#6B7280"
+                    color: !bookButton.enabled ? "#9CA3AF" : "#2563EB"
                 }
+
                 contentItem: Label {
-                    text: parent.text
+                    text: bookButton.text
                     color: "#FFFFFF"
                     font.pixelSize: 16
                     font.bold: true
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                 }
-                onClicked: root.bookRequested()
+
+                onClicked: {
+                    if (!root.quarterId) {
+                        console.warn("Missing quarterId");
+                        return;
+                    }
+
+                    var commission = root.quarterPrice * 0.10;  // 10%
+
+                    BookingController.createBooking(root.quarterId      // roomId
+                    , root.quarterPrice   // amount
+                    , commission           // commissionAmount
+                    );
+                }
             }
         }
     }
@@ -476,6 +510,55 @@ Page {
             text: label
             font.pixelSize: 13
             color: "#4B5563"
+        }
+    }
+
+    // Connections
+    Connections {
+        target: BookingController
+
+        function onBookingCreated(booking) {
+            console.log("Booking OK:", booking.id, booking.roomId, booking.amount);
+            successDialog.bookingId = booking.id;
+            successDialog.open();
+        }
+
+        function onBookingError(error) {
+            console.warn("Booking error:", error);
+            errorDialog.errorText = error;
+            errorDialog.open();
+            bookButton.enabled = true;
+        }
+    }
+
+    Dialog {
+        id: successDialog
+        property string bookingId: ""
+        anchors.centerIn: parent
+        title: "Booking Confirmed"
+        modal: true
+        standardButtons: Dialog.Ok
+        Label {
+            text: "Your booking was created.\nBooking ID: " + successDialog.bookingId
+            wrapMode: Text.WordWrap
+        }
+    }
+
+    Dialog {
+        id: errorDialog
+        property string errorText: ""      // ← plain property, not an alias
+        anchors.centerIn: parent
+        title: "Booking Failed"
+        modal: true
+        standardButtons: Dialog.Ok
+
+        // Constrain the Dialog itself, not the inner label.
+        width: Math.min(parent ? parent.width - 48 : 320, 360)
+
+        contentItem: Label {
+            text: errorDialog.errorText
+            wrapMode: Text.WordWrap
+            // Let the Dialog manage width; don't hard-code 260 here.
         }
     }
 }

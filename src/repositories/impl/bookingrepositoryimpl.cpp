@@ -16,18 +16,16 @@ BookingRepositoryImpl::BookingRepositoryImpl(QObject *parent)
 
 
 void BookingRepositoryImpl::createBooking(
-    const QString& houseId,
-    const QDateTime& startDate,
-    const QDateTime& endDate,
-    const QString& specialNotes )
+    const QString& roomId,
+    const QString& clientId,
+    double amount,
+    double commissionAmount)
 {
     QJsonObject payload;
-    payload["houseId"] = houseId;
-    payload["startDate"] = startDate.toString(Qt::ISODate);
-    payload["endDate"] = endDate.toString(Qt::ISODate);
-    if(!specialNotes.isEmpty()){
-        payload["specialNotes"] = specialNotes;
-    }
+    payload["roomId"] = roomId;
+    payload["clientId"] = clientId;
+    payload["amount"] = amount;
+    payload["commissionAmount"]= commissionAmount;
 
     APIClient::instance().post(
         "/bookings/",
@@ -45,7 +43,21 @@ void BookingRepositoryImpl::createBooking(
                     response["commissionAmount"].toDouble(),
                     this
                 );
+                qDebug()<<"booking was succefully created";
                 emit bookingCreated(booking);
+                qDebug()<<"booking was succefully created";
+            }
+            else {
+                QString message = response.value("message").toString();
+
+                // Fall back to other keys if "message" is empty
+                if (message.isEmpty())
+                    message = response.value("error").toString();
+                if (message.isEmpty())
+                    message = response.value("detail").toString();
+                if (message.isEmpty())
+                    message = QStringLiteral("Could not create booking");
+                emit bookingError(message);
             }
     }, false);
 
