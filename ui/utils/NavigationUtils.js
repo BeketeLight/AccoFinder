@@ -178,6 +178,61 @@ function navigateToBookingsView(filter){
         activeFilter:  filter || "All"
     })
 }
+function navigateToBookingDetails(){
+    push("../features/bookings/pages/BookingDetailsPage.qml")
+}
+function navigateToBookingsDetailsClient(data){
+    push("../features/bookings/pages/ClientBookinDetailsPage.qml", {
+            bookingId: data.bookingId || "",
+            status: data.status || "Pending",
+            statusNote: data.statusNote || "",
+            houseName: data.houseName || "",
+            landlordName: data.landlordName || "",
+            imageUrl: data.imageUrl || "",
+            checkIn: data.checkIn || "",
+            checkOut: data.checkOut || "",
+            specialRequests: data.specialRequests || "",
+            roomPrice: data.roomPrice || 0.0,
+            discount: data.discount || 0.0,
+            paymentStatus: data.paymentStatus || "Unpaid",
+            paymentMethod: data.paymentMethod || "",
+            paymentDate: data.paymentDate || "",
+            keyInstructions: data.keyInstructions || "",
+            cancellationPolicy: data.cancellationPolicy || ""
+         });
+}
+function navigateToBookingsDetailsOwneByAgent(data){
+    push("../features/bookings/pages/AgentBookingDetailsOnOwnedPropertiesPage.qml", {
+            bookingId: data.bookingId || "",
+            status: data.status || "",
+            houseName: data.propertyName || "",
+            propertyLocation: data.propertyLocation || "124 Lakeview Drive, Sector 4",
+            //propertyImage: data.propertyImage || "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=500",
+            roomType: data.roomType || "2 Bedrooms",
+
+            clientName: data.clientName || "John Doe",
+            clientPhone: data.clientPhone || "+1 555-0192",
+            clientEmail: data.clientEmail || "johndoe@example.com",
+                 //readonly property int guestCount: model.guestCount ?? 3
+
+            checkIn: data.checkIn || "Oct 12, 2026 (2:00 PM)",
+            //checkOut: model.checkOut || "Oct 15, 2026 (11:00 AM)"
+            //nightsCount: model.nightsCount ?? 3
+            //clientNotes: model.clientNotes ?? "Please provide an extra crib if available. Late check-in expected."
+
+            baseAmount: data.baseAmount,
+            serviceFee: data.serviceFee,
+            totalAmount: data.totalAmount ,
+            paymentStatus: data.paymentStatus || "Paid",
+            paymentMethod: data.paymentMethod ?? "Credit Card (Visa ending in 4242)",
+            paymentDate: data.paymentDate || "Oct 10, 2026",
+            //bookingFee: data.bookingFee,
+
+            //createdTime: data.createdTime || "Oct 10, 2026 at 10:15 AM"
+            //paidTime: model.paidTime ?? "Oct 10, 2026 at 10:18 AM"
+           // approvedTime:
+    });
+}
 
 var Navigation = {
     init: init,
@@ -204,5 +259,8 @@ var Navigation = {
     navigateToCancelleddBookings: navigateToCancelleddBookings,
     navigateToConfirmedBookings: navigateToConfirmedBookings,
     navigateToBookingView: navigateToBookingView,
-    navigateToBookingsView: navigateToBookingsView
+    navigateToBookingsView: navigateToBookingsView,
+    navigateToBookingDetails: navigateToBookingDetails,
+   // navigateToBookingsDetails: navigateToBookingsDetails,
+    navigateToBookingsDetailsOwneByAgent: navigateToBookingsDetailsOwneByAgent
 }

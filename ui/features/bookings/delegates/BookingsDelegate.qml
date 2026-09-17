@@ -35,7 +35,7 @@ ItemDelegate {
 
                 Image {
                     anchors.fill: parent
-                    source: model.imageUrl || ""
+                    source: model.imageUrl || "https://www.google.com/url?sa=t&source=web&rct=j&url=https%3A%2F%2Fwww.instagram.com%2Fp%2FDNTE5ecsxJ0%2F&ved=0CBYQjRxqFwoTCMjSwI-c8ZYDFQAAAAAdAAAAABAK&opi=89978449"
                     fillMode: Image.PreserveAspectCrop
 
                     // Fallback visual if image fails or path is empty

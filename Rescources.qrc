@@ -36,5 +36,7 @@
         <file>ui/assets/bookingcard-icon.svg</file>
         <file>ui/assets/confirmed-icon.svg</file>
         <file>ui/assets/dispute-active-icon.svg</file>
+        <file>ui/assets/message-icon.svg</file>
+        <file>ui/assets/location-icon.svg</file>
     </qresource>
 </RCC>
