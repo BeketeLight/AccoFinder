@@ -1,4 +1,4 @@
-import QtQuick 2.15
+import QtQuick
 
 Item {
     id: root
@@ -13,7 +13,7 @@ Item {
     property int _visibleCount: 0
 
     // Guards getMediaByProperty(pid) so it fires at most once per property
-    // per Home session. Without this, every reload() would re-fire N calls.
+    // per Home session.
     property var _mediaRequested: ({})
 
     property int _coverTicksWithoutChange: 0
@@ -61,7 +61,7 @@ Item {
                 rejectionReason: item.rejectionReason || "",
                 matches: true,
                 imageUrl: "",
-                imageUrls: []
+                imageUrls: ""
             });
         }
 
@@ -72,11 +72,10 @@ Item {
 
     function setFilter(type) {
         typeFilter = String(type || "ALL").toUpperCase();
-        console.log("the new category of proprty filter set is", typeFilter);
         applyFilter();
     }
 
-    // Recompute the `matches` role on every row without rebuilding the model.
+    // Recompute `matches` on every row without rebuilding the model.
     function applyFilter() {
         var wanted = typeFilter === "ALL" ? "" : typeFilter;
         var n = 0;
@@ -84,8 +83,8 @@ Item {
             var row = propertiesModelId.get(i);
             var status = String(row.status || "").toUpperCase();
 
-            // Public visibility: only VERIFIED listings that are still active
-            // may appear on the client home.
+            // Public visibility: only VERIFIED + active listings appear
+            // on the client home.
             var publicVisible = status === "VERIFIED" && (row.isActive === true || row.isActive === "true");
 
             var typeMatch = wanted.length === 0 || String(row.propertyType).toUpperCase() === wanted;
@@ -98,9 +97,7 @@ Item {
         _visibleCount = n;
     }
 
-    // Fire getMediaByProperty(pid) exactly once per property, ever, for the
-    // life of this model. Because MediaListModel is a shared C++ singleton,
-    // any other screen (detail page etc.) will benefit from the same cache.
+    // Fire getMediaByProperty(pid) once per property, ever.
     function scheduleMediaFetches() {
         var fired = 0;
         for (var i = 0; i < propertiesModelId.count; i++) {
@@ -117,47 +114,56 @@ Item {
             coverRefreshTimer.restart();
     }
 
-    // // Read whatever media the shared MediaListModel already has for each
-    // // row, pick the primary (or the first), and write it into imageUrl.
-    // // Called whenever the media model settles.
+    // Read whatever media the shared MediaListModel already has for each
+    // row, pick the primary (or the first), and write both imageUrl
+    // (cover) and imageUrls (comma-joined list) into the row.
     function refreshCovers() {
-        var withCover = 0;
         for (var i = 0; i < propertiesModelId.count; i++) {
             var pid = String(propertiesModelId.get(i).propertyId || "");
             if (pid.length === 0)
                 continue;
             var media = MediaViewModel.mediaForProperty(pid);
             var cover = "";
+            var urls = [];
             if (media && media.length > 0) {
                 var primary = null;
                 for (var k = 0; k < media.length; k++) {
-                    // console.log("index", k, "availabe images for cover image and room image", media[k].isPrimary);
-                    if (media[k] && media[k].isPrimary) {
-                        primary = media[k];
-                        break;
-                    }
+                    var m = media[k];
+                    if (!m)
+                        continue;
+                    var u = String(m.url || m.path || "");
+                    if (u.length > 0)
+                        urls.push(u);
+                    if (m.isPrimary && !primary)
+                        primary = m;
                 }
                 var pick = primary || media[0];
-                cover = String(pick.url || pick.path || "");
+                cover = pick ? String(pick.url || pick.path || "") : "";
+                // Put the cover first in the list, keep the rest order-stable.
+                if (cover.length > 0) {
+                    var reordered = [cover];
+                    for (var u = 0; u < urls.length; u++)
+                        if (urls[u] !== cover)
+                            reordered.push(urls[u]);
+                    urls = reordered;
+                }
             }
-
-            // console.log("  pid:", pid, "| media count:", media ? media.length : -1, "| cover:", cover.length > 0 ? cover.substring(0, 60) + "..." : "(none)");
 
             if (String(propertiesModelId.get(i).imageUrl) !== cover)
                 propertiesModelId.setProperty(i, "imageUrl", cover);
-            if (cover.length > 0)
-                withCover++;
+
+            var joined = urls.join(",");
+            if (String(propertiesModelId.get(i).imageUrls) !== joined)
+                propertiesModelId.setProperty(i, "imageUrls", joined);
         }
-        console.log("refreshCovers: rows with cover =", withCover, "of", propertiesModelId.count);
     }
+
     Component.onCompleted: {
         reload();
         PropertyViewModel.getProperties();
     }
 
-    // MediaViewModel.isLoading flips false once the last in-flight media
-    // request settles. That's our "media batch done, refresh covers" hook —
-    // since MediaViewModel doesn't expose a mediaLoadedSignal.
+    // Media batch settled → refresh covers.
     Connections {
         target: MediaViewModel
         function onIsLoadingChanged(loading) {
@@ -185,6 +191,7 @@ Item {
         }
     }
 
+    // Stop hammering the media model once nothing changes.
     Connections {
         target: coverRefreshTimer
         function onTriggered() {

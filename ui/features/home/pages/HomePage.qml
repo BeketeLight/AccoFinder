@@ -3,55 +3,53 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import "../components"
 import "../delegates"
-import "../models"
 
-Page {
-    id: homePageId
-    background: Rectangle {
-        color: "#FFFFFF"
+Item {
+    id: root
+
+    // Injected by HomeScreen.
+    property var propertiesModelRef: null
+
+    // Which chip is active. Drives both the filter and the Super Deals
+    // visibility.
+    property string selectedCategory: "All"
+    readonly property var categories: ["All", "Hostels", "Quarters", "House"]
+
+    // "All" maps to "ALL"; the rest map to the backend's enum values.
+    function filterFor(category) {
+        switch (category) {
+        case "Hostels":
+            return "HOSTEL";
+        case "Quarters":
+            return "QUARTER";
+        case "House":
+            return "WHOLE";
+        default:
+            return "ALL";
+        }
     }
 
-    // ONE shared model for all four tabs.
-    PropertiesModel {
-        id: sharedProperties
-    }
-    // ===== Header as overlay (not using Page.header) =====
-    HeaderComponent {
-        id: headerComponent
-        anchors.top: parent.top
+    implicitWidth: 400
+    implicitHeight: contentColumn.implicitHeight
+
+    ColumnLayout {
+        id: contentColumn
         anchors.left: parent.left
         anchors.right: parent.right
-        z: 10                          // stay on top of content
-        scrollPosition: mainFlick.contentY
-        maxCollapse: 50
-    }
+        spacing: 14
 
-    // ===== Scrollable content =====
-    Flickable {
-        id: mainFlick
-        anchors.fill: parent
-        contentWidth: width
-        contentHeight: contentColumn.height
-        clip: true
-        boundsBehavior: Flickable.StopAtBounds
+        // ---------- Category chips ----------
+        // Full-bleed row of chips. Because AppScrollablePage centers its
+        // content column at 520px max, the chips sit within that column
+        // rather than bleeding edge-to-edge — consistent with the rest of
+        // the app's dashboard sections.
+        Item {
+            Layout.fillWidth: true
+            implicitHeight: 44
 
-        Column {
-            id: contentColumn
-            width: mainFlick.width
-            spacing: 2
-
-            // Spacer = full height of header when not collapsed
-            // This pushes the real content below the header
-            Item {
-                width: 1
-                height: 50 + 16 + 40   // titleRow + margins + searchBar approx
-            }
-
-            // Categories
             PropertyCategoryRow {
                 id: categoryRow
-                width: parent.width
-                height: 48
+                anchors.fill: parent
                 model: ListModel {
                     ListElement {
                         name: "All"
@@ -66,75 +64,59 @@ Page {
                         name: "House"
                     }
                 }
+                currentIndex: root.categories.indexOf(root.selectedCategory)
                 onCategoryClicked: function (index, name) {
-                    contentSwipe.currentIndex = index;
+                    root.selectedCategory = name;
+                    if (root.propertiesModelRef)
+                        root.propertiesModelRef.setFilter(root.filterFor(name));
                 }
-            }
-            SwipeView {
-                id: contentSwipe
-                width: parent.width
-                height: Math.max(mainFlick.height - y, 600) // or bind better later
-                clip: true
-                currentIndex: categoryRow.currentIndex
-
-                // When user swipes → update chips
-                onCurrentIndexChanged: {
-                    categoryRow.currentIndex = currentIndex;
-                    homePageId.applyTabFilter(currentIndex);
-                }
-
-                // Page 0 - All
-                AllPage {
-                    width: contentSwipe.width
-                    height: contentSwipe.height
-                    propertiesModelRef: sharedProperties
-                }
-
-                // Page 1 - Hostels
-                HostelsPage {
-                    width: contentSwipe.width
-                    height: contentSwipe.height
-                    propertiesModelRef: sharedProperties
-                }
-
-                // Page 2 - Rooms
-                QuartersPage {
-                    width: contentSwipe.width
-                    height: contentSwipe.height
-                    propertiesModelRef: sharedProperties
-                }
-
-                // Page 3 - Houses
-                HousesPage {
-                    width: contentSwipe.width
-                    height: contentSwipe.height
-                    propertiesModelRef: sharedProperties
-                }
-            }
-            Item {
-                width: 1
-                height: headerComponent.maxCollapse + 52
-                //height: 48 + 12 + 40
-                // height: 48 + 48
             }
         }
-    }
 
-    // Maps a tab index to its propertyType filter.
-    function applyTabFilter(index) {
-        var t = "ALL";
-        if (index === 1)
-            t = "HOSTEL";
-        else if (index === 2)
-            t = "QUARTER";
-        else if (index === 3)
-            t = "WHOLE";
-        sharedProperties.setFilter(t);
-    }
+        // ---------- Super Deals (only on All) ----------
+        SuperDeals {
+            visible: root.selectedCategory === "All"
+            Layout.fillWidth: true
+            Layout.preferredHeight: visible ? 190 : 0
+            cardWidth: 220
+            cardHeight: 130
+            infoSectionVisible: false
+            title: qsTr("Super Deals")
+            model: root.propertiesModelRef ? root.propertiesModelRef.propertiesModel : null
+        }
 
-    Component.onCompleted: {
-        // SwipeView doesn't emit currentIndexChanged for its initial value,
-        // so seed the filter explicitly.
-        applyTabFilter(contentSwipe.currentIndex);
+        // ---------- Section header ----------
+        Label {
+            text: root.selectedCategory === "All" ? qsTr("All Properties") : qsTr(root.selectedCategory)
+            font.pixelSize: 16
+            font.bold: true
+            color: "#1F2937"
+            Layout.fillWidth: true
+            Layout.topMargin: 4
+        }
+
+        // ---------- The grid (or skeleton, or empty state) ----------
+        PropertyLoadingSkeleton {
+            Layout.fillWidth: true
+            visible: root.propertiesModelRef ? (root.propertiesModelRef.loading && root.propertiesModelRef.visibleCount === 0) : false
+        }
+
+        HomeListPage {
+            Layout.fillWidth: true
+            implicitHeight: _implicitContentHeight()
+            propertiesModelRef: root.propertiesModelRef
+            renderAs: root.selectedCategory === "Quarters" ? "quarter" : "property"
+
+            // HomeListPage exposes the computed height of its Flow so the
+            // outer AppScrollablePage column sizes itself correctly.
+            function _implicitContentHeight() {
+                return 0;
+            }   // placeholder — see file 7
+        }
+
+        PropertyEmptyState {
+            Layout.fillWidth: true
+            visible: root.propertiesModelRef ? (!root.propertiesModelRef.loading && root.propertiesModelRef.visibleCount === 0) : false
+        }
     }
 }

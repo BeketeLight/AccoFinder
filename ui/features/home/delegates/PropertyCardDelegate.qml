@@ -47,13 +47,11 @@ Item {
                 id: img
                 anchors.fill: parent
                 anchors.margins: borderRect.border.width
-                remoteUrl: root.imageUrl
-                // Everything below is identical to before.
+                remoteUrl: root.imageUrl.length > 0 ? root.imageUrl : (root.imageUrls.length > 0 ? String(root.imageUrls).split(",")[0] : "")
                 fillMode: Image.PreserveAspectCrop
                 asynchronous: true
                 cache: true
                 opacity: status === Image.Ready ? 1 : 0
-
                 Behavior on opacity {
                     NumberAnimation {
                         duration: 200
