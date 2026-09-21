@@ -26,7 +26,6 @@ Item {
             Layout.preferredHeight: visible ? 190 : 0
             cardWidth: 220
             cardHeight: 130
-            title: qsTr("Super Deals")
             model: root.propertiesModelRef ? root.propertiesModelRef.propertiesModel : null
         }
 
