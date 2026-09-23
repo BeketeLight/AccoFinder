@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Effects
 import "../../../utils/ImageUtils.js" as ImageUtils
+import "../../../utils/NavigationUtils.js" as NavUtils
 
 Page {
     id: root
@@ -520,7 +521,15 @@ Page {
         function onBookingCreated(booking) {
             console.log("Booking OK:", booking.id, booking.roomId, booking.amount);
             successDialog.bookingId = booking.id;
-            successDialog.open();
+            //successDialog.open();
+
+            // Option B: navigate immediately and skip the dialog
+            // NavUtils.push(Qt.resolvedUrl("../../payments/screens/PaymentStatusScreen.qml"), {
+            //     bookingId: booking.id,
+            //     amount: booking.amount,
+            //     roomId: booking.roomId
+            // });
+            NavUtils.navigateToPayments();
         }
 
         function onBookingError(error) {
@@ -539,7 +548,7 @@ Page {
         modal: true
         standardButtons: Dialog.Ok
         Label {
-            text: "Your booking was created.\nBooking ID: " + successDialog.bookingId
+            text: "Your booking was created"
             wrapMode: Text.WordWrap
         }
     }

@@ -49,5 +49,8 @@
         <file>ui/assets/amenities/security.svg</file>
         <file>ui/assets/amenities/water.svg</file>
         <file>ui/assets/amenities/wifi.svg</file>
+        <file>ui/assets/payment/airtel.png</file>
+        <file>ui/assets/payment/PayChangu.png</file>
+        <file>ui/assets/payment/tnm.svg</file>
     </qresource>
 </RCC>

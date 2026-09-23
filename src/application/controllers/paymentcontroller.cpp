@@ -97,6 +97,68 @@ void PaymentController::getPaymentStatus(const QString &id)
     m_paymentRepo->getPaymentById(id);
 }
 
+void PaymentController::refreshForUser(const QString& userId)
+{
+    if (userId.isEmpty()) {
+        emit paymentError("User ID is required.");
+        return;
+    }
+    setLoading(true);
+    m_paymentRepo->getPaymentById(userId);
+}
+
+void PaymentController::refreshForBooking(const QString& bookingId)
+{
+    if (bookingId.isEmpty()) {
+        emit paymentError("Booking ID is required.");
+        return;
+    }
+    setLoading(true);
+    m_paymentRepo->getPaymentById(bookingId);
+}
+
+void PaymentController::appendPaymentToList(Payment* payment)
+{
+    if (!payment) return;
+
+    QVariantMap row;
+    row["paymentId"]     = payment->getId();
+    row["id"]            = payment->getId();
+    row["bookingId"]     = payment->getBookingId();
+    row["amount"]        = payment->getAmount();
+    row["method"]        = payment->getMethod();
+    row["status"]        = payment->statusInt();
+    row["statusText"]    = QString::number(payment->statusInt());
+    row["transactionRef"] = payment->getTransactionalRef();
+    row["payoutStatus"]  = payment->getPayoutStatus();
+    row["payoutDate"]    = payment->getPayoutDate();
+    row["paidAt"]        = payment->getPaidAt();
+
+    // Deduplicate by paymentId: replace if present, append otherwise
+    QVector<QVariantMap> rows;
+    bool replaced = false;
+    for (int i = 0; i < m_listModel->size(); i++) {
+        QVariantMap existing = m_listModel->at(i);
+        if (existing.value("paymentId").toString() == payment->getId()) {
+            rows.append(row);
+            replaced = true;
+        } else {
+            rows.append(existing);
+        }
+    }
+    if (!replaced)
+        rows.append(row);
+
+    m_listModel->setRows(rows);
+    emit paymentCountChanged(m_listModel->size());
+}
+
+void PaymentController::clearList()
+{
+    m_listModel->clear();
+    emit paymentCountChanged(0);
+}
+
 void PaymentController::setLoading(bool loading)
 {
     if (m_isLoading == loading) return;

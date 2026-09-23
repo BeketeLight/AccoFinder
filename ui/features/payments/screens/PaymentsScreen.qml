@@ -1,8 +1,9 @@
 import QtQuick 2.15
 import "../pages"
+
 Item {
     id: paymentScreenId
-    PaymentsPage{
+    PaymentsPage {
         anchors.fill: parent
     }
 }

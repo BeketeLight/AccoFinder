@@ -6,15 +6,20 @@
 #include <QList>
 #include "services/paymentgatewayimpl.h"
 #include "models/payment.h"
+#include "presentation/models/paymentslistmodel.h"
 
 class PaymentController : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(bool isLoading READ isLoading NOTIFY isLoadingChanged)
+    Q_PROPERTY(PaymentsListModel* paymentListModel READ paymentListModel CONSTANT)
+    Q_PROPERTY(int paymentCount READ paymentCount NOTIFY paymentCountChanged)
 public:
     explicit PaymentController(QObject *parent = nullptr);
 
     bool isLoading() const { return m_isLoading; }
+    PaymentsListModel* paymentListModel() const { return m_listModel; }
+    int paymentCount() const { return m_listModel->size(); }
 
     // ---------------- PAYMENT OPERATIONS ----------------
 
@@ -54,6 +59,16 @@ public:
      */
     Q_INVOKABLE void getPaymentStatus(const QString& id);
 
+    // ---- New: refresh list for a user and for a booking ----
+    // Backend: GET /payments/user/:userId  (returns most recent payment)
+    // The app fetches one at a time; we accumulate into the list model.
+    Q_INVOKABLE void refreshForUser(const QString& userId);
+    Q_INVOKABLE void refreshForBooking(const QString& bookingId);
+
+    // ---- C++-only helper for the gateway to append a payment ----
+    void appendPaymentToList(Payment* payment);
+    void clearList();
+
 signals:
     void paymentCreated(Payment* payment);
     void paymentLoaded(Payment* payment);
@@ -61,10 +76,12 @@ signals:
     void paymentRefunded(Payment* payment);
     void paymentError(const QString& error);
     void isLoadingChanged(bool isLoading);
+    void paymentCountChanged(int count);
 
 private:
     void setLoading(bool loading);
     PaymentGatewayImpl* m_paymentRepo;
+    PaymentsListModel* m_listModel;
     bool m_isLoading = false;
 };
 

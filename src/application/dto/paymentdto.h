@@ -1,7 +1,6 @@
 #ifndef PAYMENTDTO_H
 #define PAYMENTDTO_H
 
-
 #include <QDateTime>
 #include <QJsonObject>
 #include "models/payment.h"
@@ -20,7 +19,8 @@ public:
         const PaymentStatus& status,
         const QString& transactionRef,
         const QString& payoutStatus,
-        const QDateTime& payoutDate
+        const QDateTime& payoutDate,
+        const QDateTime& paidAt = QDateTime()
         );
 
     QString m_id;
@@ -31,9 +31,9 @@ public:
     QString m_transactionRef;
     QString m_payoutStatus;
     QDateTime m_payoutDate;
+    QDateTime m_paidAt;
 
-    static PaymentDto fromJson(
-        const QJsonObject& json);
+    static PaymentDto fromJson(const QJsonObject& json);
 
     QJsonObject toJson() const;
 

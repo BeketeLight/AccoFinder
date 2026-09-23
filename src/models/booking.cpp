@@ -13,12 +13,14 @@ Booking::Booking(const QString &id,
                  const double &amount,
                  const double &commissionAmount,
                  QObject *parent)
-    :m_id(id)
-    ,m_clientId(clientId)
-    ,m_bookingDate(bookingDate)
-    ,m_amount(amount)
-    ,m_commissionAmount(commissionAmount)
-    ,QObject(parent)
+    : QObject(parent)
+    , m_id(id)
+    , m_clientId(clientId)
+    , m_roomId(roomId)
+    , m_bookingDate(bookingDate)
+    , m_status(BookingStatus::Pending)
+    , m_amount(amount)
+    , m_commissionAmount(commissionAmount)
 {
     emit bookingCreated();
 
@@ -74,31 +76,43 @@ double Booking::getCommissionAmount() const
 
 void Booking::setId(const QString &newId)
 {
+    if (m_id == newId) return;
     m_id = newId;
+    emit idChanged();
 }
 
 void Booking::setClientId(const QString &newClientId)
 {
+    if (m_clientId == newClientId) return;
     m_clientId = newClientId;
+    emit clientIdChanged();
 }
 
 void Booking::setRoomId(const QString &newRoomId)
 {
+    if (m_roomId == newRoomId) return;
     m_roomId = newRoomId;
+    emit roomIdChanged();
 }
 
 void Booking::setBookingDate(const QDateTime &newBookingDate)
 {
+    if (m_bookingDate == newBookingDate) return;
     m_bookingDate = newBookingDate;
+    emit bookingDateChanged();
 }
 
 void Booking::setAmount(double newAmount)
 {
+    if (qFuzzyCompare(m_amount, newAmount)) return;
     m_amount = newAmount;
+    emit amountChanged();
 }
 
 void Booking::setCommissionAmount(double newCommissionAmount)
 {
+    if (qFuzzyCompare(m_commissionAmount, newCommissionAmount)) return;
     m_commissionAmount = newCommissionAmount;
+     emit commissionAmountChanged();
 }
 

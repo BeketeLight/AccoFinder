@@ -3,8 +3,10 @@
 
 enum class PaymentStatus {
     Initiated,
+    Pending,
     Success,
-    Failed
+    Failed,
+    Refunded
 };
 
 #endif // EPAYMENTSTATUS_H

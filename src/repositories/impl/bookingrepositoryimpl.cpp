@@ -33,19 +33,50 @@ void BookingRepositoryImpl::createBooking(
         [this](bool success,
             const QJsonObject& response)
         {
-            if(success){
+            if (success) {
+                // Backend wraps the resource in a "data" object
+                const QJsonObject data = response.value("data").toObject();
+
+                // Helper to read "_id" first, then "id"
+                auto readId = [](const QJsonObject& obj) -> QString {
+                    if (obj.contains("_id")) return obj.value("_id").toString();
+                    return obj.value("id").toString();
+                };
+
+                // Booking id
+                const QString bookingId = readId(data);
+
+                // clientId may be a string OR an object with _id
+                QString clientId;
+                const QJsonValue clientVal = data.value("clientId");
+                if (clientVal.isObject()) {
+                    clientId = readId(clientVal.toObject());
+                } else {
+                    clientId = clientVal.toString();
+                }
+
+                // roomId may be a string OR an object with _id
+                QString roomId;
+                const QJsonValue roomVal = data.value("roomId");
+                if (roomVal.isObject()) {
+                    roomId = readId(roomVal.toObject());
+                } else {
+                    roomId = roomVal.toString();
+                }
+
                 Booking* booking = new Booking(
-                    response["id"].toString(),
-                    response["clientId"].toString(),
-                    response["roomId"].toString(),
-                    QDateTime::fromString(response["bookingDate"].toString(), Qt::ISODate),
-                    response["amount"].toDouble(),
-                    response["commissionAmount"].toDouble(),
+                    bookingId,
+                    clientId,
+                    roomId,
+                    QDateTime::fromString(data.value("bookingDate").toString(), Qt::ISODate),
+                    data.value("amount").toDouble(),
+                    data.value("commissionAmount").toDouble(),
                     this
-                );
-                qDebug()<<"booking was succefully created";
+                    );
+
+                qDebug() << "booking was successfully created, bookingId" << booking->getId();
+
                 emit bookingCreated(booking);
-                qDebug()<<"booking was succefully created";
             }
             else {
                 QString message = response.value("message").toString();
