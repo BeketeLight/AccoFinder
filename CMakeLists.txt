@@ -78,29 +78,22 @@ qt_add_qml_module(appAccoFinder
         #======FEATURE-HOME======
         ui/features/home/screens/HomeScreen.qml
         ui/features/home/components/PropertyCategoryRow.qml
-        ui/features/home/components/RecentBooking.qml
-        ui/features/home/components/WelcomeHeader.qml
-        ui/features/home/models/HomeModel.qml
         ui/features/home/pages/HomePage.qml
-        ui/features/home/delegates/HomeDelegate.qml
         ui/features/home/components/HeaderComponent.qml
         ui/features/home/components/FooterComponent.qml
         ui/features/home/delegates/PropertyCardDelegate.qml
-        ui/features/home/delegates/PropertyListDelegate.qml
         ui/features/home/delegates/PropertyDelegateDetails.qml
-        ui/features/home/models/PropertyCategoryModel.qml
-        ui/features/home/models/PropertyListModel.qml
         ui/features/home/pages/SuperDeals.qml
         ui/features/home/components/PropertyEmptyState.qml
-        ui/features/home/components/PropertyFilterBar.qml
         ui/features/home/components/PropertyLoadingSkeleton.qml
-        ui/features/home/components/StickyActionBar.qml
-        ui/features/home/pages/AllPage.qml
-        ui/features/home/pages/HostelsPage.qml
+        ui/features/home/pages/HomeListPage.qml
         ui/features/home/pages/QuartersPage.qml
-        ui/features/home/pages/HousesPage.qml
         ui/features/home/delegates/QuartersDetailDelegate.qml
-       ui/features/home/components/QuartersComponent.qml
+        ui/features/home/components/QuartersComponent.qml
+        ui/features/home/models/PropertiesModel.qml
+        ui/features/home/delegates/RemoteImage.qml
+        ui/features/home/models/RoomsModel.qml
+        ui/features/home/models/PropertyDetailsModel.qml
         #======FEATURE-NOTIFICATIONS=====
         ui/features/notifications/components/NotificationItem.qml
         ui/features/notifications/delegates/NotificationDelegate.qml
@@ -235,9 +228,6 @@ qt_add_qml_module(appAccoFinder
 
     RESOURCES
         Rescources.qrc
-        QML_FILES ui/features/home/models/PropertiesModel.qml
-        QML_FILES ui/features/home/models/RoomsModel.qml
-        QML_FILES ui/features/home/delegates/RemoteImage.qml
         QML_FILES ui/features/bookings/components/FilterComponent.qml
         QML_FILES ui/features/bookings/pages/BookingView.qml
         QML_FILES ui/features/bookings/components/BookingsCard.qml
@@ -252,8 +242,8 @@ qt_add_qml_module(appAccoFinder
         QML_FILES ui/features/bookings/pages/ClientBookinDetailsPage.qml
         QML_FILES ui/features/bookings/pages/BookingOverviewAgentPage.qml
         QML_FILES ui/features/bookings/pages/AgentBookingDetailsOnOwnedPropertiesPage.qml
-        QML_FILES ui/features/home/models/PropertyDetailsModel.qml
         QML_FILES ui/utils/ImageUtils.js
+
         QML_FILES ui/features/bookings/models/BookingsModel.qml
 )
 
