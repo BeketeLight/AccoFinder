@@ -88,9 +88,9 @@ Page {
             landlordName: model.landlordName
             houseName: model.houseName
             imageUrl: model.imageUrl ? model.imageUrl : ""
-            dates: model.checkIn + " to " + model.checkOut
+            dates: model.checkIn
             details: "Standard Reservation"
-            totalPrice: "$" + (model.roomPrice - model.discount).toFixed(2)
+            totalPrice: "MWK" + (model.roomPrice - model.discount).toFixed(2)
 
 
             // Dynamic filter binding tied to active tab text

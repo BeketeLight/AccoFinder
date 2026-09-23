@@ -161,13 +161,6 @@ Rectangle {
                                 font.pixelSize: 12
                                 color: "#64748B"
                             }
-
-                            // Text {
-                            //     text: "View Property ›"
-                            //     font.pixelSize: 13
-                            //     font.bold: true
-                            //     color: "#2563EB"
-                            // }
                         }
                     }
 
@@ -215,13 +208,6 @@ Rectangle {
                                 Text { text: "Email:"; font.pixelSize: 12; color: "#64748B"; Layout.preferredWidth: 80 }
                                 Text { text: delegateRoot.clientEmail; font.pixelSize: 12; color: "#0F172A" }
                             }
-
-                            RowLayout {
-                                Layout.fillWidth: true
-                                Text { text: "Guests:"; font.pixelSize: 12; color: "#64748B"; Layout.preferredWidth: 80 }
-                                Text { text: delegateRoot.guestCount + " Guests"; font.pixelSize: 12; color: "#0F172A" }
-                            }
-
                             Rectangle {
                                 Layout.fillWidth: true
                                 implicitHeight: 36
@@ -280,11 +266,11 @@ Rectangle {
                                 Text { text: delegateRoot.checkIn; font.pixelSize: 12; font.bold: true; color: "#0F172A" }
                             }
 
-                            RowLayout {
-                                Layout.fillWidth: true
-                                Text { text: "Check-out:"; font.pixelSize: 12; color: "#64748B"; Layout.preferredWidth: 90 }
-                                Text { text: delegateRoot.checkOut; font.pixelSize: 12; font.bold: true; color: "#0F172A" }
-                            }
+                            // RowLayout {
+                            //     Layout.fillWidth: true
+                            //     Text { text: "Check-out:"; font.pixelSize: 12; color: "#64748B"; Layout.preferredWidth: 90 }
+                            //     Text { text: delegateRoot.checkOut; font.pixelSize: 12; font.bold: true; color: "#0F172A" }
+                            // }
 
                             // RowLayout {
                             //     Layout.fillWidth: true

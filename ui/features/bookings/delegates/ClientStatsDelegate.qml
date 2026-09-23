@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import QtQuick.Effects
 import "../models"
 Rectangle {
     id: delegateRoot
@@ -74,6 +75,7 @@ Rectangle {
             spacing: 12
 
             Rectangle {
+                id: imageContainer
                 implicitWidth: 80
                 implicitHeight: 80
                 radius: 8
@@ -81,11 +83,29 @@ Rectangle {
                 clip: true
 
                 Image {
+                    id: propImage
                     anchors.fill: parent
                     source: delegateRoot.imageUrl
                     fillMode: Image.PreserveAspectCrop
                     asynchronous: true
+                    visible: false
                 }
+                MultiEffect {
+                        anchors.fill: propImage
+                        source: propImage
+                        maskEnabled: true
+                        maskThresholdMin: 0.5
+
+                        // This clips the effect to a rounded rectangle
+                        maskSource: ShaderEffectSource {
+                            sourceItem: Rectangle {
+                                width: imageContainer.width
+                                height: imageContainer.height
+                                radius: imageContainer.radius
+                                color: "black"
+                            }
+                        }
+                    }
             }
 
             ColumnLayout {
@@ -124,7 +144,7 @@ Rectangle {
                 }
 
                 Text {
-                    text:"MWK" + delegateRoot.totalPrice
+                    text:delegateRoot.totalPrice
                     font.bold: true
                     font.pixelSize: 14
                     color: "#000000"

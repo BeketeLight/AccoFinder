@@ -25,28 +25,45 @@ Page {
     property alias keyInstructions: detailDelegate.keyInstructions
     property alias cancellationPolicy: detailDelegate.cancellationPolicy
 
-    // header: ToolBar {
-    //     background: Rectangle { color: "#FFFFFF" }
-    //     RowLayout {
-    //         anchors.fill: parent
-    //         anchors.leftMargin: 8
+    //----Binding header here
+    property string pageTitle: detailPage.bookingId
+    property bool showHeader: true
+    property bool showBack: true
+    property bool isSearchBar: false
+    property bool showBottomBorder: true
 
-    //         ToolButton {
-    //             text: "‹ Back"
-    //             font.bold: true
-    //             font.pixelSize: 16
-    //             onClicked: NavUtils.pop()
-    //         }
+    // Status badge on the right side of AppHeader
+        property Component rightComponentAction: Component {
+            Item {
+                implicitWidth: badge.implicitWidth
+                implicitHeight: 36
+                Layout.rightMargin: 20
 
-    //         Text {
-    //             text: "Booking Details"
-    //             font.bold: true
-    //             font.pixelSize: 16
-    //             color: "#0F172A"
-    //             Layout.fillWidth: true
-    //         }
-    //     }
-    // }
+                Rectangle {
+                    id: badge
+                    anchors.verticalCenter: parent.verticalCenter
+                    implicitWidth: statusLabel.implicitWidth + 16
+                    implicitHeight: 28
+                    radius: 14
+                    color: detailPage.status === "Approved" ? "#DCFCE7"
+                         : detailPage.status === "Pending" ? "#FEF3C7"
+                         : detailPage.status === "Cancelled" ? "#FEE2E2"
+                         : "#F1F5F9"
+
+                    Text {
+                        id: statusLabel
+                        anchors.centerIn: parent
+                        text: detailPage.status
+                        font.pixelSize: 12
+                        font.bold: true
+                        color: detailPage.status === "Approved" ? "#15803D"
+                             : detailPage.status === "Pending" ? "#B45309"
+                             : detailPage.status === "Cancelled" ? "#B91C1C"
+                             : "#475569"
+                    }
+                }
+            }
+        }
 
     ScrollView {
         anchors.topMargin: 6

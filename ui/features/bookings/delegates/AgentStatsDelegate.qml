@@ -1,38 +1,55 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-
+import QtQuick.Effects
 Rectangle {
     id: delegateRoot
 
-    // --- MODEL PROPERTIES ---
-    property string bookingId: ""//model.bookingId ?? ""
-    property string houseName: ""//model.houseName ?? ""
-    property string imageUrl: ""//model.imageUrl ?? ""
-    property string status: ""//model.status ?? ""
-    property string clientName: ""//model.clientName ?? ""
-    property string clientPhone: ""//model.clientPhone ?? ""
-    property string dateRange: model.dateRange ?? ""
-    property string price: ""//model.price ?? ""
-    property string createdDate: model.createdDate ?? "Aug 31, 2026"
-    property string propertyImage : ""
-    property string propertyLocation: ""
-    property string roomType: ""
-    property string clientEmail: ""
-    property int guestCount: 0
-    property string checkIn: ""
-    property string checkOut: ""
-    property int nightsCount: 0
-    property string clientNotes: ""
-    property double baseAmount: 0.0
-    property double serviceFee: 0.0
-    property double totalAmount:  baseAmount + serviceFee
-    property string paymentStatus: ""
-    property string paymentMethod: ""
-    property string paymentDate: ""
+    // // --- MODEL PROPERTIES ---
+    // property string bookingId: ""//model.bookingId ?? ""
+    // property string houseName: ""//model.houseName ?? ""
+    // property string imageUrl: ""//model.imageUrl ?? ""
+    // property string status: ""//model.status ?? ""
+    // property string clientName: ""//model.clientName ?? ""
+    // property string clientPhone: ""//model.clientPhone ?? ""
+    // property string dateRange: model.dateRange ?? ""
+    // property string price: ""//model.price ?? ""
+    // property string createdDate: model.createdDate ?? "Aug 31, 2026"
+    // property string propertyImage : ""
+    // property string propertyLocation: ""
+    // property string roomType: ""
+    // property string clientEmail: ""
+    // property int guestCount: 0
+    // property string checkIn: ""
+    // property string checkOut: ""
+    // property int nightsCount: 0
+    // property string clientNotes: ""
+    // property double baseAmount: 0.0
+    // property double serviceFee: 0.0
+    // property double totalAmount:  baseAmount + serviceFee
+    // property string paymentStatus: ""
+    // property string paymentMethod: ""
+    // property string paymentDate: ""
+    // --- MODEL PROPERTIES WITH AUTOMATIC FALLBACKS ---
+        property string bookingId: model.bookingId ?? ""
+        property string houseName: model.houseName ?? "Hostel/Apartment"
+        property string imageUrl: model.propertyImage ?? model.imageUrl ?? ""
+        property string status: model.status ?? "Pending"
+        property string clientName: model.clientName ?? "Guest"
+        property string clientPhone: model.clientPhone ?? "N/A"
+        property string dateRange: model.bookingDate ?? model.dateRange ?? "N/A"
+        property string price: model.amount ? model.amount.toString() : (model.price ?? "0")
+
+        property string propertyLocation: model.location ?? ""
+        property string roomType: model.roomType ?? "Standard Room"
+        property string clientEmail: model.clientEmail ?? ""
+
+        property double baseAmount: model.amount ?? 0.0
+        property double serviceFee: model.commissionAmount ?? 0.0
+        property double totalAmount: baseAmount + serviceFee
 
     // --- ACTIVE FILTER PROP ---
-    property string activeFilter: "View all"
+    property string activeFilter: "All"
 
     // --- SIGNALS ---
     signal approveRequested()
@@ -42,7 +59,8 @@ Rectangle {
     signal detailsRequested(var data)
 
     // --- VISIBILITY & HEIGHT COLLAPSE ---
-    visible: activeFilter === "View all" || status === activeFilter
+    //visible: activeFilter === "View all" || status === activeFilter
+    visible: model.matches ?? true
     width: ListView.view ? ListView.view.width : parent.width
     implicitHeight: visible ? mainLayout.implicitHeight + 24 : 0
 
@@ -78,22 +96,6 @@ Rectangle {
         RowLayout {
             spacing: 6
 
-            // "Choice" style tag
-            // Rectangle {
-            //     implicitWidth: 46
-            //     implicitHeight: 18
-            //     radius: 4
-            //     color: "#FFD700"
-
-            //     Text {
-            //         anchors.centerIn: parent
-            //         text: "Propety Name"
-            //         font.pixelSize: 10
-            //         font.bold: true
-            //         color: "#000000"
-            //     }
-            // }
-
             Text {
                 text: delegateRoot.houseName
                 font.pixelSize: 14
@@ -108,6 +110,7 @@ Rectangle {
             spacing: 12
 
             Rectangle {
+                id: imageContainer
                 Layout.preferredWidth: 80
                 Layout.preferredHeight: 80
                 radius: 8
@@ -115,10 +118,28 @@ Rectangle {
                 clip: true
 
                 Image {
+                    id: propImage
                     anchors.fill: parent
                     source: delegateRoot.imageUrl !== "" ? delegateRoot.imageUrl : "qrc:/assets/placeholder.png"
                     fillMode: Image.PreserveAspectCrop
                     asynchronous: true
+                    visible: false
+                }
+                MultiEffect {
+                    anchors.fill: propImage
+                    source: propImage
+                    maskEnabled: true
+                    maskThresholdMin: 0.5
+
+                    // This clips the effect to a rounded rectangle
+                    maskSource: ShaderEffectSource {
+                        sourceItem: Rectangle {
+                            width: imageContainer.width
+                            height: imageContainer.height
+                            radius: imageContainer.radius
+                            color: "black"
+                            }
+                    }
                 }
             }
 
@@ -175,36 +196,36 @@ Rectangle {
             spacing: 8
 
             // LEFT BUTTONS: Contact & Details
+            // Rectangle {
+            //     implicitWidth: 75
+            //     implicitHeight: 32
+            //     radius: 16
+            //     border.color: "#CCCCCC"
+            //     border.width: 1
+            //     color: "transparent"
+
+            //     // Text {
+            //     //     anchors.centerIn: parent
+            //     //     text: "Contact"
+            //     //     font.pixelSize: 12
+            //     //     font.bold: true
+            //     //     color: "#000000"
+            //     // }
+            //     ToolButton{
+            //         anchors.centerIn: parent
+            //         icon.source: "qrc:/ui/assets/message-icon.svg"
+            //         icon.height: 16
+            //         icon.width: 16
+            //     }
+
+            //     MouseArea {
+            //         anchors.fill: parent
+            //         onClicked: delegateRoot.contactRequested()
+            //     }
+            // }
+
             Rectangle {
-                implicitWidth: 75
-                implicitHeight: 32
-                radius: 16
-                border.color: "#CCCCCC"
-                border.width: 1
-                color: "transparent"
-
-                // Text {
-                //     anchors.centerIn: parent
-                //     text: "Contact"
-                //     font.pixelSize: 12
-                //     font.bold: true
-                //     color: "#000000"
-                // }
-                ToolButton{
-                    anchors.centerIn: parent
-                    icon.source: "qrc:/ui/assets/message-icon.svg"
-                    icon.height: 16
-                    icon.width: 16
-                }
-
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: delegateRoot.contactRequested()
-                }
-            }
-
-            Rectangle {
-                implicitWidth: 70
+                implicitWidth: 150
                 implicitHeight: 32
                 radius: 16
                 border.color: "#CCCCCC"

@@ -4,15 +4,16 @@ import QtQuick.Layouts
 import "../delegates"
 import "../models"
 import "../../../utils/NavigationUtils.js" as NavUtils
-Page{
+
+Page {
     id: root
 
     // Header Bar / Filter Selector
-    header: RowLayout{
+    header: RowLayout {
         TabBar {
             id: filterTabBar
             Layout.fillWidth: true
-            background: Rectangle{
+            background: Rectangle {
                 color: "#FFFFFF"
                 Rectangle {
                     anchors.bottom: parent.bottom
@@ -21,50 +22,54 @@ Page{
                     color: "#E2E8F0"
                 }
             }
-            TabButton { text: "View all" }
+            TabButton { text: "All" }        // <-- Change "View all" to "All"
             TabButton { text: "Pending" }
-            TabButton { text: "Approved" }
-            TabButton { text: "Rejected" }
+            TabButton { text: "Confirmed" }  // <-- Change "Approved" to "Confirmed"
+            TabButton { text: "Cancelled" }
+
+            onCurrentIndexChanged: {
+                if (currentItem) {
+                    agentBookingsModel.statusFilter = currentItem.text
+                }
+            }
         }
     }
 
-    BookingModel{
+    BookingsModel {
         id: agentBookingsModel
     }
-    // ListView Binding
+    Component.onCompleted: {
+        if (typeof BookingViewModel !== "undefined" && BookingViewModel.fetchBookings) {
+            console.log("Fetching bookings")
+            BookingViewModel.fetchBookings()
+        }
+    }
+
     ListView {
-        //d: listView
         id: statsListView
         anchors.fill: parent
         anchors.margins: 12
         spacing: 12
         clip: true
-        model: agentBookingsModel
+        model: agentBookingsModel.bookingsModel
 
         delegate: AgentStatsDelegate {
+            // Correct role mappings matching BookingsModel.qml append() payload:
             bookingId: model.bookingId ?? ""
             houseName: model.houseName ?? ""
-            imageUrl: model.imageUrl
+            imageUrl: model.propertyImage ?? ""
             status: model.status ?? ""
             clientName: model.clientName ?? ""
             clientPhone: model.clientPhone ?? ""
-            dateRange: model.checkIn ?? ""
-            price: model.roomPrice ?? ""
-            propertyLocation: model.propertyLocation ?? ""
-                roomType: model.roomType ?? ""
-                clientEmail: model.clientEmail ?? ""
-                guestCount: model.guestCount ?? 0
-                checkOut: model.checkOut ?? ""
-                nightsCount: model.nightsCount ?? 0
-                clientNotes: model.clientNotes ?? ""
-                baseAmount: model.baseAmount ?? ""
-                serviceFee: model.serviceFee ?? ""
-                paymentStatus: model.paymentStatus ?? ""
-                paymentMethod: model.paymentMethod ?? ""
-                paymentDate: model.paymentDate ?? ""
-            activeFilter: filterTabBar.currentItem ? filterTabBar.currentItem.text : "View all"
+            dateRange: model.bookingDate ?? ""
+            price: model.amount ? model.amount.toString() : "0"
+            propertyLocation: (model.district && model.village) ? (model.district + ", " + model.village) : "N/A"
+            roomType: model.roomType ?? ""
+            clientEmail: model.clientEmail ?? ""
+            baseAmount: model.amount ?? 0.0
+            serviceFee: model.commissionAmount ?? 0.0
 
-            onDetailsRequested: function(data){
+            onDetailsRequested: function(data) {
                 console.log("Details data:", JSON.stringify(data))
                 NavUtils.navigateToBookingsDetailsOwneByAgent(data)
             }

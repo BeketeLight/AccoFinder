@@ -51,110 +51,110 @@ Rectangle {
         // ==========================================
         // 1. BOOKING STATUS CARD
         // ==========================================
-        Rectangle {
-            Layout.fillWidth: true
-            implicitHeight: statusLayout.implicitHeight + 24
-            radius: 10
-            color: "#F8FAFC"
-            border.color: "#E2E8F0"
+        // Rectangle {
+        //     Layout.fillWidth: true
+        //     implicitHeight: statusLayout.implicitHeight + 24
+        //     radius: 10
+        //     color: "#F8FAFC"
+        //     border.color: "#E2E8F0"
 
-            ColumnLayout {
-                id: statusLayout
-                anchors.fill: parent
-                anchors.margins: 12
-                spacing: 6
+        //     ColumnLayout {
+        //         id: statusLayout
+        //         anchors.fill: parent
+        //         anchors.margins: 12
+        //         spacing: 6
 
-                RowLayout {
-                    Layout.fillWidth: true
+        //         RowLayout {
+        //             Layout.fillWidth: true
 
-                    Text {
-                        text: "Booking Ref: " + delegateRoot.bookingId
-                        font.pixelSize: 13
-                        font.bold: true
-                        color: "#64748B"
-                        Layout.fillWidth: true
-                       // elide: Text.ElideRigh
-                    }
+        //             Text {
+        //                 text: "Booking Ref: " + delegateRoot.bookingId
+        //                 font.pixelSize: 13
+        //                 font.bold: true
+        //                 color: "#64748B"
+        //                 Layout.fillWidth: true
+        //                // elide: Text.ElideRigh
+        //             }
 
-                    Rectangle {
-                        Layout.alignment: Qt.AlignVCenter
-                        implicitWidth: statusText.implicitWidth + 16
-                        implicitHeight: statusText.implicitHeight + 8
-                       // implicitHeight: 24
-                        radius: 12
-                        color: {
-                            switch(delegateRoot.status) {
-                                case "Approved": return "#DCFCE7"
-                                case "Pending": return "#FEF3C7"
-                                case "Cancelled": return "#FEE2E2"
-                                default: return "#F1F5F9"
-                            }
-                        }
+        //             Rectangle {
+        //                 Layout.alignment: Qt.AlignVCenter
+        //                 implicitWidth: statusText.implicitWidth + 16
+        //                 implicitHeight: statusText.implicitHeight + 8
+        //                // implicitHeight: 24
+        //                 radius: 12
+        //                 color: {
+        //                     switch(delegateRoot.status) {
+        //                         case "Approved": return "#DCFCE7"
+        //                         case "Pending": return "#FEF3C7"
+        //                         case "Cancelled": return "#FEE2E2"
+        //                         default: return "#F1F5F9"
+        //                     }
+        //                 }
 
-                        Text {
-                            id: statusText
-                            anchors.centerIn: parent
-                            text: delegateRoot.status
-                            font.pixelSize: 12
-                            font.bold: true
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
-                            color: {
-                                switch(delegateRoot.status) {
-                                    case "Approved": return "#15803D"
-                                    case "Pending": return "#B45309"
-                                    case "Cancelled": return "#B91C1C"
-                                    default: return "#475569"
-                                }
-                            }
-                        }
-                    }
-                }
+        //                 Text {
+        //                     id: statusText
+        //                     anchors.centerIn: parent
+        //                     text: delegateRoot.status
+        //                     font.pixelSize: 12
+        //                     font.bold: true
+        //                     horizontalAlignment: Text.AlignHCenter
+        //                     verticalAlignment: Text.AlignVCenter
+        //                     color: {
+        //                         switch(delegateRoot.status) {
+        //                             case "Approved": return "#15803D"
+        //                             case "Pending": return "#B45309"
+        //                             case "Cancelled": return "#B91C1C"
+        //                             default: return "#475569"
+        //                         }
+        //                     }
+        //                 }
+        //             }
+        //         }
 
-                Text {
-                    text: delegateRoot.statusNote
-                    font.pixelSize: 13
-                    color: "#334155"
-                    wrapMode: Text.WordWrap
-                }
-            }
-        }
+        //         Text {
+        //             text: delegateRoot.statusNote
+        //             font.pixelSize: 13
+        //             color: "#334155"
+        //             wrapMode: Text.WordWrap
+        //         }
+        //     }
+        // }
 
         // ==========================================
         // 2. CHECK-IN INSTRUCTIONS (CONDITIONAL)
         // ==========================================
-        Rectangle {
-            Layout.fillWidth: true
-            visible: delegateRoot.status === "Approved" && delegateRoot.paymentStatus === "Paid"
-            implicitHeight: visible ? checkInInstLayout.implicitHeight + 24 : 0
-            radius: 10
-            color: "#EFF6FF"
-            border.color: "#BFDBFE"
+        // Rectangle {
+        //     Layout.fillWidth: true
+        //     visible: delegateRoot.status === "Approved" && delegateRoot.paymentStatus === "Paid"
+        //     implicitHeight: visible ? checkInInstLayout.implicitHeight + 24 : 0
+        //     radius: 10
+        //     color: "#EFF6FF"
+        //     border.color: "#BFDBFE"
 
-            ColumnLayout {
-                id: checkInInstLayout
-                anchors.fill: parent
-                anchors.margins: 12
-                spacing: 8
+        //     ColumnLayout {
+        //         id: checkInInstLayout
+        //         anchors.fill: parent
+        //         anchors.margins: 12
+        //         spacing: 8
 
-                Text {
-                    text: "Key Pickup Instructions"
-                    font.pixelSize: 15
-                    font.bold: true
-                    color: "#1E40AF"
-                }
+        //         Text {
+        //             text: "Key Pickup Instructions"
+        //             font.pixelSize: 15
+        //             font.bold: true
+        //             color: "#1E40AF"
+        //         }
 
-                Rectangle { Layout.fillWidth: true; height: 1; color: "#DBEAFE" }
+        //         Rectangle { Layout.fillWidth: true; height: 1; color: "#DBEAFE" }
 
-                Text {
-                    text: delegateRoot.keyInstructions
-                    font.pixelSize: 13
-                    color: "#1E3A8A"
-                    Layout.fillWidth: true
-                    wrapMode: Text.Wrap
-                }
-            }
-        }
+        //         Text {
+        //             text: delegateRoot.keyInstructions
+        //             font.pixelSize: 13
+        //             color: "#1E3A8A"
+        //             Layout.fillWidth: true
+        //             wrapMode: Text.Wrap
+        //         }
+        //     }
+        // }
 
         // ==========================================
         // 3. STAY INFORMATION
@@ -194,19 +194,19 @@ Rectangle {
                         Text { text: "Check-in"; font.pixelSize: 12; color: "#94A3B8" }
                         Text { text: delegateRoot.checkIn; font.pixelSize: 13; font.bold: true; color: "#334155" }
                     }
-                    ColumnLayout {
-                        Layout.fillWidth: true
-                        Text { text: "Check-out"; font.pixelSize: 12; color: "#94A3B8" }
-                        Text { text: delegateRoot.checkOut; font.pixelSize: 13; font.bold: true; color: "#334155" }
-                    }
+                    // ColumnLayout {
+                    //     Layout.fillWidth: true
+                    //     Text { text: "Check-out"; font.pixelSize: 12; color: "#94A3B8" }
+                    //     Text { text: delegateRoot.checkOut; font.pixelSize: 13; font.bold: true; color: "#334155" }
+                    // }
                 }
 
-                ColumnLayout {
-                    visible: delegateRoot.specialRequests !== ""
-                    spacing: 2
-                    Text { text: "Special Requests:"; font.pixelSize: 12; color: "#94A3B8" }
-                    Text { text: delegateRoot.specialRequests; font.pixelSize: 13; color: "#334155"; Layout.fillWidth: true; wrapMode: Text.Wrap }
-                }
+                // ColumnLayout {
+                //     visible: delegateRoot.specialRequests !== ""
+                //     spacing: 2
+                //     Text { text: "Special Requests:"; font.pixelSize: 12; color: "#94A3B8" }
+                //     Text { text: delegateRoot.specialRequests; font.pixelSize: 13; color: "#334155"; Layout.fillWidth: true; wrapMode: Text.Wrap }
+                // }
             }
         }
 
@@ -240,13 +240,13 @@ Rectangle {
                     Text { text: "MWK" + delegateRoot.roomPrice.toFixed(2); font.pixelSize: 13; color: "#334155" }
                 }
 
-                RowLayout {
-                    Layout.fillWidth: true
-                    visible: delegateRoot.discount > 0
-                    Text { text: "Discount"; font.pixelSize: 13; color: "#16A34A" }
-                    Item { Layout.fillWidth: true }
-                    Text { text: "-$" + delegateRoot.discount.toFixed(2); font.pixelSize: 13; color: "#16A34A" }
-                }
+                // RowLayout {
+                //     Layout.fillWidth: true
+                //     visible: delegateRoot.discount > 0
+                //     Text { text: "Discount"; font.pixelSize: 13; color: "#16A34A" }
+                //     Item { Layout.fillWidth: true }
+                //     //Text { text: "-$" + delegateRoot.discount.toFixed(2); font.pixelSize: 13; color: "#16A34A" }
+                // }
 
                 Rectangle { Layout.fillWidth: true; height: 1; color: "#F1F5F9" }
 
@@ -287,34 +287,34 @@ Rectangle {
         // ==========================================
         // 5. CANCELLATION POLICY
         // ==========================================
-        Rectangle {
-            Layout.fillWidth: true
-            implicitHeight: cancelLayout.implicitHeight + 24
-            radius: 10
-            color: "#FFFFFF"
-            border.color: "#E2E8F0"
+        // Rectangle {
+        //     Layout.fillWidth: true
+        //     implicitHeight: cancelLayout.implicitHeight + 24
+        //     radius: 10
+        //     color: "#FFFFFF"
+        //     border.color: "#E2E8F0"
 
-            ColumnLayout {
-                id: cancelLayout
-                anchors.fill: parent
-                anchors.margins: 12
-                spacing: 6
+        //     ColumnLayout {
+        //         id: cancelLayout
+        //         anchors.fill: parent
+        //         anchors.margins: 12
+        //         spacing: 6
 
-                Text {
-                    text: "Cancellation Policy"
-                    font.pixelSize: 14
-                    font.bold: true
-                    color: "#0F172A"
-                }
+        //         Text {
+        //             text: "Cancellation Policy"
+        //             font.pixelSize: 14
+        //             font.bold: true
+        //             color: "#0F172A"
+        //         }
 
-                Text {
-                    text: delegateRoot.cancellationPolicy
-                    font.pixelSize: 13
-                    color: "#64748B"
-                    Layout.fillWidth: true
-                    wrapMode: Text.Wrap
-                }
-            }
-        }
+        //         Text {
+        //             text: delegateRoot.cancellationPolicy
+        //             font.pixelSize: 13
+        //             color: "#64748B"
+        //             Layout.fillWidth: true
+        //             wrapMode: Text.Wrap
+        //         }
+        //     }
+        // }
     }
 }
