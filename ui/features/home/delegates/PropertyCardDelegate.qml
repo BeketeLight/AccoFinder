@@ -38,7 +38,6 @@ Item {
             width: parent.width
             height: (parent.height + 10) - (root.isInfoSectionVisible ? 52 : 0)
             border.color: "#E5E7EB"
-            color: "#F3F4F6"
             border.width: 2.5
             radius: 8
             clip: true
