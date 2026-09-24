@@ -36,7 +36,7 @@ Item {
         Rectangle {
             id: borderRect
             width: parent.width
-            height: parent.height - (root.isInfoSectionVisible ? 52 : 0)
+            height: (parent.height + 10) - (root.isInfoSectionVisible ? 52 : 0)
             border.color: "#E5E7EB"
             color: "#F3F4F6"
             border.width: 1.5
@@ -72,7 +72,6 @@ Item {
                 anchors.fill: parent
                 anchors.margins: borderRect.border.width
                 radius: 8
-                color: "black"
                 visible: false
                 layer.enabled: true
                 layer.smooth: true
@@ -151,16 +150,13 @@ Item {
                 elide: Text.ElideRight
             }
 
-            // Stars + review count
-            Row {
-                spacing: 3
-
-                // Simple star display
-                Label {
-                    text: root.title
-                    font.pixelSize: 11
-                    color: "#F59E0B"          // amber/gold
-                }
+            // Property Title
+            Label {
+                text: root.title
+                width: parent.width
+                font.pixelSize: 11
+                color: "#F59E0B"          // amber/gold
+                elide: Text.ElideRight
             }
         }
 
