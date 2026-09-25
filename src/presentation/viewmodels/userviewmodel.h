@@ -33,6 +33,8 @@ public:
     Q_INVOKABLE int activeCount() const;
     Q_INVOKABLE int suspendedCount() const;
 
+    Q_INVOKABLE QVariantMap getUserById(const QString& userId) const;///B-----addded
+    Q_INVOKABLE void fetchUserById(const QString& userId);///get user from API
 private:
     int m_index = -1;
     bool m_isLoading = false;
@@ -43,6 +45,7 @@ private:
 
 private slots:
     void onUsersLoaded(QList<User*>& users);
+    void onUserLoaded(User* user); ///added by B
     void onUserUpdated(User* user);
     void onUserError(const QString& error);
 
@@ -50,6 +53,7 @@ signals:
     void isLoadingChanged(bool isLoading);
     void userError(const QString& error);
     void userAdded(const QString& email);
+    void userLoaded(const QString& userId, const QVariantMap& userData); //b added
 };
 
 #endif // USERVIEWMODEL_H

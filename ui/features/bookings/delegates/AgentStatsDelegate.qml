@@ -2,34 +2,9 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Effects
+import "../components"
 Rectangle {
     id: delegateRoot
-
-    // // --- MODEL PROPERTIES ---
-    // property string bookingId: ""//model.bookingId ?? ""
-    // property string houseName: ""//model.houseName ?? ""
-    // property string imageUrl: ""//model.imageUrl ?? ""
-    // property string status: ""//model.status ?? ""
-    // property string clientName: ""//model.clientName ?? ""
-    // property string clientPhone: ""//model.clientPhone ?? ""
-    // property string dateRange: model.dateRange ?? ""
-    // property string price: ""//model.price ?? ""
-    // property string createdDate: model.createdDate ?? "Aug 31, 2026"
-    // property string propertyImage : ""
-    // property string propertyLocation: ""
-    // property string roomType: ""
-    // property string clientEmail: ""
-    // property int guestCount: 0
-    // property string checkIn: ""
-    // property string checkOut: ""
-    // property int nightsCount: 0
-    // property string clientNotes: ""
-    // property double baseAmount: 0.0
-    // property double serviceFee: 0.0
-    // property double totalAmount:  baseAmount + serviceFee
-    // property string paymentStatus: ""
-    // property string paymentMethod: ""
-    // property string paymentDate: ""
     // --- MODEL PROPERTIES WITH AUTOMATIC FALLBACKS ---
         property string bookingId: model.bookingId ?? ""
         property string houseName: model.houseName ?? "Hostel/Apartment"
@@ -47,7 +22,7 @@ Rectangle {
         property double baseAmount: model.amount ?? 0.0
         property double serviceFee: model.commissionAmount ?? 0.0
         property double totalAmount: baseAmount + serviceFee
-
+        property bool isLoading: clientName === "" || clientName === "Loading..." || houseName === ""
     // --- ACTIVE FILTER PROP ---
     property string activeFilter: "All"
 
@@ -112,7 +87,7 @@ Rectangle {
             Rectangle {
                 id: imageContainer
                 Layout.preferredWidth: 80
-                Layout.preferredHeight: 80
+                Layout.preferredHeight: 100
                 radius: 8
                 color: "#F0F0F0"
                 clip: true
@@ -244,42 +219,24 @@ Rectangle {
                     anchors.fill: parent
                     onClicked: {
 
-                        delegateRoot.detailsRequested({
-                                                        bookingId: delegateRoot.bookingId,
-                                                        status: delegateRoot.status,
-                                                        houseName: delegateRoot.houseName,
-                                                        clientName: delegateRoot.clientName,
-                                                        clientPhone: delegateRoot.clientPhone,
-                                                        checkIn: delegateRoot.checkIn,
-                                                        roomPrice: delegateRoot.price,
-                                                        //propertyImage: delegateRoot.propertyImage,
-                                                          //bookingId: data.bookingId || "",
-                                                          //status: data.status || "",
-                                                          //houseName: data.propertyName || "",
-                                                          propertyLocation: delegateRoot.propertyLocation,
-                                                               //readonly property string propertyImage: model.propertyImage ?? "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=500"
-                                                          roomType: delegateRoot.roomType,
-
-                                                         // clientName: data.clientName || "John Doe",
-                                                         // clientPhone: data.clientPhone || "+1 555-0192",
-                                                          clientEmail: delegateRoot.clientEmail,
-                                                               //readonly property int guestCount: model.guestCount ?? 3
-
-                                                          //checkIn: data.checkIn || "Oct 12, 2026 (2:00 PM)",
-                                                          //checkOut: model.checkOut || "Oct 15, 2026 (11:00 AM)"
-                                                          //nightsCount: model.nightsCount ?? 3
-                                                          //clientNotes: model.clientNotes ?? "Please provide an extra crib if available. Late check-in expected."
-
-                                                          baseAmount: delegateRoot.baseAmount,
-                                                          serviceFee: delegateRoot.serviceFee,
-                                                          totalAmount: delegateRoot.totalAmount,
-                                                          paymentStatus: delegateRoot.paymentStatus
-                                                          //paymentMethod: delegateRoot.pay
-                                                         //paymentDate: data.paymentDate || "Oct 10, 2026"
-
-                                                                      // Pull remaining fields directly from model roles (with defaults)
-
-                                                      })
+                    delegateRoot.detailsRequested({
+                        bookingId: delegateRoot.bookingId,
+                        status: delegateRoot.status,
+                        houseName: delegateRoot.houseName,
+                        clientName: delegateRoot.clientName,
+                        clientPhone: delegateRoot.clientPhone,
+                        checkIn: delegateRoot.dateRange,
+                        roomPrice: delegateRoot.price,
+                        propertyImage: delegateRoot.imageUrl,
+                        propertyLocation: delegateRoot.propertyLocation,
+                        //readonly property string propertyImage: model.propertyImage ?? "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=500"
+                        roomType: delegateRoot.roomType,
+                        clientEmail: delegateRoot.clientEmail,
+                        baseAmount: delegateRoot.baseAmount,
+                        serviceFee: delegateRoot.serviceFee,
+                        totalAmount: delegateRoot.totalAmount,
+                        paymentStatus: delegateRoot.paymentStatus
+                    })
                     }
                 }
             }
@@ -366,5 +323,45 @@ Rectangle {
                 }
             }
         }
+        // ColumnLayout {
+        //         // anchors.fill: parent
+        //         // anchors.margins: 12
+        //     Layout.top: parent.top
+        //     Layout.right: parent.right
+        //     Layout.top: parent.top
+        //         spacing: 12
+        //         visible: delegateRoot.isLoading
+
+        //         // Top Status Header Placeholder
+        //         RowLayout {
+        //             Layout.fillWidth: true
+        //             LoadingSkeleton {
+        //                 Layout.preferredWidth: 80
+        //                 Layout.preferredHeight: 18
+        //                 loading: delegateRoot.isLoading
+        //             }
+        //         }
+
+        //         // House Name Placeholder
+        //         LoadingSkeleton {
+        //             Layout.preferredWidth: 140
+        //             Layout.preferredHeight: 16
+        //             loading: delegateRoot.isLoading
+        //         }
+
+        //         // Content Row Placeholder
+        //         RowLayout {
+        //             Layout.fillWidth: true
+        //             spacing: 12
+
+        //             // Image Placeholder
+        //             LoadingSkeleton {
+        //                 Layout.preferredWidth: 80
+        //                 Layout.preferredHeight: 100
+        //                 radius: 8
+        //                 loading: delegateRoot.isLoading
+        //             }
+        //         }
+        // }
     }
 }

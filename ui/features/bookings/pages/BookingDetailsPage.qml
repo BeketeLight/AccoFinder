@@ -19,7 +19,7 @@ Page {
     property string clientEmail: "johndoe@example.com"
     property int guestCount: 3
 
-    property string checkIn: "Oct 12, 2026 (2:00 PM)"
+    property string checkIn: ""
     property string checkOut: "Oct 15, 2026 (11:00 AM)"
     property int nightsCount: 3
     property string clientNotes: "Please provide an extra crib if available. Late check-in expected."

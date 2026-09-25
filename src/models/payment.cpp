@@ -3,25 +3,28 @@
 Payment::Payment(QObject *parent)
     :QObject(parent)
 {}
-Payment::Payment(const QString &id,
-                 const QString &bookingId,
+Payment::Payment(const QString& id,
+                 const QString& bookingId,
                  double amount,
-                 const QString &method,
+                 const QString& method,
                  PaymentStatus status,
-                 const QString &transactionRef,
-                 const QString &payoutStatus,
-                 const QDateTime &payoutDate,
-                 QObject *parent)
-    :m_id(id)
-    ,m_bookingId(bookingId)
-    ,m_amount(amount)
-    ,m_status(status)
-    ,m_transactionalRef(transactionRef)
-    ,m_payoutStatus(payoutStatus)
-    ,m_payoutDate(payoutDate)
-    ,QObject(parent)
+                 const QString& transactionRef,
+                 const QString& payoutStatus,
+                 const QDateTime& payoutDate,
+                 const QDateTime& paidAt,
+                 QObject* parent)
+    : QObject(parent)
+    , m_id(id)
+    , m_bookingId(bookingId)
+    , m_amount(amount)
+    , m_method(method)
+    , m_status(status)
+    , m_transactionalRef(transactionRef)
+    , m_payoutStatus(payoutStatus)
+    , m_payoutDate(payoutDate)
+    , m_paidAt(paidAt)
 {
-    emit paymentCreated();
+    // No emit here. The gateway emits paymentCreated after construction.
 }
 QString Payment::getId() const
 {
@@ -52,6 +55,7 @@ PaymentStatus Payment::getStatus() const
 
 void Payment::setStatus(PaymentStatus status)
 {
+    if (m_status == status) return;
     m_status = status;
     if (getStatus() == PaymentStatus::Failed)
     {
@@ -61,6 +65,7 @@ void Payment::setStatus(PaymentStatus status)
     {
         emit paymentProcessed();
     }
+    emit statusChanged();
 }
 
 QString Payment::getTransactionalRef() const
@@ -77,6 +82,11 @@ QString Payment::getPayoutStatus() const
 QDateTime Payment::getPayoutDate() const
 {
     return m_payoutDate;
+}
+
+QDateTime Payment::getPaidAt() const
+{
+    return m_paidAt;
 }
 
 

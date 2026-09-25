@@ -3,59 +3,78 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
 import "../../../utils" as UtilsModule
+import "../pages/PaymentStatusPage.qml" as Pages
 
-Page {
-    id: signInPage
-    //anchors.fill: parent
-    header: ToolBar {
-        background: Rectangle {
-            color: "white"
-        }
+Item {
+    id: root
 
-        contentHeight: 56
+    // Injected by whoever pushes this screen
+    property string bookingId: ""
+    property string paymentId: ""
+    property real amount: 0
 
-        RowLayout {
-            anchors.fill: parent
-            anchors.leftMargin: 8
-            anchors.rightMargin: 16
+    // Live status read from the last payment that arrived
+    property int status: 0
+    property string method: ""
+    property string transactionRef: ""
+    property string statusMessage: ""
 
-            // Back Button
-            ToolButton {
+    Pages.PaymentStatusPage {
+        anchors.fill: parent
+        bookingId: root.bookingId
+        paymentId: root.paymentId
+        amount: root.amount
+        status: root.status
+        method: root.method
+        transactionRef: root.transactionRef
+        statusMessage: root.statusMessage
 
-                Image {
-                    id: home
-                    width: 24
-                    height: 24
-                    source: "qrc:/ui/assets/back.png"
-                    fillMode: Image.PreserveAspectFit
-                    Layout.alignment: Qt.AlignHCenter
-
-                    MouseArea{
-                        anchors.fill: parent
-                        onClicked: UtilsModule.NavigationUtils.pop()
-                    }
-                }
-                onClicked: UtilsModule.NavigationUtils.pop()
-            }
-
-            Item { Layout.fillWidth: true }
+        onPayNowClicked: {
+            UtilsModule.NavigationUtils.push(Qt.resolvedUrl("PaymentScreen.qml"), {
+                bookingId: root.bookingId,
+                amount: root.amount
+            });
         }
     }
-    ColumnLayout {
-        anchors {
-            top: parent.top
-            left: parent.left
-             right: parent.right
-            topMargin: 40
-            leftMargin: 24
-            rightMargin: 24
-        }
 
+    Connections {
+        target: PaymentController
 
-        Label {
-            text: "Payment status"
-            font.pixelSize: 22
-            font.bold: true
+        function onPaymentCreated(payment) {
+            if (!payment)
+                return;
+            root.paymentId = payment.id;
+            root.status = payment.status;
+            root.method = payment.method;
+            root.transactionRef = payment.transactionRef;
+            root.statusMessage = qsTr("Payment initiated. Awaiting confirmation.");
         }
+        function onPaymentLoaded(payment) {
+            if (!payment)
+                return;
+            root.paymentId = payment.id;
+            root.status = payment.status;
+            root.method = payment.method;
+            root.transactionRef = payment.transactionRef;
+            root.amount = payment.amount;
+            root.statusMessage = "";
+        }
+        function onPaymentRefunded(payment) {
+            if (!payment)
+                return;
+            root.status = payment.status;
+            root.statusMessage = qsTr("Payment was refunded.");
+        }
+        function onPaymentError(error) {
+            root.status = 3;
+            root.statusMessage = error;
+        }
+    }
+
+    Component.onCompleted: {
+        if (root.paymentId.length > 0)
+            PaymentController.getPaymentById(root.paymentId);
+        else if (root.bookingId.length > 0)
+            PaymentController.refreshForBooking(root.bookingId);
     }
 }

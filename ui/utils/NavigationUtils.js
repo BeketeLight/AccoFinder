@@ -205,21 +205,16 @@ function navigateToBookingsDetailsOwneByAgent(data){
     push("../features/bookings/pages/AgentBookingDetailsOnOwnedPropertiesPage.qml", {
             bookingId: data.bookingId || "",
             status: data.status || "",
-            houseName: data.propertyName || "",
+            houseName: data.houseName || "",
             propertyLocation: data.propertyLocation || "124 Lakeview Drive, Sector 4",
-            //propertyImage: data.propertyImage || "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=500",
+            propertyImage: data.propertyImage || "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=500",
             roomType: data.roomType || "2 Bedrooms",
 
             clientName: data.clientName || "John Doe",
             clientPhone: data.clientPhone || "+1 555-0192",
             clientEmail: data.clientEmail || "johndoe@example.com",
                  //readonly property int guestCount: model.guestCount ?? 3
-
-            checkIn: data.checkIn || "Oct 12, 2026 (2:00 PM)",
-            //checkOut: model.checkOut || "Oct 15, 2026 (11:00 AM)"
-            //nightsCount: model.nightsCount ?? 3
-            //clientNotes: model.clientNotes ?? "Please provide an extra crib if available. Late check-in expected."
-
+            checkIn: data.checkIn || data.bookingDate || data.dateRange || "",
             baseAmount: data.baseAmount,
             serviceFee: data.serviceFee,
             totalAmount: data.totalAmount ,

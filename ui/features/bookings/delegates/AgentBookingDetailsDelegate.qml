@@ -16,7 +16,7 @@ Rectangle {
         property string houseName: ""
         property string propertyImage: ""
         property string propertyLocation: ""
-        //readonly property string propertyImage: model.propertyImage ?? "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=500"
+        //property string propertyImage: model.propertyImage ?? "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=500"
         property string roomType: ""
 
         property string clientName: ""
@@ -55,56 +55,12 @@ Rectangle {
            // anchors.fill: parent
             //spacing: 0
             //id: mainColumn
-                    width: parent.width
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.top: parent.top
-                    anchors.margins: 12
-                    spacing: 12
-
-            // --- 1. HEADER ROW ---
-            Rectangle {
-                Layout.fillWidth: true
-                implicitHeight: 56
-                color: "#FFFFFF"
-
-                RowLayout {
-                    anchors.fill: parent
-                    anchors.leftMargin: 12
-                    anchors.rightMargin: 12
-                    spacing: 12
-                    // Booking ID Title
-                    // Text {
-                    //     text: delegateRoot.bookingId
-                    //     font.pixelSize: 17
-                    //     font.bold: true
-                    //     color: "#0F172A"
-                    // }
-
-                    Item { Layout.fillWidth: true }
-
-                    // Dynamic Status Badge
-                    Rectangle {
-                        implicitWidth: statusText.implicitWidth + 16
-                        implicitHeight: 24
-                        radius: 12
-                        color: delegateRoot.status === "Pending" ? "#FEF3C7" :
-                              (delegateRoot.status === "Approved" ? "#DCFCE7" :
-                              (delegateRoot.status === "Completed" ? "#E0F2FE" : "#FEE2E2"))
-
-                        Text {
-                            id: statusText
-                            anchors.centerIn: parent
-                            text: delegateRoot.status
-                            font.pixelSize: 11
-                            font.bold: true
-                            color: delegateRoot.status === "Pending" ? "#D97706" :
-                                  (delegateRoot.status === "Approved" ? "#16A34A" :
-                                  (delegateRoot.status === "Completed" ? "#0284C7" : "#E11D48"))
-                        }
-                    }
-                }
-            }
+                width: parent.width
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.top: parent.top
+                anchors.margins: 2
+                spacing: 8
 
             // --- MAIN SCROLLABLE CONTENT ---
 
@@ -118,12 +74,12 @@ Rectangle {
                         ColumnLayout {
                             id: propertyCol
                             anchors.fill: parent
-                            anchors.margins: 12
+                            anchors.margins: 0
                             spacing: 8
 
                             Rectangle {
                                 Layout.fillWidth: true
-                                implicitHeight: 140
+                                implicitHeight: 220
                                 radius: 8
                                 clip: true
 
@@ -142,25 +98,32 @@ Rectangle {
                             }
                             RowLayout{
                                 spacing: 0
-                                ToolButton{
-                                    icon.source: "qrc:/ui/assets/location-icon.svg"
-                                    icon.width: 10
-                                    icon.height: 10
-                                    background: null
-                                }
-                                Text {
-                                    text: delegateRoot.propertyLocation
-                                    font.pixelSize: 12
-                                    color: "#64748B"
+                                Layout.leftMargin: 8
+                                ColumnLayout{
+                                    spacing: 4
+                                    RowLayout{
+                                        ToolButton{
+                                            icon.source: "qrc:/ui/assets/location-icon.svg"
+                                            icon.width: 10
+                                            icon.height: 10
+                                            background: null
+                                        }
+                                        Text {
+                                            text: delegateRoot.propertyLocation
+                                            font.pixelSize: 12
+                                            color: "#64748B"
+                                        }
+                                    }
+
+                                    Text {
+                                        text: delegateRoot.roomType
+                                        font.pixelSize: 12
+                                        font.bold: true
+                                        color: "#2563EB"
+                                    }
                                 }
                             }
 
-
-                            Text {
-                                text: delegateRoot.roomType
-                                font.pixelSize: 12
-                                color: "#64748B"
-                            }
                         }
                     }
 
@@ -252,7 +215,7 @@ Rectangle {
                             spacing: 8
 
                             Text {
-                                text: "Stay Details"
+                                text: "Date"
                                 font.pixelSize: 14
                                 font.bold: true
                                 color: "#0F172A"
@@ -262,7 +225,7 @@ Rectangle {
 
                             RowLayout {
                                 Layout.fillWidth: true
-                                Text { text: "Check-in:"; font.pixelSize: 12; color: "#64748B"; Layout.preferredWidth: 90 }
+                                Text { text: "Booking Date:"; font.pixelSize: 12; color: "#64748B"; Layout.preferredWidth: 90 }
                                 Text { text: delegateRoot.checkIn; font.pixelSize: 12; font.bold: true; color: "#0F172A" }
                             }
 
@@ -370,36 +333,36 @@ Rectangle {
                     }
 
                     // --- 6. BOOKING TIMELINE ---
-                    Rectangle {
-                        Layout.fillWidth: true
-                        implicitHeight: timelineCol.implicitHeight + 24
-                        radius: 10
-                        color: "#FFFFFF"
+                    // Rectangle {
+                    //     Layout.fillWidth: true
+                    //     implicitHeight: timelineCol.implicitHeight + 24
+                    //     radius: 10
+                    //     color: "#FFFFFF"
 
-                        ColumnLayout {
-                            id: timelineCol
-                            anchors.fill: parent
-                            anchors.margins: 12
-                            spacing: 8
+                    //     ColumnLayout {
+                    //         id: timelineCol
+                    //         anchors.fill: parent
+                    //         anchors.margins: 12
+                    //         spacing: 8
 
-                            Text {
-                                text: "Booking Timeline"
-                                font.pixelSize: 14
-                                font.bold: true
-                                color: "#0F172A"
-                            }
+                    //         Text {
+                    //             text: "Booking Timeline"
+                    //             font.pixelSize: 14
+                    //             font.bold: true
+                    //             color: "#0F172A"
+                    //         }
 
-                            Rectangle { Layout.fillWidth: true; implicitHeight: 1; color: "#F1F5F9" }
+                    //         Rectangle { Layout.fillWidth: true; implicitHeight: 1; color: "#F1F5F9" }
 
-                            Column {
-                                spacing: 6
+                    //         Column {
+                    //             spacing: 6
 
-                                Text { text: "• Created: " + delegateRoot.createdTime; font.pixelSize: 12; color: "#64748B" }
-                                Text { text: "• Paid: " + delegateRoot.paidTime; font.pixelSize: 12; color: "#64748B" }
-                                Text { text: "• Approved: " + delegateRoot.approvedTime; font.pixelSize: 12; color: "#16A34A"; font.bold: true }
-                            }
-                        }
-                    }
+                    //             Text { text: "• Created: " + delegateRoot.createdTime; font.pixelSize: 12; color: "#64748B" }
+                    //             Text { text: "• Paid: " + delegateRoot.paidTime; font.pixelSize: 12; color: "#64748B" }
+                    //             Text { text: "• Approved: " + delegateRoot.approvedTime; font.pixelSize: 12; color: "#16A34A"; font.bold: true }
+                    //         }
+                    //     }
+                    // }
                 }
             //}
         }

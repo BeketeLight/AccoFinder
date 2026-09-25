@@ -1,3 +1,66 @@
+// #ifndef BOOKINGLISTMODEL_H
+// #define BOOKINGLISTMODEL_H
+
+// #include <QAbstractListModel>
+// #include <QHash>
+// #include <QVector>
+// #include <QByteArray>
+// #include <QList>
+// #include "models/booking.h"
+
+// class BookingListModel : public QAbstractListModel
+// {
+//     Q_OBJECT
+//     Q_PROPERTY(int count READ count NOTIFY countChanged)
+// public:
+   
+//     enum bookingRoles{
+//         IdRole = Qt::UserRole,
+//         ClientIdRole,
+//         RoomIdRole,
+//         BookingDateRole,
+//         AmountRole,
+//         CommissionAmountRole,
+//         StatusRole,
+//     };
+//      explicit BookingListModel(QObject *parent = nullptr);
+//     ~BookingListModel();
+
+//     // Header:
+//     QVariant headerData(int section,
+//                         Qt::Orientation orientation,
+//                         int role = Qt::DisplayRole) const override;
+
+//     // Basic functionality:
+//     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
+
+//     int count() const { return m_bookings.size(); }
+
+//     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
+//     QHash<int, QByteArray> roleNames() const override;
+
+//     // ====== INVOKABLE METHODS FOR QML
+//     Q_INVOKABLE void addBooking(Booking* booking);
+//     Q_INVOKABLE void removeBooking(int index);
+//     Q_INVOKABLE void clear();
+
+//     int countByStatus(BookingStatus status) const;
+//     double sumAmount() const;
+//     double sumCommission() const;
+//     // Q_INVOKABLE void clear();
+
+//  signals:
+//     void countChanged(int newCount);
+//     void bookingAdded(Booking* booking);
+
+// private:
+//     QVector<QSharedPointer<Booking>> m_bookings;
+// };
+
+// #endif // BOOKINGLISTMODEL_H
+
+
+
 #ifndef BOOKINGLISTMODEL_H
 #define BOOKINGLISTMODEL_H
 
@@ -12,9 +75,9 @@ class BookingListModel : public QAbstractListModel
 {
     Q_OBJECT
     Q_PROPERTY(int count READ count NOTIFY countChanged)
+
 public:
-   
-    enum bookingRoles{
+    enum bookingRoles {
         IdRole = Qt::UserRole,
         ClientIdRole,
         RoomIdRole,
@@ -22,8 +85,12 @@ public:
         AmountRole,
         CommissionAmountRole,
         StatusRole,
+        ClientNameRole,   // Qt::UserRole + 7 if IdRole = Qt::UserRole
+        ClientPhoneRole,  // +8
+        ClientEmailRole,  // +9 B---added
     };
-     explicit BookingListModel(QObject *parent = nullptr);
+
+    explicit BookingListModel(QObject *parent = nullptr);
     ~BookingListModel();
 
     // Header:
@@ -33,13 +100,15 @@ public:
 
     // Basic functionality:
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
-
     int count() const { return m_bookings.size(); }
 
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
     QHash<int, QByteArray> roleNames() const override;
 
-    // ====== INVOKABLE METHODS FOR QML
+    // BATCH UPDATE METHOD
+    void setBookings(const QList<Booking*>& bookings);
+
+    // INVOKABLE METHODS FOR QML
     Q_INVOKABLE void addBooking(Booking* booking);
     Q_INVOKABLE void removeBooking(int index);
     Q_INVOKABLE void clear();
@@ -47,9 +116,8 @@ public:
     int countByStatus(BookingStatus status) const;
     double sumAmount() const;
     double sumCommission() const;
-    // Q_INVOKABLE void clear();
 
- signals:
+signals:
     void countChanged(int newCount);
     void bookingAdded(Booking* booking);
 

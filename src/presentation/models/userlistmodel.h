@@ -31,6 +31,7 @@ public:
     int count() const { return m_users.size(); }
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
     QHash<int, QByteArray> roleNames() const override;
+    QVariantMap getUserById(const QString& userId) const;///---B   added
 
     void setUsers(QList<User*> users);
     void addUser(User* user);
