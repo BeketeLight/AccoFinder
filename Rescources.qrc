@@ -52,5 +52,8 @@
         <file>ui/assets/payment/airtel.png</file>
         <file>ui/assets/payment/PayChangu.png</file>
         <file>ui/assets/payment/tnm.svg</file>
+        <file>ui/assets/payment/airtel.svg</file>
+        <file>ui/assets/payment/tnm-logo.svg</file>
+        <file>ui/assets/payment/PayChangu.svg</file>
     </qresource>
 </RCC>

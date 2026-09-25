@@ -14,6 +14,12 @@ class Booking : public QObject
     Q_PROPERTY(QDateTime bookingDate READ getBookingDate WRITE setBookingDate NOTIFY bookingDateChanged)
     Q_PROPERTY(double amount READ getAmount WRITE setAmount NOTIFY amountChanged)
     Q_PROPERTY(double commissionAmount READ getCommissionAmount WRITE setCommissionAmount NOTIFY commissionAmountChanged)
+    Q_PROPERTY(QString id READ getId WRITE setId NOTIFY idChanged)
+    Q_PROPERTY(QString clientId READ getClientId WRITE setClientId NOTIFY clientIdChanged)
+    Q_PROPERTY(QString roomId READ getRoomId WRITE setRoomId NOTIFY roomIdChanged)
+    Q_PROPERTY(QDateTime bookingDate READ getBookingDate WRITE setBookingDate NOTIFY bookingDateChanged)
+    Q_PROPERTY(double amount READ getAmount WRITE setAmount NOTIFY amountChanged)
+    Q_PROPERTY(double commissionAmount READ getCommissionAmount WRITE setCommissionAmount NOTIFY commissionAmountChanged)
     Q_PROPERTY(QString clientName READ getClientName WRITE setClientName NOTIFY clientNameChanged)/// to extract client details
     Q_PROPERTY(QString clientPhone READ getClientPhone WRITE setClientPhone NOTIFY clientPhoneChanged)
     Q_PROPERTY(QString clientEmail READ getClientEmail WRITE setClientEmail NOTIFY clientEmailChanged)

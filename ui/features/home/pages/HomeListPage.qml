@@ -16,8 +16,8 @@ Item {
     property string renderAs: "property"
 
     readonly property int _columns: 3
-    readonly property int _gap: 8
-    readonly property int _sidePad: 0   // 0 inside the already-padded column
+    readonly property int _gap: 10
+    readonly property int _sidePad: 5   // 0 inside the already-padded column
 
     // The Flow's computed height becomes this item's implicit height so
     // AppScrollablePage's column can size itself.
@@ -39,7 +39,7 @@ Item {
                 // time the filter changes. Hide rows that don't match.
                 visible: model.matches === true
                 width: flow.cellWidth
-                height: width * 1.25
+                height: width * 1.73
 
                 sourceComponent: root.renderAs === "quarter" ? quarterCard : propertyCard
 

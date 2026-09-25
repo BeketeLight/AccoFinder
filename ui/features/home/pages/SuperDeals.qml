@@ -28,6 +28,7 @@ Item {
     }
 
     function rebuildLoopModel() {
+        console.log("superdeals card information started rendering");
         loopModel.clear();
         if (!root.model)
             return;
@@ -37,6 +38,7 @@ Item {
         for (var copy = 0; copy < root.loopCopies; ++copy) {
             for (var i = 0; i < n; ++i) {
                 var item = root.model.get(i);
+                console.log("available items for superdeals ", item.imageUrl);
                 loopModel.append({
                     propertyId: item.propertyId,
                     title: item.title,

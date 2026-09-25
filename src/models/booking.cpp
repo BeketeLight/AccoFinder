@@ -16,7 +16,6 @@ Booking::Booking(const QString &id,
     : QObject(parent)
     , m_id(id)
     , m_clientId(clientId)
-    //,m_roomId(roomId)////B added
     , m_roomId(roomId)
     , m_bookingDate(bookingDate)
     , m_status(BookingStatus::Pending)
