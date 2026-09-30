@@ -83,6 +83,7 @@ Item {
                 continue;
             if (created.getTime() < cutoffMs)
                 continue;
+            console.log("recent property found on the seacrh");
             picked.push(row);
         }
 
@@ -97,6 +98,7 @@ Item {
 
         for (var k = 0; k < picked.length; k++) {
             var p = picked[k];
+            console.log("appended to recents", p.propertyId);
             recentsPropertiesModel.append({
                 propertyId: p.propertyId,
                 title: p.title,

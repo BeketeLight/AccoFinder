@@ -18,16 +18,28 @@ Item {
         id: contentColumn
         anchors.left: parent.left
         anchors.right: parent.right
-        spacing: 5
+        spacing: 3
+
+        // Only show the section when there is at least one recent property
+        readonly property int recentCount: root.propertiesModelRef ? root.propertiesModelRef.recentsPropertiesModel.count : 0
 
         SuperDeals {
-            visible: root.showSuperDeals
-            // Layout.fillWidth: true
-            // Layout.preferredHeight: visible ? 190 : 0
-            cardWidth: 220
-            cardHeight: 130
+            id: superDeals
+            Layout.fillWidth: true
+            Layout.preferredHeight: superDeals.visible ? (superDeals.cardHeight + 10 + 26 + 8 + 8) : 0
+
+            visible: contentColumn.recentCount >= 1
+            cardWidth: 260
+            cardHeight: 160                        // the height of one card, not the whole block
             infoSectionVisible: false
+            title: qsTr("New in the last 24 hours")
             model: root.propertiesModelRef ? root.propertiesModelRef.recentsPropertiesModel : null
+        }
+
+        Rectangle {
+            Layout.fillWidth: true
+            height: 6
+            color: "#E5E7EB"
         }
 
         Label {
@@ -36,7 +48,6 @@ Item {
             font.bold: true
             color: "#1F2937"
             Layout.fillWidth: true
-            Layout.topMargin: 4
         }
 
         Rectangle {
