@@ -4,6 +4,7 @@ Item {
     id: root
 
     readonly property alias propertiesModel: propertiesModelId
+    readonly property alias recentsPropertiesModel: recentsPropertiesModel
     readonly property int count: propertiesModelId.count
     readonly property int visibleCount: _visibleCount
     readonly property bool loading: PropertyViewModel.isLoading
@@ -11,6 +12,10 @@ Item {
     // "ALL" | "HOSTEL" | "QUARTER" | "WHOLE"
     property string typeFilter: "ALL"
     property int _visibleCount: 0
+
+    // How far back "recent" goes, in hours. Exposed so a screen can
+    // temporarily widen or narrow the window without touching this file.
+    property int recentsWindowHours: 24
 
     // Guards getMediaByProperty(pid) so it fires at most once per property
     // per Home session.
@@ -22,12 +27,101 @@ Item {
         id: propertiesModelId
     }
 
+    ListModel {
+        id: recentsPropertiesModel
+    }
+
     Timer {
         id: coverRefreshTimer
         interval: 400
         repeat: true
         running: false
         onTriggered: root.refreshCovers()
+    }
+
+    // ------------------------------------------------------------
+    // Normalise whatever the model hands us into a JS Date, or
+    // null if it can't be parsed. Handles three cases:
+    //   1. QDateTime  -> arrives in QML as a JS Date
+    //   2. ISO string -> parsed with new Date()
+    //   3. epoch ms   -> constructed directly
+    // ------------------------------------------------------------
+    function parseCreatedAt(value) {
+        if (value === undefined || value === null || value === "")
+            return null;
+
+        if (value instanceof Date)
+            return isNaN(value.getTime()) ? null : value;
+
+        if (typeof value === "number")
+            return new Date(value);
+
+        var d = new Date(String(value));
+        return isNaN(d.getTime()) ? null : d;
+    }
+
+    // ------------------------------------------------------------
+    // Rebuild recentsPropertiesModel from propertiesModelId,
+    // keeping only rows whose createdAt falls within the window
+    // and which currently match the active filter.
+    // ------------------------------------------------------------
+    function refreshRecents() {
+        recentsPropertiesModel.clear();
+
+        var cutoffMs = Date.now() - (root.recentsWindowHours * 60 * 60 * 1000);
+
+        // Collect matching rows first, then sort, then append.
+        var picked = [];
+        for (var i = 0; i < propertiesModelId.count; i++) {
+            var row = propertiesModelId.get(i);
+
+            // Only surface rows that pass the current filter.
+            if (row.matches !== true)
+                continue;
+            var created = root.parseCreatedAt(row.createdAt);
+            if (!created)
+                continue;
+            if (created.getTime() < cutoffMs)
+                continue;
+            picked.push(row);
+        }
+
+        // Newest first.
+        picked.sort(function (a, b) {
+            var da = root.parseCreatedAt(a.createdAt);
+            var db = root.parseCreatedAt(b.createdAt);
+            if (!da || !db)
+                return 0;
+            return db.getTime() - da.getTime();
+        });
+
+        for (var k = 0; k < picked.length; k++) {
+            var p = picked[k];
+            recentsPropertiesModel.append({
+                propertyId: p.propertyId,
+                title: p.title,
+                description: p.description,
+                price: p.price,
+                district: p.district,
+                village: p.village,
+                location: p.location,
+                propertyType: p.propertyType,
+                status: p.status,
+                isVerified: p.isVerified,
+                isActive: p.isActive,
+                landlord: p.landlord,
+                landlordPhone: p.landlordPhone,
+                ownerName: p.ownerName,
+                ownerPhone: p.ownerPhone,
+                amenities: p.amenities,
+                roomCount: p.roomCount,
+                rejectionReason: p.rejectionReason,
+                matches: p.matches,
+                imageUrl: p.imageUrl,
+                imageUrls: p.imageUrls,
+                createdAt: p.createdAt
+            });
+        }
     }
 
     function reload() {
@@ -61,13 +155,15 @@ Item {
                 rejectionReason: item.rejectionReason || "",
                 matches: true,
                 imageUrl: "",
-                imageUrls: ""
+                imageUrls: "",
+                createdAt: item.createdAt || ""
             });
         }
 
         applyFilter();
         scheduleMediaFetches();
         refreshCovers();
+        refreshRecents();
     }
 
     function setFilter(type) {
@@ -95,6 +191,7 @@ Item {
                 n++;
         }
         _visibleCount = n;
+        refreshRecents();
     }
 
     // Fire getMediaByProperty(pid) once per property, ever.
@@ -156,6 +253,8 @@ Item {
             if (String(propertiesModelId.get(i).imageUrls) !== joined)
                 propertiesModelId.setProperty(i, "imageUrls", joined);
         }
+        // Keep the recents mirror in sync — its cards need cover images too.
+        refreshRecents();
     }
 
     Component.onCompleted: {

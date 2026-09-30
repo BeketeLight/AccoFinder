@@ -202,6 +202,7 @@ QVariantMap PropertyListModel::at(int index) const
     row["district"] = data(idx, DistrictRole);
     row["village"] = data(idx, VillageRole);
     row["price"] = data(idx, PriceRole);
+    row["createdAt"] = data(idx,CreatedAtRole);
     row["status"] = data(idx, VerificationStatusRole);
     row["verificationStatus"] = data(idx, VerificationStatusRole);
     row["amenities"] = data(idx, AmenitiesRole);

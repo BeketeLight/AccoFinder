@@ -20,15 +20,15 @@ Item {
         anchors.right: parent.right
         spacing: 5
 
-        // SuperDeals {
-        //     visible: root.showSuperDeals
-        //     // Layout.fillWidth: true
-        //     // Layout.preferredHeight: visible ? 190 : 0
-        //     cardWidth: 220
-        //     cardHeight: 130
-        //     infoSectionVisible: false
-        //     model: root.propertiesModelRef ? root.propertiesModelRef.propertiesModel : null
-        // }
+        SuperDeals {
+            visible: root.showSuperDeals
+            // Layout.fillWidth: true
+            // Layout.preferredHeight: visible ? 190 : 0
+            cardWidth: 220
+            cardHeight: 130
+            infoSectionVisible: false
+            model: root.propertiesModelRef ? root.propertiesModelRef.recentsPropertiesModel : null
+        }
 
         Label {
             text: root.headingText
