@@ -18,16 +18,17 @@ Item {
         id: contentColumn
         anchors.left: parent.left
         anchors.right: parent.right
-        spacing: 14
+        spacing: 5
 
-        SuperDeals {
-            visible: root.showSuperDeals
-            Layout.fillWidth: true
-            Layout.preferredHeight: visible ? 190 : 0
-            cardWidth: 220
-            cardHeight: 130
-            model: root.propertiesModelRef ? root.propertiesModelRef.propertiesModel : null
-        }
+        // SuperDeals {
+        //     visible: root.showSuperDeals
+        //     // Layout.fillWidth: true
+        //     // Layout.preferredHeight: visible ? 190 : 0
+        //     cardWidth: 220
+        //     cardHeight: 130
+        //     infoSectionVisible: false
+        //     model: root.propertiesModelRef ? root.propertiesModelRef.propertiesModel : null
+        // }
 
         Label {
             text: root.headingText
@@ -36,6 +37,12 @@ Item {
             color: "#1F2937"
             Layout.fillWidth: true
             Layout.topMargin: 4
+        }
+
+        Rectangle {
+            Layout.fillWidth: true
+            height: 6
+            color: "#E5E7EB"
         }
 
         PropertyLoadingSkeleton {
