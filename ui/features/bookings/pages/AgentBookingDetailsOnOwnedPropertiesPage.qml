@@ -15,20 +15,14 @@ Page{
     property alias clientName: detailDelegate.clientName
     property alias clientPhone: detailDelegate.clientPhone
     property alias clientEmail: detailDelegate.clientEmail
-    //readonly property int guestCount: model.guestCount ?? 3
-
+    property alias clientInitial: detailDelegate.clientInitial
+    property alias price: detailDelegate.price
+    property alias commission: detailDelegate.commission
     property alias checkIn: detailDelegate.checkIn
-    //property string checkOut:
-    //readonly property int nightsCount: model.nightsCount ?? 3
-    //readonly property string clientNotes: model.clientNotes ?? "Please provide an extra crib if available. Late check-in expected."
-
-    property alias baseAmount: detailDelegate.baseAmount
-    property alias serviceFee: detailDelegate.serviceFee
-    property alias totalAmount: detailDelegate.totalAmount
     property alias paymentStatus: detailDelegate.paymentStatus
     property alias paymentMethod: detailDelegate.paymentMethod
     property alias paymentDate: detailDelegate.paymentDate
-     property string pageTitle: root.houseName
+    property string pageTitle: root.houseName
 
     // Status badge on the right side of AppHeader
         property Component rightComponentAction: Component {
@@ -43,7 +37,7 @@ Page{
                     implicitWidth: statusLabel.implicitWidth + 16
                     implicitHeight: 28
                     radius: 14
-                    color: root.status === "Approved" ? "#DCFCE7"
+                    color: root.status === "Confirmed" ? "#DCFCE7"
                          : root.status === "Pending" ? "#FEF3C7"
                          : root.status === "Cancelled" ? "#FEE2E2"
                          : "#F1F5F9"
@@ -54,7 +48,7 @@ Page{
                         text: root.status
                         font.pixelSize: 12
                         font.bold: true
-                        color: root.status === "Approved" ? "#15803D"
+                        color: root.status === "Confirmed" ? "#15803D"
                              : root.status === "Pending" ? "#B45309"
                              : root.status === "Cancelled" ? "#B91C1C"
                              : "#475569"
@@ -76,6 +70,8 @@ Page{
         AgentBookingDetailsDelegate {
             id: detailDelegate
             anchors.horizontalCenter: parent.horizontalCenter
+            anchors.rightMargin: 10
+            anchors.leftMargin: 10
             width: Math.min(parent.width - 32, 600)
 
             // onPayNowRequested: {

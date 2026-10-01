@@ -2,7 +2,8 @@ import QtQuick 2.15
 
 Item {
     id: root
-
+    property string bookingId: ""
+    readonly property bool loading: BookingViewModel.isLoading
     // Backend Enum Constants
     readonly property var bookingStatus: Object.freeze({
         PENDING: 'Pending',
@@ -117,32 +118,70 @@ Item {
     //     return list[0].url || list[0].path || ""
     // }
 
+    // function coverImageFor(propertyId, roomId) {
+    //     if (!propertyId || typeof MediaViewModel === "undefined")
+    //         return ""
+
+    //     // Ensure media for this property is loaded
+    //     MediaViewModel.getMediaByProperty(propertyId)
+
+    //     var list = MediaViewModel.mediaForProperty(propertyId)
+    //     if (!list || list.length === 0){
+    //         console.log("coverImageFor: no media yet prop", propertyId, "room", roomId)
+    //         return ""
+    //     }
+    //     console.log("coverImageFor prop", propertyId, "want room", roomId, "count", list.length)
+    //     // 1. Prefer image that belongs to the booked room
+    //     if (roomId) {
+    //         for (var i = 0; i < list.length; i++) {
+    //             if (String(list[i].roomId) === String(roomId))
+    //                 return list[i].url || list[i].path || ""
+    //         }
+    //     }
+
+    //     // 2. Fall back to the property’s primary / cover image
+    //     for (var j = 0; j < list.length; j++) {
+    //         if (list[j].isPrimary)
+    //             return list[j].url || list[j].path || ""
+    //     }
+
+    //     // 3. Last resort – first image
+    //     return list[0].url || list[0].path || ""
+    // }
     function coverImageFor(propertyId, roomId) {
         if (!propertyId || typeof MediaViewModel === "undefined")
             return ""
 
-        // Ensure media for this property is loaded
         MediaViewModel.getMediaByProperty(propertyId)
-
         var list = MediaViewModel.mediaForProperty(propertyId)
-        if (!list || list.length === 0)
+        if (!list || list.length === 0) {
+            console.log("coverImageFor: no media yet prop", propertyId, "room", roomId)
             return ""
+        }
 
-        // 1. Prefer image that belongs to the booked room
+        console.log("coverImageFor prop", propertyId, "want room", roomId, "count", list.length)
+
         if (roomId) {
+            var want = String(roomId).trim()
             for (var i = 0; i < list.length; i++) {
-                if (String(list[i].roomId) === String(roomId))
-                    return list[i].url || list[i].path || ""
+                var mRoom = String(list[i].roomId !== null ? list[i].roomId : "").trim()
+                var url = list[i].url || list[i].path || ""
+                console.log("  media[", i, "] roomId=", mRoom, "isPrimary=", list[i].isPrimary, "url=", url)
+                if (mRoom.length && mRoom !== "-1" && mRoom === want && url)
+                    return url
             }
         }
 
-        // 2. Fall back to the property’s primary / cover image
+        // fallback: primary, then first property-level, then first any
         for (var j = 0; j < list.length; j++) {
             if (list[j].isPrimary)
                 return list[j].url || list[j].path || ""
         }
-
-        // 3. Last resort – first image
+        for (var k = 0; k < list.length; k++) {
+            var rid = String(list[k].roomId !== null ? list[k].roomId : "")
+            if (rid === "" || rid === "-1")
+                return list[k].url || list[k].path || ""
+        }
         return list[0].url || list[0].path || ""
     }
 
@@ -224,81 +263,49 @@ Item {
             var vill = (propInfo && propInfo.village) ? propInfo.village : ""
             var landlord = (propInfo && propInfo.landlord) ? propInfo.landlord : ""
             var landlordPhone = (propInfo && propInfo.landlordPhone) ? propInfo.landlordPhone : ""
+            //Real Host
+            var ownerFirstName = (propInfo && propInfo.ownerFirstName)
+                    ? propInfo.ownerFirstName
+                    : ""
+
+            var ownerSurname = (propInfo && propInfo.ownerSurname)
+                    ? propInfo.ownerSurname
+                    : ""
+
+            var hostName = (ownerFirstName + " " + ownerSurname).trim()
+            if (!hostName.length)
+                hostName = propInfo.ownerName || propInfo.landlord || "Host"
+
+            //Extracting Initials
+            var hostInitials = "?"
+            if (ownerFirstName.length && ownerSurname.length)
+                hostInitials = (ownerFirstName.charAt(0) + ownerSurname.charAt(0)).toUpperCase()
+            else if (hostName.length && hostName !== "Host") {
+                var parts = hostName.split(/\s+/).filter(function (p) { return p.length > 0 })
+                if (parts.length >= 2)
+                    hostInitials = (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase()
+                else if (parts.length === 1)
+                    hostInitials = parts[0].substring(0, Math.min(2, parts[0].length)).toUpperCase()
+            }
             //Extracting exact image booked by the user-----
             var imgUrl = coverImageFor(propId, rId)
 
             console.log("booking", bId, "propId", propId, "imageUrl →", imgUrl, "=======================================")
-            // --- RELATIONAL JOIN: LOOKUP CLIENT INFO ---
-            // var clientInfo = UserViewModel.getUserById(cId) || {}
-            // var cName = clientInfo.fullName || m.data(idx, Qt.UserRole + 8) || "Client"
-            // var cPhone = clientInfo.phone || m.data(idx, Qt.UserRole + 9) || "N/A"
-            // var cEmail = clientInfo.email || m.data(idx, Qt.UserRole + 10) || "N/A"
-            // console.log("booking", bId, "clientId", cId, "roomId", rId)
-            // console.log("roomInfo", JSON.stringify(roomInfo))
-            // console.log("clientInfo", JSON.stringify(clientInfo))
-            // --- CLIENT LOOKUP ---
-            // if (typeof UserViewModel !== "undefined" && UserViewModel.userListModel) {
-            //     var um = UserViewModel.userListModel
-            //     console.log("User list size:", um.count ? um.count : um.rowCount())
-            //     // Print first few users so we can see the real IDs
-            //     var limit = Math.min(5, um.rowCount ? um.rowCount() : um.count)
-            //     for (var u = 0; u < limit; u++) {
-            //         var row = um.at ? um.at(u) : null
-            //         console.log("  user[" + u + "]:", JSON.stringify(row))
-            //     }
-            // }
-            // var clientInfo = (cId && typeof UserViewModel !== "undefined")
-            //                  ? (UserViewModel.getUserById(cId) || {})
-            //                  : {}
 
-            // console.log("clientId:", cId, "→", JSON.stringify(clientInfo))
-
-            // var cName  = clientInfo.fullName || clientInfo.name || "Client"
-            // var cPhone = clientInfo.phone    || "N/A"
-            // var cEmail = clientInfo.email    || "N/A"
-
-            // Ask backend for this specific client (works for agents)
-            // if (cId && typeof UserViewModel !== "undefined") {
-            //     UserViewModel.fetchUserById(cId)
-            // }
-
-            // // Local lookup (will succeed on the next reload once the user arrives)
-            // var clientInfo = UserViewModel.getUserById(cId) || {}
-            // var cName  = clientInfo.fullName || "Client"
-            // var cPhone = clientInfo.phone    || "N/A"
-            // var cEmail = clientInfo.email    || "N/A"
-            // var cName = "Client"
-            // var cPhone = "N/A"
-            // var cEmail = "N/A"
-
-            // if (cId && typeof UserViewModel !== "undefined") {
-            //     var cachedClient = UserViewModel.getUserById(cId)
-
-            //     if (cachedClient && Object.keys(cachedClient).length > 0) {
-            //         cName = cachedClient.fullName ||
-            //                 cachedClient.name ||
-            //                 "Client"
-
-            //         cPhone = cachedClient.phone || "N/A"
-            //         cEmail = cachedClient.email || "N/A"
-            //     } else {
-            //         UserViewModel.fetchUserById(cId)
-            //     }
-            // }
             // From Booking (populated clientId parsed in repository) — NOT UserViewModel
             var cName  = m.data(idx, Qt.UserRole + 7) || "Client"
             var cPhone = m.data(idx, Qt.UserRole + 8) || "N/A"
             var cEmail = m.data(idx, Qt.UserRole + 9) || "N/A"
-
-            console.log("QML client from booking roles:", cId, cName, cPhone, cEmail)
+            // Extract first letter of client's full name
+            var clientInitial = cName.trim().charAt(0).toUpperCase()
             // Append aggregated item to QML model
             bookingsModelId.append({
                 "bookingId": bId,
                 "clientId": cId,
                 "roomId": rId,
                 "bookingDate": bDate,
-                "amount": amt,
-                "commissionAmount": commAmt,
+                "amount": Number(amt) || 0, /// real property price
+                "commissionAmount": Number(commAmt) || 0, // real commission
                 "status": stat,
                 "matches": true,
 
@@ -314,7 +321,13 @@ Item {
                 "village": vill,
                 "propertyImage": imgUrl,
                 "landlord": propInfo.landlord || "",
-                "landlordPhone": propInfo.landlordPhone || ""
+                "landlordPhone": propInfo.landlordPhone || "",
+
+                "ownerFirstName": ownerFirstName,
+                "ownerSurname": ownerSurname,
+                "hostName": hostName,
+                "hostInitials": hostInitials,
+                "clientInitial": clientInitial
             })
         }
 
@@ -331,6 +344,7 @@ Item {
         BookingViewModel.fetchBookings()
         // if(typeof UserViewModel !== "undefined")
         //     UserViewModel.getUsers()
+        // BookingViewModel.fetchBookingById(bookingId)
         reload()
     }
 
@@ -357,50 +371,5 @@ Item {
         function onCountChanged() { root.reload() }
         function onModelReset()   { root.reload() }
     }
-    // Connections {
-    //     //refresh when users arrive
-    //     target: UserViewModel.userListModel
-    //     function onCountChanged() { root.reload() }
-    //     function onModelReset()   { root.reload() }
-    // }
-    // Connections {
-    //     target: UserViewModel
 
-    //     function onUserLoaded(userId, userData) {
-    //         console.log(
-    //             "Client received:",
-    //             userId,
-    //             JSON.stringify(userData)
-    //         )
-
-    //         // Find bookings belonging to this client
-    //         for (var i = 0; i < bookingsModelId.count; i++) {
-
-    //             var booking = bookingsModelId.get(i)
-
-    //             if (String(booking.clientId) === String(userId)) {
-
-    //                 bookingsModelId.setProperty(
-    //                     i,
-    //                     "clientName",
-    //                     userData.fullName ||
-    //                     userData.name ||
-    //                     "Client"
-    //                 )
-
-    //                 bookingsModelId.setProperty(
-    //                     i,
-    //                     "clientPhone",
-    //                     userData.phone || "N/A"
-    //                 )
-
-    //                 bookingsModelId.setProperty(
-    //                     i,
-    //                     "clientEmail",
-    //                     userData.email || "N/A"
-    //                 )
-    //             }
-    //         }
-    //     }
-    // }
 }

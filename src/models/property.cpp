@@ -97,18 +97,59 @@ void Property::setAgentId(const QString &agentId)
 {
     m_agentId = agentId;
 }
+//Property Owner
+QString Property::getOwnerId() const
+{
+    return m_ownerId;
+}
+void Property::setOwnerId(const QString &newOwnerId)
+{
 
+    m_ownerId = newOwnerId;
+}
+
+QString Property::getOwnerFirstName()const
+{
+    return m_ownerFirstName;
+}
+void Property::setOwnerFirstName(const QString &newOwnerFirstName)
+{
+    m_ownerFirstName = newOwnerFirstName;
+}
+
+QString Property::getOwnerSurname() const
+{
+    return m_ownerSurname;
+}
+void Property::setOwnerSurname(const QString &newOwnerSurname)
+{
+    m_ownerSurname = newOwnerSurname;
+}
+QString Property::getOwnerEmail() const
+{
+    return  m_ownerEmail;
+}
+void Property::setOwnerEmail(const QString &newOwnerEmail)
+{
+    m_ownerEmail = newOwnerEmail;
+}
+QString Property::getOwnerPhone() const
+{
+    return m_ownerPhone;
+}
+void Property::setOwnerPhone(const QString &newOwnerPhone)
+{
+    m_ownerPhone = newOwnerPhone;
+}
 QString Property::agentPhone() const
 {
     return m_agentPhone;
 }
 
-void Property::setAgentPhone(const QString &phone)
+void Property::setAgentPhone(const QString &newOwnerPhone)
 {
-    m_agentPhone = phone;
+    m_agentPhone = newOwnerPhone;
 }
-
-
 
 QString Property::getLandlordId() const
 {

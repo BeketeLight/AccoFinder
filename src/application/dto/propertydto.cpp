@@ -112,18 +112,52 @@ PropertyDto PropertyDto::fromJson(
     // authenticated user's id on create, and populated as an object with
     // firstName/lastName/email/phone when fetched). Fall back to it so we can
     // tell which agent listed a property and show their name/phone.
+    // --------------------------------------------------
+    // Property owner
+    // --------------------------------------------------
+
     const QJsonValue owner = json["owner"];
+
     if (owner.isObject()) {
+
         const QJsonObject ownerObj = owner.toObject();
-        dto.agentId = ownerObj["_id"].toString();
-        dto.firstname = ownerObj["firstName"].toString();
-        dto.secondName = ownerObj["lastName"].toString();
-        if (dto.secondName.isEmpty())
-            dto.secondName = ownerObj["surname"].toString();
-        dto.agentPhone = ownerObj["phone"].toString();
+
+        dto.ownerId =
+            ownerObj["_id"].toString();
+
+        dto.ownerFirstName =
+            ownerObj["firstName"].toString();
+
+        dto.ownerSurname =
+            ownerObj["lastName"].toString();
+
+        if (dto.ownerSurname.isEmpty())
+            dto.ownerSurname =
+                ownerObj["surname"].toString();
+
+        dto.ownerEmail =
+            ownerObj["email"].toString();
+
+        dto.ownerPhone =
+            ownerObj["phone"].toString();
+
     } else if (owner.isString()) {
-        dto.agentId = owner.toString();
+
+        dto.ownerId =
+            owner.toString();
     }
+    // const QJsonValue owner = json["owner"];
+    // if (owner.isObject()) {
+    //     const QJsonObject ownerObj = owner.toObject();
+    //     dto.agentId = ownerObj["_id"].toString();
+    //     dto.firstname = ownerObj["firstName"].toString();
+    //     dto.secondName = ownerObj["lastName"].toString();
+    //     if (dto.secondName.isEmpty())
+    //         dto.secondName = ownerObj["surname"].toString();
+    //     dto.agentPhone = ownerObj["phone"].toString();
+    // } else if (owner.isString()) {
+    //     dto.agentId = owner.toString();
+    // }
     // A property created in this session may carry the owner name/phone at the
     // top level (the Add flow sends `ownerName`/`ownerPhone`).
     if (dto.firstname.isEmpty())
@@ -255,6 +289,13 @@ Property* PropertyDto::toDomainModel() const
     property->setAgentPhone(agentPhone);
     property->setLandlordId(landlordId);
     property->setCreatedAt(createdAt);
+
+    //Property Owner
+    property->setOwnerId(ownerId);
+    property->setOwnerFirstName(ownerFirstName);
+    property->setOwnerSurname(ownerSurname);
+    property->setOwnerEmail(ownerEmail);
+    property->setOwnerPhone(ownerPhone);
 
     // Extended schema
     property->setDistrict(district);

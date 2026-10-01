@@ -46,6 +46,18 @@ public:
     QString agentPhone() const;
     void setAgentPhone(const QString &phone);
 
+    //Property Owner ----this is what property model is expecting
+    QString getOwnerId() const;
+    void setOwnerId(const QString &newOwnerId);
+    QString getOwnerFirstName() const;
+    void  setOwnerFirstName(const QString &newOwnerFirstName);
+    QString getOwnerSurname() const;
+    void  setOwnerSurname(const QString &newOwnerSurname);
+    QString getOwnerEmail() const;
+    void  setOwnerEmail(const QString &newOwnerEmail);
+    QString getOwnerPhone() const;
+    void  setOwnerPhone(const QString &newOwnerPhone);
+
     // Extended property schema (mirrors the Add-Property wizard)
     QString getDistrict() const;
     void setDistrict(const QString &district);
@@ -96,6 +108,13 @@ private:
     PropertyStatus m_status;
     QString m_agentId;
     QString m_agentPhone;
+    //property owner
+    QString m_ownerId;
+    QString m_ownerFirstName;
+    QString m_ownerSurname;
+    QString m_ownerEmail;
+    QString m_ownerPhone;
+    //
     QString m_landlordId;
     QString m_landlordPhone;
     QString m_propertyType;

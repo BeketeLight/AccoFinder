@@ -7,36 +7,55 @@ Rectangle {
     id: delegateRoot
 
     // --- REQUIRED MODEL PROPERTIES ---
-    property string bookingId: ""
-    property string houseName: ""
-    property string imageUrl: ""
-    property string status: ""
-    property string dateText: ""
-    property string details: ""
-    property string dates: ""
-    property string totalPrice: ""
-    property string landlordName: ""
+    property string bookingId: model.bookingId ?? ""
+    property string houseName: model.houseName ?? "Hostel/Apartment"
+    property string landlordName: model.landlordName ?? model.hostName ?? "Landlord / Agent"
+    property string ownerFirstName: model.ownerFirstName ?? ""
+    property string hostName: model.hostName ?? ""
+    property string hostInitials: model.hostInitials ?? ""
+    property string imageUrl: model.propertyImage ?? model.imageUrl ?? ""
+    property string status: model.status ?? "Pending"
+    property string clientName: model.clientName ?? "Guest"
+    property string clientPhone: model.clientPhone ?? "N/A"
+    property string dateRange: model.bookingDate ?? model.dateRange ?? "N/A"
+
+    // Robust numeric check for price
+     property real price: Number(model.amount ?? 0)
+    property string propertyLocation: model.location ?? ""
+    property string roomType: model.roomType ?? "Standard Room"
+    property string details: model.details ?? model.roomType ?? "Standard Room"
+    property string clientEmail: model.clientEmail ?? ""
+
+    property double baseAmount: model.amount ?? 0.0
+    property double serviceFee: model.commissionAmount ?? 0.0
+    property double totalAmount: baseAmount + serviceFee
 
     // --- ACTIVE FILTER PROP (FOR INLINE LISTVIEW FILTERING) ---
-    property string activeFilter: "View all"
+    property string activeFilter: "All"
 
     // --- INTERACTION SIGNALS ---
     signal removeRequested()
     signal viewDetailsRequested()
 
     // --- VISIBILITY & LAYOUT BEHAVIOR ---
-    visible: activeFilter === "View all" || status === activeFilter
+    // visible: activeFilter === "All" || status === activeFilter
+    visible: model.matches ?? true
     width: ListView.view ? ListView.view.width : parent.width
     implicitHeight: visible ? cardContent.implicitHeight + 24 : 0
     color: "#FFFFFF"
+    radius: 8
+    border.color: "#E2E8F0"
+    border.width: 1
 
     ColumnLayout {
         id: cardContent
-        anchors.fill: parent
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.top: parent.top
         anchors.margins: 12
         spacing: 10
 
-        // --- 1. HEADER ROW: STATUS & CREATION DATE ---
+        // --- 1. HEADER ROW: STATUS ---
         RowLayout {
             Layout.fillWidth: true
 
@@ -48,9 +67,11 @@ Rectangle {
                 font.bold: true
                 color: {
                     switch(delegateRoot.status) {
+                        case "Confirmed":
                         case "Approved": return "#16A34A"
                         case "Pending": return "#D97706"
-                        case "Cancelled": return "#DC2626"
+                        case "Cancelled":
+                        case "Rejected": return "#DC2626"
                         default: return "#888888"
                     }
                 }
@@ -62,10 +83,9 @@ Rectangle {
             spacing: 6
 
             Text {
-                text: delegateRoot.landlordName
-                font.bold: true
+                text: delegateRoot.houseName
                 font.pixelSize: 14
-                color: "#000000"
+                color: "#2563EB"
             }
         }
 
@@ -76,8 +96,8 @@ Rectangle {
 
             Rectangle {
                 id: imageContainer
-                implicitWidth: 80
-                implicitHeight: 80
+                Layout.preferredWidth: 80
+                Layout.preferredHeight: 80
                 radius: 8
                 color: "#F0F0F0"
                 clip: true
@@ -85,141 +105,79 @@ Rectangle {
                 Image {
                     id: propImage
                     anchors.fill: parent
-                    source: delegateRoot.imageUrl
+                    source: delegateRoot.imageUrl !== "" ? delegateRoot.imageUrl : "qrc:/assets/placeholder.png"
                     fillMode: Image.PreserveAspectCrop
                     asynchronous: true
                     visible: false
                 }
-                MultiEffect {
-                        anchors.fill: propImage
-                        source: propImage
-                        maskEnabled: true
-                        maskThresholdMin: 0.5
 
-                        // This clips the effect to a rounded rectangle
-                        maskSource: ShaderEffectSource {
-                            sourceItem: Rectangle {
-                                width: imageContainer.width
-                                height: imageContainer.height
-                                radius: imageContainer.radius
-                                color: "black"
-                            }
+                MultiEffect {
+                    anchors.fill: propImage
+                    source: propImage
+                    maskEnabled: true
+                    maskThresholdMin: 0.5
+
+                    maskSource: ShaderEffectSource {
+                        sourceItem: Rectangle {
+                            width: imageContainer.width
+                            height: imageContainer.height
+                            radius: imageContainer.radius
+                            color: "black"
                         }
                     }
+                }
             }
 
             ColumnLayout {
                 Layout.fillWidth: true
                 spacing: 4
 
-                RowLayout {
-                    Layout.fillWidth: true
-
+                // Text {
+                //     text:"Room Type: " + delegateRoot.details
+                //     font.pixelSize: 12
+                //     color: "#888888"
+                //     elide: Text.ElideRight
+                //     Layout.fillWidth: true
+                // }
+                RowLayout{
+                    spacing: 0
                     Text {
-                        text: delegateRoot.houseName
-                        font.pixelSize: 13
-                        font.bold: true
-                        color: "#222222"
-                        elide: Text.ElideRight
-                        Layout.fillWidth: true
-                    }
-
-                    Text {
-                        text: "›"
-                        font.pixelSize: 14
-                        color: "#666666"
+                        text: "Room Type: " + delegateRoot.details
+                        font.pixelSize: 12
+                        color: "#888888"
+                   }
+                    Item{Layout.fillWidth: true}
+                    ToolButton{
+                        icon.source: "qrc:/ui/assets/forward-icon.svg"
+                        icon.width: 8
+                        icon.height: 8
+                        icon.color: "#64748B"
+                        background: Rectangle{
+                            color: "#F1F5F9"
+                            implicitHeight: 24
+                            implicitWidth: 24
+                            radius: 12
+                        }
                     }
                 }
 
                 Text {
-                    text: delegateRoot.details
+                    text: "Date: " + delegateRoot.dateRange
                     font.pixelSize: 12
                     color: "#888888"
                 }
 
                 Text {
-                    text: "Date: " + delegateRoot.dates
-                    font.pixelSize: 12
-                    color: "#888888"
-                }
-
-                Text {
-                    text:delegateRoot.totalPrice
+                    text: "MWK " + delegateRoot.price
                     font.bold: true
                     font.pixelSize: 14
                     color: "#000000"
                 }
             }
         }
-
-        // // --- 4. PRICE SUMMARY LINE ---
-        // RowLayout {
-        //     Layout.fillWidth: true
-
-        //     Item { Layout.fillWidth: true }
-
-        //     Text {
-        //         text: delegateRoot.totalPrice
-        //         font.bold: true
-        //         font.pixelSize: 13
-        //         color: "#000000"
-        //     }
-        // }
-
-        // --- 5. DYNAMIC ACTION BUTTONS ---
-        RowLayout {
-            Layout.fillWidth: true
-            spacing: 8
-
-            Item { Layout.fillWidth: true }
-
-            // Left Action Button (Remove / Cancel Request)
-            Rectangle {
-                implicitWidth: 110
-                implicitHeight: 32
-                radius: 16
-                border.color: "#000000"
-                border.width: 1
-                color: leftBtnArea.pressed ? "#F1F5F9" : "transparent"
-
-                Text {
-                    anchors.centerIn: parent
-                    text: delegateRoot.status === "Pending" ? "Cancel Request" : "Remove"
-                    font.pixelSize: 12
-                    font.bold: true
-                    color: "#000000"
-                }
-
-                MouseArea {
-                    id: leftBtnArea
-                    anchors.fill: parent
-                    onClicked: delegateRoot.removeRequested()
-                }
-            }
-
-            // Right Action Button (View Details)
-            Rectangle {
-                implicitWidth: 120
-                implicitHeight: 32
-                radius: 16
-                border.color: "#2563EB"
-                border.width: 1
-                color: rightBtnArea.pressed ? "#EFF6FF" : "transparent"
-
-                Text {
-                    anchors.centerIn: parent
-                    text: "View details"
-                    font.pixelSize: 12
-                    font.bold: true
-                    color: "#2563EB"
-                }
-
-                MouseArea {
-                    id: rightBtnArea
-                    anchors.fill: parent
-                    onClicked: delegateRoot.viewDetailsRequested()
-                }
-            }
-        }
+    }
+    MouseArea{
+        anchors.fill: parent
+        onClicked: delegateRoot.viewDetailsRequested()
     }
 }

@@ -97,6 +97,13 @@ QVariant PropertyListModel::data(const QModelIndex &index, int role) const
         case ApprovedByNameRole:
             return property->getApprovedByName();
 
+        //property Owner
+        case OwnerIdRole: return property->getAgentId();
+        case OwnerFirstNameRole: return property->getOwnerFirstName();
+        case OwnerSurnameRole: return property->getOwnerSurname();
+        case OwnerEmailRole: return property->getOwnerEmail();
+        case OwnerPhoneRole: return property->getOwnerPhone();
+
     }
 
     // FIXME: Implement me!
@@ -128,7 +135,12 @@ QHash<int, QByteArray> PropertyListModel::roleNames() const
         {RoomCountRole, "roomCount"},
         {RejectionReasonRole, "rejectionReason"},
         {ApprovedByIdRole, "approvedById"},
-        {ApprovedByNameRole, "approvedByName"}
+        {ApprovedByNameRole, "approvedByName"},
+        {OwnerIdRole, "ownerId"},
+        {OwnerFirstNameRole, "ownerFirstName"},
+        {OwnerSurnameRole, "ownerSurname"},
+        {OwnerEmailRole, "ownerEmail"},
+        {OwnerPhoneRole, "ownerPhone"}
     };
     return mapping;
 }

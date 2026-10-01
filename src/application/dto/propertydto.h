@@ -71,6 +71,13 @@ public:
     QString status;
     QString agentId;
     QString agentPhone;
+    // Owner
+    QString ownerId;
+    QString ownerFirstName;
+    QString ownerSurname;
+    QString ownerEmail;
+    QString ownerPhone;
+    //
     QString landlordId;
     QString landlordPhone;
     QString propertyType;

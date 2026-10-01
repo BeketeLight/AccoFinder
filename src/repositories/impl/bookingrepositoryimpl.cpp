@@ -178,8 +178,22 @@ void BookingRepositoryImpl::getBooking()
                     booking->setClientPhone(clientPhone);
                     booking->setClientEmail(clientEmail);
 
-                    // optional: status
-                    // booking->setStatusFromString(obj.value(QStringLiteral("status")).toString());
+                    const QString statusStr =
+                        obj.value(QStringLiteral("status")).toString().trimmed().toUpper();
+
+                    if (statusStr == QLatin1String("PAID"))
+                        booking->setStatus(BookingStatus::Paid);
+                    else if (statusStr == QLatin1String("CONFIRMED")
+                             || statusStr == QLatin1String("APPROVED"))
+                        booking->setStatus(BookingStatus::Confirmed);
+                    else if (statusStr == QLatin1String("CANCELLED")
+                             || statusStr == QLatin1String("CANCELED")
+                             || statusStr == QLatin1String("REJECTED"))
+                        booking->setStatus(BookingStatus::Cancelled);
+                    else
+                        booking->setStatus(BookingStatus::Pending);
+
+                   qDebug() << "status from API:" << statusStr;
 
                     qDebug() << "Booking object"
                              << "id" << booking->getId()
@@ -198,54 +212,144 @@ void BookingRepositoryImpl::getBooking()
 void BookingRepositoryImpl::getBookingById(const QString& id)
 {
     APIClient::instance().get(
-        "/bookings/" + id,
-        [this] (bool success, const QJsonObject& response)
-        {
-        if(success){
-            Booking* booking = new Booking(
-            response["id"].toString(),
-            response["clientId"].toString(),
-            response["roomId"].toString(),
-            QDateTime::fromString(response["bookingDate"].toString(), Qt::ISODate),
-            response["amount"].toDouble(),
-            response["commissionAmount"].toDouble(),
-            this
-            );
-             emit bookingLoaded(booking);
-            }else
-            {
-                emit bookingError(response["error"].toString());
-             }
-     }, false);
+        QStringLiteral("/bookings/") + id,
+        [this](bool success, const QJsonObject& response) {
+
+            qDebug() << "getBookingById success?" << success;
+            qDebug().noquote()
+                << "getBookingById raw:"
+                << QJsonDocument(response).toJson(QJsonDocument::Compact);
+
+            if (!success) {
+                QString message = response.value(QStringLiteral("message")).toString();
+                if (message.isEmpty())
+                    message = response.value(QStringLiteral("error")).toString();
+                if (message.isEmpty())
+                    message = QStringLiteral("Failed to load booking");
+                emit bookingError(message);
+                return;
+            }
+
+            // 1) Payload under "data"
+            const QJsonObject data = response.contains(QStringLiteral("data"))
+                                         ? response.value(QStringLiteral("data")).toObject()
+                                         : response;
+
+            if (data.isEmpty()) {
+                emit bookingError(QStringLiteral("Empty booking data"));
+                return;
+            }
+
+            // 2) Booking id
+            QString bookingId = jsonId(data.value(QStringLiteral("id")));
+            if (bookingId.isEmpty())
+                bookingId = jsonId(data.value(QStringLiteral("_id")));
+
+            // 3) clientId: string OR populated object
+            QString clientId;
+            QString clientName = QStringLiteral("Client");
+            QString clientPhone;
+            QString clientEmail;
+
+            const QJsonValue clientVal = data.value(QStringLiteral("clientId"));
+            if (clientVal.isObject()) {
+                const QJsonObject c = clientVal.toObject();
+                clientId = jsonId(c);
+
+                const QString first = c.value(QStringLiteral("firstName")).toString();
+                QString last = c.value(QStringLiteral("lastName")).toString();
+                if (last.isEmpty())
+                    last = c.value(QStringLiteral("surname")).toString();
+
+                clientName = (first + QLatin1Char(' ') + last).trimmed();
+                if (clientName.isEmpty())
+                    clientName = QStringLiteral("Client");
+
+                clientPhone = c.value(QStringLiteral("phone")).toString();
+                clientEmail = c.value(QStringLiteral("email")).toString();
+            } else {
+                clientId = jsonId(clientVal);
+            }
+
+            // 4) roomId: string OR populated object
+            QString roomId;
+            const QJsonValue roomVal = data.value(QStringLiteral("roomId"));
+            if (roomVal.isObject()) {
+                roomId = jsonId(roomVal.toObject());
+            } else {
+                roomId = jsonId(roomVal);
+            }
+
+            // 5) Build Booking
+            auto *booking = new Booking(
+                bookingId,
+                clientId,
+                roomId,
+                QDateTime::fromString(
+                    data.value(QStringLiteral("bookingDate")).toString(),
+                    Qt::ISODate),
+                data.value(QStringLiteral("amount")).toDouble(),
+                data.value(QStringLiteral("commissionAmount")).toDouble(),
+                this);
+
+            booking->setClientName(clientName);
+            booking->setClientPhone(clientPhone);
+            booking->setClientEmail(clientEmail);
+
+            // 6) Map status string → enum
+            const QString statusStr =
+                data.value(QStringLiteral("status")).toString().trimmed().toUpper();
+
+            if (statusStr == QLatin1String("PAID"))
+                booking->setStatus(BookingStatus::Paid);
+            else if (statusStr == QLatin1String("CONFIRMED")
+                     || statusStr == QLatin1String("APPROVED"))
+                booking->setStatus(BookingStatus::Confirmed);
+            else if (statusStr == QLatin1String("CANCELLED")
+                     || statusStr == QLatin1String("CANCELED")
+                     || statusStr == QLatin1String("REJECTED"))
+                booking->setStatus(BookingStatus::Cancelled);
+            else
+                booking->setStatus(BookingStatus::Pending);
+
+            qDebug() << "getBookingById built"
+                     << "id" << booking->getId()
+                     << "clientId" << booking->getClientId()
+                     << "roomId" << booking->getRoomId()
+                     << "amount" << booking->getAmount();
+
+            emit bookingLoaded(booking);
+        },
+        false);
 }
 
-void BookingRepositoryImpl::cancelBooking(const QString& id)
-{
-    QJsonObject payload;
-    payload["id"] = id;
+// void BookingRepositoryImpl::cancelBooking(const QString& id)
+// {
+//     QJsonObject payload;
+//     payload["id"] = id;
 
-    APIClient::instance().patch(
-        "/bookings/" + id + "/cancel",
-        payload,
-        [this] (bool success, const QJsonObject& response)
-        {
-            if(success){
-                Booking* booking = new Booking(
-                    response["id"].toString(),
-                    response["clientId"].toString(),
-                    response["roomId"].toString(),
-                    QDateTime::fromString(response["bookingDate"].toString(), Qt::ISODate),
-                    response["amount"].toDouble(),
-                    response["commissionAmount"].toDouble(),
-                    this
-                );
-               emit bookingCancelled(booking); 
-            } else{
-                emit bookingError(response["error"].toString());
-            }   
+//     APIClient::instance().patch(
+//         "/bookings/" + id + "/cancel",
+//         payload,
+//         [this] (bool success, const QJsonObject& response)
+//         {
+//             if(success){
+//                 Booking* booking = new Booking(
+//                     response["id"].toString(),
+//                     response["clientId"].toString(),
+//                     response["roomId"].toString(),
+//                     QDateTime::fromString(response["bookingDate"].toString(), Qt::ISODate),
+//                     response["amount"].toDouble(),
+//                     response["commissionAmount"].toDouble(),
+//                     this
+//                 );
+//                emit bookingCancelled(booking);
+//             } else{
+//                 emit bookingError(response["error"].toString());
+//             }
            
-    }, false);
-}
+//     }, false);
+// }
 
 void BookingRepositoryImpl::deleteBooking(const QString& id)
 {
@@ -262,36 +366,72 @@ void BookingRepositoryImpl::deleteBooking(const QString& id)
     }, false);
 }
 
-void BookingRepositoryImpl::confirmBooking(const QString& id)
-{
-    QJsonObject payload;
-    payload["id"] = id;
+// void BookingRepositoryImpl::confirmBooking(const QString& id)
+// {
+//     QJsonObject payload;
+//     payload["id"] = id;
 
-    APIClient::instance().patch(
-        "/bookings/" + id + "/confirm",
-        payload,
-        [this] (bool success, const QJsonObject& response)
-        {   
-            Booking* booking = nullptr;
-            if(success){
-                if(response.contains("id")){
-                Booking* booking = new Booking(
-                    response["id"].toString(),
-                    response["clientId"].toString(),
-                    response["roomId"].toString(),
-                    QDateTime::fromString(response["bookingDate"].toString(), Qt::ISODate),
-                    response["amount"].toDouble(),
-                    response["commissionAmount"].toDouble(),
-                    this
-                );
-              }
-               emit bookingConfirmed(booking ? booking : nullptr);
-            }else{
-                emit bookingError(response["error"].toString());
-            }
+//     APIClient::instance().patch(
+//         "/bookings/" + id + "/confirm",
+//         payload,
+//         [this] (bool success, const QJsonObject& response)
+//         {
+//             Booking* booking = nullptr;
+//             if(success){
+//                 if(response.contains("id")){
+//                 Booking* booking = new Booking(
+//                     response["id"].toString(),
+//                     response["clientId"].toString(),
+//                     response["roomId"].toString(),
+//                     QDateTime::fromString(response["bookingDate"].toString(), Qt::ISODate),
+//                     response["amount"].toDouble(),
+//                     response["commissionAmount"].toDouble(),
+//                     this
+//                 );
+//               }
+//                emit bookingConfirmed(booking ? booking : nullptr);
+//             }else{
+//                 emit bookingError(response["error"].toString());
+//             }
            
-        }, false);
+//         }, false);
+// }
+void BookingRepositoryImpl::cancelBooking(const QString &id)
+{
+    APIClient::instance().patch(
+        QStringLiteral("/bookings/") + id + QStringLiteral("/cancel"),
+        QJsonObject{},
+        [this, id](bool success, const QJsonObject &response) {
+            if (!success) {
+                const QString msg = response.value(QStringLiteral("message")).toString();
+                emit bookingError(msg.isEmpty() ? QStringLiteral("Cancel failed") : msg);
+                return;
+            }
+            auto *booking = new Booking(this);
+            booking->setId(id);
+            booking->setStatus(BookingStatus::Cancelled);
+            emit bookingCancelled(booking);
+        },
+        false);
 }
 
+void BookingRepositoryImpl::confirmBooking(const QString &id)
+{
+    APIClient::instance().patch(
+        QStringLiteral("/bookings/") + id + QStringLiteral("/confirm"),
+        QJsonObject{},
+        [this, id](bool success, const QJsonObject &response) {
+            if (!success) {
+                const QString msg = response.value(QStringLiteral("message")).toString();
+                emit bookingError(msg.isEmpty() ? QStringLiteral("Confirm failed") : msg);
+                return;
+            }
+            auto *booking = new Booking(this);
+            booking->setId(id);
+            booking->setStatus(BookingStatus::Confirmed);
+            emit bookingConfirmed(booking);
+        },
+        false);
+}
 
 

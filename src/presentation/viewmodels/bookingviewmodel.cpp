@@ -220,18 +220,31 @@ void BookingViewModel::onBookingCreated(Booking* booking)
         m_bookingListModel->addBooking(booking);
 }
 
-void BookingViewModel::onBookingConfirmed(Booking* booking)
-{
-    if (m_bookingListModel)
-        m_bookingListModel->addBooking(booking);
-}
+// void BookingViewModel::onBookingConfirmed(Booking* booking)
+// {
+//     if (m_bookingListModel)
+//         m_bookingListModel->addBooking(booking);
+// }
 
-void BookingViewModel::onBookingCancelled(Booking* booking)
+// void BookingViewModel::onBookingCancelled(Booking* booking)
+// {
+//     Q_UNUSED(booking);
+//     if (m_bookingListModel && m_index >= 0)
+//         m_bookingListModel->removeBooking(m_index);
+// }
+void BookingViewModel::onBookingConfirmed(Booking *booking)
 {
     Q_UNUSED(booking);
-    if (m_bookingListModel && m_index >= 0)
-        m_bookingListModel->removeBooking(m_index);
+    // List must show real status from server (Confirmed + client fields)
+    fetchBookings();
 }
+
+void BookingViewModel::onBookingCancelled(Booking *booking)
+{
+    Q_UNUSED(booking);
+    fetchBookings();
+}
+
 
 void BookingViewModel::onBookingDeleted(const QString& id)
 {
