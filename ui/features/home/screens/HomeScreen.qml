@@ -119,7 +119,7 @@ Item {
                 pullEnabled: true
                 refreshing: root.refreshing
                 loading: root.loading
-                contentTopMargin: 16
+                contentTopMargin: 0
                 onRefreshRequested: root.refresh()
 
                 HomePage {
