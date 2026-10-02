@@ -32,7 +32,7 @@ Item {
         if (payload.photos) {
             for (var j = 0; j < payload.photos.length; j++) {
                 var photo = payload.photos[j];
-                MediaViewModel.createMedia(propertyId, photo.path, "imaage", photo.isPrimary, realRoomIdFor(photo.roomId));
+                MediaViewModel.createMedia(propertyId, photo.path, "image", photo.isPrimary, realRoomIdFor(photo.roomId));
             }
         }
     }
@@ -66,6 +66,13 @@ Item {
             if (r && r._id)
                 return String(r._id);
         }
+        // Falling back to the whole-property sentinel here is what silently
+        // produced properties whose photos all landed in the main gallery
+        // instead of the rooms the user picked, with nothing in the logs. A
+        // miss is a real defect, so say so instead of degrading quietly.
+        console.warn("[AddPropertyScreen] Room translation failed for local room #" + n
+                     + " (position " + idx + ", created rooms available: " + rooms.length
+                     + "). Uploading this photo as whole-property media.");
         return "-1";
     }
 

@@ -11,7 +11,11 @@ Item {
     property string placeholder: "Select..."
     property var model: []                       // List of options
     property int currentIndex: -1
-    property string currentText: currentIndex >= 0 ? model[currentIndex] : ""
+    // Bounds-checked: currentIndex can be driven from a binding that briefly
+    // points past the end while the model is being rebuilt.
+    readonly property string currentText: (currentIndex >= 0 && currentIndex < model.length)
+                                         ? model[currentIndex]
+                                         : ""
     property bool required: false
 
     // Styling
@@ -52,15 +56,21 @@ Item {
         currentIndex: root.currentIndex
         enabled: root.enabled
 
-        // Sync
+        // The flow is deliberately one-directional:
+        //   caller -> currentIndex (binding) -> combo.currentIndex, and
+        //   user selection -> activated() -> caller writes currentIndex itself.
+        // There is deliberately NO onCurrentIndexChanged handler on the combo.
+        // Writing the combo's value back into root.currentIndex closed a loop
+        // (Qt reported "Binding loop detected for property currentIndex" for
+        // every instance) and, worse, let the ComboBox's own internal reset -
+        // which it performs whenever its model is reassigned - silently
+        // overwrite the selection a caller had bound to currentIndex. That is
+        // how a room assignment made in the Add Property wizard was reverted to
+        // the default. Assigning root.currentIndex here on purpose would also
+        // destroy any binding the caller placed on currentIndex.
         onActivated: function (index) {
             root.currentIndex = index;
             root.activated(index);
-        }
-
-        onCurrentIndexChanged: {
-            root.currentIndex = currentIndex;
-            root.currentIndexChanged();
         }
 
         // Placeholder when nothing selected

@@ -22,6 +22,57 @@ Item {
 
     signal nextRequested
 
+    // The photos live at the top level of the page, NOT inside the Repeater that
+    // draws them. Declaring the model inline as a Repeater's `model:` ties its
+    // lifetime to that display component, so re-creating the grid silently threw
+    // every room assignment away. Ownership here belongs to the page instead.
+    // photoId is a stable per-photo key: assignments are recorded against it
+    // rather than against a list position, so a row can be removed or reordered
+    // without an assignment landing on the wrong photo.
+    ListModel {
+        id: photosModelId
+    }
+
+    property int nextPhotoId: 1
+
+    function appendPhoto(filePath) {
+        photosModelId.append({
+                                path: filePath,
+                                isPrimary: photosModelId.count === 0,
+                                roomId: -1,
+                                photoId: root.nextPhotoId++
+                            })
+    }
+
+    // Resolves a stable photoId back to its current row. Returns -1 when the
+    // photo no longer exists, so a stale delegate can never write to whatever
+    // photo happens to occupy that row now.
+    function indexOfPhotoId(photoId) {
+        // Guard against an undefined id: without this, a delegate holding a row
+        // that predates stable ids would match the first photo (also undefined)
+        // and every selection would overwrite photo #1.
+        if (photoId === undefined || photoId === null)
+            return -1;
+        for (var i = 0; i < photosModelId.count; i++) {
+            if (photosModelId.get(i).photoId === photoId)
+                return i;
+        }
+        return -1;
+    }
+
+    function assignPhotoToOption(photoId, optionIndex) {
+        var row = root.indexOfPhotoId(photoId);
+        if (row < 0)
+            return;
+        photosModelId.setProperty(row, "roomId", root.roomIdForOption(optionIndex));
+    }
+
+    function removePhotoAt(index) {
+        photosModelId.remove(index);
+        if (photosModelId.count > 0 && !root.hasPrimaryPhoto())
+            photosModelId.setProperty(0, "isPrimary", true);
+    }
+
     implicitHeight: layout.implicitHeight
 
     FileDialog {
@@ -31,7 +82,7 @@ Item {
         fileMode: FileDialog.OpenFiles
         onAccepted: {
             for (var i = 0; i < selectedFiles.length; i++)
-                photosModelId.append({ path: selectedFiles[i].toString(), isPrimary: photosModelId.count === 0, roomId: -1 })
+                root.appendPhoto(selectedFiles[i].toString());
         }
     }
 
@@ -44,7 +95,7 @@ Item {
             if (!path)
                 return
             AppSettings.setCapturedPhotoPath("")
-            photosModelId.append({ path: path, isPrimary: photosModelId.count === 0, roomId: -1 })
+            root.appendPhoto(path);
         }
     }
 
@@ -221,9 +272,15 @@ Item {
                             borderColor: root.borderColor
                             focusBorderColor: root.primaryColor
                             textColor: root.textColor
+                            // Bound one-way: the dropdown never writes back into
+                            // this, so a ComboBox re-evaluation cannot undo the
+                            // user's choice. The model row is the single source
+                            // of truth and the binding re-reads from it.
                             currentIndex: root.optionIndexForRoom(photoAssignCard.model.roomId)
                             onActivated: function (optionIndex) {
-                                photosModelId.setProperty(photoAssignCard.index, "roomId", root.roomIdForOption(optionIndex))
+                                // Recorded against the photo's stable id, not the
+                                // delegate's row position.
+                                root.assignPhotoToOption(photoAssignCard.model.photoId, optionIndex)
                             }
                         }
                     }
@@ -237,9 +294,10 @@ Item {
             spacing: 10
 
             Repeater {
-                model: ListModel {
-                    id: photosModelId
-                }
+                // Uses the page-level photos model declared at the top of this
+                // component (see photosModelId), shared with the assignment list
+                // above and with the payload builder in AddPropertiesPage.
+                model: photosModelId
 
                 delegate: Item {
                     required property var model
@@ -316,11 +374,7 @@ Item {
                             anchors.fill: parent
                             hoverEnabled: true
                             cursorShape: Qt.PointingHandCursor
-                            onClicked: {
-                                photosModelId.remove(index)
-                                if (photosModelId.count > 0 && !root.hasPrimaryPhoto())
-                                    photosModelId.setProperty(0, "isPrimary", true)
-                            }
+                            onClicked: root.removePhotoAt(index)
                         }
                     }
                 }
