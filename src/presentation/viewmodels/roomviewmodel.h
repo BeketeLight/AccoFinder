@@ -31,6 +31,8 @@ public:
     // {roomType, price, available} maps. The QML detail pages use this because
     // the property document does not embed its rooms (they live in /rooms/).
     Q_INVOKABLE QVariantList roomsForProperty(const QString& propertyId) const;
+    // Add under public Q_INVOKABLE methods in roomviewmodel.h:
+    Q_INVOKABLE QVariantMap getRoomById(const QString& roomId) const; //b---added
 
 private:
     bool m_isLoading = false;

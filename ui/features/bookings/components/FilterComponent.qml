@@ -1,70 +1,33 @@
 import QtQuick
-import QtQuick.Layouts
+import QtQuick.Controls
 
-Rectangle {
+TabButton {
     id: root
 
-    property string title: ""
-    property int count: 0
-    property bool selected: false
+    // Optional theme hooks
+    property color activeColor: "#2563EB"
+    property color inactiveTextColor: "#64748B"
+    property color inactiveBorderColor: "#E2E8F0"
 
-    signal clicked()
+    width: implicitWidth
+    height: 36
+    leftPadding: 16
+    rightPadding: 16
 
-    implicitWidth: chipRow.implicitWidth + 24
-    implicitHeight: 38
-    radius: 19
-    color: "transparent"//root.selected ? "#2B62ED" : "#EAEFF7"
-
-    Behavior on color { ColorAnimation { duration: 150 } }
-    ColumnLayout{
-        anchors.fill: parent
-        spacing: 0
-
-        RowLayout {
-            id: chipRow
-            //anchors.centerIn: parent
-            spacing: 8
-            Layout.leftMargin: 4
-            Text {
-                text: root.title
-                color: root.selected ? "black" : "#5A6E85"
-                font.bold: true
-                font.pixelSize: 14
-            }
-
-            Rectangle {
-                implicitWidth: badgeText.implicitWidth + 10
-                implicitHeight: 20
-                radius: 10
-                color: root.selected ? "#5C88F7" : "#DDE4EE"
-
-                Text {
-                    id: badgeText
-                    anchors.centerIn: parent
-                    text: root.count
-                    color: root.selected ? "white" : "#5A6E85"
-                    font.pixelSize: 12
-                    font.bold: true
-                }
-            }
-        }
-        Rectangle {
-                   id: underline
-                   Layout.preferredWidth: 50
-                   Layout.preferredHeight: 3
-                   radius: 1.5
-                   color: "#2B62ED"
-                   visible: root.selected
-                   opacity: root.selected ? 1 : 0
-                Layout.alignment: Qt.AlignHCenter
-                Layout.rightMargin: 20
-                   Behavior on opacity { NumberAnimation { duration: 200 } }
-               }
+    contentItem: Text {
+        text: root.text
+        font.pixelSize: 13
+        font.bold: root.checked
+        color: root.checked ? "#FFFFFF" : root.inactiveTextColor
+        horizontalAlignment: Text.AlignHCenter
+        verticalAlignment: Text.AlignVCenter
     }
 
-
-    MouseArea {
-        anchors.fill: parent
-        onClicked: root.clicked()
+    background: Rectangle {
+        implicitHeight: 36
+        radius: 18
+        color: root.checked ? root.activeColor : "transparent"
+        border.width: root.checked ? 0 : 1
+        border.color: root.inactiveBorderColor
     }
 }

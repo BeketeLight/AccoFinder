@@ -12,6 +12,8 @@ UserViewModel::UserViewModel(QObject *parent)
             this, &UserViewModel::onUserUpdated);
     connect(m_userController, &UserController::userError,
             this, &UserViewModel::onUserError);
+    connect(m_userController, &UserController::userLoaded,
+            this, &UserViewModel::onUserLoaded); //added by B
 }
 
 void UserViewModel::setLoading(bool loading)
@@ -21,6 +23,36 @@ void UserViewModel::setLoading(bool loading)
         emit isLoadingChanged(loading);
     }
 }
+QVariantMap UserViewModel::getUserById(const QString& userId) const
+{
+    if (m_userListModel) {
+        return m_userListModel->getUserById(userId);
+    }
+    return QVariantMap();
+}////////////---------------------B added
+
+void UserViewModel::fetchUserById(const QString& userId)
+{
+    if (userId.isEmpty())
+        return;
+    setLoading(true);
+    m_userController->getUserById(userId);
+}
+
+void UserViewModel::onUserLoaded(User* user)
+{
+   /* setLoading(false);
+    if (user && m_userListModel)
+        m_userListModel->updateUserById(user->getId(), user);*/  // upsert into the model
+    setLoading(false);
+    if (user && m_userListModel) {
+        m_userListModel->updateUserById(user->getId(), user);
+
+        // Fetch populated map from model and notify QML
+        QVariantMap userData = m_userListModel->getUserById(user->getId());
+        emit userLoaded(user->getId(), userData);
+    }
+}//added by B
 
 void UserViewModel::getUsers()
 {

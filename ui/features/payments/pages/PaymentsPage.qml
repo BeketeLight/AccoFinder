@@ -99,17 +99,17 @@ Page {
                             {
                                 key: "airtel",
                                 label: qsTr("Airtel Money"),
-                                icon: "qrc:/ui/assets/payment/airtel.png"
+                                icon: "qrc:/ui/assets/payment/airtel.svg"
                             },
                             {
                                 key: "tnm",
                                 label: qsTr("TNM Mpamba"),
-                                icon: "qrc:/ui/assets/payment/tnm.svg"
+                                icon: "qrc:/ui/assets/payment/tnm-logo.svg"
                             },
                             {
                                 key: "card",
                                 label: qsTr("Card / Bank"),
-                                icon: "qrc:/ui/assets/payment/PayChangu.png"
+                                icon: "qrc:/ui/assets/payment/PayChangu.svg"
                             }
                         ]
 

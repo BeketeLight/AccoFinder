@@ -14,6 +14,15 @@ class Booking : public QObject
     Q_PROPERTY(QDateTime bookingDate READ getBookingDate WRITE setBookingDate NOTIFY bookingDateChanged)
     Q_PROPERTY(double amount READ getAmount WRITE setAmount NOTIFY amountChanged)
     Q_PROPERTY(double commissionAmount READ getCommissionAmount WRITE setCommissionAmount NOTIFY commissionAmountChanged)
+    Q_PROPERTY(QString id READ getId WRITE setId NOTIFY idChanged)
+    Q_PROPERTY(QString clientId READ getClientId WRITE setClientId NOTIFY clientIdChanged)
+    Q_PROPERTY(QString roomId READ getRoomId WRITE setRoomId NOTIFY roomIdChanged)
+    Q_PROPERTY(QDateTime bookingDate READ getBookingDate WRITE setBookingDate NOTIFY bookingDateChanged)
+    Q_PROPERTY(double amount READ getAmount WRITE setAmount NOTIFY amountChanged)
+    Q_PROPERTY(double commissionAmount READ getCommissionAmount WRITE setCommissionAmount NOTIFY commissionAmountChanged)
+    Q_PROPERTY(QString clientName READ getClientName WRITE setClientName NOTIFY clientNameChanged)/// to extract client details
+    Q_PROPERTY(QString clientPhone READ getClientPhone WRITE setClientPhone NOTIFY clientPhoneChanged)
+    Q_PROPERTY(QString clientEmail READ getClientEmail WRITE setClientEmail NOTIFY clientEmailChanged)
 public:
     explicit Booking(QObject *parent = nullptr);
     explicit Booking(const QString& id,
@@ -31,7 +40,12 @@ public:
     void setStatus(const BookingStatus& status);
     double getAmount() const;
     double getCommissionAmount() const;
-
+    QString getClientName() const;//
+    QString getClientPhone() const;//
+    QString getClientEmail() const;//
+    void setClientName(const QString &newClientName);//
+    void setClientPhone(const QString &newClientPhone);//
+    void setClientEmail(const QString &newClientEmail);//
 
     void setId(const QString &newId);
 
@@ -53,6 +67,9 @@ private:
     BookingStatus m_status;
     double m_amount;
     double m_commissionAmount;
+    QString m_clientName;//
+    QString m_clientPhone;//
+    QString m_clientEmail;//
 signals:
     void bookingCreated();
     void bookingConfirmed();
@@ -66,6 +83,10 @@ signals:
     void bookingDateChanged();
     void amountChanged();
     void commissionAmountChanged();
+    //Client details change notification
+    void clientNameChanged();
+    void clientPhoneChanged();
+    void clientEmailChanged();
 };
 
 #endif // BOOKING_H

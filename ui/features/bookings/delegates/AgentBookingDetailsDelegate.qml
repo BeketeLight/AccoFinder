@@ -1,421 +1,528 @@
-import QtQuick
+import QtQuick 2.15
 import QtQuick.Controls
 import QtQuick.Layouts
+import QtQuick.Effects
+import "../components"
+import "../../../components/buttons"
 
-Rectangle {
-    id: delegateRoot
+Item{
+    id: detailsPage
+    anchors.fill: parent
+    implicitHeight: mainContent.implicitHeight + 32
+   // color: "#F8F9FB"
 
-    //Item {
-        //id: delegateRoot
-        width: ListView.view ? ListView.view.width : parent.width
-        implicitHeight: mainLayout.implicitHeight
+    // --- DATA MODEL / PASSED PARAMETERS ---
+    property bool isLoading: false
 
-        // Fallbacks allow using model roles directly or binding custom properties
-        property string bookingId: ""
-        property string status: ""
-        property string houseName: ""
-        property string propertyImage: ""
-        property string propertyLocation: ""
-        //readonly property string propertyImage: model.propertyImage ?? "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=500"
-        property string roomType: ""
+    property string bookingId: ""
+    property string status: ""
+    property string houseName: ""
+    property string ownerFirstName: ""
+    property string hostName: ""
+    property string hostInitials: ""
+    property string propertyImage: ""
+    property string propertyLocation: ""
+    property string roomType: ""
 
-        property string clientName: ""
-        property string clientPhone: ""
-        property string clientEmail: ""
-        property int guestCount: 0
+    property string clientName: ""
+    property string clientPhone: ""
+    property string clientEmail: ""
+    property string clientInitial: ""
+    property int guestCount: 0
 
-        property string checkIn: ""
-        property string checkOut: ""
-        property int nightsCount: 0
-        property string clientNotes: ""
+    property string checkIn: ""
+    property real price: 0.0
+    property real commission: 0.0
+    property string paymentStatus: ""
+    property string paymentMethod: ""
+    property string paymentDate: ""
 
-        property double baseAmount: 0.0
-        property double serviceFee: 0.0
-        property double totalAmount: 0.0//(Number(baseAmount) || 0.0) + (Number(serviceFee) || 0.0)
-        property string paymentStatus: ""
-        property string paymentMethod: ""
-        property string paymentDate: ""
+    property string createdTime: ""
 
-        property string createdTime: ""
-        //property string paidTime: model.paidTime ?? "Oct 10, 2026 at 10:18 AM"
-        //property string approvedTime: model.approvedTime ?? "Oct 11, 2026 at 09:00 AM"
+    // --- SIGNALS ---
+    signal contactHostRequested()
+    signal viewMapRequested()
 
-        // Background layer equivalent to Page background
-        //  Rectangle {
-        //      anchors.fill: parent
-        //      color: "#F5F5F5"
-        // }
-        color: "#FFFFFF"
-        radius: 12
-        border.color: "#E2E8F0"
-        border.width: 1
-
+        // ------------------------------------------
+        // 1. POPULATED DATA VIEW
+        // ------------------------------------------
         ColumnLayout {
-            id: mainLayout
-           // anchors.fill: parent
-            //spacing: 0
-            //id: mainColumn
-                    width: parent.width
+            id: mainContent
+            width: parent.width
+                    spacing: 16
+
+            Behavior on opacity {
+                NumberAnimation { duration: 250 }
+            }
+
+            // --- HERO CARD: PROPERTY BANNER & TITLE ---
+            Rectangle {
+                Layout.fillWidth: true
+                implicitHeight: propertyColumn.implicitHeight + 16
+                radius: 16
+                color: "#FFFFFF"
+
+                ColumnLayout {
+                    id: propertyColumn
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.top: parent.top
+                    spacing: 12
+
+                    // Top Image Banner
+                    Rectangle {
+                        id: imageWrapper
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: 180
+                        radius: 16
+                        clip: true
+
+                        Image {
+                            id: mainImg
+                            anchors.fill: parent
+                            source: detailsPage.propertyImage
+                            fillMode: Image.PreserveAspectCrop
+                            asynchronous: true
+                        }
+                    }
+
+                    // Property Titles
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        Layout.leftMargin: 12
+                        Layout.rightMargin: 12
+                        Layout.bottomMargin: 12
+                        spacing: 4
+
+                        Text {
+                            text: detailsPage.houseName
+                            font.pixelSize: 16
+                            font.bold: true
+                            color: "#0F172A"
+                        }
+
+                        RowLayout {
+                            spacing: 0
+                            ToolButton{
+                                icon.source: "qrc:/ui/assets/location-icon.svg"
+                                icon.height: 12
+                                icon.width: 12
+                                background: null
+                            }
+                            Text {
+                                text: detailsPage.propertyLocation
+                                font.pixelSize: 12
+                                color: "#64748B"
+                            }
+                        }
+                    }
+                }
+            }
+            // --- RESERVATION DETAILS CARD ---
+            Rectangle {
+                Layout.fillWidth: true
+                implicitHeight: resCol.implicitHeight + 24
+                radius: 12
+                color: "#FFFFFF"
+                border.color: "#E2E8F0"
+                border.width: 1
+
+                ColumnLayout {
+                    id: resCol
                     anchors.left: parent.left
                     anchors.right: parent.right
                     anchors.top: parent.top
                     anchors.margins: 12
                     spacing: 12
 
-            // --- 1. HEADER ROW ---
-            Rectangle {
-                Layout.fillWidth: true
-                implicitHeight: 56
-                color: "#FFFFFF"
-
-                RowLayout {
-                    anchors.fill: parent
-                    anchors.leftMargin: 12
-                    anchors.rightMargin: 12
-                    spacing: 12
-                    // Booking ID Title
-                    // Text {
-                    //     text: delegateRoot.bookingId
-                    //     font.pixelSize: 17
-                    //     font.bold: true
-                    //     color: "#0F172A"
-                    // }
-
-                    Item { Layout.fillWidth: true }
-
-                    // Dynamic Status Badge
-                    Rectangle {
-                        implicitWidth: statusText.implicitWidth + 16
-                        implicitHeight: 24
-                        radius: 12
-                        color: delegateRoot.status === "Pending" ? "#FEF3C7" :
-                              (delegateRoot.status === "Approved" ? "#DCFCE7" :
-                              (delegateRoot.status === "Completed" ? "#E0F2FE" : "#FEE2E2"))
-
+                    RowLayout {
+                        spacing: 8
+                        ToolButton{
+                            icon.source: "qrc:/ui/assets/reservation-icon.svg"
+                            icon.height: 12
+                            icon.width: 12
+                            background: null
+                        }
                         Text {
-                            id: statusText
-                            anchors.centerIn: parent
-                            text: delegateRoot.status
-                            font.pixelSize: 11
+                            text: "Reservation Details"
+                            font.pixelSize: 14
                             font.bold: true
-                            color: delegateRoot.status === "Pending" ? "#D97706" :
-                                  (delegateRoot.status === "Approved" ? "#16A34A" :
-                                  (delegateRoot.status === "Completed" ? "#0284C7" : "#E11D48"))
+                            color: "#0F172A"
+                        }
+                    }
+
+                    GridLayout {
+                        columns: 2
+                        Layout.fillWidth: true
+                        columnSpacing: 24
+                        rowSpacing: 12
+                        ColumnLayout {
+                            spacing: 2
+                            Text { text: "Booking date"; font.pixelSize: 13; color:"#0F172A"  }
+                            Text { text: detailsPage.checkIn; font.pixelSize: 11; color:  "#64748B"}
+                        }
+                        ColumnLayout {
+                            spacing: 2
+                            Text { text: "Room Type"; font.pixelSize: 13; color: "#0F172A" }
+                            Text { text: detailsPage.roomType; font.pixelSize: 11; color: "#64748B" }
                         }
                     }
                 }
             }
 
-            // --- MAIN SCROLLABLE CONTENT ---
+            // --- PAYMENT SUMMARY CARD ---
+            Rectangle {
+                Layout.fillWidth: true
+                implicitHeight: payCol.implicitHeight + 24
+                radius: 12
+                color: "#FFFFFF"
+                border.color: "#E2E8F0"
+                border.width: 1
+                ColumnLayout {
+                    id: payCol
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.top: parent.top
+                    anchors.margins: 12
+                    spacing: 12
 
-                    // --- 2. PROPERTY SUMMARY ---
-                    Rectangle {
-                        Layout.fillWidth: true
-                        implicitHeight: propertyCol.implicitHeight + 24
-                        radius: 10
-                        color: "#FFFFFF"
-
-                        ColumnLayout {
-                            id: propertyCol
-                            anchors.fill: parent
-                            anchors.margins: 12
-                            spacing: 8
-
-                            Rectangle {
-                                Layout.fillWidth: true
-                                implicitHeight: 140
-                                radius: 8
-                                clip: true
-
-                                Image {
-                                    anchors.fill: parent
-                                    source: delegateRoot.propertyImage
-                                    fillMode: Image.PreserveAspectCrop
-                                }
-                            }
-
-                            Text {
-                                text: delegateRoot.houseName
-                                font.pixelSize: 16
-                                font.bold: true
-                                color: "#0F172A"
-                            }
-                            RowLayout{
-                                spacing: 0
-                                ToolButton{
-                                    icon.source: "qrc:/ui/assets/location-icon.svg"
-                                    icon.width: 10
-                                    icon.height: 10
-                                    background: null
-                                }
-                                Text {
-                                    text: delegateRoot.propertyLocation
-                                    font.pixelSize: 12
-                                    color: "#64748B"
-                                }
-                            }
-
-
-                            Text {
-                                text: delegateRoot.roomType
-                                font.pixelSize: 12
-                                color: "#64748B"
-                            }
-
-                            // Text {
-                            //     text: "View Property ›"
-                            //     font.pixelSize: 13
-                            //     font.bold: true
-                            //     color: "#2563EB"
-                            // }
+                    RowLayout {
+                        spacing: 2
+                        ToolButton{
+                            icon.source: "qrc:/ui/assets/payment-icon.svg"
+                            icon.height: 16
+                            icon.width: 16
+                            background: null
                         }
+                        Text { text: "Payment Summary"; font.pixelSize: 14; font.bold: true; color: "#0F172A" }
                     }
 
-                    // --- 3. CLIENT INFORMATION ---
-                    Rectangle {
+                    RowLayout {
                         Layout.fillWidth: true
-                        implicitHeight: clientCol.implicitHeight + 24
-                        radius: 10
-                        color: "#FFFFFF"
 
                         ColumnLayout {
-                            id: clientCol
-                            anchors.fill: parent
-                            anchors.margins: 12
-                            spacing: 8
-
-                            Text {
-                                text: "Client Information"
-                                font.pixelSize: 14
-                                font.bold: true
-                                color: "#0F172A"
-                            }
-
-                            Rectangle { Layout.fillWidth: true; implicitHeight: 1; color: "#F1F5F9" }
-
+                            spacing: 6
                             RowLayout {
-                                Layout.fillWidth: true
-                                Text { text: "Name:"; font.pixelSize: 12; color: "#64748B"; Layout.preferredWidth: 80 }
-                                Text { text: delegateRoot.clientName; font.pixelSize: 13; font.bold: true; color: "#0F172A" }
+                                Text { text: "Room price"; font.pixelSize: 12; color: "#64748B" }
+                                Item { Layout.fillWidth: true }
+                                Text { text:"MWK" + detailsPage.price; font.pixelSize: 12; font.bold: true; color: "#0F172A" }
                             }
-
                             RowLayout {
-                                Layout.fillWidth: true
-                                Text { text: "Phone:"; font.pixelSize: 12; color: "#64748B"; Layout.preferredWidth: 80 }
-                                Text {
-                                    text: delegateRoot.clientPhone
-                                    font.pixelSize: 13
-                                    font.bold: true
+                                Text { text: "Commission Earned"; font.pixelSize: 12; color: "#2563EB" }
+                                Item { Layout.fillWidth: true }
+                                Rectangle{
+                                    width: commTextId.width + 8
+                                    height: commTextId.height + 8
+                                    radius: 8
                                     color: "#2563EB"
-                                }
-                            }
 
-                            RowLayout {
-                                Layout.fillWidth: true
-                                Text { text: "Email:"; font.pixelSize: 12; color: "#64748B"; Layout.preferredWidth: 80 }
-                                Text { text: delegateRoot.clientEmail; font.pixelSize: 12; color: "#0F172A" }
-                            }
-
-                            RowLayout {
-                                Layout.fillWidth: true
-                                Text { text: "Guests:"; font.pixelSize: 12; color: "#64748B"; Layout.preferredWidth: 80 }
-                                Text { text: delegateRoot.guestCount + " Guests"; font.pixelSize: 12; color: "#0F172A" }
-                            }
-
-                            Rectangle {
-                                Layout.fillWidth: true
-                                implicitHeight: 36
-                                radius: 18
-                                color: "#2563EB"
-                                RowLayout{
-                                    anchors.centerIn: parent
-                                    spacing: 6
-                                    ToolButton{
-                                        icon.source: "qrc:/ui/assets/message-icon.svg"
-                                        icon.height: 16
-                                        icon.width: 16
-                                        background: null
-                                    }
                                     Text {
-                                        //anchors.centerIn: parent
-                                        text: "Contact Client"
-                                        font.pixelSize: 12
+                                        id: commTextId
+                                        anchors.centerIn: parent
+                                        text:"MWK1000000" //detailsPage.commission
+                                        font.pixelSize: 10
                                         font.bold: true
                                         color: "#FFFFFF"
                                     }
                                 }
-                                MouseArea {
-                                    anchors.fill: parent
-                                    onClicked: console.log("Contact client:", delegateRoot.clientName)
-                                }
+
                             }
-                        }
-                    }
-
-                    // --- 4. STAY DETAILS ---
-                    Rectangle {
-                        Layout.fillWidth: true
-                        implicitHeight: stayCol.implicitHeight + 24
-                        radius: 10
-                        color: "#FFFFFF"
-
-                        ColumnLayout {
-                            id: stayCol
-                            anchors.fill: parent
-                            anchors.margins: 12
-                            spacing: 8
-
-                            Text {
-                                text: "Stay Details"
-                                font.pixelSize: 14
-                                font.bold: true
-                                color: "#0F172A"
-                            }
-
-                            Rectangle { Layout.fillWidth: true; implicitHeight: 1; color: "#F1F5F9" }
-
-                            RowLayout {
-                                Layout.fillWidth: true
-                                Text { text: "Check-in:"; font.pixelSize: 12; color: "#64748B"; Layout.preferredWidth: 90 }
-                                Text { text: delegateRoot.checkIn; font.pixelSize: 12; font.bold: true; color: "#0F172A" }
-                            }
-
-                            RowLayout {
-                                Layout.fillWidth: true
-                                Text { text: "Check-out:"; font.pixelSize: 12; color: "#64748B"; Layout.preferredWidth: 90 }
-                                Text { text: delegateRoot.checkOut; font.pixelSize: 12; font.bold: true; color: "#0F172A" }
-                            }
-
                             // RowLayout {
-                            //     Layout.fillWidth: true
-                            //     Text { text: "Duration:"; font.pixelSize: 12; color: "#64748B"; Layout.preferredWidth: 90 }
-                            //     Text { text: delegateRoot.nightsCount + " Nights"; font.pixelSize: 12; color: "#0F172A" }
-                            // }
-
-                            // Text {
-                            //     text: "Special Requests:"
-                            //     font.pixelSize: 12; font.bold: true; color: "#64748B"
-                            // }
-
-                            // Rectangle {
-                            //     Layout.fillWidth: true
-                            //     implicitHeight: notesText.implicitHeight + 16
-                            //     radius: 6
-                            //     color: "#F8FAFC"
-                            //     border.color: "#E2E8F0"
-
-                            //     Text {
-                            //         id: notesText
-                            //         anchors.fill: parent
-                            //         anchors.margins: 8
-                            //         text: delegateRoot.clientNotes
-                            //         font.pixelSize: 12
-                            //         color: "#334155"
-                            //         wrapMode: Text.WordWrap
-                            //     }
+                            //     Text { text: "Commission"; font.pixelSize: 12; color: "#64748B" }
+                            //     Item { Layout.fillWidth: true }
+                            //     Text { text: detailsPage.commissionPrice; font.pixelSize: 12; font.bold: true; color: "#0F172A" }
                             // }
                         }
-                    }
 
-                    // --- 5. PAYMENT SUMMARY ---
-                    Rectangle {
-                        Layout.fillWidth: true
-                        implicitHeight: payCol.implicitHeight + 24
-                        radius: 10
-                        color: "#FFFFFF"
+                        Rectangle {
+                            implicitWidth: 1
+                            implicitHeight: 36
+                            color: "#E2E8F0"
+                            Layout.leftMargin: 12
+                            Layout.rightMargin: 12
+                        }
 
                         ColumnLayout {
-                            id: payCol
-                            anchors.fill: parent
-                            anchors.margins: 12
-                            spacing: 8
+                            spacing: 4
+                            Text { text: "Payment status"; font.pixelSize: 11; color: "#64748B" }
 
-                            Text {
-                                text: "Payment Summary"
-                                font.pixelSize: 14
-                                font.bold: true
-                                color: "#0F172A"
-                            }
+                            Rectangle {
+                                implicitWidth: payStatusText.implicitWidth + 20
+                                implicitHeight: 22
+                                radius: 11
+                                color: "#E6F4EA"
 
-                            Rectangle { Layout.fillWidth: true; implicitHeight: 1; color: "#F1F5F9" }
-
-                            RowLayout {
-                                Layout.fillWidth: true
-                                Text { text: "Room Amount:"; font.pixelSize: 12; color: "#64748B" }
-                                Item { Layout.fillWidth: true }
-                                Text { text: "MWK" + delegateRoot.baseAmount; font.pixelSize: 12; color: "#0F172A" }
-                            }
-
-                            RowLayout {
-                                Layout.fillWidth: true
-                                Text { text: "Booking Fee:"; font.pixelSize: 12; color: "#64748B" }
-                                Item { Layout.fillWidth: true }
-                                Text { text:"MWK" + delegateRoot.serviceFee; font.pixelSize: 12; color: "#0F172A" }
-                            }
-
-                            Rectangle { Layout.fillWidth: true; implicitHeight: 1; color: "#E2E8F0" }
-
-                            RowLayout {
-                                Layout.fillWidth: true
-                                Text { text: "Total Amount:"; font.pixelSize: 13; font.bold: true; color: "#0F172A" }
-                                Item { Layout.fillWidth: true }
-                                Text { text:"MWK" + delegateRoot.totalAmount; font.pixelSize: 15; font.bold: true; color: "#0F172A" }
-                            }
-
-                            RowLayout {
-                                Layout.fillWidth: true
-                                Text { text: "Status:"; font.pixelSize: 12; color: "#64748B" }
-                                Item { Layout.fillWidth: true }
-                                Text {
-                                    text: delegateRoot.paymentStatus
-                                    font.pixelSize: 12
-                                    font.bold: true
-                                    color: delegateRoot.paymentStatus === "Paid" ? "#16A34A" : "#E11D48"
+                                RowLayout {
+                                    anchors.centerIn: parent
+                                    spacing: 4
+                                    Text { text: "✓"; font.pixelSize: 10; color: "#1E8E3E"; font.bold: true }
+                                    Text {
+                                        id: payStatusText
+                                        text: detailsPage.paymentStatus
+                                        font.pixelSize: 11
+                                        font.bold: true
+                                        color: "#1E8E3E"
+                                    }
                                 }
                             }
-
-                            RowLayout {
-                                Layout.fillWidth: true
-                                Text { text: "Method:"; font.pixelSize: 12; color: "#64748B" }
-                                Item { Layout.fillWidth: true }
-                                Text { text: delegateRoot.paymentMethod; font.pixelSize: 12; color: "#334155" }
-                            }
                         }
                     }
 
-                    // --- 6. BOOKING TIMELINE ---
-                    Rectangle {
+                    Rectangle { Layout.fillWidth: true; implicitHeight: 1; color: "#F1F5F9" }
+
+                    RowLayout {
                         Layout.fillWidth: true
-                        implicitHeight: timelineCol.implicitHeight + 24
-                        radius: 10
-                        color: "#FFFFFF"
+                        Text { text: "Total"; font.pixelSize: 13; font.bold: true; color: "#0F172A" }
+                        Item { Layout.fillWidth: true }
+                        Text { text:"MWK" + detailsPage.price; font.pixelSize: 15; font.bold: true; color: "#0F172A" }
+                    }
+                }
+            }
+
+            // --- PROPERTY CLIENT CARD ---
+            Rectangle {
+                Layout.fillWidth: true
+                implicitHeight: hostRow.implicitHeight + 48
+                radius: 12
+                border.color: "#E2E8F0"
+                border.width: 1
+                color: "#FFFFFF"
+
+                ColumnLayout {
+                    id: hostCol
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.top: parent.top
+                    anchors.margins: 12
+                    spacing: 8
+
+                    RowLayout {
+                        spacing: 8
+                        RowLayout {
+                            spacing: 0
+                            ToolButton{
+                                icon.source: "qrc:/ui/assets/account-icon.svg"
+                                icon.height: 12
+                                icon.width: 12
+                                background: null
+                            }
+                            Text { text: "Client Info"; font.pixelSize: 14; font.bold: true; color: "#0F172A" }
+                        }
+
+                    }
+
+                    RowLayout {
+                        id: hostRow
+                        Layout.fillWidth: true
+                        spacing: 12
+
+                        Rectangle {
+                            implicitWidth: 44
+                            implicitHeight: 44
+                            radius: 22
+                            color: "#E2E8F0"
+                            clip: true
+
+                            // Image {
+                            //     anchors.fill: parent
+                            //     source: detailsPage.hostAvatar
+                            //     fillMode: Image.PreserveAspectCrop
+                            // }
+                            Text{
+                                anchors.centerIn: parent
+                                text: detailsPage.clientInitial
+                                color: "#2563EB"
+                                font.pointSize: 16
+                                font.bold: true
+                            }
+                        }
 
                         ColumnLayout {
-                            id: timelineCol
-                            anchors.fill: parent
-                            anchors.margins: 12
-                            spacing: 8
+                            spacing: 2
+                            Text { text: detailsPage.clientName; font.pixelSize: 13; font.bold: true; color: "#0F172A" }
+                            Text { text: "📞 " + detailsPage.clientPhone; font.pixelSize: 11; color: "#64748B" }
+                        }
 
-                            Text {
-                                text: "Booking Timeline"
-                                font.pixelSize: 14
-                                font.bold: true
-                                color: "#0F172A"
-                            }
+                       // Item { Layout.fillWidth: true }
+                    }
+                }
+            }
 
-                            Rectangle { Layout.fillWidth: true; implicitHeight: 1; color: "#F1F5F9" }
+            // --- BOOKING TIMELINE CARD ---
+            Rectangle {
+                Layout.fillWidth: true
+                implicitHeight: timeCol.implicitHeight + 24
+                radius: 12
+                color: "#FFFFFF"
+                border.color: "#E2E8F0"
+                border.width: 1
 
-                            Column {
-                                spacing: 6
+                ColumnLayout {
+                    id: timeCol
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.top: parent.top
+                    anchors.margins: 12
+                    spacing: 12
 
-                                Text { text: "• Created: " + delegateRoot.createdTime; font.pixelSize: 12; color: "#64748B" }
-                                Text { text: "• Paid: " + delegateRoot.paidTime; font.pixelSize: 12; color: "#64748B" }
-                                Text { text: "• Approved: " + delegateRoot.approvedTime; font.pixelSize: 12; color: "#16A34A"; font.bold: true }
+                    RowLayout {
+                        spacing: 8
+                        ToolButton{
+                            icon.source: "qrc:/ui/assets/timeline-icon.svg"
+                            icon.height: 12
+                            icon.width: 12
+                            background: null
+                        }
+                        Text { text: "Booking Timeline"; font.pixelSize: 14; font.bold: true; color: "#0F172A" }
+                    }
+
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        spacing: 10
+
+                        Repeater {
+                            model: [
+                                { label: "Booking created", date: detailsPage.checkIn, active: true },
+                                { label: "Payment received", date: "12 Sep 2026, 10:35", active: true },
+                                { label: "Booking confirmed", date: "12 Sep 2026, 11:02", active: true },
+                            ]
+
+                            RowLayout {
+                                Layout.fillWidth: true
+                                spacing: 12
+
+                                Rectangle {
+                                    implicitWidth: 8
+                                    implicitHeight: 8
+                                    radius: 4
+                                    color: modelData.active ? "#10B981" : "#CBD5E1"
+                                }
+
+                                Text {
+                                    text: modelData.label
+                                    font.pixelSize: 12
+                                    color: modelData.active ? "#0F172A" : "#64748B"
+                                    font.bold: modelData.active
+                                }
+
+                                Item { Layout.fillWidth: true }
+
+                                Text {
+                                    text: modelData.date
+                                    font.pixelSize: 11
+                                    color: "#94A3B8"
+                                }
                             }
                         }
                     }
                 }
-            //}
+            }
+
+            // --- APPROVE ACTION BUTTON ---
+            Rectangle {
+                visible: detailsPage.status === "Pending"
+                Layout.fillWidth: true
+                implicitHeight: 44
+                radius: 22
+                border.color: "#10B981"
+                border.width: 1
+                color: "transparent"
+
+                RowLayout {
+                    anchors.centerIn: parent
+                    spacing: 6
+                    Text {
+                        text: "Approve Booking"
+                        font.pixelSize: 13
+                        font.bold: true
+                        color: "#10B981"
+                    }
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: detailsPage.cancelBookingRequested()
+                }
+            }
         }
-    //}
-//}
+
+        // ------------------------------------------
+        // 2. SKELETON SHIMMER OVERLAY (Parallel Layout)
+        // ------------------------------------------
+        ColumnLayout {
+            id: skeletonContent
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.top: parent.top
+            anchors.margins: 16
+            spacing: 16
+            visible: detailsPage.isLoading
+
+            // Hero Image Placeholder
+            Rectangle {
+                Layout.fillWidth: true
+                implicitHeight: 260
+                radius: 16
+                color: "#FFFFFF"
+
+                ColumnLayout {
+                    anchors.fill: parent
+                    spacing: 12
+
+                    LoadingSkeleton {
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: 180
+                        radius: 16
+                        loading: detailsPage.isLoading
+                    }
+
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        Layout.margins: 12
+                        spacing: 8
+
+                        LoadingSkeleton { Layout.preferredWidth: 200; Layout.preferredHeight: 18; loading: detailsPage.isLoading }
+                        LoadingSkeleton { Layout.preferredWidth: 130; Layout.preferredHeight: 14; loading: detailsPage.isLoading }
+                    }
+                }
+            }
+
+            // Confirmation Banner Placeholder
+            LoadingSkeleton {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 60
+                radius: 12
+                loading: detailsPage.isLoading
+            }
+
+            // Cards Placeholders
+            Repeater {
+                model: 4
+                Rectangle {
+                    Layout.fillWidth: true
+                    implicitHeight: 120
+                    radius: 12
+                    color: "#FFFFFF"
+
+                    ColumnLayout {
+                        anchors.fill: parent
+                        anchors.margins: 12
+                        spacing: 12
+
+                        LoadingSkeleton { Layout.preferredWidth: 140; Layout.preferredHeight: 16; loading: detailsPage.isLoading }
+                        LoadingSkeleton { Layout.fillWidth: true; Layout.preferredHeight: 14; loading: detailsPage.isLoading }
+                        LoadingSkeleton { Layout.preferredWidth: 220; Layout.preferredHeight: 14; loading: detailsPage.isLoading }
+                    }
+                }
+            }
+
+            // Button Placeholder
+            LoadingSkeleton {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 44
+                radius: 22
+                loading: detailsPage.isLoading
+            }
+        }
+   // }
+}

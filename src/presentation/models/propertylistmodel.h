@@ -37,7 +37,13 @@ public:
         RoomCountRole,
         RejectionReasonRole,
         ApprovedByIdRole,
-        ApprovedByNameRole
+        ApprovedByNameRole,
+        //Host--Property Owner
+        OwnerIdRole,
+        OwnerFirstNameRole,
+        OwnerSurnameRole,
+        OwnerEmailRole,
+        OwnerPhoneRole,
     };
     explicit PropertyListModel(QObject *parent = nullptr);
 

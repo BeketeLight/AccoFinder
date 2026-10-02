@@ -62,6 +62,23 @@ QHash<int, QByteArray> RoomListModel::roleNames() const
 
     return mapping;
 }
+QVariantMap RoomListModel::getRoomById(const QString& roomId) const
+{
+    QVariantMap map;
+
+    for (const auto& roomPtr : m_rooms) {
+        if (roomPtr && roomPtr->getId() == roomId) {
+            map["id"] = roomPtr->getId();
+            map["propertyId"] = roomPtr->getPropertyId();
+            map["type"] = roomPtr->getType();
+            map["price"] = roomPtr->getPrice();
+            map["available"] = roomPtr->getAvailable(); // Matched to your header
+            return map;
+        }
+    }
+
+    return map;
+}///b---added
 
 void RoomListModel::setRooms(QList<QSharedPointer<Room>> newRooms)
 {

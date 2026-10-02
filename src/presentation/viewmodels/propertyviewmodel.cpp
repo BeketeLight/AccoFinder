@@ -79,6 +79,12 @@ QVariantList PropertyViewModel::propertiesForView() const
         row["verificationStatus"] = m_propertyListModel->data(idx, PropertyListModel::VerificationStatusRole);
         row["propertyType"] = m_propertyListModel->data(idx, PropertyListModel::PropertyTypeRole);
         row["agentId"] = m_propertyListModel->data(idx, PropertyListModel::AgentIdRole);
+        //Property-Host
+        row["ownerId"] = m_propertyListModel->data(idx, PropertyListModel::OwnerIdRole);
+        row["ownerFirstName"] = m_propertyListModel->data(idx, PropertyListModel::OwnerFirstNameRole);
+        row["ownerSurname"] = m_propertyListModel->data(idx, PropertyListModel::OwnerSurnameRole);
+        row["ownerEmail"] = m_propertyListModel->data(idx, PropertyListModel::OwnerEmailRole);
+        row["ownerPhone"] = m_propertyListModel->data(idx, PropertyListModel::OwnerPhoneRole);
         list.append(row);
     }
     return list;

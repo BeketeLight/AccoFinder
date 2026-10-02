@@ -181,56 +181,56 @@ function navigateToBookingsView(filter){
 function navigateToBookingDetails(){
     push("../features/bookings/pages/BookingDetailsPage.qml")
 }
-function navigateToBookingsDetailsClient(data){
+function navigateToBookingsDetailsClient(data) {
     push("../features/bookings/pages/ClientBookinDetailsPage.qml", {
-            bookingId: data.bookingId || "",
-            status: data.status || "Pending",
-            statusNote: data.statusNote || "",
-            houseName: data.houseName || "",
-            landlordName: data.landlordName || "",
-            imageUrl: data.imageUrl || "",
-            checkIn: data.checkIn || "",
-            checkOut: data.checkOut || "",
-            specialRequests: data.specialRequests || "",
-            roomPrice: data.roomPrice || 0.0,
-            discount: data.discount || 0.0,
-            paymentStatus: data.paymentStatus || "Unpaid",
-            paymentMethod: data.paymentMethod || "",
-            paymentDate: data.paymentDate || "",
-            keyInstructions: data.keyInstructions || "",
-            cancellationPolicy: data.cancellationPolicy || ""
-         });
+        bookingId: data.bookingId || "",
+        status: data.status || "Pending",
+        ownerFirstName: data.ownerFirstName,
+        hostInitials: data.hostInitials,
+        hostName: data.hostName,
+        houseName: data.houseName || "",
+        propertyImage: data.propertyImage || data.imageUrl || "",
+        propertyLocation: data.propertyLocation || data.location || "",
+        roomType: data.roomType || "",
+        checkIn: data.checkIn || data.bookingDate || data.dateRange || "",
+        baseAmount: data.baseAmount !== null ? data.baseAmount : (data.roomPrice || 0),
+        serviceFee: data.serviceFee !== null ? data.serviceFee : (data.commissionAmount || 0),
+        totalAmount: data.totalAmount !== null
+            ? data.totalAmount
+            : ((data.baseAmount || data.amount || 0) + (data.serviceFee || data.commissionAmount || 0)),
+        paymentStatus: data.paymentStatus || "Unpaid",
+        paymentMethod: data.paymentMethod || "",
+        paymentDate: data.paymentDate || "",
+        price: data.price,
+        // if you add these on the page + delegate:
+        clientName: data.clientName || "",
+        clientPhone: data.clientPhone || "",
+        clientEmail: data.clientEmail || ""
+    })
 }
 function navigateToBookingsDetailsOwneByAgent(data){
+    data = data || {}
+        var price = Number(data.price !== null ? data.price
+                        : (data.amount !== null ? data.amount : 0))
+        var commission = Number(data.commissionAmount !== null ? data.commissionAmount : 0)
     push("../features/bookings/pages/AgentBookingDetailsOnOwnedPropertiesPage.qml", {
             bookingId: data.bookingId || "",
             status: data.status || "",
-            houseName: data.propertyName || "",
+            houseName: data.houseName || "",
             propertyLocation: data.propertyLocation || "124 Lakeview Drive, Sector 4",
-            //propertyImage: data.propertyImage || "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=500",
+            propertyImage: data.propertyImage || data.imageUrl || "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=500",
             roomType: data.roomType || "2 Bedrooms",
 
             clientName: data.clientName || "John Doe",
             clientPhone: data.clientPhone || "+1 555-0192",
             clientEmail: data.clientEmail || "johndoe@example.com",
-                 //readonly property int guestCount: model.guestCount ?? 3
-
-            checkIn: data.checkIn || "Oct 12, 2026 (2:00 PM)",
-            //checkOut: model.checkOut || "Oct 15, 2026 (11:00 AM)"
-            //nightsCount: model.nightsCount ?? 3
-            //clientNotes: model.clientNotes ?? "Please provide an extra crib if available. Late check-in expected."
-
-            baseAmount: data.baseAmount,
-            serviceFee: data.serviceFee,
-            totalAmount: data.totalAmount ,
+            clientInitial: data.clientInitial || "B" ,
+            checkIn: data.checkIn || data.bookingDate || data.dateRange || "",
+            price: price,
+            commission: commission,
             paymentStatus: data.paymentStatus || "Paid",
             paymentMethod: data.paymentMethod ?? "Credit Card (Visa ending in 4242)",
             paymentDate: data.paymentDate || "Oct 10, 2026",
-            //bookingFee: data.bookingFee,
-
-            //createdTime: data.createdTime || "Oct 10, 2026 at 10:15 AM"
-            //paidTime: model.paidTime ?? "Oct 10, 2026 at 10:18 AM"
-           // approvedTime:
     });
 }
 

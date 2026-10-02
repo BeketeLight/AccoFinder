@@ -52,6 +52,26 @@ QHash<int, QByteArray> UserListModel::roleNames() const
     };
     return mapping;
 }
+QVariantMap UserListModel::getUserById(const QString& userId) const
+{
+    QVariantMap map;
+
+    for (const auto& userPtr : m_users) { // Assuming m_users stores QSharedPointer<User> or User*
+        if (userPtr && userPtr->getId() == userId) {
+            map["id"] = userPtr->getId();
+            map["fullName"] = userPtr->getFullName();
+            map["firstName"] = userPtr->firstName();
+            map["lastName"] = userPtr->lastName();
+            map["email"] = userPtr->getEmail();
+            map["phone"] = userPtr->getPhone();
+            map["address"] = userPtr->getResidentialAddress();
+            map["role"] = userPtr->getRole();
+            return map;
+        }
+    }
+
+    return map;///----B added-----------------------------
+}
 
 void UserListModel::setUsers(QList<User *> users)
 {

@@ -35,6 +35,18 @@ QString Booking::getClientId() const
 {
     return m_clientId;
 }
+QString Booking::getClientName() const
+{
+    return m_clientName;
+}
+QString Booking::getClientEmail() const
+{
+    return m_clientEmail;
+}
+QString Booking::getClientPhone() const
+{
+    return m_clientPhone;
+}
 
 QString Booking::getRoomId() const
 {
@@ -86,6 +98,25 @@ void Booking::setClientId(const QString &newClientId)
     if (m_clientId == newClientId) return;
     m_clientId = newClientId;
     emit clientIdChanged();
+}
+
+void Booking::setClientName(const QString &newClientName)
+{
+    if(m_clientName == newClientName) return;
+    m_clientName = newClientName;
+    emit clientNameChanged();
+}
+void Booking::setClientEmail(const QString &newClientEmail)
+{
+    if(m_clientEmail == newClientEmail) return;
+    m_clientEmail = newClientEmail;
+    emit clientEmailChanged();
+}
+void Booking::setClientPhone(const QString &newClientPhone)
+{
+    if(m_clientPhone == newClientPhone) return;
+    m_clientPhone = newClientPhone;
+    emit clientPhoneChanged();
 }
 
 void Booking::setRoomId(const QString &newRoomId)

@@ -46,6 +46,7 @@ public:
     // Rooms belonging to the given property id, shaped for QML display as
     // {roomId, roomType, price, available} maps.
     QVariantList roomsForProperty(const QString& propertyId) const;
+    QVariantMap getRoomById(const QString& roomId) const; //b----added
 
 signals:
     void countChanged(int newCount);

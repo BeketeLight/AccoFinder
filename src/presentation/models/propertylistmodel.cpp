@@ -97,6 +97,13 @@ QVariant PropertyListModel::data(const QModelIndex &index, int role) const
         case ApprovedByNameRole:
             return property->getApprovedByName();
 
+        //property Owner
+        case OwnerIdRole: return property->getAgentId();
+        case OwnerFirstNameRole: return property->getOwnerFirstName();
+        case OwnerSurnameRole: return property->getOwnerSurname();
+        case OwnerEmailRole: return property->getOwnerEmail();
+        case OwnerPhoneRole: return property->getOwnerPhone();
+
     }
 
     // FIXME: Implement me!
@@ -128,7 +135,12 @@ QHash<int, QByteArray> PropertyListModel::roleNames() const
         {RoomCountRole, "roomCount"},
         {RejectionReasonRole, "rejectionReason"},
         {ApprovedByIdRole, "approvedById"},
-        {ApprovedByNameRole, "approvedByName"}
+        {ApprovedByNameRole, "approvedByName"},
+        {OwnerIdRole, "ownerId"},
+        {OwnerFirstNameRole, "ownerFirstName"},
+        {OwnerSurnameRole, "ownerSurname"},
+        {OwnerEmailRole, "ownerEmail"},
+        {OwnerPhoneRole, "ownerPhone"}
     };
     return mapping;
 }
@@ -202,6 +214,7 @@ QVariantMap PropertyListModel::at(int index) const
     row["district"] = data(idx, DistrictRole);
     row["village"] = data(idx, VillageRole);
     row["price"] = data(idx, PriceRole);
+    row["createdAt"] = data(idx,CreatedAtRole);
     row["status"] = data(idx, VerificationStatusRole);
     row["verificationStatus"] = data(idx, VerificationStatusRole);
     row["amenities"] = data(idx, AmenitiesRole);

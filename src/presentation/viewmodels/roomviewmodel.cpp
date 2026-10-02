@@ -16,6 +16,13 @@ RoomViewModel::RoomViewModel(QObject *parent)
     connect(m_roomController, &RoomController::onError,
             this, &RoomViewModel::onError);
 }
+QVariantMap RoomViewModel::getRoomById(const QString& roomId) const
+{
+    if (m_roomListModel) {
+        return m_roomListModel->getRoomById(roomId);
+    }
+    return QVariantMap();
+}////b-added------------------------
 
 void RoomViewModel::setLoading(bool loading)
 {
