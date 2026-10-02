@@ -2,6 +2,8 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import "../../../utils/NavigationUtils.js" as NavUtils
+import "../../../components/pages"
+import "../../dashboards/admins/pages"
 
 Rectangle {
     id: root
@@ -11,6 +13,9 @@ Rectangle {
     readonly property bool isGuest: !AppSettings.isLoggedIn()
     readonly property bool isClient: AppSettings.isLoggedIn() && AppSettings.userType() === "CLIENT"
     readonly property bool isAgent: AppSettings.isLoggedIn() && AppSettings.userType() === "AGENT"
+    readonly property bool isAdmin: AppSettings.isLoggedIn()
+                               && (AppSettings.userType() === "ADMIN"
+                                   || AppSettings.userType() === "SUPER_ADMIN")
 
     // --- GUEST VIEW BANNER ---
     ColumnLayout {
@@ -50,11 +55,27 @@ Rectangle {
     // --- LOGGED-IN ROLE ROUTER ---
     Loader {
         anchors.fill: parent
-        visible: !root.isGuest
+        visible: !root.isGuest && !root.isAdmin
         source: {
             if (root.isAgent)  return "BookingOverviewAgentPage.qml"
             if (root.isClient) return "BookingOverviewClientPage.qml"
             return ""
+        }
+    }
+
+    // Admins get the platform-wide oversight list rather than a blank page.
+    // The page is content-only, so it is hosted in the shared scrollable shell
+    // here - the same shell AdminBookingsScreen uses when the list is reached
+    // by pushing from the admin dashboard.
+    AppScrollablePage {
+        anchors.fill: parent
+        visible: root.isAdmin
+        loading: BookingViewModel.isLoading
+                   && adminBookings.bookingsModel.totalCount === 0
+
+        AdminBookingsPage {
+            id: adminBookings
+            Layout.fillWidth: true
         }
     }
 }

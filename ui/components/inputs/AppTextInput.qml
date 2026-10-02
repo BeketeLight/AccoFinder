@@ -13,6 +13,12 @@ Item {
     property string helperText: ""
     property bool required: false
     property bool password: false
+    // When true the masked text can be revealed with the trailing eye button.
+    // Password fields default to offering the toggle so users can proofread a
+    // mistyped password instead of guessing which character they got wrong.
+    property bool passwordToggleEnabled: true
+    // Runtime revealed/hidden state of a password field.
+    property bool passwordVisible: false
     property bool error: false
     property int fieldHeight: 56
     property int fieldWidth: 280
@@ -34,11 +40,16 @@ Item {
     property color borderColor: "#DADCE0"
     property color focusColor: "#1A73E8"
     property color errorColor: "#D93025"
+    property color mutedIconColor: "#5F6368"
 
     // Signals
     signal accepted
     signal textEdited
     signal editingFinished
+
+    // The eye button only occupies the field when it is actually relevant.
+    readonly property bool showPasswordToggle: root.password && root.passwordToggleEnabled
+    readonly property int toggleInset: root.showPasswordToggle ? 44 : 0
 
     // fieldWidth is the default/implicit size only.
     // In Layouts, use Layout.fillWidth: true — the field fills the assigned width.
@@ -86,7 +97,8 @@ Item {
             // Built-in placeholder disabled; floatingLabel draws it instead
             placeholderText: ""
             enabled: root.enabled
-            echoMode: root.password ? TextInput.Password : TextInput.Normal
+            echoMode: (root.password && !root.passwordVisible)
+                      ? TextInput.Password : TextInput.Normal
             color: root.textColor
             font.pixelSize: root.fontPixelSize
             inputMethodHints: root.inputMethodHints
@@ -95,7 +107,8 @@ Item {
             selectByMouse: true
 
             leftPadding: root.horizontalPadding
-            rightPadding: root.horizontalPadding
+            // Reserve the trailing strip so text never runs under the eye icon.
+            rightPadding: root.horizontalPadding + root.toggleInset
             // Leave room under the floating label for the typed text
             topPadding: isFloating ? root.floatingLabelTopMargin + 14 : 0
             bottomPadding: isFloating ? 8 : 0
@@ -133,7 +146,7 @@ Item {
                     font.weight: textField.isFloating ? Font.Medium : Font.Normal
 
                     x: root.horizontalPadding
-                    width: parent.width - root.horizontalPadding * 2
+                    width: parent.width - root.horizontalPadding * 2 - root.toggleInset
                     elide: Text.ElideRight
 
                     y: textField.isFloating
@@ -182,9 +195,90 @@ Item {
         }
     }
 
+    // Show / hide password. Drawn inline (an outlined lens plus a pupil, with a
+    // strike-through while masked) so the component needs no icon asset and
+    // stays legible at any theme colour.
+    //
+    // Deliberately a sibling of the ColumnLayout rather than part of
+    // TextField.background: the background is painted *behind* the field's
+    // contentItem, and that contentItem is a TextInput filling the control, so
+    // a toggle living in the background never receives the tap.
+    Item {
+        id: passwordToggle
+        visible: root.showPasswordToggle
+        width: 40
+        height: 24
+        z: 1
+        // Positioned by binding, not by anchor. textField lives inside the
+        // ColumnLayout, so it is neither this item's parent nor its sibling and
+        // Qt rejects an anchor to it — the toggle then silently falls back to
+        // (0,0) and lands on top of the label. Deriving x/y from textField's
+        // geometry is legal across the nesting and keeps the eye inside the
+        // field it belongs to.
+        x: textField.x + textField.width - width - 6
+        y: textField.y + (textField.height - height) / 2
+
+        readonly property color tint: !root.enabled ? Qt.darker(root.mutedIconColor, 1.6)
+                                : (hoverArea.hovered || tapArea.pressed) ? root.focusColor
+                                : root.mutedIconColor
+
+        Rectangle {
+            id: lens
+            width: 19
+            height: 11
+            radius: height / 2
+            color: "transparent"
+            border.color: passwordToggle.tint
+            border.width: 1.4
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.horizontalCenter: parent.horizontalCenter
+        }
+
+        Rectangle {
+            width: 5
+            height: 5
+            radius: 2.5
+            color: passwordToggle.tint
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.horizontalCenter: parent.horizontalCenter
+        }
+
+        // Strike-through shown while the password is masked.
+        Rectangle {
+            visible: !root.passwordVisible
+            width: lens.width
+            height: 1.4
+            color: passwordToggle.tint
+            radius: 0.7
+            anchors.centerIn: parent
+            rotation: -35
+        }
+
+        HoverHandler {
+            id: hoverArea
+            cursorShape: Qt.PointingHandCursor
+            enabled: passwordToggle.visible
+        }
+
+        TapHandler {
+            id: tapArea
+            enabled: passwordToggle.visible && root.enabled
+            onTapped: {
+                root.passwordVisible = !root.passwordVisible
+                textField.forceActiveFocus()
+            }
+        }
+    }
+
     // Keep internal field in sync when text is set from outside
     onTextChanged: {
         if (textField.text !== root.text)
             textField.text = root.text
+    }
+
+    // A field that stops being a password must not stay revealed.
+    onPasswordChanged: {
+        if (!password)
+            root.passwordVisible = false
     }
 }

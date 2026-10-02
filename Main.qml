@@ -9,6 +9,8 @@ import "./ui/features/home/components"
 import "./ui/utils/NavigationUtils.js" as NavUtils
 
 ApplicationWindow {
+    id: root
+
     width: 640
     height: 480
     visible: true
@@ -24,14 +26,51 @@ ApplicationWindow {
     Material.accent : Material.Blue
     Component.onCompleted: {
         AppSettings.setStatusBarAppearance(Qt.rgba(0,0,0,0),true)
-        if (AppSettings.isLoggedIn() &&
-                (AppSettings.userType() === "ADMIN" || AppSettings.userType() === "SUPER_ADMIN"))
-            loader.source = "./ui/features/dashboards/admins/screens/AdminsDashboardScreen.qml"
+        // Also covers a sign-in that completed before this QML existed - the
+        // Google OAuth redirect can land on a cold-started app, and the session
+        // it persisted must still route to the right page rather than the
+        // public home screen.
+        root.applySessionLanding()
     }
 
     function isRootLandingPage(url) {
         var s = url.toString()
         return s.endsWith("HomeScreen.qml") || s.endsWith("AdminsDashboardScreen.qml")
+    }
+
+    // Picks the page the app should open on. Used both at startup and after a
+    // sign-in, so the two can never disagree about where a session belongs.
+    function sessionLandingSource() {
+        if (AppSettings.isLoggedIn()) {
+            var role = AppSettings.userType()
+            if (role === "ADMIN" || role === "SUPER_ADMIN")
+                return "./ui/features/dashboards/admins/screens/AdminsDashboardScreen.qml"
+            return "./ui/features/auth/pages/Profile.qml"
+        }
+        // A sign-up interrupted by the user leaving to read their emailed OTP
+        // resumes straight into the wizard with their answers restored, rather
+        // than dumping them on the home page to retype everything. The draft
+        // expires on its own, so a genuinely new visitor still lands on Home.
+        if (AppSettings.hasRegistrationDraft())
+            return "./ui/features/auth/screens/SignUpScreen.qml"
+        return "./ui/features/home/screens/HomeScreen.qml"
+    }
+
+    function sessionLandingNavIndex() {
+        if (!AppSettings.isLoggedIn())
+            return 0
+        var role = AppSettings.userType()
+        if (role === "ADMIN" || role === "SUPER_ADMIN")
+            return 0
+        return 4
+    }
+
+    // Clears any pushed pages and shows the page this session belongs on.
+    function applySessionLanding() {
+        mainStack.stackView.clear()
+        loader.source = root.sessionLandingSource()
+        if (typeof bottomNavBar.currentIndex !== "undefined")
+            bottomNavBar.currentIndex = root.sessionLandingNavIndex()
     }
     readonly property var currentPage: (mainStack.depth > 0 && mainStack.currentItem)
                                     ? mainStack.currentItem
@@ -177,15 +216,9 @@ ApplicationWindow {
                 NavUtils.resetToSignIn()
             }
             function onSignInSucceded(user) {
-                mainStack.stackView.clear()
-                var role = AppSettings.userType()
-                if (role === "ADMIN" || role === "SUPER_ADMIN") {
-                    loader.source = "./ui/features/dashboards/admins/screens/AdminsDashboardScreen.qml"
-                    bottomNavBar.currentIndex = 0
-                } else {
-                    loader.source = "./ui/features/auth/pages/Profile.qml"
-                    bottomNavBar.currentIndex = 4
-                }
+                // Covers password sign-in and the Google OAuth redirect alike,
+                // since both land here through AuthController.
+                root.applySessionLanding()
             }
         }
 
@@ -220,7 +253,10 @@ ApplicationWindow {
                 NavUtils.push(Qt.resolvedUrl("./ui/features/dashboards/admins/screens/PropertyApprovalScreen.qml"))
             }
             function onBookingsRequested() {
-                loader.source = "./ui/features/bookings/screens/BookingsScreen.qml"
+                // Pushed, not swapped into the root loader: every other card
+                // uses NavUtils.push, and replacing the loader source here
+                // destroyed the dashboard the user was standing on.
+                NavUtils.push(Qt.resolvedUrl("./ui/features/dashboards/admins/screens/AdminBookingsScreen.qml"))
             }
             function onPaymentsRequested() {
                 NavUtils.push(Qt.resolvedUrl("./ui/features/dashboards/admins/screens/PaymentsOversightScreen.qml"))

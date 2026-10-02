@@ -6,6 +6,7 @@
 #include <QVector>
 #include <QByteArray>
 #include <QList>
+#include <QVariantMap>
 #include "models/booking.h"
 
 class BookingListModel : public QAbstractListModel
@@ -43,6 +44,10 @@ public:
     Q_INVOKABLE void addBooking(Booking* booking);
     Q_INVOKABLE void removeBooking(int index);
     Q_INVOKABLE void clear();
+
+    // Row snapshot as a plain map, so QML can copy the shared C++ model into a
+    // filtered ListModel (the same pattern UserListModel::at serves).
+    Q_INVOKABLE QVariantMap at(int index) const;
 
     int countByStatus(BookingStatus status) const;
     double sumAmount() const;

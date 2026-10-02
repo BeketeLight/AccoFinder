@@ -12,8 +12,15 @@ AuthController::AuthController(QObject *parent)
     // it succeeds or fails). A watchdog stops the loading state when the user
     // cancels the browser flow and the redirect never arrives — otherwise the
     // spinner would hang forever until the app is restarted.
+    //
+    // This is only a backstop. The responsive path is the foreground-resume
+    // check in main.cpp, which gives the redirect a few seconds to land and
+    // then cancels, so the user is not left staring at a spinner. The generous
+    // interval here covers the case where the user never comes back to the app
+    // at all, without cutting off a legitimate consent screen, an account
+    // chooser or a 2FA step, which routinely take longer than a minute.
     m_googleAuthTimeout->setSingleShot(true);
-    m_googleAuthTimeout->setInterval(60000);
+    m_googleAuthTimeout->setInterval(5 * 60 * 1000);
     connect(m_googleAuthTimeout, &QTimer::timeout, this, [this]() {
         if (m_googleAuthPending)
             cancelGoogleAuth();

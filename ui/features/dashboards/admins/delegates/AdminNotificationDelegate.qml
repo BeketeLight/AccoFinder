@@ -40,7 +40,14 @@ Rectangle {
                 color: "#111827"
                 font.pixelSize: 13
                 font.bold: true
-                elide: Text.ElideRight
+                // Announcement subjects are free text, so they flow onto as many
+                // lines as they need. This label used to carry only
+                // elide: Text.ElideRight with no wrapMode, which under the
+                // default NoWrapping cut every subject to one line ending in an
+                // ellipsis. wrapMode does the flowing; elide is pinned so a line
+                // cap cannot creep back in.
+                wrapMode: Text.WordWrap
+                elide: Text.ElideNone
             }
 
             Rectangle {
@@ -65,7 +72,12 @@ Rectangle {
             text: root.message
             color: root.mutedColor
             font.pixelSize: 11
+            lineHeight: 1.15
+            // Long announcements flow onto as many lines as they need. The card
+            // is sized from the wrapped height, so there is no reason to cap the
+            // body - a capped announcement is a silently truncated one.
             wrapMode: Text.WordWrap
+            elide: Text.ElideNone
         }
 
         Label {
@@ -73,6 +85,7 @@ Rectangle {
             text: root.date + " \u00B7 " + qsTr("delivered to %1 users").arg(root.delivered)
             color: "#9CA3AF"
             font.pixelSize: 10
+            wrapMode: Text.WordWrap
         }
     }
 }

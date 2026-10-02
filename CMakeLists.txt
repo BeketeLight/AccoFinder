@@ -49,6 +49,7 @@ qt_add_qml_module(appAccoFinder
         ui/components/navigations/AppNotificationBell.qml
         ui/components/navigations/AdminDrawer.qml
         ui/components/navigations/AgentDrawer.qml
+        ui/components/navigations/DrawerLogoutButton.qml
 
         #========UTILS============
         ui/utils/Utils.js
@@ -111,6 +112,8 @@ qt_add_qml_module(appAccoFinder
         ui/features/dashboards/admins/pages/PaymentsOversightPage.qml
         ui/features/dashboards/admins/pages/DisputesManagementPage.qml
         ui/features/dashboards/admins/pages/SystemNotificationsPage.qml
+        ui/features/dashboards/admins/pages/AdminBookingsPage.qml
+        ui/features/dashboards/admins/screens/AdminBookingsScreen.qml
         ui/features/dashboards/admins/screens/UserManagementScreen.qml
         ui/features/dashboards/admins/screens/AgentManagementScreen.qml
         ui/features/dashboards/admins/screens/PropertyApprovalScreen.qml
@@ -135,6 +138,7 @@ qt_add_qml_module(appAccoFinder
         ui/features/dashboards/admins/delegates/CommissionRowDelegate.qml
         ui/features/dashboards/admins/delegates/PayoutRowDelegate.qml
         ui/features/dashboards/admins/delegates/UserRowDelegate.qml
+        ui/features/dashboards/admins/delegates/AdminBookingDelegate.qml
         #======FEATURE-AUTH-GLOBAL======
         ui/features/auth/components/AuthHeaderComponent.qml
         ui/features/auth/components/AuthTextField.qml
@@ -192,6 +196,7 @@ qt_add_qml_module(appAccoFinder
         ui/features/dashboards/models/AgentDashboardModel.qml
         ui/features/dashboards/models/AdminDashboardModel.qml
         ui/features/dashboards/models/AdminUsersModel.qml
+        ui/features/dashboards/models/AdminBookingsModel.qml
         ui/features/dashboards/models/AdminAgentsModel.qml
         ui/features/dashboards/models/AdminPaymentsModel.qml
         ui/features/dashboards/models/AdminDisputesModel.qml

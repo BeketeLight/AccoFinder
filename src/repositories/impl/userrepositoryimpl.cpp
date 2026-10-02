@@ -298,34 +298,45 @@ void UserRepositoryImpl::signInWithGoogle(const QString &authUrl)
 void UserRepositoryImpl::handleGoogleAuthUrl(const QString &url)
 {
     QUrl qurl(url);
-    if (qurl.scheme() != "accofinder" || qurl.host() != "auth") {
+    if (qurl.scheme().compare(QLatin1String("accofinder"), Qt::CaseInsensitive) != 0
+        || qurl.host().compare(QLatin1String("auth"), Qt::CaseInsensitive) != 0) {
         emit signInFailed("Invalid Google authentication response.");
         return;
     }
 
+    // Providers differ on where they put the result: some append it to the
+    // query string, others to the fragment (which keeps the token off the
+    // server log). Read both so the redirect is accepted either way.
     QUrlQuery query(qurl.query());
+    if (query.isEmpty() && qurl.hasFragment())
+        query = QUrlQuery(qurl.fragment());
 
-    QString accessToken = query.queryItemValue("accessToken");
-    QString refreshToken = query.queryItemValue("refreshToken");
-    QString userId = query.queryItemValue("userId");
-    QString firstName = query.queryItemValue("firstName");
-    QString surname = query.queryItemValue("surname");
-    QString email = query.queryItemValue("email");
-    QString phone = query.queryItemValue("phone");
-    QString role = query.queryItemValue("role");
-    QString bankName = query.queryItemValue("bankName");
-    QString bankAccountNumber = query.queryItemValue("bankAccountNumber");
-    QString paymentMethod = query.queryItemValue("paymentMethod");
+    auto value = [&query](const QString &key) {
+        return query.queryItemValue(key, QUrl::FullyDecoded).trimmed();
+    };
+
+    QString accessToken = value(QStringLiteral("accessToken"));
+    QString refreshToken = value(QStringLiteral("refreshToken"));
+    QString userId = value(QStringLiteral("userId"));
+    QString firstName = value(QStringLiteral("firstName"));
+    QString surname = value(QStringLiteral("surname"));
+    QString email = value(QStringLiteral("email"));
+    QString phone = value(QStringLiteral("phone"));
+    QString role = value(QStringLiteral("role"));
+    QString bankName = value(QStringLiteral("bankName"));
+    QString bankAccountNumber = value(QStringLiteral("bankAccountNumber"));
+    QString paymentMethod = value(QStringLiteral("paymentMethod"));
 
     if (accessToken.isEmpty() || userId.isEmpty()) {
-        emit signInFailed("Google sign in incomplete. Please try again.");
+        emit signInFailed("Google sign in did not complete. Please try again.");
         return;
     }
 
     // Check if account is suspended before proceeding
-    bool isActive = query.queryItemValue("isActive").isEmpty()
+    const QString activeValue = value(QStringLiteral("isActive"));
+    bool isActive = activeValue.isEmpty()
         ? true
-        : (query.queryItemValue("isActive").toLower() == "true");
+        : (activeValue.toLower() == QLatin1String("true"));
     if (!isActive) {
         qDebug() << "=== GOOGLE ACCOUNT SUSPENDED ===";
         emit accountSuspended();

@@ -31,6 +31,8 @@
 #include "src/services/fcmservice.h"
 #include <QQmlContext>
 #include <QTimer>
+#include <QUrl>
+#include <QFileOpenEvent>
 #include <functional>
 
 #if defined(Q_OS_ANDROID)
@@ -57,6 +59,22 @@ static bool hasPendingDeepLink()
         "()Z");
 }
 #endif
+
+// Google sign-in finishes by redirecting the browser back into the app with a
+// custom-scheme link. Every platform delivers that link differently, so the
+// capture has to cover all of them or the user is stranded on the Google page:
+//   * Android  - an ACTION_VIEW intent, surfaced through DeepLinkActivity and
+//                polled over JNI (see below).
+//   * macOS    - a QFileOpenEvent.
+//   * Windows/Linux - a command line argument.
+// Recognising the scheme up front keeps unrelated launches (and Qt's own
+// "-qwindowgeometry" style flags) out of the OAuth path.
+static bool isGoogleRedirectUrl(const QString &candidate)
+{
+    return candidate.startsWith(QLatin1String("accofinder://"),
+                                Qt::CaseInsensitive);
+}
+
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
@@ -220,29 +238,74 @@ int main(int argc, char *argv[])
         &app,
         []() { QCoreApplication::exit(-1); },
         Qt::QueuedConnection);
-    engine.loadFromModule("AccoFinder", "Main");
+
+    // Routes an OAuth redirect into AuthController, rejecting anything that is
+    // not one of ours so a stray link can never be mistaken for a session.
+    auto forwardGoogleRedirect = [&authController](const QString &url) {
+        if (url.isEmpty() || !isGoogleRedirectUrl(url))
+            return;
+        // The redirect carries a bearer token in its query string, so log the
+        // shape only - never the full URL, which would leak it to logcat.
+        const QUrl parsed(url);
+        qInfo() << "[Main] Google OAuth redirect received:"
+                << parsed.scheme() << "://" << parsed.host();
+        authController.handleGoogleAuthUrl(url);
+    };
 
 #if defined(Q_OS_ANDROID)
     // Poll for Google OAuth deep links (accofinder://auth?...). This covers
     // both a cold start and the case where the app is already running when the
     // OAuth flow redirects back to the app's custom scheme. Each captured URL
     // is forwarded to AuthController so the Google sign-in is finalised.
-    auto processDeepLink = [&authController]() {
+    auto processAndroidDeepLink = [&forwardGoogleRedirect]() {
         if (!hasPendingDeepLink())
             return;
-        const QString url = takePendingDeepLinkUrl();
-        if (!url.isEmpty()) {
-            qInfo() << "[Main] Processing deep link:" << url;
-            authController.handleGoogleAuthUrl(url);
-        }
+        forwardGoogleRedirect(takePendingDeepLinkUrl());
     };
     QTimer* deepLinkTimer = new QTimer(&app);
-    QObject::connect(deepLinkTimer, &QTimer::timeout, &app, processDeepLink);
-    deepLinkTimer->start(1500);
+    QObject::connect(deepLinkTimer, &QTimer::timeout, &app, processAndroidDeepLink);
+    deepLinkTimer->start(500);
 
     // Handle a deep link that was already present at launch.
-    QTimer::singleShot(200, &app, processDeepLink);
+    QTimer::singleShot(200, &app, processAndroidDeepLink);
 #endif
+
+    // Desktop launches hand the redirect over as a plain command line argument.
+    for (const QString &arg : app.arguments()) {
+        if (isGoogleRedirectUrl(arg))
+            QTimer::singleShot(0, &app, [forwardGoogleRedirect, arg]() {
+                forwardGoogleRedirect(arg);
+            });
+    }
+
+    // macOS delivers the same link as a QFileOpenEvent instead, both when the
+    // app is already running and when the link is what launched it.
+    class DeepLinkEventFilter : public QObject
+    {
+    public:
+        explicit DeepLinkEventFilter(std::function<void(const QString &)> sink,
+                                     QObject *parent = nullptr)
+            : QObject(parent), m_sink(std::move(sink)) {}
+
+    protected:
+        bool eventFilter(QObject *watched, QEvent *event) override
+        {
+            if (event->type() == QEvent::FileOpen) {
+                auto *open = static_cast<QFileOpenEvent *>(event);
+                const QString url = open->url().toString();
+                if (!url.isEmpty() && m_sink)
+                    m_sink(url);
+            }
+            return QObject::eventFilter(watched, event);
+        }
+
+    private:
+        std::function<void(const QString &)> m_sink;
+    };
+    auto *deepLinkFilter = new DeepLinkEventFilter(forwardGoogleRedirect, &app);
+    app.installEventFilter(deepLinkFilter);
+
+    engine.loadFromModule("AccoFinder", "Main");
 
     // Hide the sticky Android splash as soon as the UI is ready, instead of
     // waiting a fixed 3 seconds. The splash is dismissible once the first

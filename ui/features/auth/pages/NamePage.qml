@@ -18,6 +18,23 @@ Item {
 
     signal nextRequested
 
+    // Re-fills the step from a recovered registration draft. Any previous
+    // validation message is dropped so the user is not shown a stale error for
+    // an empty field they have not touched yet.
+    function restore(firstNameValue, lastNameValue) {
+        firstNameField.text = firstNameValue || ""
+        lastNameField.text = lastNameValue || ""
+        errorText.text = ""
+    }
+
+    // Empties the fields through their ids rather than through the bound
+    // firstName/lastName properties, which would break those bindings.
+    function reset() {
+        firstNameField.text = ""
+        lastNameField.text = ""
+        errorText.text = ""
+    }
+
     implicitHeight: layout.implicitHeight
 
     ColumnLayout {

@@ -17,6 +17,19 @@ Item {
 
     signal nextRequested
 
+    // Re-fills the step from a recovered registration draft.
+    function restore(phoneValue) {
+        phoneField.text = phoneValue || ""
+        errorText.text = ""
+    }
+
+    // Empties the field through its id rather than through the bound phone
+    // property, which would break that binding.
+    function reset() {
+        phoneField.text = ""
+        errorText.text = ""
+    }
+
     function normalizedPhone() {
         return phoneField.text.trim().replace(/\s+/g, "");
     }
