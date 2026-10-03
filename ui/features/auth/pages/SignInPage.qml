@@ -308,6 +308,15 @@ Page {
 
     AppLoadingDialog {
         id: loadingDialog
+        // The Google hand-off spends real time in the device browser, so offer
+        // a way out instead of leaving the user on a spinner with no feedback.
+        cancellable: root.pendingAction === "google"
+        message: "Completing sign in with Google…"
+        onCancelled: {
+            root.pendingAction = "";
+            loadingDialog.close();
+            AuthController.cancelGoogleAuth();
+        }
     }
 
     function submitSignIn() {

@@ -284,6 +284,22 @@ void BookingListModel::clear()
     emit countChanged(0);
 }
 
+QVariantMap BookingListModel::at(int index) const
+{
+    if (index < 0 || index >= m_bookings.size())
+        return QVariantMap();
+    const QModelIndex idx = this->index(index, 0);
+    QVariantMap row;
+    row["bookingId"] = data(idx, IdRole);
+    row["clientId"] = data(idx, ClientIdRole);
+    row["roomId"] = data(idx, RoomIdRole);
+    row["bookingDate"] = data(idx, BookingDateRole);
+    row["amount"] = data(idx, AmountRole);
+    row["commissionAmount"] = data(idx, CommissionAmountRole);
+    row["status"] = data(idx, StatusRole);
+    return row;
+}
+
 int BookingListModel::countByStatus(BookingStatus status) const
 {
     int count = 0;

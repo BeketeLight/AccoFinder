@@ -43,6 +43,11 @@ Rectangle {
             font.pixelSize: root.lableFontSize
             font.bold: true
             color: "#1F2937"
+            // Stat values are long currency figures and long counts. Keep them
+            // on one line but let them wrap to a second line before anything is
+            // truncated, so a wide value is never silently cut off.
+            wrapMode: Text.WordWrap
+            maximumLineCount: 2
             elide: Text.ElideRight
         }
 

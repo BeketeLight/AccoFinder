@@ -169,6 +169,35 @@ public:
     Q_INVOKABLE QString recentRoomId() const;
 
     // =========================
+    // REGISTRATION DRAFT
+    // =========================
+    // A sign-up can stall while the user leaves the app to read the emailed
+    // OTP, during which Android may kill the process. The wizard therefore
+    // checkpoints what has been typed so a cold start can resume instead of
+    // restarting from an empty form. The draft is deliberately short-lived and
+    // self-expiring: see registrationDraftTtlMs().
+    Q_INVOKABLE void saveRegistrationDraft(const QString &firstName,
+                                           const QString &lastName,
+                                           const QString &location,
+                                           const QString &phone,
+                                           const QString &email,
+                                           const QString &password,
+                                           int step);
+    Q_INVOKABLE bool hasRegistrationDraft() const;
+    Q_INVOKABLE void clearRegistrationDraft();
+
+    Q_INVOKABLE QString registrationDraftFirstName() const;
+    Q_INVOKABLE QString registrationDraftLastName() const;
+    Q_INVOKABLE QString registrationDraftLocation() const;
+    Q_INVOKABLE QString registrationDraftPhone() const;
+    Q_INVOKABLE QString registrationDraftEmail() const;
+    Q_INVOKABLE QString registrationDraftPassword() const;
+    // Index of the wizard step the user had reached, clamped to a valid step.
+    Q_INVOKABLE int registrationDraftStep() const;
+    // Seconds left before the draft expires; 0 once it is gone.
+    Q_INVOKABLE int registrationDraftSecondsRemaining() const;
+
+    // =========================
     // CAMERA (transient, in-memory)
     // =========================
     // Stores the path of the photo just captured by the full-screen camera
@@ -186,6 +215,18 @@ signals:
     void capturedPhotoPathChanged();
 
 private:
+    // A registration draft is only offered back to the user for this long,
+    // so an abandoned sign-up never leaves stale personal details sitting in
+    // local storage for a future session to stumble into.
+    static constexpr qint64 registrationDraftTtlMs = 10 * 60 * 1000;
+    static constexpr int registrationDraftStepCount = 6;
+
+    // True when a draft exists and is still inside its TTL. Expired drafts are
+    // purged on the spot so expiry needs no timer or background task.
+    bool registrationDraftIsFresh() const;
+    // Reads one draft field, or an empty string once the draft has expired.
+    QString registrationDraftField(const QString &field) const;
+
     QSettings m_settings;
     QString m_capturedPhotoPath;
 };

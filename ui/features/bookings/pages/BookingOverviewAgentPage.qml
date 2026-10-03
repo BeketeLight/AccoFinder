@@ -5,38 +5,23 @@ import "../delegates"
 import "../../../components/dialogs"
 import "../../../components/indicators"
 import "../models"
+import "../components"
 import "../../../utils/NavigationUtils.js" as NavUtils
 
 Page {
     id: root
     property string  pendingApprovedId: ""
     // Header Bar / Filter Selector
-    header: RowLayout {
-        TabBar {
-            id: filterTabBar
-            Layout.fillWidth: true
-            background: Rectangle {
-                color: "#FFFFFF"
-                Rectangle {
-                    anchors.bottom: parent.bottom
-                    width: parent.width
-                    height: 1
-                    color: "#E2E8F0"
-                }
-            }
-            TabButton { text: "All" }        // <-- Change "View all" to "All"
-            TabButton { text: "Pending" }
-            TabButton { text: "Confirmed" }  // <-- Change "Approved" to "Confirmed"
-            TabButton { text: "Cancelled" }
-
-            onCurrentIndexChanged: {
-                if (currentItem) {
-                    agentBookingsModel.statusFilter = currentItem.text
-                }
-            }
+    background: Rectangle{
+        color: "#F4F6F9"
+    }
+    header: FilterComponent {
+        id: filterBar
+        model: ["All", "Pending", "Confirmed", "Cancelled"]
+        onFilterChanged: function(text) {
+            agentBookingsModel.statusFilter = text
         }
     }
-
     BookingsModel {
         id: agentBookingsModel
     }
@@ -53,7 +38,7 @@ Page {
         delegate: AgentStatsDelegate {
             // Correct role mappings matching BookingsModel.qml append() payload:
             activeFilter: {
-                    var t = filterTabBar.currentItem ? filterTabBar.currentItem.text : "All"
+                    var t = filterBar.currentText
                     if (t === "Approved") return "Confirmed"
                     return t
                 }

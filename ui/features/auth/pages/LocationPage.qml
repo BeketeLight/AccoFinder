@@ -17,6 +17,19 @@ Item {
 
     signal nextRequested
 
+    // Re-fills the step from a recovered registration draft.
+    function restore(locationValue) {
+        locationField.text = locationValue || ""
+        errorText.text = ""
+    }
+
+    // Empties the field through its id rather than through the bound location
+    // property, which would break that binding.
+    function reset() {
+        locationField.text = ""
+        errorText.text = ""
+    }
+
     implicitHeight: layout.implicitHeight
 
     ColumnLayout {

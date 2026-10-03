@@ -39,7 +39,9 @@ public class DeepLinkActivity extends QtActivity {
         final Uri data = intent.getData();
         if (data == null) return;
         pendingUrl = data.toString();
-        Log.d(TAG, "Captured deep link: " + pendingUrl);
+        // The redirect carries a bearer token in its query string, so log the
+        // shape only. Logging the full URL would leak the session to logcat.
+        Log.d(TAG, "Captured deep link: " + data.getScheme() + "://" + data.getHost());
     }
 
     /**

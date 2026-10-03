@@ -18,6 +18,19 @@ Item {
 
     signal nextRequested
 
+    // Re-fills the step from a recovered registration draft.
+    function restore(emailValue) {
+        emailField.text = emailValue || ""
+        errorText.text = ""
+    }
+
+    // Empties the field through its id rather than through the bound email
+    // property, which would break that binding.
+    function reset() {
+        emailField.text = ""
+        errorText.text = ""
+    }
+
     function setError(message) {
         errorText.text = message || "";
     }

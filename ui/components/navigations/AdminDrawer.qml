@@ -119,5 +119,14 @@ Drawer {
         }
 
         Item { Layout.fillHeight: true }
+
+        // Sign out sits below the spacer so it is pinned to the bottom of the
+        // drawer, clear of the quick-action list.
+        DrawerLogoutButton {
+            Layout.fillWidth: true
+            Layout.preferredHeight: 46
+            Layout.topMargin: 6
+            onLogoutCompleted: root.close()
+        }
     }
 }

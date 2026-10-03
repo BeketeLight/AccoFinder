@@ -22,6 +22,12 @@ public class SplashActivity extends Activity {
                 public boolean onPreDraw() {
                     Intent intent = new Intent(SplashActivity.this, DeepLinkActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                    // When the app is relaunched by a Google OAuth redirect,
+                    // this activity holds the accofinder:// link. The Qt
+                    // activity is started with an explicit intent, so the data
+                    // has to be carried across by hand or the redirect - and
+                    // with it the sign-in - is lost.
+                    intent.setData(getIntent() == null ? null : getIntent().getData());
                     startActivity(intent);
 
                     content.getViewTreeObserver().removeOnPreDrawListener(this);

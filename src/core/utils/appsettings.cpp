@@ -1,5 +1,9 @@
     #include "appsettings.h"
 
+#include <QDateTime>
+#include <QStringList>
+#include <QtGlobal>
+
 AppSettings::AppSettings(QObject *parent)
     : QObject{parent},
     m_settings(QCoreApplication::organizationName(),
@@ -374,6 +378,141 @@ void AppSettings::setRecentRoomId(const QString &value) {
 }
 QString AppSettings::recentRoomId() const {
     return m_settings.value("recent/roomId").toString();
+}
+
+// REGISTRATION DRAFT
+
+namespace {
+qint64 nowMs()
+{
+    return QDateTime::currentMSecsSinceEpoch();
+}
+} // namespace
+
+void AppSettings::saveRegistrationDraft(const QString &firstName,
+                                       const QString &lastName,
+                                       const QString &location,
+                                       const QString &phone,
+                                       const QString &email,
+                                       const QString &password,
+                                       int step)
+{
+    m_settings.beginGroup(QStringLiteral("registrationDraft"));
+    m_settings.setValue(QStringLiteral("firstName"), firstName);
+    m_settings.setValue(QStringLiteral("lastName"), lastName);
+    m_settings.setValue(QStringLiteral("location"), location);
+    m_settings.setValue(QStringLiteral("phone"), phone);
+    m_settings.setValue(QStringLiteral("email"), email);
+    m_settings.setValue(QStringLiteral("password"), password);
+    m_settings.setValue(QStringLiteral("step"),
+                        qBound(0, step, registrationDraftStepCount - 1));
+    m_settings.setValue(QStringLiteral("savedAt"), nowMs());
+    m_settings.endGroup();
+}
+
+bool AppSettings::registrationDraftIsFresh() const
+{
+    const QVariant savedAt =
+        m_settings.value(QStringLiteral("registrationDraft/savedAt"));
+    if (!savedAt.isValid())
+        return false;
+
+    bool ok = false;
+    const qint64 stamp = savedAt.toLongLong(&ok);
+    if (!ok || stamp <= 0)
+        return false;
+
+    const qint64 age = nowMs() - stamp;
+    // A clock moved backwards (or a hand-edited store) yields a negative age;
+    // treat that as stale rather than keeping the draft alive forever.
+    return age >= 0 && age < registrationDraftTtlMs;
+}
+
+// Expired drafts are unreadable, not merely un-offered. hasRegistrationDraft()
+// is the gate QML asks first, but the field getters are Q_INVOKABLE and can be
+// called directly, so the TTL is enforced on the read path too.
+QString AppSettings::registrationDraftField(const QString &field) const
+{
+    if (!registrationDraftIsFresh())
+        return {};
+    return m_settings.value(QStringLiteral("registrationDraft/") + field).toString();
+}
+
+bool AppSettings::hasRegistrationDraft() const
+{
+    if (!registrationDraftIsFresh())
+        return false;
+
+    // Any single recovered field is worth offering back, so a sign-up that
+    // stalled part-way through still saves the user their typing.
+    static const QStringList fields{
+        QStringLiteral("firstName"),
+        QStringLiteral("lastName"),
+        QStringLiteral("location"),
+        QStringLiteral("phone"),
+        QStringLiteral("email")
+    };
+    for (const QString &field : fields) {
+        if (!m_settings.value(QStringLiteral("registrationDraft/") + field)
+                 .toString().isEmpty()) {
+            return true;
+        }
+    }
+    return false;
+}
+
+void AppSettings::clearRegistrationDraft()
+{
+    m_settings.remove(QStringLiteral("registrationDraft"));
+}
+
+QString AppSettings::registrationDraftFirstName() const
+{
+    return registrationDraftField(QStringLiteral("firstName"));
+}
+
+QString AppSettings::registrationDraftLastName() const
+{
+    return registrationDraftField(QStringLiteral("lastName"));
+}
+
+QString AppSettings::registrationDraftLocation() const
+{
+    return registrationDraftField(QStringLiteral("location"));
+}
+
+QString AppSettings::registrationDraftPhone() const
+{
+    return registrationDraftField(QStringLiteral("phone"));
+}
+
+QString AppSettings::registrationDraftEmail() const
+{
+    return registrationDraftField(QStringLiteral("email"));
+}
+
+QString AppSettings::registrationDraftPassword() const
+{
+    return registrationDraftField(QStringLiteral("password"));
+}
+
+int AppSettings::registrationDraftStep() const
+{
+    if (!registrationDraftIsFresh())
+        return 0;
+    const int step =
+        m_settings.value(QStringLiteral("registrationDraft/step")).toInt();
+    return qBound(0, step, registrationDraftStepCount - 1);
+}
+
+int AppSettings::registrationDraftSecondsRemaining() const
+{
+    if (!registrationDraftIsFresh())
+        return 0;
+    const qint64 stamp =
+        m_settings.value(QStringLiteral("registrationDraft/savedAt")).toLongLong();
+    const qint64 left = registrationDraftTtlMs - (nowMs() - stamp);
+    return static_cast<int>(qMax<qint64>(0, left / 1000));
 }
 
 // CAMERA (transient, in-memory)

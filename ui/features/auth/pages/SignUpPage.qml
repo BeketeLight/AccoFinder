@@ -28,15 +28,72 @@ Page {
     property string pendingAction: ""
     readonly property string otpPurpose: "registration"
 
+    // True when this wizard was reopened with a recovered draft, which adds a
+    // "we kept your details" note above the form and offers a way to discard it.
+    property bool restoredFromDraft: false
+
+    // --- DRAFT SUPPORT ---
+    // The user has to leave the app to read the emailed OTP, and Android may
+    // kill the process while they are away. Every step change checkpoints the
+    // form into AppSettings so a cold start can resume the wizard instead of
+    // asking for the same six fields again. The draft self-expires (see
+    // AppSettings::registrationDraftTtlMs) and is cleared as soon as the
+    // account is verified.
+    function saveDraft() {
+        AppSettings.saveRegistrationDraft(
+                    nameStep.firstName.trim(),
+                    nameStep.lastName.trim(),
+                    locationStep.location.trim(),
+                    phoneStep.normalizedPhone(),
+                    emailStep.email.trim().toLowerCase(),
+                    passwordStep.password,
+                    root.currentStep
+                    );
+    }
+
+    function restoreDraft() {
+        if (!AppSettings.hasRegistrationDraft())
+            return;
+
+        nameStep.restore(AppSettings.registrationDraftFirstName(),
+                         AppSettings.registrationDraftLastName());
+        locationStep.restore(AppSettings.registrationDraftLocation());
+        phoneStep.restore(AppSettings.registrationDraftPhone());
+        emailStep.restore(AppSettings.registrationDraftEmail());
+        passwordStep.restore(AppSettings.registrationDraftPassword());
+
+        root.currentStep = AppSettings.registrationDraftStep();
+        root.restoredFromDraft = true;
+    }
+
+    // Throws the draft away for good: clears the stored copy, empties every
+    // step, and returns to step 0. Storage is cleared last because moving back
+    // to step 0 re-saves whatever is still in the form.
+    function discardDraft() {
+        nameStep.reset();
+        locationStep.reset();
+        phoneStep.reset();
+        emailStep.reset();
+        passwordStep.reset();
+
+        root.currentStep = 0;
+        root.restoredFromDraft = false;
+        AppSettings.clearRegistrationDraft();
+    }
+
     function goBack() {
         if (root.busy)
             return;
 
         if (currentStep > 0) {
+            root.saveDraft()
             currentStep -= 1;
             return;
         }
 
+        // Leaving the wizard entirely: the draft has served its purpose only
+        // if the user meant to come back mid-registration, so drop it here.
+        AppSettings.clearRegistrationDraft();
         UtilsModule.NavigationUtils.pop();
     }
 
@@ -135,6 +192,51 @@ Page {
             anchors.top: parent.top
             anchors.topMargin: 24
             spacing: 20
+
+            // Shown only when the wizard was reopened from a recovered draft,
+            // so the user knows their earlier answers came back and can wipe
+            // them if this is no longer what they want to sign up with.
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.preferredHeight: resumedColumn.implicitHeight + 24
+                radius: 12
+                color: root.softGreenColor
+                border.color: "#BBF7D0"
+                border.width: 1
+                visible: root.restoredFromDraft
+
+                RowLayout {
+                    id: resumedColumn
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.leftMargin: 14
+                    anchors.rightMargin: 14
+                    spacing: 10
+
+                    Label {
+                        Layout.fillWidth: true
+                        text: "We kept the details you had entered. Carry on where you stopped."
+                        color: "#166534"
+                        font.pixelSize: 12
+                        lineHeight: 1.1
+                        wrapMode: Text.WordWrap
+                    }
+
+                    Label {
+                        text: "Discard"
+                        color: root.errorColor
+                        font.pixelSize: 12
+                        font.bold: true
+
+                        MouseArea {
+                            anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: root.discardDraft()
+                        }
+                    }
+                }
+            }
 
             Rectangle {
                 Layout.fillWidth: true
@@ -488,6 +590,11 @@ Page {
             // If status is false, pass an error message
             const errorMessage = status ? "" : "Could not send the verification code. Please try again using the resend option.";
 
+            // The user is about to leave the app to read the code, which is
+            // exactly when the process is most likely to be killed. Checkpoint
+            // the form now so returning to a cold-started app resumes here.
+            root.saveDraft()
+
             // Navigate to OTP page
             UtilsModule.NavigationUtils.navigateToOtp(
                 emailStep.email.trim().toLowerCase(),  // Ensure lowercase
@@ -510,6 +617,8 @@ Page {
 
             if (status) {
                 otpStep.clearError();
+                // The account exists now, so the draft has served its purpose.
+                AppSettings.clearRegistrationDraft();
                 UtilsModule.NavigationUtils.resetToSignIn();
             } else {
                 otpStep.setError("Email verification failed. Check the code and try again.");
@@ -517,4 +626,14 @@ Page {
         }
 
     }
+
+    // Checkpoint the form on every step change so an app that is killed while
+    // the user is away reading their email can be resumed. Also fires when the
+    // wizard is closed from the hardware Back shortcut.
+    onCurrentStepChanged: root.saveDraft()
+
+    // Recover a previous sign-up that was interrupted. This runs before the
+    // first paint on a cold start, so the fields are already filled when the
+    // user sees the wizard.
+    Component.onCompleted: root.restoreDraft()
 }

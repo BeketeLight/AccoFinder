@@ -11,6 +11,13 @@ Dialog {
     anchors.centerIn: parent
     property alias message: messageLabel.text
 
+    // Long-running flows that can be abandoned (e.g. the browser hand-off in
+    // a Google sign-in) opt into a cancel button so the dialog is not a dead
+    // end for the full length of the operation.
+    property bool cancellable: false
+    property string cancelText: "Cancel"
+    signal cancelled()
+
     standardButtons: Dialog.NoButton
 
     contentItem: ColumnLayout {
@@ -32,6 +39,34 @@ Dialog {
             font.pixelSize: 15
             font.weight: Font.Medium
             color: "#374151"
+            horizontalAlignment: Text.AlignHCenter
+            wrapMode: Text.WordWrap
+        }
+
+        Button {
+            id: cancelButton
+            Layout.alignment: Qt.AlignHCenter
+            visible: loadingDialog.cancellable
+            Layout.preferredHeight: visible ? 40 : 0
+            text: loadingDialog.cancelText
+
+            contentItem: Label {
+                text: cancelButton.text
+                color: "#2563EB"
+                font.pixelSize: 14
+                font.bold: true
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+            }
+
+            background: Rectangle {
+                radius: 10
+                color: cancelButton.down ? "#EFF6FF" : "transparent"
+                border.color: "#BFDBFE"
+                border.width: 1
+            }
+
+            onClicked: loadingDialog.cancelled()
         }
     }
 

@@ -16,6 +16,10 @@ Item {
     property string statusFilter: "All"
     property string searchText: ""
     property int resultCount: 0
+    property int totalCount: 0
+    property int pendingCount: 0
+    property int confirmedCount: 0
+    property int cancelledCount: 0
 
     readonly property alias bookingsModel: bookingsModelId
     readonly property alias filterChipsModel: filterChipsModelId
@@ -34,7 +38,36 @@ Item {
         ListElement { label: "Paid" }
         ListElement { label: "Cancelled" }
     }
+    //Looping and summing up statuses
+    function updateStatusCount(){
+        var total = 0
+        var pending = 0
+        var confirmed = 0
+        var cancelled = 0
 
+        for(var i = 0; i < bookingsModelId.count; i++){
+            var status = String(bookingsModelId.get(i).status || "").trim().toUpperCase()
+            total++
+
+            switch(status){
+            case "PENDING":
+                pending++
+                break
+
+            case "CONFIRMED":
+                confirmed++
+                break
+
+            case "CANCELLED":
+                cancelled++
+                break
+            }
+        }
+        root.totalCount = total
+        root.pendingCount = pending
+        root.confirmedCount = confirmed
+        root.cancelledCount  = cancelled
+    }
     // --- 1. SEARCH & FILTERING LOGIC ---
     function applyFilters() {
         var count = 0
@@ -330,7 +363,7 @@ Item {
                 "clientInitial": clientInitial
             })
         }
-
+        root.updateStatusCount()
         root.applyFilters()
     }
 

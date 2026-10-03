@@ -20,6 +20,28 @@ Item {
 
     signal nextRequested
 
+    // Re-fills both password boxes from a recovered registration draft. The
+    // confirmation is restored alongside the password so the step's
+    // "passwords do not match" check still passes on resume.
+    function restore(passwordValue) {
+        passwordField.text = passwordValue || ""
+        confirmPasswordField.text = passwordValue || ""
+        errorText.text = ""
+    }
+
+    // Empties the fields through their ids rather than through the bound
+    // password properties, which would break those bindings. Each field's
+    // reveal state is cleared through its own id too, so a discarded password
+    // is not left on screen. (This page has no passwordVisible property of its
+    // own: writing the bare name resolved to a QML global and was rejected.)
+    function reset() {
+        passwordField.text = ""
+        confirmPasswordField.text = ""
+        errorText.text = ""
+        passwordField.passwordVisible = false
+        confirmPasswordField.passwordVisible = false
+    }
+
     function setError(message) {
         errorText.text = message || "";
     }
