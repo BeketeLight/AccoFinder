@@ -2,6 +2,7 @@
 #define NOTIFICATIONDTO_H
 
 #include <QJsonObject>
+#include <QDateTime>
 #include "models/notification.h"
 
 
@@ -22,6 +23,7 @@ public:
     QString m_message;
     QString m_type;
     QString m_status;
+    QDateTime m_createdAt;
 
 
     static NotificationDto fromJson(

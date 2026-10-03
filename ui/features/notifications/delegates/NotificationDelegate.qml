@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import "../../../utils/Utils.js" as Utils
 
 ColumnLayout {
     id: root
@@ -10,6 +11,13 @@ ColumnLayout {
     property string message: ""
     property bool unread: false
     property bool showSeparator: true
+    // When the notification was delivered. A Date (from the C++ role), an
+    // ISO-8601 string, or epoch millis; empty when the backend never stamped it.
+    property var createdAt: null
+
+    // Empty when createdAt is unusable, so the row simply carries no timestamp
+    // rather than implying the notification arrived in 1970.
+    readonly property string timestamp: Utils.notificationTimestamp(root.createdAt)
 
     property color primaryColor: "#2563EB"
     property color softBlueColor: "#EFF6FF"
@@ -92,6 +100,17 @@ ColumnLayout {
                     // and no elide: a truncated notification is a lost one.
                     wrapMode: Text.WordWrap
                     elide: Text.ElideNone
+                }
+
+                Label {
+                    Layout.fillWidth: true
+                    visible: root.timestamp.length > 0
+                    text: root.timestamp
+                    color: "#9CA3AF"
+                    font.pixelSize: 10
+                    // Trailing meta line: a fixed 24-hour clock and a short date
+                    // never wrap, so it stays a single line under elide too.
+                    elide: Text.ElideRight
                 }
             }
         }

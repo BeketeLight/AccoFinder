@@ -20,7 +20,8 @@ public:
         IdRole = Qt::UserRole + 1,
         TitleRole,
         MessageRole,
-        UnreadRole
+        UnreadRole,
+        CreatedAtRole
     };
 
     explicit NotificationListModel(QObject *parent = nullptr);

@@ -54,3 +54,11 @@ compile_commands.json
 *creator.user*
 
 *_qmlcache.qrc
+
+# Runtime crash output
+crash.log
+crash_dump.log
+hs_err_pid*.log
+
+# Throwaway output from manual curl probes against the API
+curl_result*.txt

@@ -23,6 +23,7 @@ Item {
     Page {
         anchors.fill: parent
         background: Rectangle { color: "#F8FAFC" }
+        topPadding: 10
 
 
         PropertyApprovalDetailPage {

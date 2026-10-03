@@ -43,3 +43,44 @@ function invalidateImages(srcs) {
             ImageCache.invalidateUrl(u)
     }
 }
+
+// Render when a notification arrived, as "<date> · <time>" in the device's own
+// locale and timezone. Accepts a JS Date (what the C++ role hands QML), an
+// ISO-8601 string, or epoch milliseconds.
+//
+// Anything unparseable, and anything the backend never stamped, returns an
+// empty string rather than a placeholder: callers hide the whole row when it
+// is empty, so a missing timestamp shows as simply no timestamp instead of a
+// misleading 1 Jan 1970.
+function notificationTimestamp(value) {
+    var d
+    if (value instanceof Date)
+        d = value
+    else if (typeof value === "number")
+        d = new Date(value)
+    else if (typeof value === "string" && value.length > 0)
+        d = new Date(value)
+    else
+        return ""
+    if (isNaN(d.getTime()) || d.getTime() <= 0)
+        return ""
+
+    // Midnight boundaries are computed in local time on both sides, so "today"
+    // and "yesterday" follow the device clock rather than UTC.
+    var now = new Date()
+    var startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime()
+    var day = 86400000
+
+    var time = Qt.formatTime(d, Qt.locale(), "HH:mm")
+    var dayLabel
+    if (d.getTime() >= startOfToday)
+        dayLabel = qsTr("Today")
+    else if (d.getTime() >= startOfToday - day)
+        dayLabel = qsTr("Yesterday")
+    else if (d.getFullYear() === now.getFullYear())
+        dayLabel = Qt.formatDate(d, Qt.locale(), "d MMM")
+    else
+        dayLabel = Qt.formatDate(d, Qt.locale(), "d MMM yyyy")
+
+    return dayLabel + " · " + time
+}

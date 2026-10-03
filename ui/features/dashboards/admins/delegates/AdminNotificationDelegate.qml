@@ -80,9 +80,13 @@ Rectangle {
             elide: Text.ElideNone
         }
 
-        Label {
+Label {
             Layout.fillWidth: true
-            text: root.date + " \u00B7 " + qsTr("delivered to %1 users").arg(root.delivered)
+            // The timestamp is optional: rows the backend never stamped would
+            // otherwise render a leading separator with nothing before it.
+            text: root.date.length > 0
+                  ? root.date + " · " + qsTr("delivered to %1 users").arg(root.delivered)
+                  : qsTr("delivered to %1 users").arg(root.delivered)
             color: "#9CA3AF"
             font.pixelSize: 10
             wrapMode: Text.WordWrap

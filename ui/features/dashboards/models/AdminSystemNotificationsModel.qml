@@ -1,4 +1,5 @@
 import QtQuick
+import "../../../utils/Utils.js" as Utils
 
 Item {
     id: root
@@ -30,10 +31,11 @@ Item {
         return "All users"
     }
 
+    // When the announcement was sent, as "<date> · <time>". Empty when the
+    // backend row carries no createdAt, in which case the history card simply
+    // omits the stamp instead of printing a placeholder date.
     function formatDate(value) {
-        if (value === undefined || value === null || value === "")
-            return "—"
-        return Qt.formatDate(new Date(value), "d MMM yyyy")
+        return Utils.notificationTimestamp(value)
     }
 
     function sendAnnouncement(title, message, audience) {

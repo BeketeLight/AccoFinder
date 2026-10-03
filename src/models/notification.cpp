@@ -62,4 +62,14 @@ void Notification::setStatus(const QString &newStatus)
     m_status = newStatus;
 }
 
+QDateTime Notification::getCreatedAt() const
+{
+    return m_createdAt;
+}
+
+void Notification::setCreatedAt(const QDateTime &createdAt)
+{
+    m_createdAt = createdAt;
+}
+
 

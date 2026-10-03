@@ -154,6 +154,7 @@ Item {
                             title: model.title
                             message: model.message
                             unread: model.unread
+                            createdAt: model.createdAt
                             showSeparator: index < root.notificationsModel.count - 1
                         }
                     }

@@ -53,10 +53,7 @@ qt_add_qml_module(appAccoFinder
 
         #========UTILS============
         ui/utils/Utils.js
-        ui/utils/DateUtils.js
-        ui/utils/StringUtils.js
         ui/utils/NavigationUtils.js
-        ui/utils/CalculationUtils.js
         #======FEATURE-BOOKINGS======
         ui/features/bookings/delegates/BookingsDelegate.qml
         ui/features/bookings/pages/BookingPage.qml
@@ -96,11 +93,7 @@ qt_add_qml_module(appAccoFinder
         ui/features/home/models/RoomsModel.qml
         ui/features/home/models/PropertyDetailsModel.qml
         #======FEATURE-NOTIFICATIONS=====
-        ui/features/notifications/components/NotificationItem.qml
         ui/features/notifications/delegates/NotificationDelegate.qml
-        ui/features/notifications/models/NotificationListModel.qml
-        ui/features/notifications/pages/NotificationsPage.qml
-        ui/features/notifications/screens/NotificationListScreen.qml
 
         #========FEATURE-DASHBOARD-AGENT-ADMIN--CLIENT========
         ui/features/dashboards/admins/pages/PropertyApprovalPage.qml

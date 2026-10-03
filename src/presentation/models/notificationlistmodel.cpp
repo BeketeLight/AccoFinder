@@ -40,6 +40,8 @@ QVariant NotificationListModel::data(const QModelIndex &index, int role) const
         const QString s = n->status().toUpper();
         return s != "READ" && s != "READY";
     }
+    case CreatedAtRole:
+        return n->getCreatedAt();
     }
 
     return QVariant();
@@ -51,7 +53,8 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
         { IdRole, "id" },
         { TitleRole, "title" },
         { MessageRole, "message" },
-        { UnreadRole, "unread" }
+        { UnreadRole, "unread" },
+        { CreatedAtRole, "createdAt" }
     };
     return roles;
 }

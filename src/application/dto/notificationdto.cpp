@@ -42,6 +42,14 @@ NotificationDto NotificationDto::fromJson(const QJsonObject &json)
     // model's `status` so NotificationListModel::unreadCount() stays correct.
     dto.m_status = json["isRead"].toBool() ? "READ" : "UNREAD";
 
+    // Mongo timestamps give an ISO-8601 UTC instant. Parsed as-is so the UI can
+    // show it in the device's own timezone; an absent field leaves the value
+    // invalid, which the delegate renders as a dash instead of a 1970 date.
+    dto.m_createdAt =
+        QDateTime::fromString(
+            json["createdAt"].toString(),
+            Qt::ISODate);
+
     return dto;
 
 }
@@ -75,6 +83,7 @@ Notification *NotificationDto::toDomainModel() const
     notification->setMessage(m_message);
     notification->setType(m_type);
     notification->setStatus(m_status);
+    notification->setCreatedAt(m_createdAt);
 
     return notification;
 }
