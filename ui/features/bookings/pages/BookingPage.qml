@@ -4,6 +4,8 @@ import QtQuick.Layouts
 import "../../../utils/NavigationUtils.js" as NavUtils
 import "../../../components/pages"
 import "../../dashboards/admins/pages"
+import "../../../components/pages"
+import "../../dashboards/admins/pages"
 
 Rectangle {
     id: root
