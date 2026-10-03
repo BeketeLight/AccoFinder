@@ -4,6 +4,8 @@ import QtQuick.Layouts
 import "../../../utils/NavigationUtils.js" as NavUtils
 import "../../../components/pages"
 import "../../dashboards/admins/pages"
+import "../../../components/pages"
+import "../../dashboards/admins/pages"
 
 Rectangle {
     id: root
@@ -13,52 +15,16 @@ Rectangle {
     readonly property bool isGuest: !AppSettings.isLoggedIn()
     readonly property bool isClient: AppSettings.isLoggedIn() && AppSettings.userType() === "CLIENT"
     readonly property bool isAgent: AppSettings.isLoggedIn() && AppSettings.userType() === "AGENT"
-    readonly property bool isAdmin: AppSettings.isLoggedIn()
-                               && (AppSettings.userType() === "ADMIN"
-                                   || AppSettings.userType() === "SUPER_ADMIN")
-
-    // --- GUEST VIEW BANNER ---
-    ColumnLayout {
-        anchors.fill: parent
-        visible: root.isGuest
-        //Layout.visible: visible
-        spacing: 16
-
-        Rectangle {
-            Layout.fillWidth: true
-            Layout.preferredHeight: 180
-            color: "#2563EB"
-
-            ColumnLayout {
-                anchors.fill: parent
-                anchors.margins: 16
-                spacing: 12
-
-                Text {
-                    text: qsTr("Welcome to AccoFinder")
-                    font.pixelSize: 22
-                    font.bold: true
-                    color: "#FFFFFF"
-                }
-                Text {
-                    text: qsTr("Sign in to manage or view your bookings.")
-                    color: "#E0F2FE"
-                }
-                Button {
-                    text: qsTr("Sign in / Register")
-                    onClicked: NavUtils.navigateToSignIn()
-                }
-            }
-        }
-    }
-
-    // --- LOGGED-IN ROLE ROUTER ---
+    readonly property bool isAdmin: AppSettings.isLoggedIn() && AppSettings.userType() === "ADMIN"
+    // --- USER-ROLE ROUTER ---
     Loader {
         anchors.fill: parent
-        visible: !root.isGuest && !root.isAdmin
+        //visible: !root.isGuest && !root.isAdmin
         source: {
             if (root.isAgent)  return "BookingOverviewAgentPage.qml"
             if (root.isClient) return "BookingOverviewClientPage.qml"
+            if(root.isAdmin) return "BookingOverviewAdminPage.qml"
+            if (root.isGuest) return "../../auth/screens/SignInScreen.qml"
             return ""
         }
     }
@@ -67,15 +33,4 @@ Rectangle {
     // The page is content-only, so it is hosted in the shared scrollable shell
     // here - the same shell AdminBookingsScreen uses when the list is reached
     // by pushing from the admin dashboard.
-    AppScrollablePage {
-        anchors.fill: parent
-        visible: root.isAdmin
-        loading: BookingViewModel.isLoading
-                   && adminBookings.bookingsModel.totalCount === 0
-
-        AdminBookingsPage {
-            id: adminBookings
-            Layout.fillWidth: true
-        }
-    }
 }

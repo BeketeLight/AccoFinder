@@ -201,11 +201,6 @@ function navigateToBookingsDetailsClient(data) {
         propertyLocation: data.propertyLocation || data.location || "",
         roomType: data.roomType || "",
         checkIn: data.checkIn || data.bookingDate || data.dateRange || "",
-        baseAmount: data.baseAmount !== null ? data.baseAmount : (data.roomPrice || 0),
-        serviceFee: data.serviceFee !== null ? data.serviceFee : (data.commissionAmount || 0),
-        totalAmount: data.totalAmount !== null
-            ? data.totalAmount
-            : ((data.baseAmount || data.amount || 0) + (data.serviceFee || data.commissionAmount || 0)),
         paymentStatus: data.paymentStatus || "Unpaid",
         paymentMethod: data.paymentMethod || "",
         paymentDate: data.paymentDate || "",
@@ -220,7 +215,7 @@ function navigateToBookingsDetailsOwneByAgent(data){
     data = data || {}
         var price = Number(data.price !== null ? data.price
                         : (data.amount !== null ? data.amount : 0))
-        var commission = Number(data.commissionAmount !== null ? data.commissionAmount : 0)
+        var commission = Number(data.commission !== null ? data.commission : 0)
     push("../features/bookings/pages/AgentBookingDetailsOnOwnedPropertiesPage.qml", {
             bookingId: data.bookingId || "",
             status: data.status || "",

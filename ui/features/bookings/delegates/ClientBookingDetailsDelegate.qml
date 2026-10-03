@@ -197,85 +197,6 @@ Item{
                 }
             }
 
-            // --- LOCATION CARD ---
-            // Rectangle {
-            //     Layout.fillWidth: true
-            //     implicitHeight: locCol.implicitHeight + 24
-            //     radius: 12
-            //     color: "#FFFFFF"
-
-            //     ColumnLayout {
-            //         id: locCol
-            //         anchors.left: parent.left
-            //         anchors.right: parent.right
-            //         anchors.top: parent.top
-            //         anchors.margins: 12
-            //         spacing: 12
-
-            //         RowLayout {
-            //             Layout.fillWidth: true
-
-            //             ColumnLayout {
-            //                 spacing: 4
-            //                 RowLayout {
-            //                     spacing: 6
-            //                     Text { text: "📍"; font.pixelSize: 14 }
-            //                     Text { text: "Location"; font.pixelSize: 14; font.bold: true; color: "#0F172A" }
-            //                 }
-            //                 Text {
-            //                     text: detailsPage.propertyLocation
-            //                     font.pixelSize: 12
-            //                     color: "#64748B"
-            //                     Layout.leftMargin: 20
-            //                 }
-            //             }
-
-            //             Item { Layout.fillWidth: true }
-
-            //             // Map Thumbnail
-            //             Rectangle {
-            //                 implicitWidth: 70
-            //                 implicitHeight: 40
-            //                 radius: 6
-            //                 color: "#E2E8F0"
-            //                 clip: true
-
-            //                 Text {
-            //                     anchors.centerIn: parent
-            //                     text: "🗺️"
-            //                     font.pixelSize: 18
-            //                 }
-            //             }
-            //         }
-
-            //         Rectangle {
-            //             Layout.fillWidth: true
-            //             implicitHeight: 36
-            //             radius: 18
-            //             border.color: "#2563EB"
-            //             border.width: 1
-            //             color: "transparent"
-
-            //             RowLayout {
-            //                 anchors.centerIn: parent
-            //                 spacing: 6
-            //                 Text { text: "🗺️"; font.pixelSize: 12 }
-            //                 Text {
-            //                     text: "View on Map"
-            //                     font.pixelSize: 12
-            //                     font.bold: true
-            //                     color: "#2563EB"
-            //                 }
-            //             }
-
-            //             MouseArea {
-            //                 anchors.fill: parent
-            //                 onClicked: detailsPage.viewMapRequested()
-            //             }
-            //         }
-            //     }
-            // }
-
             // --- PAYMENT SUMMARY CARD ---
             Rectangle {
                 Layout.fillWidth: true
@@ -313,11 +234,6 @@ Item{
                                 Item { Layout.fillWidth: true }
                                 Text { text:"MWK" + detailsPage.price; font.pixelSize: 12; font.bold: true; color: "#0F172A" }
                             }
-                            // RowLayout {
-                            //     Text { text: "Commission"; font.pixelSize: 12; color: "#64748B" }
-                            //     Item { Layout.fillWidth: true }
-                            //     Text { text: detailsPage.commissionPrice; font.pixelSize: 12; font.bold: true; color: "#0F172A" }
-                            // }
                         }
 
                         Rectangle {
@@ -428,29 +344,6 @@ Item{
                             Text { text: detailsPage.hostName; font.pixelSize: 13; font.bold: true; color: "#0F172A" }
                             // Text { text: "📞 " + detailsPage.hostPhone; font.pixelSize: 11; color: "#64748B" }
                         }
-
-                        Item { Layout.fillWidth: true }
-
-                        // Rectangle {
-                        //     implicitWidth: 110
-                        //     implicitHeight: 32
-                        //     radius: 16
-                        //     border.color: "#2563EB"
-                        //     border.width: 1
-                        //     color: "transparent"
-
-                        //     RowLayout {
-                        //         anchors.centerIn: parent
-                        //         spacing: 4
-                        //         Text { text: "📞"; font.pixelSize: 11 }
-                        //         Text { text: "Contact Host"; font.pixelSize: 11; font.bold: true; color: "#2563EB" }
-                        //     }
-
-                        //     MouseArea {
-                        //         anchors.fill: parent
-                        //         onClicked: detailsPage.contactHostRequested()
-                        //     }
-                        // }
                     }
                 }
             }

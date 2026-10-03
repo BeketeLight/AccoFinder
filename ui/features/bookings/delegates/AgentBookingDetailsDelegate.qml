@@ -136,7 +136,7 @@ Item{
                     spacing: 12
 
                     RowLayout {
-                        spacing: 8
+                        spacing: 1
                         ToolButton{
                             icon.source: "qrc:/ui/assets/reservation-icon.svg"
                             icon.height: 12
@@ -205,7 +205,7 @@ Item{
                             RowLayout {
                                 Text { text: "Room price"; font.pixelSize: 12; color: "#64748B" }
                                 Item { Layout.fillWidth: true }
-                                Text { text:"MWK" + detailsPage.price; font.pixelSize: 12; font.bold: true; color: "#0F172A" }
+                                Text { text:"MK" + detailsPage.price; font.pixelSize: 12; font.bold: true; color: "#0F172A" }
                             }
                             RowLayout {
                                 Text { text: "Commission Earned"; font.pixelSize: 12; color: "#2563EB" }
@@ -219,7 +219,7 @@ Item{
                                     Text {
                                         id: commTextId
                                         anchors.centerIn: parent
-                                        text:"MWK1000000" //detailsPage.commission
+                                        text:"MK" + detailsPage.commission
                                         font.pixelSize: 10
                                         font.bold: true
                                         color: "#FFFFFF"
@@ -227,11 +227,6 @@ Item{
                                 }
 
                             }
-                            // RowLayout {
-                            //     Text { text: "Commission"; font.pixelSize: 12; color: "#64748B" }
-                            //     Item { Layout.fillWidth: true }
-                            //     Text { text: detailsPage.commissionPrice; font.pixelSize: 12; font.bold: true; color: "#0F172A" }
-                            // }
                         }
 
                         Rectangle {
@@ -241,7 +236,6 @@ Item{
                             Layout.leftMargin: 12
                             Layout.rightMargin: 12
                         }
-
                         ColumnLayout {
                             spacing: 4
                             Text { text: "Payment status"; font.pixelSize: 11; color: "#64748B" }
@@ -274,7 +268,7 @@ Item{
                         Layout.fillWidth: true
                         Text { text: "Total"; font.pixelSize: 13; font.bold: true; color: "#0F172A" }
                         Item { Layout.fillWidth: true }
-                        Text { text:"MWK" + detailsPage.price; font.pixelSize: 15; font.bold: true; color: "#0F172A" }
+                        Text { text:"MK" + detailsPage.price; font.pixelSize: 15; font.bold: true; color: "#0F172A" }
                     }
                 }
             }
@@ -449,80 +443,80 @@ Item{
         // ------------------------------------------
         // 2. SKELETON SHIMMER OVERLAY (Parallel Layout)
         // ------------------------------------------
-        ColumnLayout {
-            id: skeletonContent
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.top: parent.top
-            anchors.margins: 16
-            spacing: 16
-            visible: detailsPage.isLoading
+        // ColumnLayout {
+        //     id: skeletonContent
+        //     anchors.left: parent.left
+        //     anchors.right: parent.right
+        //     anchors.top: parent.top
+        //     anchors.margins: 16
+        //     spacing: 16
+        //     visible: detailsPage.isLoading
 
-            // Hero Image Placeholder
-            Rectangle {
-                Layout.fillWidth: true
-                implicitHeight: 260
-                radius: 16
-                color: "#FFFFFF"
+        //     // Hero Image Placeholder
+        //     Rectangle {
+        //         Layout.fillWidth: true
+        //         implicitHeight: 260
+        //         radius: 16
+        //         color: "#FFFFFF"
 
-                ColumnLayout {
-                    anchors.fill: parent
-                    spacing: 12
+        //         ColumnLayout {
+        //             anchors.fill: parent
+        //             spacing: 12
 
-                    LoadingSkeleton {
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: 180
-                        radius: 16
-                        loading: detailsPage.isLoading
-                    }
+        //             LoadingSkeleton {
+        //                 Layout.fillWidth: true
+        //                 Layout.preferredHeight: 180
+        //                 radius: 16
+        //                 loading: detailsPage.isLoading
+        //             }
 
-                    ColumnLayout {
-                        Layout.fillWidth: true
-                        Layout.margins: 12
-                        spacing: 8
+        //             ColumnLayout {
+        //                 Layout.fillWidth: true
+        //                 Layout.margins: 12
+        //                 spacing: 8
 
-                        LoadingSkeleton { Layout.preferredWidth: 200; Layout.preferredHeight: 18; loading: detailsPage.isLoading }
-                        LoadingSkeleton { Layout.preferredWidth: 130; Layout.preferredHeight: 14; loading: detailsPage.isLoading }
-                    }
-                }
-            }
+        //                 LoadingSkeleton { Layout.preferredWidth: 200; Layout.preferredHeight: 18; loading: detailsPage.isLoading }
+        //                 LoadingSkeleton { Layout.preferredWidth: 130; Layout.preferredHeight: 14; loading: detailsPage.isLoading }
+        //             }
+        //         }
+        //     }
 
-            // Confirmation Banner Placeholder
-            LoadingSkeleton {
-                Layout.fillWidth: true
-                Layout.preferredHeight: 60
-                radius: 12
-                loading: detailsPage.isLoading
-            }
+        //     // Confirmation Banner Placeholder
+        //     LoadingSkeleton {
+        //         Layout.fillWidth: true
+        //         Layout.preferredHeight: 60
+        //         radius: 12
+        //         loading: detailsPage.isLoading
+        //     }
 
-            // Cards Placeholders
-            Repeater {
-                model: 4
-                Rectangle {
-                    Layout.fillWidth: true
-                    implicitHeight: 120
-                    radius: 12
-                    color: "#FFFFFF"
+        //     // Cards Placeholders
+        //     Repeater {
+        //         model: 4
+        //         Rectangle {
+        //             Layout.fillWidth: true
+        //             implicitHeight: 120
+        //             radius: 12
+        //             color: "#FFFFFF"
 
-                    ColumnLayout {
-                        anchors.fill: parent
-                        anchors.margins: 12
-                        spacing: 12
+        //             ColumnLayout {
+        //                 anchors.fill: parent
+        //                 anchors.margins: 12
+        //                 spacing: 12
 
-                        LoadingSkeleton { Layout.preferredWidth: 140; Layout.preferredHeight: 16; loading: detailsPage.isLoading }
-                        LoadingSkeleton { Layout.fillWidth: true; Layout.preferredHeight: 14; loading: detailsPage.isLoading }
-                        LoadingSkeleton { Layout.preferredWidth: 220; Layout.preferredHeight: 14; loading: detailsPage.isLoading }
-                    }
-                }
-            }
+        //                 LoadingSkeleton { Layout.preferredWidth: 140; Layout.preferredHeight: 16; loading: detailsPage.isLoading }
+        //                 LoadingSkeleton { Layout.fillWidth: true; Layout.preferredHeight: 14; loading: detailsPage.isLoading }
+        //                 LoadingSkeleton { Layout.preferredWidth: 220; Layout.preferredHeight: 14; loading: detailsPage.isLoading }
+        //             }
+        //         }
+        //     }
 
-            // Button Placeholder
-            LoadingSkeleton {
-                Layout.fillWidth: true
-                Layout.preferredHeight: 44
-                radius: 22
-                loading: detailsPage.isLoading
-            }
-        }
+        //     // Button Placeholder
+        //     LoadingSkeleton {
+        //         Layout.fillWidth: true
+        //         Layout.preferredHeight: 44
+        //         radius: 22
+        //         loading: detailsPage.isLoading
+        //     }
+        // }
    // }
 }

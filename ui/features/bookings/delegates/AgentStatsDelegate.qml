@@ -49,30 +49,6 @@ Rectangle {
         anchors.top: parent.top
         anchors.margins: 12
         spacing: 10
-
-        // --- 1. HEADER ROW: STATUS ---
-        RowLayout {
-            Layout.fillWidth: true
-
-            Item { Layout.fillWidth: true }
-
-            Text {
-                text: delegateRoot.status
-                font.pixelSize: 12
-                font.bold: true
-                color: {
-                    switch(delegateRoot.status) {
-                        case "Confirmed":
-                        case "Approved": return "#16A34A"
-                        case "Pending": return "#D97706"
-                        case "Cancelled":
-                        case "Rejected": return "#DC2626"
-                        default: return "#888888"
-                    }
-                }
-            }
-        }
-
         // --- 2. LANDLORD / STORE BADGE ---
         RowLayout {
             spacing: 6
@@ -81,6 +57,33 @@ Rectangle {
                 text: delegateRoot.houseName
                 font.pixelSize: 14
                 color: "#2563EB"
+            }
+
+            Item { Layout.fillWidth: true }
+
+
+            Rectangle {
+                id: badge
+                Layout.alignment: Qt.AlignVCenter
+                implicitWidth: statusLabel.implicitWidth + 16
+                implicitHeight: 28
+                radius: 14
+                color: delegateRoot.status === "Confirmed" ? "#DCFCE7"
+                     : delegateRoot.status === "Pending" ? "#FEF3C7"
+                     : delegateRoot.status === "Cancelled" ? "#FEE2E2"
+                     : "#F1F5F9"
+
+                Text {
+                    id: statusLabel
+                    anchors.centerIn: parent
+                    text: delegateRoot.status
+                    font.pixelSize: 12
+                    font.bold: true
+                    color: delegateRoot.status === "Confirmed" ? "#15803D"
+                         : delegateRoot.status === "Pending" ? "#B45309"
+                         : delegateRoot.status === "Cancelled" ? "#B91C1C"
+                         : "#475569"
+                }
             }
         }
 

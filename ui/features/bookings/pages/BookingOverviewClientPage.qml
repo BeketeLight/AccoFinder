@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import "../delegates"
 import "../models"
+import "../components"
 import "../../../components/indicators"
 import "../../../utils/NavigationUtils.js" as NavUtils
 
@@ -11,68 +12,11 @@ Page {
     title: "My Bookings"
 
     //--- TOOLBAR & TABBAR HEADER ---
-    header: ColumnLayout {
-        spacing: 0
-
-        // Top Toolbar Title
-        ToolBar {
-            Layout.fillWidth: true
-            background: Rectangle { color: "#FFFFFF" }
-
-            // RowLayout {
-            //     anchors.fill: parent
-            //     anchors.leftMargin: 16
-            //     anchors.rightMargin: 16
-
-            //     Text {
-            //         text: "My Bookings"
-            //         font.bold: true
-            //         font.pixelSize: 18
-            //         color: "#0F172A"
-            //         Layout.fillWidth: true
-            //     }
-            // }
-        }
-
-        // Status Filter Tabs
-        TabBar {
-            id: filterTabBar
-            Layout.fillWidth: true
-            background: Rectangle {
-                color: "#FFFFFF"
-                Rectangle {
-                    anchors.bottom: parent.bottom
-                    width: parent.width
-                    height: 1
-                    color: "#E2E8F0"
-                }
-            }
-
-            TabButton {
-                text: "All"
-                width: implicitWidth
-            }
-            TabButton {
-                text: "Confirmed"  //approved
-                width: implicitWidth
-            }
-            TabButton {
-                text: "Pending"
-                width: implicitWidth
-            }
-            TabButton {
-                text: "Cancelled"
-                width: implicitWidth
-            }
-            onCurrentIndexChanged: {
-                if (!currentItem)
-                    return
-                var t = currentItem.text
-                // Map UI label → model statusFilter
-                if (t === "Approved")
-                    t = "Confirmed"
-                clientBookingModel.statusFilter = t
-            }
+    header: FilterComponent {
+        id: filterBar
+        model: ["All", "Pending", "Confirmed", "Cancelled"]
+        onFilterChanged: function(text) {
+            clientBookingModel.statusFilter = text
         }
     }
 
@@ -93,7 +37,7 @@ Page {
 
         delegate: ClientStatsDelegate {
             activeFilter: {
-                    var t = filterTabBar.currentItem ? filterTabBar.currentItem.text : "All"
+                    var t = filterBar.currentText
                     if (t === "Approved") return "Confirmed"
                     return t
                 }
