@@ -59,7 +59,9 @@ public:
                                     const QString& verificationStatus,
                                     bool isActive,
                                     const QJsonArray& rooms = QJsonArray());
-    Q_INVOKABLE void deleteProperty(const QString& houseId);
+    // force bypasses the backend's active-booking guard; set only once the
+    // user has confirmed the override dialog.
+    Q_INVOKABLE void deleteProperty(const QString& houseId, bool force = false);
     Q_INVOKABLE void attachMedia(const QString& houseId, const QStringList& mediaIds);
 
 private:
@@ -86,6 +88,9 @@ signals:
     void propertyCreatedSignal(const QString& id, const QString& title, const QVariant& rooms = QVariant());
     void propertyUpdatedSignal(const QString& id);
     void propertyDeletedSignal(const QString& id);
+    // Delete refused because rooms still hold bookings. Carries the count so
+    // QML can offer a "delete anyway" override.
+    void propertyDeleteBlockedSignal(int activeBookings);
 };
 
 #endif // PROPERTYVIEWMODEL_H

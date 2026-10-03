@@ -51,6 +51,21 @@ BookingDto BookingDto::fromJson(
     dto.commissionAmount =
         json["commissionAmount"].toDouble();
 
+    // Provisional hold deadline. Absent on non-hold bookings, which leaves the
+    // QDateTime invalid - the signal for "no countdown to show".
+    const QString holdExpiry =
+        json["expiresAt"].toString();
+
+    if (!holdExpiry.isEmpty()) {
+        dto.holdExpiresAt =
+            QDateTime::fromString(holdExpiry, Qt::ISODate);
+
+        if (!dto.holdExpiresAt.isValid()) {
+            dto.holdExpiresAt =
+                QDateTime::fromString(holdExpiry, Qt::ISODateWithMs);
+        }
+    }
+
     return dto;
 }
 
@@ -67,6 +82,11 @@ QJsonObject BookingDto::toJson() const
     json["status"] = status;
     json["amount"] = amount;
     json["commissionAmount"] = commissionAmount;
+
+    if (holdExpiresAt.isValid()) {
+        json["expiresAt"] =
+            holdExpiresAt.toUTC().toString(Qt::ISODate);
+    }
 
     return json;
 }

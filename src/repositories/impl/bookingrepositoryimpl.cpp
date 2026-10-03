@@ -10,6 +10,57 @@
 
 // ... other includes
 
+// Map the API's status string onto BookingStatus.
+//
+// Kept in one place because the two response shapes (list and single) both need
+// it, and two copies of this switch is how the new hold statuses would have
+// silently gone missing from one of them.
+//
+// Unknown values fall back to PendingPayment rather than Pending: an unrecognised
+// status on a freshly created booking means a hold we do not recognise, and
+// treating that as "pending work" is safer than pretending it is merely pending
+// confirmation.
+static BookingStatus bookingStatusFromString(const QString &rawStatus)
+{
+    const QString s = rawStatus.trimmed().toUpper();
+
+    if (s == QLatin1String("PENDINGPAYMENT"))
+        return BookingStatus::PendingPayment;
+    if (s == QLatin1String("PAYMENTINFLIGHT"))
+        return BookingStatus::PaymentInFlight;
+    if (s == QLatin1String("EXPIRED"))
+        return BookingStatus::Expired;
+    if (s == QLatin1String("FAILED"))
+        return BookingStatus::Failed;
+
+    // PAID is legacy: the hold model confirms on verified payment, so this only
+    // appears on historical rows.
+    if (s == QLatin1String("PAID"))
+        return BookingStatus::Paid;
+    if (s == QLatin1String("CONFIRMED") || s == QLatin1String("APPROVED"))
+        return BookingStatus::Confirmed;
+    if (s == QLatin1String("CANCELLED")
+        || s == QLatin1String("CANCELED")
+        || s == QLatin1String("REJECTED"))
+        return BookingStatus::Cancelled;
+
+    return BookingStatus::PendingPayment;
+}
+
+// Read a hold expiry from a booking payload. Returns an invalid QDateTime when
+// the booking is not on a hold, which callers treat as "no countdown".
+static QDateTime holdExpiryFromJson(const QJsonObject &obj)
+{
+    const QString raw = obj.value(QStringLiteral("expiresAt")).toString();
+    if (raw.isEmpty())
+        return QDateTime();
+
+    QDateTime parsed = QDateTime::fromString(raw, Qt::ISODate);
+    if (!parsed.isValid())
+        parsed = QDateTime::fromString(raw, Qt::ISODateWithMs);
+    return parsed;
+}
+
 // ---- helper (file scope) ----
 static QString jsonId(const QJsonValue &v)
 {
@@ -181,19 +232,11 @@ void BookingRepositoryImpl::getBooking()
                     const QString statusStr =
                         obj.value(QStringLiteral("status")).toString().trimmed().toUpper();
 
-                    if (statusStr == QLatin1String("PAID"))
-                        booking->setStatus(BookingStatus::Paid);
-                    else if (statusStr == QLatin1String("CONFIRMED")
-                             || statusStr == QLatin1String("APPROVED"))
-                        booking->setStatus(BookingStatus::Confirmed);
-                    else if (statusStr == QLatin1String("CANCELLED")
-                             || statusStr == QLatin1String("CANCELED")
-                             || statusStr == QLatin1String("REJECTED"))
-                        booking->setStatus(BookingStatus::Cancelled);
-                    else
-                        booking->setStatus(BookingStatus::Pending);
+                    booking->setStatus(bookingStatusFromString(statusStr));
+                    booking->setHoldExpiresAt(holdExpiryFromJson(obj));
 
-                   qDebug() << "status from API:" << statusStr;
+                    qDebug() << "status from API:" << statusStr
+                             << "holdExpiresAt:" << booking->getHoldExpiresAt();
 
                     qDebug() << "Booking object"
                              << "id" << booking->getId()
@@ -300,17 +343,8 @@ void BookingRepositoryImpl::getBookingById(const QString& id)
             const QString statusStr =
                 data.value(QStringLiteral("status")).toString().trimmed().toUpper();
 
-            if (statusStr == QLatin1String("PAID"))
-                booking->setStatus(BookingStatus::Paid);
-            else if (statusStr == QLatin1String("CONFIRMED")
-                     || statusStr == QLatin1String("APPROVED"))
-                booking->setStatus(BookingStatus::Confirmed);
-            else if (statusStr == QLatin1String("CANCELLED")
-                     || statusStr == QLatin1String("CANCELED")
-                     || statusStr == QLatin1String("REJECTED"))
-                booking->setStatus(BookingStatus::Cancelled);
-            else
-                booking->setStatus(BookingStatus::Pending);
+            booking->setStatus(bookingStatusFromString(statusStr));
+            booking->setHoldExpiresAt(holdExpiryFromJson(data));
 
             qDebug() << "getBookingById built"
                      << "id" << booking->getId()

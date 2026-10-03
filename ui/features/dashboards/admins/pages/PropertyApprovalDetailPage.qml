@@ -21,6 +21,11 @@ Item {
 
     signal decisionMade(var propertyId, var title, var approved)
     signal goBackRequested()
+    // Emitted once the backend confirms the delete, so the host screen can drop
+    // its cached images and pop. Not emitted optimistically on click: a delete
+    // that fails on the server must leave the admin on the page, not navigate
+    // away from a property that is still there.
+    signal propertyDeleted()
 
     implicitWidth: 400
     implicitHeight: contentColumn.implicitHeight
@@ -55,6 +60,24 @@ Item {
     property string propApprovedBy: propertyPayload ? String(propertyPayload.approvedByName || "") : ""
 
     readonly property bool hasPrice: root.propPrice > 0
+
+    // ---- Delete flow ----
+    // True only between our own delete call and its answer. PropertyViewModel's
+    // deleted/error signals are app-wide, so an unguarded handler would react to
+    // unrelated property requests made from other screens.
+    property bool deletePending: false
+    property string deleteError: ""
+    // Set when the backend refuses the delete because rooms still hold
+    // bookings; drives the "delete anyway" override dialog.
+    property int blockedBookings: 0
+
+    // Spelled out once so the override dialog and the warning copy cannot
+    // disagree on the count. Built by hand rather than with a %n plural
+    // because these strings are only ever shown untranslated in practice and a
+    // missing plural entry would silently render the wrong form.
+    readonly property string blockedBookingCount: root.blockedBookings === 1
+        ? qsTr("1 active booking")
+        : qsTr("%1 active bookings").arg(root.blockedBookings)
 
     // Rooms live in the separate /rooms/ collection keyed by propertyId, so
     // pull them from RoomViewModel (via C++) instead of the (room-less) payload
@@ -115,6 +138,61 @@ Item {
         rejectDialog.close()
     }
 
+    // ---- Delete ----
+    // Same confirmation gate the agent-facing property page uses
+    // (PropertyDetailsPage), reached from the same business call:
+    // PropertyViewModel.deleteProperty -> DELETE /house-listing/:id.
+    function confirmDelete() {
+        root.deleteError = ""
+        root.blockedBookings = 0
+        deleteDialog.open()
+    }
+
+    // force=true only ever comes from the override dialog, i.e. after the admin
+    // has seen how many bookings are in the way and confirmed anyway.
+    function doDelete(force) {
+        // Nothing server-side to remove without a real id (a local draft).
+        if (!root.propertyId || root.propertyId.length === 0)
+            return
+        root.deletePending = true
+        root.deleteError = ""
+        deleteDialog.close()
+        forceDeleteDialog.close()
+        PropertyViewModel.deleteProperty(root.propertyId, force === true)
+        console.log("Delete requested:", root.propertyId, "force:", force === true)
+    }
+
+    function handleDeleteSucceeded(id) {
+        if (!root.deletePending || String(id) !== String(root.propertyId))
+            return
+        root.deletePending = false
+        console.log("Delete confirmed:", root.propertyId)
+        root.propertyDeleted()
+    }
+
+    function handleDeleteFailed(message) {
+        if (!root.deletePending)
+            return
+        root.deletePending = false
+        root.deleteError = (message && String(message).length > 0)
+            ? String(message)
+            : qsTr("This property could not be deleted. Please try again.")
+        console.warn("Delete failed:", root.propertyId, root.deleteError)
+    }
+
+    // The backend refuses the delete while any room still holds a booking. It
+    // reports how many, which we turn into an explicit override prompt rather
+    // than a failure.
+    function handleDeleteBlocked(activeBookings) {
+        if (!root.deletePending)
+            return
+        root.deletePending = false
+        root.deleteError = ""
+        root.blockedBookings = Number(activeBookings) > 0 ? Number(activeBookings) : 1
+        forceDeleteDialog.open()
+        console.warn("Delete blocked by active bookings:", root.propertyId, root.blockedBookings)
+    }
+
     // Amenities come from the property document (via C++). Fetching them here
     // keeps them authoritative and avoids QML ListModel/Array.isArray fragility.
     function syncAmenities() {
@@ -156,6 +234,17 @@ Item {
         target: MediaViewModel.mediaListModel
         function onCountChanged() { root.loadMedia() }
         function onModelReset() { root.loadMedia() }
+    }
+
+    // Backend answer for the delete started above. Both handlers bail out unless
+    // deletePending is set, because these signals are shared with every other
+    // property operation in the app.
+    Connections {
+        target: PropertyViewModel
+
+        function onPropertyDeletedSignal(id) { root.handleDeleteSucceeded(id) }
+        function onPropertyError(message) { root.handleDeleteFailed(message) }
+        function onPropertyDeleteBlockedSignal(activeBookings) { root.handleDeleteBlocked(activeBookings) }
     }
 
     Flickable {
@@ -673,6 +762,68 @@ Item {
                     }
                 }
             }
+
+            // Delete gets its own row rather than a third button in the row above:
+            // an irreversible delete should not sit one mis-tap away from
+            // Approve. Outlined rather than filled so it reads as destructive
+            // without competing with the two primary actions.
+            Button {
+                id: deleteButton
+                Layout.fillWidth: true
+                visible: root.propertyId.length > 0
+                Layout.preferredHeight: visible ? 46 : 0
+                enabled: !root.deletePending
+                text: root.deletePending ? qsTr("Deleting...") : qsTr("Delete property")
+
+                contentItem: Item {
+                    Text {
+                        id: deleteLabel
+                        anchors.centerIn: parent
+                        // Half the spinner (16px) plus half the 8px gap, so the
+                        // spinner and label stay centred as the text changes.
+                        anchors.horizontalCenterOffset: root.deletePending ? 12 : 0
+                        text: deleteButton.text
+                        color: "#B91C1C"
+                        font.pixelSize: 14
+                        font.bold: true
+                    }
+
+                    AppSpinner {
+                        // Explicit width/height: this contentItem is a plain Item,
+                        // so AppSpinner's implicit size is never applied.
+                        width: 16
+                        height: 16
+                        size: 16
+                        lineWidth: 2.5
+                        color: "#B91C1C"
+                        anchors.right: deleteLabel.left
+                        anchors.rightMargin: 8
+                        anchors.verticalCenter: deleteLabel.verticalCenter
+                        visible: root.deletePending
+                        running: root.deletePending
+                    }
+                }
+
+                background: Rectangle {
+                    radius: 23
+                    color: "#FFFFFF"
+                    border.color: "#FECACA"
+                    border.width: 1
+                }
+
+                onClicked: root.confirmDelete()
+            }
+
+            // Delete failure message. Shown in place of the dialog so the admin
+            // keeps the full context of what they were trying to remove.
+            Label {
+                Layout.fillWidth: true
+                visible: root.deleteError.length > 0
+                text: root.deleteError
+                color: root.dangerColor
+                font.pixelSize: 11
+                wrapMode: Text.WordWrap
+            }
         }
     }
 
@@ -840,6 +991,202 @@ Item {
                     }
 
                     onClicked: root.doReject()
+                }
+            }
+        }
+    }
+
+    // Confirmation gate for the irreversible delete, matching the one on the
+    // agent-facing property detail page. Stays open on nothing: the dialog is
+    // only a "are you sure", the outcome arrives on PropertyViewModel's signals
+    // and is reported on the page itself.
+    Dialog {
+        id: deleteDialog
+        modal: true
+        width: Math.min(parent ? parent.width - 48 : 340, 340)
+        anchors.centerIn: parent
+        padding: 20
+
+        background: Rectangle {
+            radius: 16
+            color: root.surfaceColor
+        }
+
+        contentItem: ColumnLayout {
+            spacing: 10
+
+            Label {
+                Layout.fillWidth: true
+                text: qsTr("Delete this property?")
+                color: root.textColor
+                font.pixelSize: 16
+                font.bold: true
+                wrapMode: Text.WordWrap
+            }
+
+            Label {
+                Layout.fillWidth: true
+                text: qsTr("\"%1\", its rooms and its photos will be permanently removed. If any of its rooms still has an active booking, the delete will be blocked and you will be asked to confirm.").arg(root.propTitle)
+                color: root.mutedColor
+                font.pixelSize: 13
+                wrapMode: Text.WordWrap
+            }
+
+            RowLayout {
+                Layout.fillWidth: true
+                Layout.topMargin: 8
+                spacing: 10
+
+                Button {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 44
+                    text: qsTr("Keep")
+
+                    contentItem: Label {
+                        text: qsTr("Keep")
+                        color: root.textColor
+                        font.pixelSize: 13
+                        font.bold: true
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+
+                    background: Rectangle {
+                        radius: 22
+                        color: "transparent"
+                        border.color: root.borderColor
+                        border.width: 1
+                    }
+
+                    onClicked: deleteDialog.close()
+                }
+
+                Button {
+                    id: deleteConfirmButton
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 44
+                    text: qsTr("Delete")
+
+                    contentItem: Label {
+                        text: qsTr("Delete")
+                        color: "#FFFFFF"
+                        font.pixelSize: 13
+                        font.bold: true
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+
+                    background: Rectangle {
+                        radius: 22
+                        color: deleteConfirmButton.down ? "#B91C1C" : root.dangerColor
+                    }
+
+                    onClicked: root.doDelete()
+                }
+            }
+        }
+    }
+
+    // Opened only when the backend refuses the delete with HTTP 409 because
+    // the property's rooms still hold bookings. This is the one decision the
+    // admin has to make themselves, so it is stated in full: how many bookings
+    // are in the way, that they will be cancelled, that the rooms disappear
+    // with the property, and that the booking rows themselves are kept so the
+    // payment history survives. "Keep property" is the safe default and closes
+    // without touching the backend, which is still fully intact at this point.
+    Dialog {
+        id: forceDeleteDialog
+        modal: true
+        width: Math.min(parent ? parent.width - 48 : 340, 340)
+        anchors.centerIn: parent
+        padding: 20
+
+        background: Rectangle {
+            radius: 16
+            color: root.surfaceColor
+        }
+
+        contentItem: ColumnLayout {
+            spacing: 10
+
+            Label {
+                Layout.fillWidth: true
+                text: qsTr("Delete despite an active booking?")
+                color: root.textColor
+                font.pixelSize: 16
+                font.bold: true
+                wrapMode: Text.WordWrap
+            }
+
+            Label {
+                Layout.fillWidth: true
+                text: qsTr("\"%1\" still has %2. Deleting it will cancel %3 and remove the rooms, so those clients lose the reservation.")
+                        .arg(root.propTitle)
+                        .arg(root.blockedBookingCount)
+                        .arg(root.blockedBookings === 1 ? qsTr("it") : qsTr("them"))
+                color: root.mutedColor
+                font.pixelSize: 13
+                wrapMode: Text.WordWrap
+            }
+
+            Label {
+                Layout.fillWidth: true
+                text: qsTr("The cancelled bookings stay on record so payment history is not lost.")
+                color: root.mutedColor
+                font.pixelSize: 12
+                wrapMode: Text.WordWrap
+            }
+
+            RowLayout {
+                Layout.fillWidth: true
+                Layout.topMargin: 8
+                spacing: 10
+
+                Button {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 44
+                    text: qsTr("Keep property")
+
+                    contentItem: Label {
+                        text: qsTr("Keep property")
+                        color: root.textColor
+                        font.pixelSize: 13
+                        font.bold: true
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+
+                    background: Rectangle {
+                        radius: 22
+                        color: "transparent"
+                        border.color: root.borderColor
+                        border.width: 1
+                    }
+
+                    onClicked: forceDeleteDialog.close()
+                }
+
+                Button {
+                    id: forceDeleteConfirmButton
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 44
+                    text: qsTr("Delete anyway")
+
+                    contentItem: Label {
+                        text: qsTr("Delete anyway")
+                        color: "#FFFFFF"
+                        font.pixelSize: 13
+                        font.bold: true
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+
+                    background: Rectangle {
+                        radius: 22
+                        color: forceDeleteConfirmButton.down ? "#B91C1C" : root.dangerColor
+                    }
+
+                    onClicked: root.doDelete(true)
                 }
             }
         }

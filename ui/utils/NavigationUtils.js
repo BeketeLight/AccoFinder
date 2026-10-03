@@ -90,8 +90,16 @@ function navigateToAddProperty(){
 function navigateToDrafts(){
     push("../features/properties/screens/DraftsScreen.qml")
 }
-function navigateToPayments(){
-    push("../features/payments/screens/PaymentsScreen.qml")
+// Takes the booking context so the payment screen can show the provisional
+// hold countdown and prefill what it is paying for. Previously it pushed the
+// screen with no arguments at all, so PaymentsPage received an empty bookingId
+// and amount.
+function navigateToPayments(bookingId, amount, holdExpiresAt){
+    push("../features/payments/screens/PaymentsScreen.qml", {
+        bookingId: bookingId !== undefined ? bookingId : "",
+        amount: amount !== undefined ? amount : 0,
+        holdExpiresAt: holdExpiresAt !== undefined ? holdExpiresAt : null
+    })
 }
 function navigateToSettings(){
     push("../features/settings/screens/SettingsScreen.qml")

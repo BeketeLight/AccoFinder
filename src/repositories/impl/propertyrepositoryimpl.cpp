@@ -207,14 +207,23 @@ void PropertyRepositoryImpl::createProperty(const QString &title, const QString 
     );
 }
 
-void PropertyRepositoryImpl::deleteProperty(const QString &houseId)
+void PropertyRepositoryImpl::deleteProperty(const QString &houseId, bool force)
 {
+    // The backend rejects the delete with 409 while any room of the property
+    // still holds a booking. force=true is the override, and is only ever sent
+    // after the user has confirmed the warning dialog.
+    const QString endpoint = "/house-listing/" + houseId
+        + (force ? QStringLiteral("?force=true") : QString());
+
     APIClient::instance().del(
-        "/house-listing/" + houseId,
+        endpoint,
         [this, houseId] (bool success, const QJsonObject& response)
         {
             if(success){
                 emit propertyDeleted(houseId);
+            } else if(response.contains("activeBookings")) {
+                // 409 body carries the blocking count alongside the message.
+                emit propertyDeleteBlocked(response.value("activeBookings").toInt());
             } else {
                 emit propertyError(response.value("message").toString());
             }

@@ -30,7 +30,7 @@ public:
                               const QString& reason = QString(),
                               const QString& approvedById = QString(),
                               const QString& approvedByName = QString()) override;
-    void deleteProperty(const QString& houseId) override;
+    void deleteProperty(const QString& houseId, bool force = false) override;
     void attachMedia(const QString& houseId, const QStringList& mediaIds) override;
 
 private:
@@ -42,6 +42,10 @@ signals:
     void propertyCreated(Property* property);
     void propertyDeleted(const QString& houseId);
     void propertyError(const QString& error);
+    // The backend refused a delete with HTTP 409 because rooms still hold
+    // bookings. Carries the count so the UI can offer an explicit override
+    // instead of surfacing a generic failure.
+    void propertyDeleteBlocked(int activeBookings);
 
 };
 

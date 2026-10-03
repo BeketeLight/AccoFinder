@@ -17,6 +17,8 @@ PropertyViewModel::PropertyViewModel(QObject *parent)
             this, &PropertyViewModel::onPropertyDeleted);
     connect(m_propertyController, &PropertyController::propertyError,
             this, &PropertyViewModel::onPropertyError);
+    connect(m_propertyController, &PropertyController::propertyDeleteBlocked,
+            this, &PropertyViewModel::propertyDeleteBlockedSignal);
 }
 
 void PropertyViewModel::setLoading(bool loading)
@@ -129,10 +131,10 @@ void PropertyViewModel::createProperty(const QString &title, const QString &desc
     m_propertyController->createProperty(title, description, price, propertyType, district, village, amenities, landlord, landlordPhone, verificationStatus, isActive, rooms);
 }
 
-void PropertyViewModel::deleteProperty(const QString &houseId)
+void PropertyViewModel::deleteProperty(const QString &houseId, bool force)
 {
     setLoading(true);
-    m_propertyController->deleteProperty(houseId);
+    m_propertyController->deleteProperty(houseId, force);
 }
 
 void PropertyViewModel::attachMedia(const QString &houseId, const QStringList &mediaIds)

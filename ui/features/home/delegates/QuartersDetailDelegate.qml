@@ -21,6 +21,20 @@ Page {
     property string location: "Area 47, Lilongwe"
     property real quarterPrice: 250000
     property bool isquarterAvailable: true
+
+    // Provisional hold state, surfaced by GET /rooms/:id (holdActive /
+    // holdExpiresAt). The backend only sets available=false once a booking is
+    // CONFIRMED, so a room that is temporarily spoken for still arrives with
+    // isquarterAvailable === true. Without these the app would offer "Book Now"
+    // on a held room and only discover the conflict after the user committed.
+    property bool isOnHold: false
+    property var holdExpiresAt: null
+
+    // True when this client can still act on the room. A hold that belongs to
+    // this user's own booking is still actionable - they need to reach the
+    // payment screen to use it - so this only blocks when the room is held by
+    // someone else or permanently booked.
+    readonly property bool canBookRoom: isquarterAvailable && !isOnHold
     property string description: "Spacious quarter with en-suite bathroom and walk-in closet. Features large windows with natural light and a beautiful view of the garden."
 
     // Agent information
@@ -284,12 +298,18 @@ Page {
                     height: 28
                     radius: 14
                     width: availabilityText.width + 24
-                    color: root.isquarterAvailable ? "#22C55E" : "#EF4444"
+                    // Amber for a hold, so "temporarily spoken for" is
+                    // visually distinct from "permanently booked".
+                    color: !root.isquarterAvailable ? "#EF4444"
+                         : root.isOnHold            ? "#F59E0B"
+                                                    : "#22C55E"
 
                     Label {
                         id: availabilityText
                         anchors.centerIn: parent
-                        text: root.isquarterAvailable ? "✓ Available Now" : "✗ Currently Booked"
+                        text: !root.isquarterAvailable ? "✗ Currently Booked"
+                             : root.isOnHold            ? "⏳ On Hold"
+                                                         : "✓ Available Now"
                         color: "white"
                         font.pixelSize: 13
                         font.bold: true
@@ -458,12 +478,14 @@ Page {
                 id: bookButton
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                enabled: !BookingController.isLoading && root.isquarterAvailable
+                enabled: !BookingController.isLoading && root.canBookRoom
                 text: {
                     if (BookingController.isLoading)
                         return "Booking…";
                     if (!root.isquarterAvailable)
                         return "Currently Booked";
+                    if (root.isOnHold)
+                        return "On Hold";
                     return "Book Now";
                 }
 
@@ -484,6 +506,19 @@ Page {
                 onClicked: {
                     if (!root.quarterId) {
                         console.warn("Missing quarterId");
+                        return;
+                    }
+
+                    // Guard in the handler as well as in `enabled`, because the
+                    // hold flag arrives from the server after the button may
+                    // already be live.
+                    if (root.isOnHold || !root.isquarterAvailable) {
+                        console.warn("[Booking] Blocked: room is "
+                                     + (root.isOnHold ? "on hold" : "booked"));
+                        errorDialog.errorText = root.isOnHold
+                            ? "This room is currently on hold by another user."
+                            : "This room is no longer available.";
+                        errorDialog.open();
                         return;
                     }
 
@@ -529,7 +564,16 @@ Page {
             //     amount: booking.amount,
             //     roomId: booking.roomId
             // });
-            NavUtils.navigateToPayments();
+            // Carry the hold deadline into the payment screen so it can count
+            // down. The booking is a hold, not a confirmation, so the user needs
+            // to see how long the room is theirs for.
+            NavUtils.navigateToPayments(
+                booking.id,
+                booking.amount,
+                booking.holdExpiresAt !== undefined
+                    ? booking.holdExpiresAt
+                    : null
+            );
         }
 
         function onBookingError(error) {

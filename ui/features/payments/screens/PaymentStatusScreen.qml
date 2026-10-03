@@ -13,6 +13,11 @@ Item {
     property string paymentId: ""
     property real amount: 0
 
+    // Provisional-hold deadline, fetched from the booking rather than pushed in:
+    // this screen is normally reached from the payments history, where the
+    // caller only knows the booking id. ISO string; empty means no live hold.
+    property string holdExpiresAt: ""
+
     // Live status read from the last payment that arrived
     property int status: 0
     property string method: ""
@@ -32,8 +37,21 @@ Item {
         onPayNowClicked: {
             UtilsModule.NavigationUtils.push(Qt.resolvedUrl("PaymentScreen.qml"), {
                 bookingId: root.bookingId,
-                amount: root.amount
+                amount: root.amount,
+                holdExpiresAt: root.holdExpiresAt
             });
+        }
+    }
+
+    Connections {
+        target: BookingController
+
+        function onBookingLoaded(booking) {
+            if (!booking || booking.id !== root.bookingId)
+                return;
+            // Invalid QDateTime stringifies to "", which is exactly the
+            // "no live hold" signal PaymentsPage expects.
+            root.holdExpiresAt = booking.holdExpiresAt;
         }
     }
 
@@ -76,5 +94,11 @@ Item {
             PaymentController.getPaymentById(root.paymentId);
         else if (root.bookingId.length > 0)
             PaymentController.refreshForBooking(root.bookingId);
+
+        // Pay Now needs the hold deadline to show the countdown, so pull the
+        // booking as well. Failure here is harmless: an unknown expiry simply
+        // means the countdown is skipped.
+        if (root.bookingId.length > 0)
+            BookingController.fetchBookingById(root.bookingId);
     }
 }

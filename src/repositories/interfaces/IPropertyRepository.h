@@ -28,7 +28,9 @@ public:
                                 bool isActive) = 0;
     virtual void updatePropertyStatus(const QString& houseId, const QString& status, const QString& reason = QString(),
                                       const QString& approvedById = QString(), const QString& approvedByName = QString()) = 0;
-    virtual void deleteProperty(const QString& houseId) = 0;
+    // force skips the backend's active-booking guard. It is only ever set after
+    // the user has explicitly confirmed the override dialog.
+    virtual void deleteProperty(const QString& houseId, bool force = false) = 0;
     virtual void attachMedia(const QString& houseId, const QStringList& mediaIds) = 0;
 
     virtual ~IPropertyRepository() {}

@@ -89,6 +89,9 @@ public:
         ClientNameRole,   // Qt::UserRole + 7 if IdRole = Qt::UserRole
         ClientPhoneRole,  // +8
         ClientEmailRole,  // +9 B---added
+        HoldExpiresAtRole,
+        HoldSecondsRemainingRole,
+        HoldActiveRole,
     };
 
     explicit BookingListModel(QObject *parent = nullptr);

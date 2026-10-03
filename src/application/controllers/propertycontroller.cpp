@@ -16,6 +16,8 @@ PropertyController::PropertyController(QObject *parent)
             this, &PropertyController::propertyDeleted);
     connect(m_propertyRepositoryImpl, &PropertyRepositoryImpl::propertyError,
             this, &PropertyController::propertyError);
+    connect(m_propertyRepositoryImpl, &PropertyRepositoryImpl::propertyDeleteBlocked,
+            this, &PropertyController::propertyDeleteBlocked);
 }
 
 void PropertyController::setLoading(bool loading)
@@ -100,14 +102,14 @@ void PropertyController::updatePropertyStatus(const QString &houseId, const QStr
     m_propertyRepositoryImpl->updatePropertyStatus(houseId, status, reason, approvedById, approvedByName);
 }
 
-void PropertyController::deleteProperty(const QString &houseId)
+void PropertyController::deleteProperty(const QString &houseId, bool force)
 {
     if (houseId.isEmpty()) {
         emit propertyError("houseId cannot be empty");
         return;
     }
     setLoading(true);
-    m_propertyRepositoryImpl->deleteProperty(houseId);
+    m_propertyRepositoryImpl->deleteProperty(houseId, force);
 }
 
 void PropertyController::attachMedia(const QString &houseId, const QStringList &mediaIds)

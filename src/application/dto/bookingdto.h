@@ -28,6 +28,8 @@ public:
     QString status;
     double amount;
     double commissionAmount;
+    // Provisional hold deadline; invalid when the booking is not on a hold.
+    QDateTime holdExpiresAt;
 
     static BookingDto fromJson(
         const QJsonObject& json);

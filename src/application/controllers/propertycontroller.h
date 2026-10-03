@@ -42,7 +42,7 @@ public:
                                           const QString& reason = QString(),
                                           const QString& approvedById = QString(),
                                           const QString& approvedByName = QString());
-    Q_INVOKABLE void deleteProperty(const QString& houseId);
+    Q_INVOKABLE void deleteProperty(const QString& houseId, bool force = false);
     Q_INVOKABLE void attachMedia(const QString& houseId, const QStringList& mediaIds);
 
 signals:
@@ -52,6 +52,7 @@ signals:
     void propertyCreated(Property* property);
     void propertyDeleted(const QString& houseId);
     void propertyError(const QString& error);
+    void propertyDeleteBlocked(int activeBookings);
     void isLoadingChanged(bool isLoading);
 
 private:

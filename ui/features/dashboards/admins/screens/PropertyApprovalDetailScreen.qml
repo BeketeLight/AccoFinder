@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import "../pages"
 import "../../../../utils/NavigationUtils.js" as NavUtils
+import "../../../../utils/Utils.js" as UtilsModule
 
 Item {
     id: root
@@ -23,31 +24,6 @@ Item {
         anchors.fill: parent
         background: Rectangle { color: "#F8FAFC" }
 
-        header: ToolBar {
-            background: Rectangle { color: "#FFFFFF" }
-
-            RowLayout {
-                anchors.fill: parent
-                anchors.leftMargin: 8
-                anchors.rightMargin: 16
-                spacing: 4
-
-                ToolButton {
-                    text: qsTr("←")
-                    font.pixelSize: 20
-                    onClicked: root.goBack()
-                }
-
-                Label {
-                    Layout.fillWidth: true
-                    text: root.pageTitle
-                    font.pixelSize: 18
-                    font.bold: true
-                    color: "#1F2937"
-                    elide: Text.ElideRight
-                }
-            }
-        }
 
         PropertyApprovalDetailPage {
             id: detailPage
@@ -59,6 +35,21 @@ Item {
 
             onDecisionMade: (propertyId, title, approved) => root.decisionMade(propertyId, title, approved)
             onGoBackRequested: root.goBack()
+
+            // Fired only once the backend has confirmed the delete, so this can
+            // safely navigate. Drop the property's images from the local cache
+            // first so a removed property can never be shown from a stale copy.
+            // Guarded for the same reason as the agent detail screen: cache
+            // invalidation must never block the navigation below.
+            onPropertyDeleted: {
+                try {
+                    if (UtilsModule && typeof UtilsModule.invalidateImages === "function")
+                        UtilsModule.invalidateImages(detailPage.propPhotos)
+                } catch (err) {
+                    console.log("PropertyApprovalDetailScreen: cache invalidation skipped:", err)
+                }
+                root.goBack()
+            }
         }
     }
 }

@@ -149,10 +149,14 @@
 static QString bookingStatusToString(BookingStatus status)
 {
     switch (status) {
-    case BookingStatus::Pending:   return QStringLiteral("Pending");
-    case BookingStatus::Paid:      return QStringLiteral("Paid");
-    case BookingStatus::Confirmed: return QStringLiteral("Confirmed");
-    case BookingStatus::Cancelled: return QStringLiteral("Cancelled");
+    case BookingStatus::PendingPayment:  return QStringLiteral("Pending payment");
+    case BookingStatus::PaymentInFlight: return QStringLiteral("Payment processing");
+    case BookingStatus::Confirmed:       return QStringLiteral("Confirmed");
+    case BookingStatus::Expired:         return QStringLiteral("Expired");
+    case BookingStatus::Cancelled:       return QStringLiteral("Cancelled");
+    case BookingStatus::Failed:          return QStringLiteral("Payment failed");
+    case BookingStatus::Pending:         return QStringLiteral("Pending");
+    case BookingStatus::Paid:            return QStringLiteral("Paid");
     }
     return QStringLiteral("Pending");
 }
@@ -185,6 +189,11 @@ QHash<int, QByteArray> BookingListModel::roleNames() const
     roles[ClientNameRole]  = "clientName";
     roles[ClientPhoneRole] = "clientPhone";
     roles[ClientEmailRole] = "clientEmail";
+    // Provisional hold state, so a card can show "held - 12:34 remaining"
+    // without the delegate reaching back into the Booking object.
+    roles[HoldExpiresAtRole] = "holdExpiresAt";
+    roles[HoldSecondsRemainingRole] = "holdSecondsRemaining";
+    roles[HoldActiveRole] = "holdActive";
     return roles;
 }
 
@@ -242,6 +251,9 @@ QVariant BookingListModel::data(const QModelIndex &index, int role) const
     case ClientNameRole:  return booking->getClientName();
     case ClientPhoneRole: return booking->getClientPhone(); //B added
     case ClientEmailRole: return booking->getClientEmail();
+    case HoldExpiresAtRole: return booking->getHoldExpiresAt();
+    case HoldSecondsRemainingRole: return booking->getHoldSecondsRemaining();
+    case HoldActiveRole: return booking->getHoldActive();
     }
 
     return QVariant();

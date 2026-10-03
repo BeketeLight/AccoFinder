@@ -166,6 +166,12 @@ Page {
             quarterType: roomData.type,
             quarterPrice: roomData.price,
             isquarterAvailable: roomData.available,
+            // Provisional hold state from GET /rooms. A held room still comes
+            // back with available === true (only a CONFIRMED booking sets it
+            // false), so these have to travel with the payload or the detail
+            // page would show "Book Now" on a room that is already spoken for.
+            isOnHold: roomData.holdActive === true,
+            holdExpiresAt: roomData.holdExpiresAt ?? null,
             roomImage: roomData.imageUrl || "",
             mediaList: mediaArray // <--- Forward room images array
             ,

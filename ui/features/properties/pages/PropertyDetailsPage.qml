@@ -2312,8 +2312,16 @@ Page {
                 }
             }
 
+            // Delete is offered for local drafts only. Removing a draft is a purely local
+            // DraftViewModel operation that never reaches the API.
+            //
+            // Server-backed properties have no delete affordance here on purpose: deleting
+            // one also removes its rooms and its photos from S3 and orphans any bookings
+            // made against it, so the backend restricts DELETE /house-listing/:id to ADMIN
+            // (see propertyRoutes.mjs). An agent that taps this would only get a 403.
+            // Admins remove listings from PropertyApprovalDetailPage instead.
             Rectangle {
-                visible: root.agentMode && !root.editMode
+                visible: root.agentMode && !root.editMode && root.isDraftItem
                 Layout.fillWidth: true
                 implicitHeight: deleteRow.implicitHeight + 28
                 radius: 12
@@ -2323,7 +2331,7 @@ Page {
 
                 RowLayout {
                     id: deleteRow
-                    visible: root.agentMode && !root.editMode
+                    visible: root.agentMode && !root.editMode && root.isDraftItem
                     anchors.fill: parent
                     anchors.margins: 14
                     spacing: 12
@@ -2333,7 +2341,7 @@ Page {
                         spacing: 2
 
                         Label {
-                            text: root.isDraftItem ? qsTr("Delete draft") : qsTr("Delete property")
+                            text: qsTr("Delete draft")
                             color: root.dangerColor
                             font.pixelSize: 13
                             font.bold: true
@@ -2341,9 +2349,7 @@ Page {
 
                         Label {
                             Layout.fillWidth: true
-                            text: root.isDraftItem
-                                  ? qsTr("Permanently delete this draft. This cannot be undone.")
-                                  : qsTr("Permanently remove this listing and all its rooms.")
+                            text: qsTr("Permanently delete this draft. This cannot be undone.")
                             color: root.mutedColor
                             font.pixelSize: 11
                             wrapMode: Text.WordWrap
