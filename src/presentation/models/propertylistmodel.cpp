@@ -98,7 +98,12 @@ QVariant PropertyListModel::data(const QModelIndex &index, int role) const
             return property->getApprovedByName();
 
         //property Owner
-        case OwnerIdRole: return property->getAgentId();
+        case OwnerIdRole:
+            // The listing payload identifies the account that created the
+            // listing through `owner`, not `agentId` (which the API does not
+            // send). Returning the agent id here left every row ownerless, so
+            // "whose listings are these?" could never be answered.
+            return property->getOwnerId();
         case OwnerFirstNameRole: return property->getOwnerFirstName();
         case OwnerSurnameRole: return property->getOwnerSurname();
         case OwnerEmailRole: return property->getOwnerEmail();
@@ -254,4 +259,30 @@ QVariantList PropertyListModel::amenitiesFor(const QString &propertyId) const
         return out;
     }
     return QVariantList();
+}
+
+int PropertyListModel::indexOfPropertyId(const QString &propertyId) const
+{
+    for (int i = 0; i < m_properties.size(); ++i) {
+        Property* property = m_properties.at(i);
+        if (property && property->getId() == propertyId)
+            return i;
+    }
+    return -1;
+}
+
+void PropertyListModel::setVerificationStatus(const QString &propertyId, const QString &status,
+                                             const QString &reason)
+{
+    const int index = indexOfPropertyId(propertyId);
+    if (index < 0)
+        return;
+    Property* property = m_properties.at(index);
+    if (!property)
+        return;
+    property->setVerificationStatus(status);
+    if (!reason.isEmpty())
+        property->setVerificationReason(reason);
+    emit dataChanged(this->index(index, 0), this->index(index, 0),
+                     { StatusRole, VerificationStatusRole, RejectionReasonRole });
 }

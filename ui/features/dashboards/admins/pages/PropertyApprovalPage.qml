@@ -27,11 +27,72 @@ Item {
     property var pendingRejectId: ""
     property var pendingRejectTitle: ""
 
-    function refreshQueue() {
-        queueModel.clear()
-        for (var i = 0; i < root.listingsModel.propertiesModel.count; i++) {
-            var p = root.listingsModel.propertiesModel.get(i)
-            if (String(p.status || "").toUpperCase() !== "PENDING")
+    // True while an owner walk is in flight, false once the queue has settled
+    // at least once. The page must not claim there is nothing to review before
+    // that point, otherwise it flashes an empty state while loading.
+    property bool pendingLoadStarted: false
+    property bool queueSettled: false
+
+    readonly property bool queueLoading: !root.queueSettled || PropertyViewModel.isLoading
+
+    // Ids of the accounts whose listings have to be checked. Agents are the
+    // only accounts that list properties, and every owner already visible in the
+    // shared list is included so a listing submitted before the agent list
+    // arrived is still picked up.
+    function ownerIdsToCheck() {
+        var owners = []
+        function add(id) {
+            var value = String(id || "")
+            if (value.length > 0 && owners.indexOf(value) === -1)
+                owners.push(value)
+        }
+
+        var agents = AgentViewModel.agentListModel
+        if (agents) {
+            for (var i = 0; i < agents.size(); i++)
+                add(agents.at(i).agentId)
+        }
+        var shared = PropertyViewModel.propertiesForView() || []
+        for (var j = 0; j < shared.length; j++)
+            add(shared[j].ownerId)
+
+        return owners
+    }
+
+    // The listing endpoint hides unverified listings from the unfiltered list,
+    // so the queue is fetched per owner into PropertyViewModel.pendingListModel
+    // instead of being read from the shared list alone.
+    function loadPendingListings() {
+        if (root.pendingLoadStarted)
+            return
+        root.pendingLoadStarted = true
+        PropertyViewModel.loadPendingListings(root.ownerIdsToCheck())
+    }
+
+    // Append every listing still awaiting a decision from a model. Accepts both
+    // shapes used here: a C++ PropertyListModel (via at()) and the QML
+    // ListModel owned by MyPropertiesModel (via get()).
+    function appendQueueRows(source) {
+        if (!source)
+            return
+        var count = source.at ? source.size() : source.count
+        for (var i = 0; i < count; i++) {
+            var p = source.at ? source.at(i) : source.get(i)
+            if (!p)
+                continue
+            // Match every alias the backend uses for "awaiting verification"
+            // (PENDING / UNVERIFIED / Not Verified) so this list stays in step
+            // with the dashboard's pending counter.
+            if (!Utils.isPendingVerification(p.status || p.verificationStatus))
+                continue
+            var known = false
+            for (var k = 0; k < queueModel.count; k++) {
+                if (String(queueModel.get(k).propertyId) === String(p.propertyId)) {
+                    known = true
+                    break
+                }
+            }
+            if (known)
                 continue
             queueModel.append({
                 propertyId: p.propertyId,
@@ -42,7 +103,14 @@ Item {
                 landlord: p.landlord
             })
         }
-        emptyState.visible = queueModel.count === 0
+    }
+
+    function refreshQueue() {
+        queueModel.clear()
+        // Unverified listings the shared list cannot show first, then whatever
+        // the shared list holds (a locally created or just decided listing).
+        appendQueueRows(PropertyViewModel.pendingListModel)
+        appendQueueRows(root.listingsModel.propertiesModel)
     }
 
     function confirmReject(propertyId, title) {
@@ -61,6 +129,7 @@ Item {
         }
         rejectError.visible = false
         root.listingsModel.setPropertyStatus(pendingRejectId, "REJECTED", reason)
+        PropertyViewModel.setPendingListingStatus(pendingRejectId, "REJECTED", reason)
         // Persist the decision (with the reason) on the backend so it survives a
         // refresh. setPropertyStatus only edits the local list.
         PropertyViewModel.updatePropertyStatus(pendingRejectId, "REJECTED", reason)
@@ -72,15 +141,56 @@ Item {
 
     ListModel { id: queueModel }
 
+    // A fresh shared list means new listings may be waiting: re-walk the owners
+    // once the reload settles instead of on every intermediate row change.
+    Timer {
+        id: pendingReloadTimer
+        interval: 500
+        onTriggered: {
+            root.pendingLoadStarted = false
+            root.loadPendingListings()
+        }
+    }
+
+    Connections {
+        target: PropertyViewModel.pendingListModel
+        function onCountChanged() { root.refreshQueue() }
+        function onDataChanged() { root.refreshQueue() }
+    }
+
+    Connections {
+        target: PropertyViewModel
+        function onPendingListingsLoaded() {
+            root.pendingLoadStarted = false
+            root.queueSettled = true
+            root.refreshQueue()
+        }
+    }
+
+    // The owner walk can only start once the agents are known.
+    Connections {
+        target: AgentViewModel.agentListModel
+        function onCountChanged() { root.loadPendingListings() }
+    }
+
     // The shared property model is populated asynchronously after the network
     // fetch resolves. Rebuild the queue whenever it changes so newly fetched
-    // PENDING listings actually appear (instead of only at Component.onCompleted).
+    // listings actually appear (instead of only at Component.onCompleted).
     Connections {
         target: root.listingsModel.propertiesModel
         function onCountChanged() { root.refreshQueue() }
+        function onModelReset() {
+            root.queueSettled = false
+            pendingReloadTimer.restart()
+            root.refreshQueue()
+        }
     }
 
-    Component.onCompleted: refreshQueue()
+    Component.onCompleted: {
+        refreshQueue()
+        AgentViewModel.getAgents()
+        loadPendingListings()
+    }
 
     ColumnLayout {
         id: contentColumn
@@ -127,6 +237,7 @@ Item {
                 onReviewRequested: (propertyId) => root.reviewRequested(propertyId)
                 onApproveRequested: (propertyId, title) => {
                     root.listingsModel.setPropertyStatus(propertyId, "VERIFIED")
+                    PropertyViewModel.setPendingListingStatus(propertyId, "VERIFIED")
                     // Persist the decision on the backend so it survives a
                     // refresh. setPropertyStatus only edits the local list.
                     PropertyViewModel.updatePropertyStatus(propertyId, "VERIFIED", "", AppSettings.userId(), AppSettings.userName())
@@ -140,7 +251,11 @@ Item {
 
         Label {
             id: emptyState
-            visible: false
+            // Bound, not assigned from refreshQueue(): while the owner walk is
+            // still running the page must not claim there is nothing to review,
+            // and an empty queue always explains itself instead of showing a
+            // blank screen.
+            visible: queueModel.count === 0 && !root.queueLoading
             Layout.fillWidth: true
             horizontalAlignment: Text.AlignHCenter
             text: qsTr("No properties waiting for verification.")

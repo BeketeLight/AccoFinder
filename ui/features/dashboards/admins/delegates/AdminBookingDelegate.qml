@@ -13,6 +13,8 @@ Rectangle {
 
     property string bookingId: ""
     property string clientId: ""
+    property string clientName: ""
+    property string clientPhone: ""
     property string roomId: ""
     property string bookingDate: ""
     property real amount: 0
@@ -31,6 +33,13 @@ Rectangle {
                                          : root.status === "Paid"      ? "#2563EB"
                                          : "#D97706"
     readonly property bool isActionable: root.status === "Pending"
+
+    // Mongo ObjectIds are 24 characters long and mean nothing to an admin, so
+    // only their leading characters are shown as a reference.
+    function shortRef(value) {
+        var s = String(value || "").trim()
+        return s.length > 8 ? s.substring(0, 8) : s
+    }
 
     Layout.fillWidth: true
     implicitHeight: cardColumn.implicitHeight + 20
@@ -72,7 +81,7 @@ Rectangle {
 
                 Label {
                     Layout.fillWidth: true
-                    text: root.bookingId.length > 0 ? qsTr("Booking %1").arg(root.bookingId) : qsTr("Booking")
+                    text: root.bookingId.length > 0 ? qsTr("Booking #%1").arg(root.shortRef(root.bookingId)) : qsTr("Booking")
                     color: "#111827"
                     font.pixelSize: 13
                     font.bold: true
@@ -83,9 +92,24 @@ Rectangle {
                     Layout.fillWidth: true
                     // Identifiers are long and unbounded, so they wrap rather
                     // than being cut off at the right edge of the card.
-                    text: root.clientId.length > 0 || root.roomId.length > 0
-                          ? qsTr("Client %1  ·  Room %2").arg(root.clientId, root.roomId)
-                          : qsTr("No client or room details")
+                    text: {
+                        // Who booked, how to reach them, and which room: the
+                        // three facts an admin needs to act on a booking.
+                        var parts = []
+                        var client = String(root.clientName || "").trim()
+                        if (client.length > 0)
+                            parts.push(qsTr("Client: %1").arg(client))
+                        else if (String(root.clientId || "").trim().length > 0)
+                            parts.push(qsTr("Client: %1").arg(root.shortRef(root.clientId)))
+                        var phone = String(root.clientPhone || "").trim()
+                        if (phone.length > 0)
+                            parts.push(phone)
+                        var room = root.shortRef(root.roomId)
+                        if (room.length > 0)
+                            parts.push(qsTr("Room: %1").arg(room))
+                        return parts.length > 0 ? parts.join("  ·  ")
+                                               : qsTr("No client or room details")
+                    }
                     color: "#6B7280"
                     font.pixelSize: 11
                     lineHeight: 1.1
@@ -121,7 +145,7 @@ Rectangle {
                     var commission = root.commissionAmount > 0
                         ? qsTr("  ·  Commission %1").arg(Utils.formatCurrency(root.commissionAmount))
                         : ""
-                    return qsTr("Booked %1%2").arg(date, commission)
+                    return qsTr("Booked %1%2").arg(date).arg(commission)
                 }
                 color: "#6B7280"
                 font.pixelSize: 11

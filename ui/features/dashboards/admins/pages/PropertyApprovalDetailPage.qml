@@ -99,6 +99,9 @@ Item {
         root.propApprovedBy = (root.propStatus === "VERIFIED") ? (approvedBy || "") : ""
         if (root.listingsModel)
             root.listingsModel.setPropertyStatus(root.propertyId, root.propStatus)
+        // Keep the admin verification queue in step: the listing being reviewed
+        // is queued from the owner-scoped fetch, not from the shared list.
+        PropertyViewModel.setPendingListingStatus(root.propertyId, root.propStatus)
     }
 
     function doApprove() {

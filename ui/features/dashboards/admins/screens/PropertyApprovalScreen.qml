@@ -17,7 +17,10 @@ Item {
 
     AppScrollablePage {
         anchors.fill: parent
-        loading: PropertyViewModel.isLoading
+        // Also cover the owner walk that fills the verification queue: the
+        // queue is not part of the shared property list, so isLoading alone
+        // would stop spinning while the page is still empty.
+        loading: PropertyViewModel.isLoading || approvalsPage.queueLoading
 
         PropertyApprovalPage {
             id: approvalsPage

@@ -68,10 +68,18 @@ public:
 
     Q_INVOKABLE int size() const { return m_properties.size(); }
     Q_INVOKABLE QVariantMap at(int index) const;
+    int indexOfPropertyId(const QString& propertyId) const;
     // Returns the property's amenities as a genuine list. Used by the detail
     // pages (which only know the propertyId) to avoid the fragility of passing
     // arrays through a QML ListModel and re-detecting them with Array.isArray.
     Q_INVOKABLE QVariantList amenitiesFor(const QString& propertyId) const;
+
+    // Apply a new verification decision to a listing already held by this
+    // model, in place. Used by the admin approval queue after a decision so
+    // the row leaves (or stays in) the queue without another network round
+    // trip. Only the status roles change, so no structural reset is emitted.
+    void setVerificationStatus(const QString& propertyId, const QString& status,
+                               const QString& reason = QString());
 
 signals:
     void countChanged(int newCount);

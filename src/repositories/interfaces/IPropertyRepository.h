@@ -13,6 +13,13 @@ public:
     explicit IPropertyRepository(QObject *parent = nullptr)
         : QObject(parent) {}
     virtual void getProperties(const QString& owner = QString()) = 0;
+    // Listings that still need a decision are only returned when the request is
+    // scoped to a single listing owner: GET /house-listing/ without `owner`
+    // answers with VERIFIED listings only, while /dashboard/stats counts every
+    // pending one. The admin verification queue therefore walks the owners and
+    // asks for their unverified listings, delivered on its own signal so the
+    // shared property list is never replaced by them.
+    virtual void getPropertiesOwnedBy(const QString& ownerId) = 0;
     virtual void getPropertyById(const QString& houseId) = 0;
     virtual void getPropertiesByStatus(const QString& status) = 0;
     virtual void createProperty(const QString& title, const QString& description,

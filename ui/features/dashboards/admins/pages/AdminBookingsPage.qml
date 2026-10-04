@@ -149,6 +149,8 @@ Item {
 
                 bookingId: model.bookingId
                 clientId: model.clientId
+                clientName: model.clientName || ""
+                clientPhone: model.clientPhone || ""
                 roomId: model.roomId
                 bookingDate: model.bookingDate
                 amount: model.amount

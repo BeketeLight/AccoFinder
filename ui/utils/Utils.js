@@ -25,6 +25,27 @@ function notificationRoleForViewer() {
     return "AGENT"
 }
 
+// Normalise a verification status coming from the backend before comparing it
+// against a known value. The API has used "PENDING", "pending" and
+// "Unverified" for the same state, and PropertyListModel also falls back to
+// "Not Verified", so every caller shares one comparison rule instead of
+// hard-coding its own.
+function normalizeVerificationStatus(value) {
+    var s = String(value === undefined || value === null ? "" : value).trim().toUpperCase()
+    if (s === "")
+        return ""
+    // Collapse "Not Verified" / "Not verified" onto the same token.
+    return s.replace(/\s+/g, " ")
+}
+
+// True when a property is still waiting for an admin decision. The dashboard
+// counter and the approval queue both call this so a non-zero card can never
+// open an empty screen.
+function isPendingVerification(value) {
+    var s = normalizeVerificationStatus(value)
+    return s === "PENDING" || s === "UNVERIFIED" || s === "NOT VERIFIED"
+}
+
 // Tell the CachedImageProvider to forget one or more remote URLs after the
 // underlying image was deleted server-side, so a stale copy is not served
 // later. Accepts a single string or an array of strings/objects with .url.

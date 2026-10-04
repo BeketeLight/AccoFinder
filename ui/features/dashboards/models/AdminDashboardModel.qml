@@ -1,4 +1,5 @@
 import QtQuick
+import "../../../utils/Utils.js" as Utils
 
 Item {
     id: root
@@ -44,8 +45,8 @@ Item {
         var props = PropertyViewModel.propertiesForView() || []
         for (var i = 0; i < props.length; i++) {
             var p = props[i] || {}
-            var status = String(p.verificationStatus || "").toUpperCase()
-            if (status === "PENDING" || status === "UNVERIFIED") {
+            var status = String(p.verificationStatus || "").trim().toUpperCase()
+            if (Utils.isPendingVerification(status)) {
                 pendingActivitiesModelId.append({
                     title: p.title || "Untitled property",
                     detail: qsTr("Property awaiting verification"),
@@ -60,6 +61,24 @@ Item {
                     targetId: String(p.id || "")
                 })
             }
+        }
+
+        // Listings that still need a decision are absent from the shared
+        // property list (the listing endpoint only returns verified ones), so
+        // the owner-scoped verification queue is scanned here too. Otherwise
+        // the "Pending verifications" card counts a property this list never
+        // mentions.
+        var pending = PropertyViewModel.pendingListModel
+        for (var j = 0; pending && j < pending.size(); j++) {
+            var row = pending.at(j) || {}
+            if (!Utils.isPendingVerification(row.status || row.verificationStatus))
+                continue
+            pendingActivitiesModelId.append({
+                title: row.title || "Untitled property",
+                detail: qsTr("Property awaiting verification"),
+                kind: "approvals",
+                targetId: String(row.propertyId || "")
+            })
         }
     }
 
@@ -87,5 +106,13 @@ Item {
         function onModelReset() { root.refreshActivities(); root.refreshStats() }
         function onRowsInserted(parent, first, last) { root.refreshActivities(); root.refreshStats() }
         function onRowsRemoved(parent, first, last) { root.refreshActivities(); root.refreshStats() }
+    }
+
+    // The verification queue is filled owner by owner, so the activity list has
+    // to follow it as rows arrive.
+    Connections {
+        target: PropertyViewModel.pendingListModel
+        function onCountChanged() { root.refreshActivities() }
+        function onDataChanged() { root.refreshActivities() }
     }
 }

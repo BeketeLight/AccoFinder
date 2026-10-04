@@ -18,6 +18,7 @@ public:
     bool isLoading() const { return m_isLoading; }
 
     Q_INVOKABLE void getProperties(const QString& owner = QString());
+    Q_INVOKABLE void getPropertiesOwnedBy(const QString& ownerId);
     Q_INVOKABLE void getPropertyById(const QString& houseId);
     Q_INVOKABLE void getPropertiesByStatus(const QString& status);
     Q_INVOKABLE void createProperty(const QString& title, const QString& description,
@@ -47,6 +48,7 @@ public:
 
 signals:
     void propertiesLoaded(QList<Property*>& properties);
+    void ownedPropertiesLoaded(QList<Property*>& properties);
     void propertyLoaded(Property* property);
     void propertyUpdated(Property* property);
     void propertyCreated(Property* property);

@@ -309,6 +309,9 @@ QVariantMap BookingListModel::at(int index) const
     row["amount"] = data(idx, AmountRole);
     row["commissionAmount"] = data(idx, CommissionAmountRole);
     row["status"] = data(idx, StatusRole);
+    row["clientName"] = data(idx, ClientNameRole);
+    row["clientPhone"] = data(idx, ClientPhoneRole);
+    row["clientEmail"] = data(idx, ClientEmailRole);
     return row;
 }
 

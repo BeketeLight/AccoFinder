@@ -13,11 +13,16 @@ class PropertyViewModel : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(PropertyListModel* propertyListModel READ propertyListModel CONSTANT)
+    // Listings still waiting for an admin decision. Kept apart from the shared
+    // property list because the listing endpoint only returns unverified
+    // listings when the request is scoped to a single owner.
+    Q_PROPERTY(PropertyListModel* pendingListModel READ pendingListModel CONSTANT)
     Q_PROPERTY(bool isLoading READ isLoading NOTIFY isLoadingChanged)
 public:
     explicit PropertyViewModel(QObject *parent = nullptr);
 
     PropertyListModel* propertyListModel() const { return m_propertyListModel; }
+    PropertyListModel* pendingListModel() const { return m_pendingListModel; }
     bool isLoading() const { return m_isLoading; }
 
     Q_INVOKABLE QVariantList propertiesForView() const;
@@ -25,6 +30,16 @@ public:
     Q_INVOKABLE int verifiedPropertiesCount() const;
     Q_INVOKABLE void getProperties(const QString& owner = QString());
     Q_INVOKABLE void getPropertiesByStatus(const QString& status);
+    // Fill pendingListModel with the listings that still need a decision by
+    // walking the given listing owners (agents) one request at a time, then
+    // emit pendingListingsLoaded(). Owners are walked in order and a failed
+    // request only skips that owner, so one bad id cannot empty the queue.
+    Q_INVOKABLE void loadPendingListings(const QStringList& ownerIds);
+    // Record a decision on a queued listing so it leaves the queue (or stays in
+    // it when a verified listing is put back to pending).
+    Q_INVOKABLE void setPendingListingStatus(const QString& propertyId,
+                                             const QString& status,
+                                             const QString& reason = QString());
     Q_INVOKABLE void getPropertyById(const QString& houseId);
     // Row index of the property with the given backend id in the list model
     // (-1 when the property is not currently in the model).
@@ -68,12 +83,17 @@ private:
     int m_index = -1;
     bool m_isLoading = false;
     PropertyListModel* m_propertyListModel = nullptr;
+    PropertyListModel* m_pendingListModel = nullptr;
     PropertyController* m_propertyController = nullptr;
+    QStringList m_pendingOwnerIds;
+    int m_pendingOwnerIndex = 0;
 
     void setLoading(bool loading);
+    void fetchNextOwnerListings();
 
 private slots:
     void onPropertiesLoaded(QList<Property*>& properties);
+    void onOwnedPropertiesLoaded(QList<Property*>& properties);
     void onGetPropertyById(Property* property);
     void onUpdateProperty(Property* property);
     void onCreateProperty(Property* property);
@@ -83,6 +103,9 @@ private slots:
 signals:
     void isLoadingChanged(bool isLoading);
     void propertyError(const QString& error);
+    // Emitted once every requested owner has been walked (immediately when
+    // there was no owner to walk), so callers can stop showing a loading state.
+    void pendingListingsLoaded();
     // `rooms` carries the rooms created atomically with the property (each with
     // the real backend _id) so callers can map wizard room numbers to real ids.
     void propertyCreatedSignal(const QString& id, const QString& title, const QVariant& rooms = QVariant());

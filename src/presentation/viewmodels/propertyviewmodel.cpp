@@ -3,10 +3,13 @@
 PropertyViewModel::PropertyViewModel(QObject *parent)
     : QObject{parent},
       m_propertyListModel(new PropertyListModel(this)),
+      m_pendingListModel(new PropertyListModel(this)),
       m_propertyController(new PropertyController(this))
 {
     connect(m_propertyController, &PropertyController::propertiesLoaded,
             this, &PropertyViewModel::onPropertiesLoaded);
+    connect(m_propertyController, &PropertyController::ownedPropertiesLoaded,
+            this, &PropertyViewModel::onOwnedPropertiesLoaded);
     connect(m_propertyController, &PropertyController::propertyLoaded,
             this, &PropertyViewModel::onGetPropertyById);
     connect(m_propertyController, &PropertyController::propertyUpdated,
@@ -64,6 +67,59 @@ void PropertyViewModel::getPropertiesByStatus(const QString &status)
 {
     setLoading(true);
     m_propertyController->getPropertiesByStatus(status);
+}
+
+void PropertyViewModel::loadPendingListings(const QStringList &ownerIds)
+{
+    m_pendingOwnerIds = ownerIds;
+    m_pendingOwnerIndex = 0;
+    m_pendingListModel->clear();
+    fetchNextOwnerListings();
+}
+
+void PropertyViewModel::fetchNextOwnerListings()
+{
+    if (m_pendingOwnerIndex >= m_pendingOwnerIds.size()) {
+        m_pendingOwnerIds.clear();
+        m_pendingOwnerIndex = 0;
+        emit pendingListingsLoaded();
+        return;
+    }
+
+    const QString ownerId = m_pendingOwnerIds.at(m_pendingOwnerIndex);
+    m_pendingOwnerIndex += 1;
+    m_propertyController->getPropertiesOwnedBy(ownerId);
+}
+
+void PropertyViewModel::onOwnedPropertiesLoaded(QList<Property *> &properties)
+{
+    // The shared property list only ever holds VERIFIED listings (see
+    // PropertyRepositoryImpl::getProperties), so the admin queue is fed from
+    // these owner-scoped responses and every already-verified row is dropped:
+    // it is either irrelevant to the queue or already shown from the shared
+    // list, and duplicating it would list the same property twice.
+    for (Property *property : properties) {
+        if (!property)
+            continue;
+        const QString status = property->getVerificationStatus();
+        if (status.compare(QStringLiteral("VERIFIED"), Qt::CaseInsensitive) == 0) {
+            delete property;
+            continue;
+        }
+        if (m_pendingListModel->indexOfPropertyId(property->getId()) >= 0) {
+            delete property;
+            continue;
+        }
+        m_pendingListModel->appendProperty(property);
+    }
+
+    fetchNextOwnerListings();
+}
+
+void PropertyViewModel::setPendingListingStatus(const QString &propertyId, const QString &status,
+                                                const QString &reason)
+{
+    m_pendingListModel->setVerificationStatus(propertyId, status, reason);
 }
 
 QVariantList PropertyViewModel::propertiesForView() const
