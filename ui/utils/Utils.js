@@ -46,6 +46,46 @@ function isPendingVerification(value) {
     return s === "PENDING" || s === "UNVERIFIED" || s === "NOT VERIFIED"
 }
 
+// Bucket a booking status into the state the admin UI filters on.
+//
+// BookingListModel renders BookingStatus::PendingPayment as "Pending payment"
+// and PaymentInFlight as "Payment processing" (the backend enum values are
+// "PendingPayment"/"PaymentInFlight"), so comparing a row against the bare
+// token "Pending" never matched anything. Comparing here instead of against the
+// display string keeps every caller - the status filter, the counters and the
+// delegate's action buttons - in step.
+//
+//   PENDING   hold still open, nothing settled: "Pending payment",
+//             "Payment processing", "Payment failed" (retryable, hold stands)
+//             and the legacy "Pending"
+//   CONFIRMED "Confirmed" and the legacy "Paid"
+//   CANCELLED "Cancelled"
+//   EXPIRED   hold lapsed and the room was released - nothing left to do
+//
+// Returns "" for an unrecognised status so it is never silently counted.
+function bookingStatusBucket(value) {
+    var s = normalizeVerificationStatus(value)
+    if (s === "PENDING PAYMENT" || s === "PAYMENT PROCESSING"
+            || s === "PAYMENT FAILED" || s === "PENDING") {
+        return "PENDING"
+    }
+    if (s === "CONFIRMED" || s === "PAID")
+        return "CONFIRMED"
+    if (s === "CANCELLED")
+        return "CANCELLED"
+    if (s === "EXPIRED")
+        return "EXPIRED"
+    return ""
+}
+
+// True while a booking is unsettled enough for an admin to act on it. The
+// backend's confirmBooking refuses an already-confirmed or cancelled booking
+// and otherwise confirms whenever the hold still stands, so exactly the
+// PENDING bucket is actionable.
+function isActionableBooking(value) {
+    return bookingStatusBucket(value) === "PENDING"
+}
+
 // Tell the CachedImageProvider to forget one or more remote URLs after the
 // underlying image was deleted server-side, so a stale copy is not served
 // later. Accepts a single string or an array of strings/objects with .url.

@@ -28,11 +28,14 @@ Rectangle {
     signal confirmRequested(var bookingId)
     signal cancelRequested(var bookingId)
 
-    readonly property color statusTint: root.status === "Confirmed" ? "#16A34A"
-                                         : root.status === "Cancelled" ? "#DC2626"
-                                         : root.status === "Paid"      ? "#2563EB"
+    readonly property color statusTint: Utils.bookingStatusBucket(root.status) === "CONFIRMED" ? "#16A34A"
+                                         : Utils.bookingStatusBucket(root.status) === "CANCELLED" ? "#DC2626"
+                                         : Utils.bookingStatusBucket(root.status) === "EXPIRED" ? "#6B7280"
                                          : "#D97706"
-    readonly property bool isActionable: root.status === "Pending"
+    // Driven by the shared bucket rule rather than `status === "Pending"`: the
+    // list model renders the open hold as "Pending payment", so that equality
+    // was never true and the action buttons below never appeared.
+    readonly property bool isActionable: Utils.isActionableBooking(root.status)
 
     // Mongo ObjectIds are 24 characters long and mean nothing to an admin, so
     // only their leading characters are shown as a reference.

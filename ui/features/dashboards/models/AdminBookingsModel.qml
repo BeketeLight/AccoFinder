@@ -1,4 +1,5 @@
 import QtQuick
+import "../../../utils/Utils.js" as Utils
 
 // QML-side filter over the shared C++ BookingListModel, following the same
 // pattern as AdminUsersModel: the real rows always come from
@@ -14,9 +15,12 @@ Item {
     // the affected card shows an inline spinner.
     property string busyBookingId: ""
 
-    readonly property int pendingCount: countFor("Pending")
-    readonly property int confirmedCount: countFor("Confirmed") + countFor("Paid")
-    readonly property int cancelledCount: countFor("Cancelled")
+    // Counters read sourceModel, never viewModelId: they describe the whole
+    // booking list, so they must not collapse to whatever the active filter
+    // happens to let through.
+    readonly property int pendingCount: countInBucket("PENDING")
+    readonly property int confirmedCount: countInBucket("CONFIRMED")
+    readonly property int cancelledCount: countInBucket("CANCELLED")
     readonly property int shownCount: viewModelId.count
     // Every booking the backend returned, before the status filter narrows it.
     readonly property int totalCount: sourceModel.count
@@ -25,21 +29,22 @@ Item {
     // Repeater's model to it. The name matches the sourceModel convention.
     readonly property alias viewModel: viewModelId
 
-    function countFor(status) {
+    function countInBucket(bucket) {
         var n = 0
-        for (var i = 0; i < viewModelId.count; i++) {
-            if (viewModelId.get(i).status === status)
+        for (var i = 0; i < sourceModel.count; i++) {
+            if (Utils.bookingStatusBucket(sourceModel.get(i).status) === bucket)
                 n++
         }
         return n
     }
 
+    // Rows carry the display text BookingListModel renders ("Pending payment",
+    // "Payment processing", ...), not the bare filter token, so the comparison
+    // goes through the shared bucket rule instead of an equality check.
     function statusMatches(status) {
         if (root.statusFilter === "ALL")
             return true
-        if (root.statusFilter === "CONFIRMED")
-            return status === "Confirmed" || status === "Paid"
-        return status === root.statusFilter
+        return Utils.bookingStatusBucket(status) === root.statusFilter
     }
 
     function applyFilters() {
