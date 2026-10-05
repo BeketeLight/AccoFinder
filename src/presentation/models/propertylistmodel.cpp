@@ -226,13 +226,29 @@ QVariantMap PropertyListModel::at(int index) const
     row["landlord"] = data(idx, LandlordIdRole);
     row["landlordPhone"] = data(idx, LandlordPhoneRole);
     {
-        QString first = data(idx, FirstNameRole).toString().trimmed();
-        QString second = data(idx, SecondNameRole).toString().trimmed();
+        // The listing account arrives in the populated `owner` object
+        // (firstName/surname/phone), never as top-level firstName/secondName or
+        // ownerPhone, so the owner roles are the authoritative source here.
+        // Reading the legacy agent roles instead left ownerName/ownerPhone blank
+        // on every row. The legacy fields are kept only as a fallback for a
+        // property created in this session, where the client sends its own
+        // name/phone and the server has nothing to populate `owner` from yet.
+        QString first = data(idx, OwnerFirstNameRole).toString().trimmed();
+        QString second = data(idx, OwnerSurnameRole).toString().trimmed();
+        if (first.isEmpty())
+            first = data(idx, FirstNameRole).toString().trimmed();
+        if (second.isEmpty())
+            second = data(idx, SecondNameRole).toString().trimmed();
         QStringList parts;
         if (!first.isEmpty()) parts << first;
         if (!second.isEmpty()) parts << second;
         row["ownerName"] = parts.join(' ');
-        row["ownerPhone"] = data(idx, AgentPhoneRole).toString();
+        QString ownerPhone = data(idx, OwnerPhoneRole).toString().trimmed();
+        if (ownerPhone.isEmpty())
+            ownerPhone = data(idx, AgentPhoneRole).toString().trimmed();
+        row["ownerPhone"] = ownerPhone;
+        row["ownerId"] = data(idx, OwnerIdRole);
+        row["ownerEmail"] = data(idx, OwnerEmailRole);
     }
     row["description"] = data(idx, DescriptionRole);
     row["propertyType"] = data(idx, PropertyTypeRole);
