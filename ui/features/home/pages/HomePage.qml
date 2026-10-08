@@ -32,6 +32,7 @@ Item {
             cardWidth: 260
             cardHeight: 160                        // the height of one card, not the whole block
             infoSectionVisible: false
+            insideInfoSection: true
             title: qsTr("New in the last 24 hours")
             model: root.propertiesModelRef ? root.propertiesModelRef.recentsPropertiesModel : null
         }

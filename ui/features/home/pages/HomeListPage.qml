@@ -55,6 +55,7 @@ Item {
                         imageUrls: model.imageUrls
                         amenities: model.amenities
                         status: model.status
+                        insideInfoSection: false
                         isVerified: model.isVerified
                     }
                 }
