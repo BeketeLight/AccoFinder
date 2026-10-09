@@ -14,7 +14,7 @@ Page {
     //--- TOOLBAR & TABBAR HEADER ---
     header: FilterComponent {
         id: filterBar
-        model: ["All", "Pending", "Confirmed", "Cancelled"]
+        model: ["All", "Pending Payment", "Confirmed", "Cancelled"]
         onFilterChanged: function(text) {
             clientBookingModel.statusFilter = text
         }
@@ -24,7 +24,14 @@ Page {
     BookingsModel {
         id: clientBookingModel
     }
-
+    // PopUpPaymentSheet{
+    //     id: popUpPayment
+    //     onPaymentSubmitted: function(bookingId, amount, method) {
+    //             console.log("Processing payment for booking:", bookingId, "via:", method)
+    //             // Call your payment controller here:
+    //             PaymentController.processPayment(bookingId, amount, method)
+    //         }
+    // }
     // --- MAIN LIST VIEW ---
     ListView {
         id: statsListView
@@ -36,12 +43,19 @@ Page {
         model: clientBookingModel.bookingsModel
 
         delegate: ClientStatsDelegate {
-            activeFilter: {
-                    var t = filterBar.currentText
-                    if (t === "Approved") return "Confirmed"
-                    return t
-                }
+            // activeFilter: {
+            //         var t = filterBar.currentText
+            //         if (t === "Approved") return "Confirmed"
+            //         return t
+            //     }
             // Map Model Roles -> Delegate Properties
+            // onPayNowRequested: function(bId, amt, expiresAt) {
+            //             popUpPayment.bookingId = bId
+            //             popUpPayment.amount = amt
+            //             popUpPayment.holdExpiresAt = expiresAt
+            //             popUpPayment.selectedMethod = "" // Reset previous selection
+            //            popUpPayment.open() // Pops up the bottom sheet
+            //         }
             bookingId: model.bookingId ?? ""
             houseName: model.houseName ?? ""
             ownerFirstName: model.ownerFirstName ?? ""
@@ -56,6 +70,7 @@ Page {
             clientEmail: model.clientEmail ?? ""
             baseAmount: model.amount ?? 0.0
             serviceFee: model.commissionAmount ?? 0.0
+            holdExpiresAt: model.holdExpiresAt ?? ""
 
             // Dynamic filter binding tied to active tab text
             // activeFilter: filterTabBar.currentItem ? filterTabBar.currentItem.text : "All"
@@ -65,7 +80,7 @@ Page {
                 console.log("Action requested for booking:", model.bookingId)
             }
 
-            onViewDetailsRequested: {
+            onViewDetailsRequested:{
                 NavUtils.navigateToBookingsDetailsClient({
                     bookingId: model.bookingId || "",
                     status: model.status || "Pending",
@@ -82,8 +97,30 @@ Page {
                     landlordName: model.landlord || "",
                     landlordPhone: model.landlordPhone || "",
                     paymentStatus: model.paymentStatus || "Unpaid",
-                    price: model.amount
+                   // price: model.amount,
+                    price: Number(model.amount ?? 0),
+                    holdExpiresAt: model.holdExpiresAt ?? ""
                 });
+            }
+            // onPayNowRequested:  function(bId, amt, expiresAt){
+            //     NavUtils.navigateToPayments(
+            //             bId || model.bookingId || "",
+            //             amt || model.amount || 0,
+            //             expiresAt || model.holdExpiresAt || ""
+            //     )
+            // }
+            onPayNowRequested: function(bId, amt, expiresAt) {
+                var id = (bId && String(bId).length) ? String(bId) : String(model.bookingId || "")
+                var payAmount = (amt !== undefined && amt !== null && !isNaN(Number(amt)))
+                    ? Number(amt)
+                    : Number(model.amount || 0)
+                var expires = (expiresAt !== undefined && expiresAt !== null && String(expiresAt).length)
+                    ? expiresAt
+                    : (model.holdExpiresAt || null)
+
+                console.log("navigateToPayments", id, payAmount, expires)
+
+                NavUtils.navigateToPayments(id, payAmount, expires)
             }
         }
     }

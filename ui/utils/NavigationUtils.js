@@ -208,7 +208,8 @@ function navigateToBookingsDetailsClient(data) {
         // if you add these on the page + delegate:
         clientName: data.clientName || "",
         clientPhone: data.clientPhone || "",
-        clientEmail: data.clientEmail || ""
+        clientEmail: data.clientEmail || "",
+        holdExpiresAt: data.holdExpiresAt || ""
     })
 }
 function navigateToBookingsDetailsOwneByAgent(data){
