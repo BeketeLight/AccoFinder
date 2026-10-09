@@ -196,7 +196,7 @@ Page {
             RowLayout {
                 Layout.fillWidth: true
                 Layout.topMargin: 8
-                spacing: 12
+                spacing: 8
 
                 Rectangle {
                     Layout.fillWidth: true
@@ -230,6 +230,7 @@ Page {
                         Layout.fillWidth: true
                     }
 
+
                     Rectangle {
                         Layout.preferredWidth: 24
                         Layout.preferredHeight: 24
@@ -238,12 +239,12 @@ Page {
                         border.color: root.borderColor
                         border.width: 1
 
-                        Text {
+                        Image {
                             anchors.centerIn: parent
-                            text: "G"
-                            color: "#1F2937"
-                            font.pixelSize: 13
-                            font.bold: true
+                            source: "qrc:/ui/assets/auth/google.svg"
+                            width: 24
+                            height: 24
+                            fillMode: Image.PreserveAspectFit
                         }
                     }
 
