@@ -59,5 +59,6 @@
         <file>ui/assets/timeline-icon.svg</file>
         <file>ui/assets/payment-icon.svg</file>
         <file>ui/assets/forward-icon.svg</file>
+        <file>ui/assets/auth/google.svg</file>
     </qresource>
 </RCC>
