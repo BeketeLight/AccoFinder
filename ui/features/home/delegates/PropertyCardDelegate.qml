@@ -120,62 +120,145 @@ Item {
                 //     opacity: 0.25
                 // }
             }
-
+            // ---- Info overlay (bottom of the image) ----
             Rectangle {
                 id: insideRectangleInfo
-                visible: root.insideInfoSection
+                visible: root.insideInfoSection && img.status === Image.Ready
+
+                // Pin to the image, not the border rectangle. Cleaner geometry and
+                // it stays inside the rounded image mask.
                 anchors {
-                    right: borderRect.right
-                    left: borderRect.left
-                    bottom: borderRect.bottom
-                    leftMargin: 7
-                    rightMargin: insideRectangleInfo.anchors.leftMargin
-                    bottomMargin: insideRectangleInfo.anchors.leftMargin
+                    left: img.left
+                    right: img.right
+                    bottom: img.bottom
                 }
-                height: insideInfoSection.height + 5
-                radius: 3
 
-                // INFO SECTION
-                Column {
-                    id: insideInfoSection
-                    //width: parent.width
-                    spacing: 0
-                    leftPadding: 2
-                    rightPadding: 2
+                // Height grows with content; padding is baked into the layout below.
+                implicitHeight: insideInfoContent.implicitHeight + 28   // 14 top + 14 bottom
 
-                    // Center horizontally only, keep vertical flow natural
-                    anchors.horizontalCenter: insideRectangleInfo.horizontalCenter
-                    //anchors.verticalCenter: parent.verticalCenter
+                // Rounded only on the bottom to match the image corners.
+                radius: 8
+                // Square off the top so it reads as a footer, not a floating pill.
+                topLeftRadius: 0
+                topRightRadius: 0
 
-                    width: parent.width
+                // Dark gradient so any image behind it stays legible. Solid `#00000080`
+                // also works, but a gradient reads as "designed" rather than "patched on".
+                gradient: Gradient {
+                    GradientStop {
+                        position: 0.0
+                        color: "#00000000"
+                    }
+                    GradientStop {
+                        position: 0.35
+                        color: "#00000088"
+                    }
+                    GradientStop {
+                        position: 1.0
+                        color: "#000000CC"
+                    }
+                }
 
-                    // Price
+                // Content
+                ColumnLayout {
+                    id: insideInfoContent
+                    anchors {
+                        left: parent.left
+                        right: parent.right
+                        bottom: parent.bottom
+                        leftMargin: 14
+                        rightMargin: 14
+                        bottomMargin: 12
+                    }
+                    spacing: 2
+
+                    // ---- Title (top of the card, most prominent) ----
                     Label {
-                        width: parent.width
-                        text: "MWK " + Number(root.price).toLocaleString(Qt.locale(), "f", 0)
-                        font.pixelSize: 12
-                        font.bold: true
-                        color: "#2563EB"
+                        Layout.fillWidth: true
+                        text: root.title.length > 0 ? root.title : "Untitled property"
+                        color: "#FFFFFF"
+                        font.pixelSize: 15
+                        font.weight: Font.DemiBold
                         elide: Text.ElideRight
-                        visible: root.price ? true : false
+                        maximumLineCount: 1
                     }
 
-                    // Location
-                    Label {
-                        width: parent.width
-                        text: root.location
-                        font.pixelSize: 11
-                        color: "#6B7280"
-                        elide: Text.ElideRight
+                    // ---- Location with a small pin ----
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: 4
+                        visible: root.location.length > 0
+
+                        // Pin icon (unicode; swap for an SVG if you prefer)
+                        Label {
+                            text: "\uD83D\uDCCD"      // 📍
+                            font.pixelSize: 11
+                            color: "#E5E7EB"
+                            Layout.alignment: Qt.AlignVCenter
+                        }
+
+                        Label {
+                            Layout.fillWidth: true
+                            text: root.location
+                            color: "#E5E7EB"
+                            font.pixelSize: 12
+                            elide: Text.ElideRight
+                            maximumLineCount: 1
+                            Layout.alignment: Qt.AlignVCenter
+                        }
                     }
 
-                    // Property Title
-                    Label {
-                        text: root.title
-                        width: parent.width
-                        font.pixelSize: 11
-                        color: "#F59E0B"          // amber/gold
-                        elide: Text.ElideRight
+                    // ---- Bottom row: price (left) + rating (right) ----
+                    RowLayout {
+                        Layout.fillWidth: true
+                        Layout.topMargin: 6
+                        spacing: 8
+
+                        // Price badge — a small pill that makes the number pop
+                        Rectangle {
+                            visible: root.price > 0
+                            implicitHeight: 24
+                            implicitWidth: priceLabel.implicitWidth + 16
+                            radius: 12
+                            color: "#2563EB"   // primary blue; swap for your brand colour
+
+                            Label {
+                                id: priceLabel
+                                anchors.centerIn: parent
+                                text: "MWK " + Number(root.price).toLocaleString(Qt.locale(), "f", 0)
+                                color: "#FFFFFF"
+                                font.pixelSize: 12
+                                font.weight: Font.DemiBold
+                            }
+                        }
+
+                        Item {
+                            Layout.fillWidth: true
+                        }   // spacer
+
+                        // Rating badge
+                        RowLayout {
+                            visible: root.reviewCount > 0
+                            spacing: 3
+                            Layout.alignment: Qt.AlignVCenter
+
+                            Label {
+                                text: "\u2605"      // ★
+                                color: "#F59E0B"
+                                font.pixelSize: 13
+                            }
+                            Label {
+                                text: root.rating.toFixed(1)
+                                color: "#FFFFFF"
+                                font.pixelSize: 12
+                                font.weight: Font.Medium
+                            }
+                            Label {
+                                text: "(" + root.reviewCount + ")"
+                                color: "#D1D5DB"
+                                font.pixelSize: 11
+                            }
+                        }
                     }
                 }
             }

@@ -15,12 +15,6 @@ Page {
     property var bookingDetails: null
     property string phase: "form"
     signal paymentSubmitted(string bookingId, real amount, string method, string operatorRefId, string phoneNumber)
-    Connections {
-        target: root
-        function onPaymentSubmitted(bookingId, amount, method, operatorRefId, phoneNumber) {
-            console.log("[PaymentsPage] own signal fired:", bookingId, amount, method);
-        }
-    }
 
     // Provisional hold deadline (ISO string from POST /bookings). Invalid or
     // null when the booking is not on a hold, in which case no countdown is
@@ -42,11 +36,56 @@ Page {
 
     readonly property bool holdExpired: hasHold && holdSecondsRemaining <= 0
 
+    // True only when the text in the amount field parses to exactly root.amount.
+    // Handles formatted inputs like "55,000", "MK 55000", and "55000.00".
+    readonly property bool amountMatches: {
+        if (root.amount <= 0)
+            return false;
+        if (!summary || !summary.text)
+            return false;
+
+        var cleaned = String(summary.text).replace(/[^0-9.]/g, "");
+        if (cleaned.length === 0)
+            return false;
+
+        var typed = Number(cleaned);
+        if (isNaN(typed))
+            return false;
+
+        return Math.round(typed * 100) === Math.round(root.amount * 100);
+    }
+
     readonly property string holdCountdownText: {
         var total = Math.max(0, root.holdSecondsRemaining);
         var mins = Math.floor(total / 60);
         var secs = total % 60;
         return (mins < 10 ? "0" : "") + mins + ":" + (secs < 10 ? "0" : "") + secs;
+    }
+
+    // Maps an operator to a local icon. The backend's PayChangu response has
+    // `logo: null` for all operators, so we fall back on a per-operator asset.
+    function operatorIcon(op) {
+        if (!op)
+            return "";
+
+        // Prefer whatever the backend gives us.
+        if (op.icon && op.icon.length > 0)
+            return op.icon;
+        if (op.logo && op.logo.length > 0)
+            return op.logo;
+
+        // Fall back on short_code first (stable), then name (fragile but useful).
+        var key = (op.short_code || op.name || "").toLowerCase();
+
+        if (key.indexOf("airtel") !== -1)
+            return "qrc:/ui/assets/payment/airtel.svg";
+        if (key.indexOf("tnm") !== -1 || key.indexOf("mpamba") !== -1)
+            return "qrc:/ui/assets/payment/tnm-logo.svg";
+        if (key.indexOf("changu_wallet") !== -1 || key.indexOf("card") !== -1)
+            return "qrc:/ui/assets/payment/PayChangu.svg";
+
+        // Last resort: a generic fallback.
+        return "qrc:/ui/assets/payment/PayChangu.svg";
     }
 
     // Recomputes remaining time and keeps the timer in step. Safe to call from
@@ -266,10 +305,15 @@ Page {
                 // ---- Amount summary card ----
                 AppTextInput {
                     id: summary
-                    placeholder: "Amount due"
-                    label: "Amount"
+                    Layout.fillWidth: true
+                    label: qsTr("Amount due")
+                    placeholder: qsTr("Enter the amount shown on the button")
                     fieldHeight: 65
                     fieldWidth: contentColumn.width
+                    inputMethodHints: Qt.ImhFormattedNumbersOnly
+                    // Prefill so the amount starts correct. Delete this `text:` line if you
+                    // want the user to *type* the amount as a confirmation step.
+                    text: root.amount > 0 ? root.amount.toLocaleString(Qt.locale("en_MW"), 'f', 0) : ""
                 }
 
                 // ---- Method picker ----
@@ -290,17 +334,17 @@ Page {
                     Repeater {
                         model: root.operators.length > 0 ? root.operators : [
                             {
-                                ref_id: "airtel",
+                                ref_id: "20be6c20-adeb-4b5b-a7ba-0769820df4fb",
                                 name: qsTr("Airtel Money"),
                                 icon: "qrc:/ui/assets/payment/airtel.svg"
                             },
                             {
-                                ref_id: "tnm",
+                                ref_id: "27494cb5-ba9e-437f-a114-4e7a7686bcca",
                                 name: qsTr("TNM Mpamba"),
                                 icon: "qrc:/ui/assets/payment/tnm-logo.svg"
                             },
                             {
-                                ref_id: "",
+                                ref_id: "550c35a2-86aa-4590-9931-8f23e664cee9",
                                 name: "Card",
                                 icon: "qrc:/ui/assets/payment/PayChangu.svg"
                             },
@@ -321,7 +365,7 @@ Page {
                                 spacing: 6
                                 Image {
                                     Layout.alignment: Qt.AlignHCenter
-                                    source: modelData.icon || ""
+                                    source: root.operatorIcon(modelData)
                                     sourceSize.width: 36
                                     sourceSize.height: 36
                                     fillMode: Image.PreserveAspectFit
@@ -372,7 +416,7 @@ Page {
                     // reject the booking anyway, and charging someone for a
                     // room that has already gone to another user is the worst
                     // possible outcome.
-                    enabled: !root.holdExpired && root.selectedMethod.length > 0 && root.amount > 0 && !PaymentController.isLoading && (root.selectedMethod !== "mobile_money" || (root.selectedOperatorRefId.length > 0 && phoneField.text.replace(/\s/g, "").length >= 9))
+                    enabled: !root.holdExpired && root.amountMatches && root.selectedMethod.length > 0 && root.amount > 0 && !PaymentController.isLoading && (root.selectedMethod !== "mobile_money" || (root.selectedOperatorRefId.length > 0 && phoneField.text.replace(/\s/g, "").length >= 9))
 
                     onClicked: {
                         console.log("pay now button clicked");

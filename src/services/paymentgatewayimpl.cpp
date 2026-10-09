@@ -141,6 +141,8 @@ void PaymentGatewayImpl::fetchOperators()
                 return;
             }
             QVariantList list;
+            qDebug()<<"avaible opoarators";
+            qDebug()<<resp.value("data").toArray();
             for (const auto& v : resp.value("data").toArray())
                 list.append(v.toObject().toVariantMap());
             emit operatorsLoaded(list);
