@@ -259,6 +259,27 @@ Page {
                 }
                 onClicked: root.payNowClicked()
             }
+
+            Button {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 48
+                visible: root.status === 2 || root.status === 3 || root.status === 4
+                text: qsTr("Back to booking")
+
+                contentItem: Label {
+                    text: parent.text
+                    color: "#1F2937"
+                    font.pixelSize: 14
+                    font.bold: true
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                }
+                background: Rectangle {
+                    radius: 14
+                    color: parent.down ? "#E5E7EB" : "#F3F4F6"
+                }
+                onClicked: UtilsModule.NavigationUtils.pop()
+            }
         }
     }
 }

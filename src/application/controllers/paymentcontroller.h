@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QString>
 #include <QList>
+#include <QVariantList>
 #include "services/paymentgatewayimpl.h"
 #include "models/payment.h"
 #include "presentation/models/paymentslistmodel.h"
@@ -19,7 +20,6 @@ public:
 
     bool isLoading() const { return m_isLoading; }
     PaymentsListModel* paymentListModel() const { return m_listModel; }
-    int paymentCount() const { return m_listModel->size(); }
 
     // ---------------- PAYMENT OPERATIONS ----------------
 
@@ -29,7 +29,11 @@ public:
      * - Calls PaymentGatewayRepositoryImpl::processPayment()
      * - Returns the created Payment object
      */
-    Q_INVOKABLE void createPayment(const QString& bookingId, double amount, const QString& method);
+    Q_INVOKABLE void createPayment(const QString& bookingId,
+                                   double amount,
+                                   const QString& method,
+                                   const QString& operatorRefId = QString(),
+                                   const QString& phoneNumber = QString());
 
     /**
      * Retrieves a payment by its unique ID.
@@ -65,9 +69,13 @@ public:
     Q_INVOKABLE void refreshForUser(const QString& userId);
     Q_INVOKABLE void refreshForBooking(const QString& bookingId);
 
+    Q_INVOKABLE void fetchOperators();
+    Q_INVOKABLE void verifyPayment(const QString& chargeId);
+
     // ---- C++-only helper for the gateway to append a payment ----
     void appendPaymentToList(Payment* payment);
     void clearList();
+    int paymentCount() const { return m_listModel ? m_listModel->size() : 0; }
 
 signals:
     void paymentCreated(Payment* payment);
@@ -77,12 +85,17 @@ signals:
     void paymentError(const QString& error);
     void isLoadingChanged(bool isLoading);
     void paymentCountChanged(int count);
+    void operatorsLoaded(const QVariantList& operators);
+    void operatorsError(const QString& error);
+    void paymentVerified(Payment* payment);
+    void paymentVerificationPending(Payment* payment);
 
 private:
     void setLoading(bool loading);
     PaymentGatewayImpl* m_paymentRepo;
-    PaymentsListModel* m_listModel;
+    PaymentsListModel* m_listModel = nullptr;
     bool m_isLoading = false;
+    QVariantList m_operatorsCache;
 };
 
 #endif 

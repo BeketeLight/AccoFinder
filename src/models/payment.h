@@ -18,6 +18,9 @@ class Payment : public QObject
     Q_PROPERTY(QString payoutStatus READ getPayoutStatus NOTIFY payoutStatusChanged)
     Q_PROPERTY(QDateTime payoutDate READ getPayoutDate NOTIFY payoutDateChanged)
     Q_PROPERTY(QDateTime paidAt READ getPaidAt NOTIFY paidAtChanged)
+    Q_PROPERTY(bool bookingConfirmed READ isBookingConfirmed NOTIFY bookingConfirmedChanged)
+    Q_PROPERTY(QString bookingOutcomeReason READ getBookingOutcomeReason NOTIFY bookingOutcomeReasonChanged)
+
 public:
     explicit Payment(QObject *parent = nullptr);
 
@@ -31,6 +34,8 @@ public:
             const QString& payoutStatus = "",
             const QDateTime& payoutDate = QDateTime(),
             const QDateTime& paidAt = QDateTime(),
+            bool bookingConfirmed = false,
+            const QString& bookingOutcomeReason = QString(),
             QObject* parent = nullptr);
     QString getId() const;
 
@@ -44,6 +49,11 @@ public:
     QString getPayoutStatus() const;
     QDateTime getPayoutDate() const;
     QDateTime getPaidAt() const;
+    bool isBookingConfirmed() const { return m_bookingConfirmed; }
+    QString getBookingOutcomeReason() const { return m_bookingOutcomeReason; }
+
+    void setBookingConfirmed(bool v);
+    void setBookingOutcomeReason(const QString& v);
 private:
     QString m_id;
     QString m_bookingId;
@@ -54,6 +64,8 @@ private:
     QString m_payoutStatus;
     QDateTime m_payoutDate;
     QDateTime m_paidAt;
+    bool    m_bookingConfirmed = false;
+    QString m_bookingOutcomeReason;
 
 signals:
     void paymentProcessed();
@@ -69,6 +81,8 @@ signals:
     void payoutStatusChanged();
     void payoutDateChanged();
     void paidAtChanged();
+    void bookingConfirmedChanged();
+    void bookingOutcomeReasonChanged();
 
 
 };
