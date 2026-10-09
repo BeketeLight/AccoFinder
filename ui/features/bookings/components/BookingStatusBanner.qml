@@ -5,23 +5,26 @@ import QtQuick.Controls
 Rectangle {
     id: root
 
-    property string status: "Pending"
+    property string status: "Pending payment"
 
     readonly property string statusKey: String(status).toUpperCase()
 
     readonly property var style: {
         switch (statusKey) {
         case "CONFIRMED":
-        case "APPROVED":
+        case "PAID":
             return {
                 bg: "#E6F4EA",
                 iconBg: "#1E8E3E",
                 iconSource: "qrc:/ui/assets/good-standing-icon.svg",
                 title: qsTr("Booking confirmed"),
-                subtitle: qsTr("Your reservation is confirmed."),
+                subtitle: qsTr("Your Booking is confirmed."),
                 titleColor: "#1E8E3E",
                 subtitleColor: "#2D6A4F"
             }
+        case "PENDING PAYMENT":
+        case "PAYMENT PROCESSING":
+        case "PAYMENT FAILED":
         case "PENDING":
             return {
                 bg: "#FEF3C7",
@@ -32,25 +35,24 @@ Rectangle {
                 titleColor: "#B45309",
                 subtitleColor: "#92400E"
             }
-        case "PAID":
-            return {
-                bg: "#DBEAFE",
-                iconBg: "#2563EB",
-                iconSource: "qrc:/ui/assets/good-standing-icon.svg",
-                title: qsTr("Payment received"),
-                subtitle: qsTr("Waiting for the host to confirm your stay."),
-                titleColor: "#1D4ED8",
-                subtitleColor: "#1E40AF"
-            }
         case "CANCELLED":
-        case "CANCELED":
-        case "REJECTED":
             return {
                 bg: "#FEE2E2",
                 iconBg: "#DC2626",
                 iconSource: "qrc:/ui/assets/cancelled-icon.svg",
                 title: qsTr("Booking cancelled"),
-                subtitle: qsTr("This reservation is no longer active."),
+                subtitle: qsTr("This booking is no longer active."),
+                titleColor: "#B91C1C",
+                subtitleColor: "#991B1B"
+            }
+
+        case "EXPIRED":
+            return {
+                bg: "#FEE2E2",
+                iconBg: "#DC2626",
+                iconSource: "qrc:/ui/assets/cancelled-icon.svg",
+                title: qsTr("Booking expired"),
+                subtitle: qsTr("The payment time window has passed and this room was released."),
                 titleColor: "#B91C1C",
                 subtitleColor: "#991B1B"
             }
@@ -85,13 +87,6 @@ Rectangle {
             implicitHeight: 32
             radius: 16
             color: root.style.iconBg
-            // Text {
-            //     anchors.centerIn: parent
-            //     text: root.style.icon
-            //     font.pixelSize: 16
-            //     font.bold: true
-            //     color: "#FFFFFF"
-            // }
             ToolButton {
                 id: statusIconButton
 

@@ -4,6 +4,8 @@ import QtQuick.Layouts
 import QtQuick.Effects
 import "../components"
 import "../../../components/buttons"
+import "../../../components/dialogs"
+import "../../../utils/Utils.js" as Helper
 
 Item{
     id: detailsPage
@@ -22,7 +24,6 @@ Item{
     property string hostInitials: ""
     property string propertyImage: ""
     property string propertyLocation: ""
-    //property string propertyImage: model.propertyImage ?? "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=500"
     property string roomType: ""
     property real price: 0.0
     property string clientName: ""
@@ -40,16 +41,39 @@ Item{
     property string paymentDate: ""
 
     property string createdTime: ""
-
+    property string holdExpiresAt:  ""
+    property int tick: 0
     // --- SIGNALS ---
     signal backRequested()
     signal cancelBookingRequested()
     signal contactHostRequested()
-    signal viewMapRequested()
+    signal payNowRequested(string bookingId, real amount, var holdExpiresAt)
 
         // ------------------------------------------
         // 1. POPULATED DATA VIEW
         // ------------------------------------------
+    Timer {
+        interval: 1000
+        running: detailsPage.holdExpiresAt.length > 0
+        repeat: true
+       onTriggered: detailsPage.tick++
+   }
+    readonly property string holdCountdownText: {
+        var _ = tick
+       // return .holdCountdownText(holdExpiresAt)
+        return Helper.holdCountdownText(holdExpiresAt)
+    }
+
+    readonly property bool canPay: {
+        var _ = tick
+        return Helper.canPayBooking(status, holdExpiresAt)
+    }
+    //Status must be pending
+    //Expiration window still open
+    readonly property bool showHoldActions: {
+        var _ = tick
+        return Helper.canPayBooking(status, holdExpiresAt)
+    }
         ColumnLayout {
             id: mainContent
             width: parent.width
@@ -122,6 +146,7 @@ Item{
                     }
                 }
             }
+            //Status Banner
             BookingStatusBanner{
                 Layout.fillWidth: true
                 status: detailsPage.status
@@ -142,10 +167,10 @@ Item{
                     anchors.right: parent.right
                     anchors.top: parent.top
                     anchors.margins: 12
-                    spacing: 12
+                    spacing: 4
 
                     RowLayout {
-                        spacing: 8
+                        spacing: 0
                         ToolButton{
                             icon.source: "qrc:/ui/assets/reservation-icon.svg"
                             icon.height: 12
@@ -165,25 +190,11 @@ Item{
                         Layout.fillWidth: true
                         columnSpacing: 24
                         rowSpacing: 12
-
-                        // Col 1
-                        // ColumnLayout {
-                        //     spacing: 2
-                        //     Text { text: "Booking ID"; font.pixelSize: 11; color: "#64748B" }
-                        //     Text { text: detailsPage.bookingId; font.pixelSize: 13; font.bold: true; color: "#0F172A" }
-                        // }
-
-                        // Col 2
-                        // ColumnLayout {
-                        //     spacing: 2
-                        //     Text { text: "Check-in"; font.pixelSize: 11; color: "#64748B" }
-                        //     Text { text:detailsPage.checkIn; font.pixelSize: 13; font.bold: true; color: "#0F172A" }
-                        // }
-
                         // Row 2 Col 1
                         ColumnLayout {
                             spacing: 2
                             Text { text: "Booking date"; font.pixelSize: 13; color:"#0F172A"  }
+                            Item{Layout.preferredWidth: 250}
                             Text { text: detailsPage.checkIn; font.pixelSize: 11; color:  "#64748B"}
                         }
 
@@ -191,6 +202,7 @@ Item{
                         ColumnLayout {
                             spacing: 2
                             Text { text: "Room Type"; font.pixelSize: 13; color: "#0F172A" }
+                            Item{Layout.preferredWidth: 250}
                             Text { text: detailsPage.roomType; font.pixelSize: 11; color: "#64748B" }
                         }
                     }
@@ -211,10 +223,10 @@ Item{
                     anchors.right: parent.right
                     anchors.top: parent.top
                     anchors.margins: 12
-                    spacing: 12
+                    spacing: 4
 
                     RowLayout {
-                        spacing: 8
+                        spacing: 0
                         ToolButton{
                             icon.source: "qrc:/ui/assets/payment-icon.svg"
                             icon.height: 16
@@ -226,7 +238,6 @@ Item{
 
                     RowLayout {
                         Layout.fillWidth: true
-
                         ColumnLayout {
                             spacing: 6
                             RowLayout {
@@ -235,41 +246,7 @@ Item{
                                 Text { text:"MWK" + detailsPage.price; font.pixelSize: 12; font.bold: true; color: "#0F172A" }
                             }
                         }
-
-                        Rectangle {
-                            implicitWidth: 1
-                            implicitHeight: 36
-                            color: "#E2E8F0"
-                            Layout.leftMargin: 12
-                            Layout.rightMargin: 12
-                        }
-
-                        ColumnLayout {
-                            spacing: 4
-                            Text { text: "Payment status"; font.pixelSize: 11; color: "#64748B" }
-
-                            Rectangle {
-                                implicitWidth: payStatusText.implicitWidth + 20
-                                implicitHeight: 22
-                                radius: 11
-                                color: "#E6F4EA"
-
-                                RowLayout {
-                                    anchors.centerIn: parent
-                                    spacing: 4
-                                    Text { text: "✓"; font.pixelSize: 10; color: "#1E8E3E"; font.bold: true }
-                                    Text {
-                                        id: payStatusText
-                                        text: detailsPage.paymentStatus
-                                        font.pixelSize: 11
-                                        font.bold: true
-                                        color: "#1E8E3E"
-                                    }
-                                }
-                            }
-                        }
                     }
-
                     Rectangle { Layout.fillWidth: true; implicitHeight: 1; color: "#F1F5F9" }
 
                     RowLayout {
@@ -296,20 +273,20 @@ Item{
                     anchors.right: parent.right
                     anchors.top: parent.top
                     anchors.margins: 12
-                    spacing: 8
+                    spacing: 4
 
                     RowLayout {
-                        spacing: 8
+                        spacing: 0
                         RowLayout {
                             spacing: 0
                             ToolButton{
-                                icon.source: "qrc:/ui/assets/account-icon.svg"
-                                icon.height: 12
-                                icon.width: 12
-                                background: null
-                            }
-                            Text { text: "Property Host"; font.pixelSize: 14; font.bold: true; color: "#0F172A" }
+                            icon.source: "qrc:/ui/assets/account-icon.svg"
+                            icon.height: 12
+                            icon.width: 12
+                            background: null
                         }
+                        Text { text: "Property Host"; font.pixelSize: 14; font.bold: true; color: "#0F172A" }
+                    }
 
                     }
 
@@ -324,12 +301,6 @@ Item{
                             radius: 22
                             color: "#E2E8F0"
                             clip: true
-
-                            // Image {
-                            //     anchors.fill: parent
-                            //     source: detailsPage.hostAvatar
-                            //     fillMode: Image.PreserveAspectCrop
-                            // }
                             Text{
                                 anchors.centerIn: parent
                                 text: detailsPage.hostInitials
@@ -347,181 +318,74 @@ Item{
                     }
                 }
             }
-
-            // --- BOOKING TIMELINE CARD ---
-            Rectangle {
+            // Cancel action button
+            // Actions while hold is open ---
+            RowLayout {
                 Layout.fillWidth: true
-                implicitHeight: timeCol.implicitHeight + 24
-                radius: 12
-                color: "#FFFFFF"
-                border.color: "#E2E8F0"
-                border.width: 1
+                Layout.topMargin: 8
+                spacing: 12
+                visible: detailsPage.showHoldActions
 
-                ColumnLayout {
-                    id: timeCol
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.top: parent.top
-                    anchors.margins: 12
-                    spacing: 12
-
-                    RowLayout {
-                        spacing: 8
-                        ToolButton{
-                            icon.source: "qrc:/ui/assets/timeline-icon.svg"
-                            icon.height: 12
-                            icon.width: 12
-                            background: null
-                        }
-                        Text { text: "Booking Timeline"; font.pixelSize: 14; font.bold: true; color: "#0F172A" }
-                    }
-
-                    ColumnLayout {
-                        Layout.fillWidth: true
-                        spacing: 10
-
-                        Repeater {
-                            model: [
-                                { label: "Booking created", date: detailsPage.checkIn, active: true },
-                                { label: "Payment received", date: "12 Sep 2026, 10:35", active: true },
-                                { label: "Booking confirmed", date: "12 Sep 2026, 11:02", active: true },
-                            ]
-
-                            RowLayout {
-                                Layout.fillWidth: true
-                                spacing: 12
-
-                                Rectangle {
-                                    implicitWidth: 8
-                                    implicitHeight: 8
-                                    radius: 4
-                                    color: modelData.active ? "#10B981" : "#CBD5E1"
-                                }
-
-                                Text {
-                                    text: modelData.label
-                                    font.pixelSize: 12
-                                    color: modelData.active ? "#0F172A" : "#64748B"
-                                    font.bold: modelData.active
-                                }
-
-                                Item { Layout.fillWidth: true }
-
-                                Text {
-                                    text: modelData.date
-                                    font.pixelSize: 11
-                                    color: "#94A3B8"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            // --- CANCEL ACTION BUTTON ---
-            Rectangle {
-                Layout.fillWidth: true
-                implicitHeight: 44
-                radius: 22
-                border.color: "#F43F5E"
-                border.width: 1
-                color: "transparent"
-
-                RowLayout {
-                    anchors.centerIn: parent
-                    spacing: 6
-                    Text {
-                        text: "Cancel Booking"
-                        font.pixelSize: 13
-                        font.bold: true
-                        color: "#F43F5E"
-                    }
-                }
-
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: detailsPage.cancelBookingRequested()
-                }
-            }
-        }
-
-        // ------------------------------------------
-        // 2. SKELETON SHIMMER OVERLAY (Parallel Layout)
-        // ------------------------------------------
-        ColumnLayout {
-            id: skeletonContent
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.top: parent.top
-            anchors.margins: 16
-            spacing: 16
-            visible: detailsPage.isLoading
-
-            // Hero Image Placeholder
-            Rectangle {
-                Layout.fillWidth: true
-                implicitHeight: 260
-                radius: 16
-                color: "#FFFFFF"
-
-                ColumnLayout {
-                    anchors.fill: parent
-                    spacing: 12
-
-                    LoadingSkeleton {
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: 180
-                        radius: 16
-                        loading: detailsPage.isLoading
-                    }
-
-                    ColumnLayout {
-                        Layout.fillWidth: true
-                        Layout.margins: 12
-                        spacing: 8
-
-                        LoadingSkeleton { Layout.preferredWidth: 200; Layout.preferredHeight: 18; loading: detailsPage.isLoading }
-                        LoadingSkeleton { Layout.preferredWidth: 130; Layout.preferredHeight: 14; loading: detailsPage.isLoading }
-                    }
-                }
-            }
-
-            // Confirmation Banner Placeholder
-            LoadingSkeleton {
-                Layout.fillWidth: true
-                Layout.preferredHeight: 60
-                radius: 12
-                loading: detailsPage.isLoading
-            }
-
-            // Cards Placeholders
-            Repeater {
-                model: 4
                 Rectangle {
+                    id: cancel
                     Layout.fillWidth: true
-                    implicitHeight: 120
-                    radius: 12
-                    color: "#FFFFFF"
-
-                    ColumnLayout {
+                    implicitHeight: 40
+                    radius: 24
+                    border.width: 1
+                    border.color: "#F43F5E"
+                    color: "transparent"
+                    Text {
+                        anchors.centerIn: parent
+                        text: qsTr("Cancel booking")
+                        color: "#F43F5E"
+                        font.pixelSize: 14
+                        font.bold: true
+                    }
+                    MouseArea {
                         anchors.fill: parent
-                        anchors.margins: 12
-                        spacing: 12
+                        onClicked: {
+                            //cancelBookingDialog.visibleDialog = true
+                            //detailsPage.cancelBookingRequested()
+                            cancelBookingDialog.open()
+                        }
+                    }
+                }
 
-                        LoadingSkeleton { Layout.preferredWidth: 140; Layout.preferredHeight: 16; loading: detailsPage.isLoading }
-                        LoadingSkeleton { Layout.fillWidth: true; Layout.preferredHeight: 14; loading: detailsPage.isLoading }
-                        LoadingSkeleton { Layout.preferredWidth: 220; Layout.preferredHeight: 14; loading: detailsPage.isLoading }
+                Rectangle {
+                    id: pay
+                    Layout.fillWidth: true
+                    implicitHeight: 40
+                    radius: 24
+                    color: "#22C55E"
+                    Text {
+                        anchors.centerIn: parent
+                        text: qsTr("Pay now")
+                        color: "#FFFFFF"
+                        font.pixelSize: 14
+                        font.bold: true
+                    }
+                    MouseArea {
+                        anchors.fill: pay
+                        onClicked: detailsPage.payNowRequested(
+                            detailsPage.bookingId,
+                            detailsPage.price,
+                            detailsPage.holdExpiresAt
+                        )
                     }
                 }
             }
 
-            // Button Placeholder
-            LoadingSkeleton {
-                Layout.fillWidth: true
-                Layout.preferredHeight: 44
-                radius: 22
-                loading: detailsPage.isLoading
+            AppAlertDialog {
+                id: cancelBookingDialog
+                Layout.alignment: Qt.AlignCenter
+                customText: qsTr("Cancel booking?")
+                customInformativeText: qsTr(
+                    "Are you sure you want to cancel this booking? This action may not be reversible."
+                )
+
+                onAccepted: {
+                    BookingViewModel.cancelBooking(detailsPage.bookingId)
+                }
             }
         }
-   // }
 }
