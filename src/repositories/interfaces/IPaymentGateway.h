@@ -2,6 +2,7 @@
 #define IPAYMENTGATEWAY_H
 
 #include <QObject>
+#include <QVariantList>
 #include "models/payment.h"
 #include "core/utils/EPaymentStatus.h"
 
@@ -13,16 +14,14 @@ public:
         : QObject(parent) {}
    // virtual Payment* processPayment() = 0;
 
-    virtual void createPayment(const QString& id, 
-                       const QString& bookingId, 
-                       double amount, 
-                       const QString& method, 
-                       const PaymentStatus& status,
-                       const QString& transactionRef, 
-                       const QString& payoutStatus, 
-                       const QDateTime& payoutDate) =0; //initiating payment
+    virtual void createPayment(const QString& bookingId,
+                               double amount,
+                               const QString& method,
+                               const QString& operatorRefId,
+                               const QString& phoneNumber) =0;
 
-    virtual void verifyPayment(const QString& id, double amount) = 0;
+    virtual void verifyPayment(const QString& chargeId) = 0;
+    virtual void fetchOperators() = 0;
 
     virtual void getPaymentById(const QString& id) =0;
     //virtual void getAllPayments() =0;
@@ -37,6 +36,11 @@ public:
                        const QDateTime& payoutDate) =0;
 
     virtual ~IPaymentGateway() {}
+signals:
+    void operatorsLoaded(const QVariantList& operators);
+    void operatorsError(const QString& error);
+    void paymentVerified(Payment* payment);
+    void paymentVerificationPending(Payment* payment);
 };
 
 #endif // IPAYMENTGATEWAY_H

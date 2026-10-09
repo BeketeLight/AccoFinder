@@ -4,6 +4,10 @@ import "../pages"
 Item {
     id: paymentScreenId
 
+    property var bookingDetails: null
+    property var operators: []
+    property string phase: "form"
+
     // Booking context from the Book Now flow. holdExpiresAt is the provisional
     // hold deadline (ISO string from the API) and drives the countdown on the
     // payment page.
@@ -16,5 +20,12 @@ Item {
         bookingId: paymentScreenId.bookingId
         amount: paymentScreenId.amount
         holdExpiresAt: paymentScreenId.holdExpiresAt
+        bookingDetails: paymentScreenId.bookingDetails
+        operators: paymentScreenId.operators
+        phase: paymentScreenId.phase
+        onPaymentSubmitted: function (bookingId, amount, method, operatorRefId, phoneNumber) {
+            console.log("pay now button clicked on payment");
+            PaymentController.createPayment(bookingId, amount, method, operatorRefId, phoneNumber);
+        }
     }
 }

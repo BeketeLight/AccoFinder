@@ -12,6 +12,8 @@ Payment::Payment(const QString& id,
                  const QString& payoutStatus,
                  const QDateTime& payoutDate,
                  const QDateTime& paidAt,
+                 bool bookingConfirmed,
+                 const QString& bookingOutcomeReason,
                  QObject* parent)
     : QObject(parent)
     , m_id(id)
@@ -23,6 +25,8 @@ Payment::Payment(const QString& id,
     , m_payoutStatus(payoutStatus)
     , m_payoutDate(payoutDate)
     , m_paidAt(paidAt)
+    , m_bookingConfirmed(bookingConfirmed)
+    , m_bookingOutcomeReason(bookingOutcomeReason)
 {
     // No emit here. The gateway emits paymentCreated after construction.
 }
@@ -88,5 +92,17 @@ QDateTime Payment::getPaidAt() const
 {
     return m_paidAt;
 }
+void Payment::setBookingConfirmed(bool v)
+{
+    if (m_bookingConfirmed == v) return;
+    m_bookingConfirmed = v;
+    emit bookingConfirmedChanged();
+}
 
+void Payment::setBookingOutcomeReason(const QString& v)
+{
+    if (m_bookingOutcomeReason == v) return;
+    m_bookingOutcomeReason = v;
+    emit bookingOutcomeReasonChanged();
+}
 

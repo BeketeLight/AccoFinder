@@ -11,6 +11,7 @@ Item {
     // Injected by whoever pushes this screen
     property string bookingId: ""
     property string paymentId: ""
+    property string chargeId: ""
     property real amount: 0
 
     // Provisional-hold deadline, fetched from the booking rather than pushed in:
@@ -23,6 +24,14 @@ Item {
     property string method: ""
     property string transactionRef: ""
     property string statusMessage: ""
+
+    Timer {
+        id: pollTimer
+        interval: 4000
+        repeat: true
+        running: (root.status === 0 || root.status === 1) && root.chargeId.length > 0
+        onTriggered: PaymentController.verifyPayment(root.chargeId)
+    }
 
     Pages.PaymentStatusPage {
         anchors.fill: parent
@@ -66,6 +75,7 @@ Item {
             root.method = payment.method;
             root.transactionRef = payment.transactionRef;
             root.statusMessage = qsTr("Payment initiated. Awaiting confirmation.");
+            root.chargeId = payment.transactionRef;
         }
         function onPaymentLoaded(payment) {
             if (!payment)
@@ -86,6 +96,22 @@ Item {
         function onPaymentError(error) {
             root.status = 3;
             root.statusMessage = error;
+        }
+        function onPaymentVerified(payment) {
+            if (!payment)
+                return;
+            root.status = payment.status;
+            root.method = payment.method;
+            root.transactionRef = payment.transactionRef;
+            root.statusMessage = payment.bookingConfirmed ? qsTr("Payment confirmed and booking secured.") : qsTr("Payment succeeded, but the room is no longer available. " + "Support will contact you.");
+            pollTimer.stop();
+        }
+        function onPaymentVerificationPending(payment) {
+            if (!payment)
+                return;
+            root.status = payment.status;
+            root.chargeId = payment.transactionRef;
+            root.statusMessage = qsTr("Waiting for you to authorize the payment on your phone…");
         }
     }
 

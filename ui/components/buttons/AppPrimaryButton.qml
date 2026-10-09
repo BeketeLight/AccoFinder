@@ -1,46 +1,36 @@
 import QtQuick 2.15
 import QtQuick.Controls
 
-Item {
+Button {
     id: root
 
-    property alias customWidth: root.width
-    property alias customeHeight: root.height
-    property color customBackgroundColor
-    property alias customRadius: buttomBackground.radius
-    property alias customText: control.text
-    property alias customBorder: buttomBackground.border
-    property color customTextColor: buttonTextAttributes.color
+    // ---- Public API ----
+    property color customBackgroundColor: "#2563EB"
+    property color customTextColor: "#FFFFFF"
+    property real customRadius: 8
+    property string customText: qsTr("change me")
+    property color customBorderColor: "transparent"
+    property int customBorderWidth: 0
 
-    signal clicked
+    text: root.customText
 
-    Button {
-        id: control
-        text: qsTr("change me")
-        highlighted: true
+    contentItem: Text {
+        text: root.text
+        font: root.font
+        color: root.customTextColor
+        opacity: root.enabled ? 1.0 : 0.4
+        horizontalAlignment: Text.AlignHCenter
+        verticalAlignment: Text.AlignVCenter
+        elide: Text.ElideRight
+    }
 
-        contentItem: Text {
-            id: buttonTextAttributes
-            text: control.text
-            font: control.font
-            opacity: enabled ? 1.0 : 0.3
-            color: control.down ? "#17a81a" : "#21be2b"
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
-            elide: Text.ElideRight
-        }
-
-        background: Rectangle {
-            id: buttomBackground
-            implicitWidth: customWidth
-            implicitHeight: customeHeight
-            color: customColor
-            opacity: enabled ? 1 : 0.3
-            border.color: control.down ? "#17a81a" : "#21be2b"
-            border.width: 1
-            radius: 2
-        }
-
-        onClicked: clicked()
+    background: Rectangle {
+        implicitWidth: root.implicitWidth
+        implicitHeight: root.implicitHeight
+        radius: root.customRadius
+        color: root.customBackgroundColor
+        opacity: root.enabled ? 1.0 : 0.4
+        border.color: root.customBorderColor
+        border.width: root.customBorderWidth
     }
 }

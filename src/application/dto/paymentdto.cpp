@@ -48,7 +48,9 @@ PaymentDto::PaymentDto(
     const QString& transactionRef,
     const QString& payoutStatus,
     const QDateTime& payoutDate,
-    const QDateTime& paidAt)
+    const QDateTime& paidAt,
+    bool        bookingConfirmed ,
+    const QString&     bookingOutcomeReason)
     : m_id(id)
     , m_bookingId(bookingId)
     , m_amount(amount)
@@ -58,6 +60,8 @@ PaymentDto::PaymentDto(
     , m_payoutStatus(payoutStatus)
     , m_payoutDate(payoutDate)
     , m_paidAt(paidAt)
+    , m_bookingConfirmed(bookingConfirmed)
+    , m_bookingOutcomeReason(bookingOutcomeReason)
 {
 }
 
@@ -82,6 +86,8 @@ PaymentDto PaymentDto::fromJson(const QJsonObject& json)
 
     dto.m_paidAt = QDateTime::fromString(
         json.value("paidAt").toString(), Qt::ISODate);
+    dto.m_bookingConfirmed     = json.value("bookingConfirmed").toBool(false);
+    dto.m_bookingOutcomeReason = json.value("bookingOutcomeReason").toString();
 
     return dto;
 }
@@ -103,6 +109,8 @@ QJsonObject PaymentDto::toJson() const
 
     if (m_paidAt.isValid())
         json["paidAt"] = m_paidAt.toString(Qt::ISODate);
+    json["bookingConfirmed"]     = m_bookingConfirmed;
+    json["bookingOutcomeReason"] = m_bookingOutcomeReason;
 
     return json;
 }
@@ -118,6 +126,8 @@ Payment* PaymentDto::toDomainModel() const
         m_transactionRef,
         m_payoutStatus,
         m_payoutDate,
-        m_paidAt
+        m_paidAt,
+        m_bookingConfirmed,
+        m_bookingOutcomeReason
         );
 }

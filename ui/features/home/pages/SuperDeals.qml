@@ -13,6 +13,7 @@ Item {
     property int cardHeight: 130
     property string title: ""
     property bool infoSectionVisible: true
+    property bool insideInfoSection: false
 
     // Real model from outside.
     property var model: null
@@ -223,6 +224,7 @@ Item {
                     location: model.location
                     price: model.price
                     isInfoSectionVisible: root.infoSectionVisible
+                    insideInfoSection: root.insideInfoSection
                     imageUrl: model.imageUrl
                     imageUrls: model.imageUrls
                     isVerified: model.isVerified

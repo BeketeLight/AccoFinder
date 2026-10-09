@@ -16,6 +16,7 @@ Item {
     property string status: "PENDING"
     property bool isVerified: false
     property bool isInfoSectionVisible: true
+    property bool insideInfoSection: false
     property var amenities: []
 
     property real rating: 4.5          // e.g. 4.5
@@ -119,13 +120,72 @@ Item {
                 //     opacity: 0.25
                 // }
             }
+
+            Rectangle {
+                id: insideRectangleInfo
+                visible: root.insideInfoSection
+                anchors {
+                    right: borderRect.right
+                    left: borderRect.left
+                    bottom: borderRect.bottom
+                    leftMargin: 7
+                    rightMargin: insideRectangleInfo.anchors.leftMargin
+                    bottomMargin: insideRectangleInfo.anchors.leftMargin
+                }
+                height: insideInfoSection.height + 5
+                radius: 3
+
+                // INFO SECTION
+                Column {
+                    id: insideInfoSection
+                    //width: parent.width
+                    spacing: 0
+                    leftPadding: 2
+                    rightPadding: 2
+
+                    // Center horizontally only, keep vertical flow natural
+                    anchors.horizontalCenter: insideRectangleInfo.horizontalCenter
+                    //anchors.verticalCenter: parent.verticalCenter
+
+                    width: parent.width
+
+                    // Price
+                    Label {
+                        width: parent.width
+                        text: "MWK " + Number(root.price).toLocaleString(Qt.locale(), "f", 0)
+                        font.pixelSize: 12
+                        font.bold: true
+                        color: "#2563EB"
+                        elide: Text.ElideRight
+                        visible: root.price ? true : false
+                    }
+
+                    // Location
+                    Label {
+                        width: parent.width
+                        text: root.location
+                        font.pixelSize: 11
+                        color: "#6B7280"
+                        elide: Text.ElideRight
+                    }
+
+                    // Property Title
+                    Label {
+                        text: root.title
+                        width: parent.width
+                        font.pixelSize: 11
+                        color: "#F59E0B"          // amber/gold
+                        elide: Text.ElideRight
+                    }
+                }
+            }
         }
 
         // INFO SECTION
         Column {
             id: infoSection
             width: parent.width
-            spacing: 2
+            spacing: 0
             leftPadding: 2
             rightPadding: 2
             visible: root.isInfoSectionVisible
@@ -138,6 +198,7 @@ Item {
                 font.bold: true
                 color: "#2563EB"
                 elide: Text.ElideRight
+                visible: root.price ? true : false
             }
 
             // Location

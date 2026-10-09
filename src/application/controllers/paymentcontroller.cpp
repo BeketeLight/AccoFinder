@@ -3,16 +3,19 @@
 
 PaymentController::PaymentController(QObject *parent)
     : QObject(parent),
-      m_paymentRepo(new PaymentGatewayImpl())
+      m_paymentRepo(new PaymentGatewayImpl()),
+      m_listModel(new PaymentsListModel(this))
 {
     // Connect repository signals to controller signals
     connect(m_paymentRepo, &PaymentGatewayImpl::paymentCreated, this, [this](Payment* payment) {
         setLoading(false);
+        if (payment) appendPaymentToList(payment);
         emit paymentCreated(payment);
     });
 
     connect(m_paymentRepo, &PaymentGatewayImpl::paymentLoaded, this, [this](Payment* payment) {
         setLoading(false);
+        if (payment) appendPaymentToList(payment);
         emit paymentLoaded(payment);
     });
 
@@ -25,9 +28,35 @@ PaymentController::PaymentController(QObject *parent)
         setLoading(false);
         emit paymentError(error);
     });
+
+    connect(m_paymentRepo, &PaymentGatewayImpl::operatorsLoaded,
+            this, [this](const QVariantList& operators) {
+                setLoading(false);
+                m_operatorsCache = operators;
+                emit operatorsLoaded(operators);
+            });
+    connect(m_paymentRepo, &PaymentGatewayImpl::operatorsError,
+            this, [this](const QString& err) {
+                setLoading(false);
+                emit operatorsError(err);
+            });
+    connect(m_paymentRepo, &PaymentGatewayImpl::paymentVerified,
+            this, [this](Payment* payment) {
+                if (payment) appendPaymentToList(payment);
+                emit paymentVerified(payment);
+            });
+    connect(m_paymentRepo, &PaymentGatewayImpl::paymentVerificationPending,
+            this, [this](Payment* payment) {
+                if (payment) appendPaymentToList(payment);
+                emit paymentVerificationPending(payment);
+            });
 }
 
-void PaymentController::createPayment(const QString &bookingId, double amount, const QString &method)
+void PaymentController::createPayment(const QString& bookingId,
+                                      double amount,
+                                      const QString& method,
+                                      const QString& operatorRefId ,
+                                      const QString& phoneNumber )
 {
     if (bookingId.isEmpty() || amount <= 0) {
         emit paymentError("Invalid booking ID or amount.");
@@ -35,18 +64,14 @@ void PaymentController::createPayment(const QString &bookingId, double amount, c
     }
 
     setLoading(true);
-    QString paymentId = QUuid::createUuid().toString(QUuid::WithoutBraces);
     
     // Initiating payment through the gateway
     m_paymentRepo->createPayment(
-        paymentId,
         bookingId,
         amount,
         method,
-        PaymentStatus::Initiated,
-        "", // transactionRef
-        "", // payoutStatus
-        QDateTime() // payoutDate
+        operatorRefId,
+        phoneNumber
     );
 }
 
@@ -133,6 +158,8 @@ void PaymentController::appendPaymentToList(Payment* payment)
     row["payoutStatus"]  = payment->getPayoutStatus();
     row["payoutDate"]    = payment->getPayoutDate();
     row["paidAt"]        = payment->getPaidAt();
+    row["bookingConfirmed"]     = payment->isBookingConfirmed();
+    row["bookingOutcomeReason"] = payment->getBookingOutcomeReason();
 
     // Deduplicate by paymentId: replace if present, append otherwise
     QVector<QVariantMap> rows;
@@ -164,4 +191,23 @@ void PaymentController::setLoading(bool loading)
     if (m_isLoading == loading) return;
     m_isLoading = loading;
     emit isLoadingChanged(m_isLoading);
+}
+void PaymentController::fetchOperators()
+{
+    if (!m_operatorsCache.isEmpty()) {
+        emit operatorsLoaded(m_operatorsCache);
+        return;
+    }
+    setLoading(true);
+    m_paymentRepo->fetchOperators();
+}
+
+void PaymentController::verifyPayment(const QString& chargeId)
+{
+    if (chargeId.isEmpty()) {
+        emit paymentError("Charge ID is required for verification.");
+        return;
+    }
+    // No setLoading here — this runs every 4s and would flash the spinner.
+    m_paymentRepo->verifyPayment(chargeId);
 }
