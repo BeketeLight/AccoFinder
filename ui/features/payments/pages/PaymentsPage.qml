@@ -11,6 +11,16 @@ Page {
     // Passed in from the booking flow
     property string bookingId: ""
     property real amount: 0
+    property var operators: []            // filled from PaymentController.operatorsLoaded
+    property var bookingDetails: null
+    property string phase: "form"
+    signal paymentSubmitted(string bookingId, real amount, string method, string operatorRefId, string phoneNumber)
+    Connections {
+        target: root
+        function onPaymentSubmitted(bookingId, amount, method, operatorRefId, phoneNumber) {
+            console.log("[PaymentsPage] own signal fired:", bookingId, amount, method);
+        }
+    }
 
     // Provisional hold deadline (ISO string from POST /bookings). Invalid or
     // null when the booking is not on a hold, in which case no countdown is
@@ -53,9 +63,7 @@ Page {
                 deadline = parsed;
         }
 
-        var remaining = deadline > 0
-            ? Math.max(0, Math.floor((deadline - Date.now()) / 1000))
-            : 0;
+        var remaining = deadline > 0 ? Math.max(0, Math.floor((deadline - Date.now()) / 1000)) : 0;
 
         root.holdSecondsRemaining = remaining;
         root.hasHold = deadline > 0;
@@ -67,9 +75,9 @@ Page {
     }
 
     // Selected method. Empty means nothing chosen yet.
-    property string selectedMethod: ""
-
-    signal paymentSubmitted(string bookingId, real amount, string method)
+    property string selectedMethod: ""        // "mobile_money" | "card"
+    property string selectedOperatorRefId: ""
+    property string selectedOperatorName: ""
 
     // Only ticks while a hold is actually running, so an ordinary payment
     // screen costs nothing. Started/stopped by recomputeHoldCountdown().
@@ -103,7 +111,10 @@ Page {
                     fillMode: Image.PreserveAspectFit
                     anchors.centerIn: parent
                 }
-                onClicked: UtilsModule.NavigationUtils.pop()
+                onClicked: UtilsModule.NavigationUtils.pop({
+                    bookingId: root.bookingId,
+                    returnToBooking: true
+                })
             }
             Label {
                 Layout.fillWidth: true
@@ -123,6 +134,7 @@ Page {
     ScrollView {
         anchors.fill: parent
         clip: true
+        visible: root.phase === "form"
 
         // Wrapper item gives the ColumnLayout padding (24 sides, 24 top,
         // 32 bottom) because ColumnLayout itself has no padding properties.
@@ -167,9 +179,7 @@ Page {
 
                             Label {
                                 Layout.fillWidth: true
-                                text: root.holdExpired
-                                      ? qsTr("Your hold has expired")
-                                      : qsTr("Room held for you")
+                                text: root.holdExpired ? qsTr("Your hold has expired") : qsTr("Room held for you")
                                 color: root.holdExpired ? "#991B1B" : "#92400E"
                                 font.pixelSize: 15
                                 font.bold: true
@@ -206,6 +216,53 @@ Page {
                     }
                 }
 
+                Rectangle {
+                    Layout.fillWidth: true
+                    visible: root.bookingDetails !== null
+                    implicitHeight: bookingSummary.implicitHeight + 24
+                    radius: 14
+                    color: "#F9FAFB"
+                    border.color: "#E5E7EB"
+
+                    ColumnLayout {
+                        id: bookingSummary
+                        anchors.fill: parent
+                        anchors.margins: 12
+                        spacing: 6
+
+                        Label {
+                            text: qsTr("Booking summary")
+                            font.bold: true
+                            font.pixelSize: 13
+                            color: "#1F2937"
+                        }
+                        Label {
+                            Layout.fillWidth: true
+                            text: root.bookingDetails ? ((root.bookingDetails.propertyName || "") + " — " + (root.bookingDetails.roomName || "")) : ""
+                            color: "#374151"
+                            font.pixelSize: 13
+                            wrapMode: Text.WordWrap
+                        }
+                        RowLayout {
+                            Layout.fillWidth: true
+                            Label {
+                                text: qsTr("%1 nights").arg(root.bookingDetails ? (root.bookingDetails.nights || 0) : 0)
+                                color: "#6B7280"
+                                font.pixelSize: 12
+                            }
+                            Item {
+                                Layout.fillWidth: true
+                            }
+                            Label {
+                                text: "MK " + (root.bookingDetails ? Number(root.bookingDetails.total).toLocaleString(Qt.locale("en_MW"), 'f', 0) : "0")
+                                font.bold: true
+                                color: "#1F2937"
+                                font.pixelSize: 14
+                            }
+                        }
+                    }
+                }
+
                 // ---- Amount summary card ----
                 AppTextInput {
                     id: summary
@@ -231,59 +288,75 @@ Page {
                     rowSpacing: 10
 
                     Repeater {
-                        model: [
+                        model: root.operators.length > 0 ? root.operators : [
                             {
-                                key: "airtel",
-                                label: qsTr("Airtel Money"),
+                                ref_id: "airtel",
+                                name: qsTr("Airtel Money"),
                                 icon: "qrc:/ui/assets/payment/airtel.svg"
                             },
                             {
-                                key: "tnm",
-                                label: qsTr("TNM Mpamba"),
+                                ref_id: "tnm",
+                                name: qsTr("TNM Mpamba"),
                                 icon: "qrc:/ui/assets/payment/tnm-logo.svg"
                             },
                             {
-                                key: "card",
-                                label: qsTr("Card / Bank"),
+                                ref_id: "",
+                                name: "Card",
                                 icon: "qrc:/ui/assets/payment/PayChangu.svg"
-                            }
+                            },
                         ]
 
                         delegate: Rectangle {
-                            required property var model
+                            required property var modelData
                             Layout.fillWidth: true
                             implicitHeight: 96
                             radius: 14
-                            color: root.selectedMethod === model.key ? Qt.rgba(0.14, 0.39, 0.92, 0.10) : "#F5F5F5"
-                            border.width: root.selectedMethod === model.key ? 2 : 1
-                            border.color: root.selectedMethod === model.key ? "#2563EB" : "#E5E7EB"
+                            readonly property bool isSelected: root.selectedOperatorRefId === modelData.ref_id
+                            color: isSelected ? Qt.rgba(0.14, 0.39, 0.92, 0.10) : "#F5F5F5"
+                            border.width: isSelected ? 2 : 1
+                            border.color: isSelected ? "#2563EB" : "#E5E7EB"
 
                             ColumnLayout {
                                 anchors.centerIn: parent
                                 spacing: 6
                                 Image {
                                     Layout.alignment: Qt.AlignHCenter
-                                    source: model.icon
+                                    source: modelData.icon || ""
                                     sourceSize.width: 36
                                     sourceSize.height: 36
                                     fillMode: Image.PreserveAspectFit
                                 }
                                 Label {
                                     Layout.alignment: Qt.AlignHCenter
-                                    text: model.label
+                                    text: modelData.name || ""
                                     color: "#1F2937"
                                     font.pixelSize: 11
                                     font.bold: true
                                 }
                             }
-
                             MouseArea {
                                 anchors.fill: parent
                                 cursorShape: Qt.PointingHandCursor
-                                onClicked: root.selectedMethod = model.key
+                                onClicked: {
+                                    root.selectedOperatorRefId = modelData.ref_id || "";
+                                    root.selectedOperatorName = modelData.name || "";
+                                    root.selectedMethod = (modelData.ref_id || "").length > 0 ? "mobile_money" : "card";
+                                }
                             }
                         }
                     }
+                }
+
+                AppTextInput {
+                    id: phoneField
+                    visible: root.selectedMethod === "mobile_money"
+                    Layout.fillWidth: true
+                    label: qsTr("Mobile money number")
+                    placeholder: qsTr("e.g. 0991234567")
+                    fieldHeight: 52
+                    fieldWidth: contentColumn.width
+                    text: (typeof AppSettings !== "undefined" && AppSettings.phone) ? AppSettings.phone : ""
+                    inputMethodHints: Qt.ImhDialableCharactersOnly
                 }
 
                 // ---- Pay button ----
@@ -299,26 +372,23 @@ Page {
                     // reject the booking anyway, and charging someone for a
                     // room that has already gone to another user is the worst
                     // possible outcome.
-                    enabled: !root.holdExpired
-                             && root.selectedMethod.length > 0
-                             && root.amount > 0
-                             && !PaymentController.isLoading
+                    enabled: !root.holdExpired && root.selectedMethod.length > 0 && root.amount > 0 && !PaymentController.isLoading && (root.selectedMethod !== "mobile_money" || (root.selectedOperatorRefId.length > 0 && phoneField.text.replace(/\s/g, "").length >= 9))
 
                     onClicked: {
+                        console.log("pay now button clicked");
                         if (root.holdExpired) {
-                            console.warn("[Payment] blocked: hold expired");
+                            console.warn("[Payment] hold expired");
                             return;
                         }
-                        root.paymentSubmitted(root.bookingId, root.amount, root.selectedMethod);
+                        console.log(root.bookingId, root.amount, root.selectedMethod, root.selectedOperatorRefId, phoneField.text.replace(/\s/g, ""));
+                        root.paymentSubmitted(root.bookingId, root.amount, root.selectedMethod, root.selectedOperatorRefId, phoneField.text.replace(/\s/g, ""));
                     }
                 }
 
                 // ---- Hint ----
                 Label {
                     Layout.fillWidth: true
-                    text: root.holdExpired
-                          ? qsTr("This hold has expired, so payment is no longer available.")
-                          : qsTr("You will receive a prompt on your phone to authorize the payment.")
+                    text: root.holdExpired ? qsTr("This hold has expired, so payment is no longer available.") : qsTr("You will receive a prompt on your phone to authorize the payment.")
                     color: "#6B7280"
                     font.pixelSize: 11
                     wrapMode: Text.WordWrap
@@ -330,6 +400,44 @@ Page {
                 Item {
                     Layout.preferredHeight: 8
                 }
+            }
+        }
+    }
+
+    Rectangle {
+        anchors.fill: parent
+        visible: root.phase === "awaitingPin"
+        color: "#FFFFFF"
+        z: 90
+
+        ColumnLayout {
+            anchors.centerIn: parent
+            width: parent.width - 64
+            spacing: 20
+
+            BusyIndicator {
+                running: true
+                Layout.alignment: Qt.AlignHCenter
+            }
+
+            Label {
+                Layout.fillWidth: true
+                text: qsTr("A payment request was sent to your phone.\n\n" + "Open the prompt and enter your Mobile Money PIN to " + "complete the payment. Do not close this screen.")
+                horizontalAlignment: Text.AlignHCenter
+                wrapMode: Text.WordWrap
+                color: "#1F2937"
+                font.pixelSize: 14
+            }
+
+            Label {
+                visible: root.hasHold
+                Layout.fillWidth: true
+                text: qsTr("Time remaining: ") + root.holdCountdownText
+                horizontalAlignment: Text.AlignHCenter
+                color: "#92400E"
+                font.pixelSize: 16
+                font.bold: true
+                font.family: "monospace"
             }
         }
     }

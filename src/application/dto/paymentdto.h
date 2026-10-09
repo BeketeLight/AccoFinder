@@ -20,7 +20,9 @@ public:
         const QString& transactionRef,
         const QString& payoutStatus,
         const QDateTime& payoutDate,
-        const QDateTime& paidAt = QDateTime()
+        const QDateTime& paidAt = QDateTime(),
+        bool bookingConfirmed = false,
+        const QString& bookingOutcomeReason = QString()
         );
 
     QString m_id;
@@ -32,6 +34,8 @@ public:
     QString m_payoutStatus;
     QDateTime m_payoutDate;
     QDateTime m_paidAt;
+    bool      m_bookingConfirmed = false;
+    QString   m_bookingOutcomeReason;
 
     static PaymentDto fromJson(const QJsonObject& json);
 
