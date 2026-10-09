@@ -152,7 +152,7 @@ Item{
                 status: detailsPage.status
             }
 
-            // --- RESERVATION DETAILS CARD ---
+            // Booking detaiils
             Rectangle {
                 Layout.fillWidth: true
                 implicitHeight: resCol.implicitHeight + 24
@@ -178,7 +178,7 @@ Item{
                             background: null
                         }
                         Text {
-                            text: "Reservation Details"
+                            text: "Booking Details"
                             font.pixelSize: 14
                             font.bold: true
                             color: "#0F172A"
