@@ -300,16 +300,12 @@ Page {
                     width: availabilityText.width + 24
                     // Amber for a hold, so "temporarily spoken for" is
                     // visually distinct from "permanently booked".
-                    color: !root.isquarterAvailable ? "#EF4444"
-                         : root.isOnHold            ? "#F59E0B"
-                                                    : "#22C55E"
+                    color: !root.isquarterAvailable ? "#EF4444" : root.isOnHold ? "#F59E0B" : "#22C55E"
 
                     Label {
                         id: availabilityText
                         anchors.centerIn: parent
-                        text: !root.isquarterAvailable ? "✗ Currently Booked"
-                             : root.isOnHold            ? "⏳ On Hold"
-                                                         : "✓ Available Now"
+                        text: !root.isquarterAvailable ? "✗ Currently Booked" : root.isOnHold ? "⏳ On Hold" : "✓ Available Now"
                         color: "white"
                         font.pixelSize: 13
                         font.bold: true
@@ -513,11 +509,8 @@ Page {
                     // hold flag arrives from the server after the button may
                     // already be live.
                     if (root.isOnHold || !root.isquarterAvailable) {
-                        console.warn("[Booking] Blocked: room is "
-                                     + (root.isOnHold ? "on hold" : "booked"));
-                        errorDialog.errorText = root.isOnHold
-                            ? "This room is currently on hold by another user."
-                            : "This room is no longer available.";
+                        console.warn("[Booking] Blocked: room is " + (root.isOnHold ? "on hold" : "booked"));
+                        errorDialog.errorText = root.isOnHold ? "This room is currently on hold by another user." : "This room is no longer available.";
                         errorDialog.open();
                         return;
                     }
@@ -567,13 +560,7 @@ Page {
             // Carry the hold deadline into the payment screen so it can count
             // down. The booking is a hold, not a confirmation, so the user needs
             // to see how long the room is theirs for.
-            NavUtils.navigateToPayments(
-                booking.id,
-                booking.amount,
-                booking.holdExpiresAt !== undefined
-                    ? booking.holdExpiresAt
-                    : null
-            );
+            NavUtils.navigateToPayments(booking.id, booking.amount, booking.holdExpiresAt !== undefined ? booking.holdExpiresAt : null);
         }
 
         function onBookingError(error) {

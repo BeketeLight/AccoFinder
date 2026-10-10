@@ -145,3 +145,54 @@ function notificationTimestamp(value) {
 
     return dayLabel + " · " + time
 }
+
+// Seconds left until holdExpiresAt (ISO / parseable string).
+// -1 = missing/invalid deadline (no countdown)
+//  0 = expired
+// >0 = still open
+function holdSecondsRemaining(holdExpiresAt) {
+    if (holdExpiresAt === undefined || holdExpiresAt === null)
+        return -1
+    var s = String(holdExpiresAt).trim()
+    if (s.length === 0)
+        return -1
+    var end = Date.parse(s)
+    if (isNaN(end) || end <= 0)
+        return -1
+    return Math.max(0, Math.floor((end - Date.now()) / 1000))
+}
+// Check if the booking is in a pending state eligible for payment/action
+function isActionableBooking(status) {
+    if (!status) return false;
+    var s = String(status).trim().toUpperCase();
+    return s === "PENDING" || s === "PENDING PAYMENT" || s === "PAYMENT PROCESSING";
+}
+
+function isHoldOpen(holdExpiresAt) {
+    return holdSecondsRemaining(holdExpiresAt) > 0
+}
+
+// Card / details label. Empty string = hide the row.
+function holdCountdownText(status,holdExpiresAt) {
+    // If booking is cancelled, confirmed, or expired, hide hold text completely
+    if (!isActionableBooking(status))
+            return "";
+    var sec = holdSecondsRemaining(holdExpiresAt)
+    if (sec < 0)
+        return ""
+    if (sec <= 0)
+        return qsTr("Hold expired")
+    var h = Math.floor(sec / 3600)
+    var m = Math.floor((sec % 3600) / 60)
+    var s = sec % 60
+    if (h > 0)
+        return qsTr("This booking expires in %1h %2m").arg(h).arg(m)
+    if (m > 0)
+        return qsTr("This booking expires in %1m %2s").arg(m).arg(s)
+    return qsTr("Expires in %1s").arg(s)
+}
+
+// Pay / cancel-while-hold: pending bucket AND time left
+function canPayBooking(status, holdExpiresAt) {
+    return isActionableBooking(status) && isHoldOpen(holdExpiresAt)
+}
