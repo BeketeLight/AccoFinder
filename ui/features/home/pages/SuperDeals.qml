@@ -83,21 +83,21 @@ Item {
         }
 
         // Multi-item case: triplicate for the fake-circular carousel.
-        for (var copy = 0; copy < root.loopCopies; ++copy) {
-            for (var j = 0; j < realCount; ++j) {
-                var item = root.model.get(j);
-                loopModel.append({
-                    propertyId: item.propertyId,
-                    title: item.title,
-                    location: item.location,
-                    price: item.price,
-                    imageUrl: item.imageUrl,
-                    imageUrls: item.imageUrls,
-                    status: item.status,
-                    isVerified: item.isVerified
-                });
-            }
+        // for (var copy = 0; copy < root.loopCopies; ++copy) {
+        for (var j = 0; j < realCount; ++j) {
+            var item = root.model.get(j);
+            loopModel.append({
+                propertyId: item.propertyId,
+                title: item.title,
+                location: item.location,
+                price: item.price,
+                imageUrl: item.imageUrl,
+                imageUrls: item.imageUrls,
+                status: item.status,
+                isVerified: item.isVerified
+            });
         }
+        // }
     }
 
     // Rebuild when the source reference is assigned.
@@ -166,7 +166,7 @@ Item {
             // The loop model. In the single-item case it holds exactly one
             // row (no duplication). In the multi-item case it holds
             // loopCopies × realCount rows.
-            model: loopModel
+            model: root.model
 
             // Peek: centre the current card, leave room either side.
             // StrictlyEnforceRange is what makes the "current" card stay
@@ -184,10 +184,11 @@ Item {
             function positionToStart() {
                 if (!root.loopEnabled)
                     return;
-                if (width <= 0 || realCount <= 0 || loopModel.count === 0)
+                if (width <= 0 || root.realCount <= 0 || root.model.count === 0)
                     return;
-                var local = Math.min(2, realCount - 1);
-                var start = realCount + local;          // middle block
+                var start = Math.trunc(root.realCount / 2);
+                //var start = realCount + local;          // middle block
+                console.log("realcount is by start is ", start);
                 currentIndex = start;
                 positionViewAtIndex(start, ListView.Center);
             }
