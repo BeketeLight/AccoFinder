@@ -19,6 +19,7 @@ public:
     Q_INVOKABLE void getMediaByProperty(const QString& propertyId);
     Q_INVOKABLE void deleteMedia(const QString& mediaId);
     Q_INVOKABLE void updateMediaPrimary(const QString& mediaId, bool isPrimary);
+    Q_INVOKABLE void updateMediaRoom(const QString& mediaId, const QString& roomId);
 
 signals:
     void mediaCreated(const QSharedPointer<Media>& media);

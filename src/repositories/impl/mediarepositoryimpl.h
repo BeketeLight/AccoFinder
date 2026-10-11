@@ -24,6 +24,7 @@ public:
     void getMediaByProperty(const QString& propertyId) override;
     void deleteMedia(const QString& mediaId) override;
     void updateMedia(const QString& mediaId, bool isPrimary) override;
+    void updateMediaRoom(const QString& mediaId, const QString& roomId) override;
 
 private:
     QList<QSharedPointer<Media>> m_media;

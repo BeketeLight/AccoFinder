@@ -53,6 +53,12 @@ void MediaViewModel::updateMediaPrimary(const QString &mediaId, bool isPrimary)
     m_mediaController->updateMediaPrimary(mediaId, isPrimary);
 }
 
+void MediaViewModel::updateMediaRoom(const QString &mediaId, const QString &roomId)
+{
+    setLoading(true);
+    m_mediaController->updateMediaRoom(mediaId, roomId);
+}
+
 QVariantList MediaViewModel::mediaForProperty(const QString &propertyId) const
 {
     return m_mediaListModel ? m_mediaListModel->mediaForProperty(propertyId) : QVariantList();
@@ -90,8 +96,10 @@ void MediaViewModel::onMediaDeleted(const QString &mediaId)
 void MediaViewModel::onMediaUpdated(const QSharedPointer<Media> &media)
 {
     setLoading(false);
-    if (media && m_mediaListModel)
+    if (media && m_mediaListModel) {
         m_mediaListModel->setMediaPrimary(media->getId(), media->getIsPrimary());
+        m_mediaListModel->setMediaRoom(media->getId(), media->getRoomId());
+    }
     emit mediaUpdatedSignal(media ? media->getId() : QString());
 }
 
