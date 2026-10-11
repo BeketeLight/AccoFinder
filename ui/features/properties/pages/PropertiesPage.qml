@@ -122,6 +122,7 @@ Page {
             },
             price: row.price,
             verificationStatus: row.verificationStatus,
+            rejectionReason: (full ? (full.rejectionReason || "") : (row.rejectionReason || "")),
             propertyId: String(row.propertyId),
             isActive: true,
             amenities: m ? m.amenitiesFor(String(row.propertyId)) : [],

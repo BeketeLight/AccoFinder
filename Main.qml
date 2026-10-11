@@ -45,7 +45,8 @@ ApplicationWindow {
             var role = AppSettings.userType()
             if (role === "ADMIN" || role === "SUPER_ADMIN")
                 return "./ui/features/dashboards/admins/screens/AdminsDashboardScreen.qml"
-            return "./ui/features/auth/pages/Profile.qml"
+            // Clients and agents land on Home, not on the Account tab.
+            return "./ui/features/home/screens/HomeScreen.qml"
         }
         // A sign-up interrupted by the user leaving to read their emailed OTP
         // resumes straight into the wizard with their answers restored, rather
@@ -57,12 +58,9 @@ ApplicationWindow {
     }
 
     function sessionLandingNavIndex() {
-        if (!AppSettings.isLoggedIn())
-            return 0
-        var role = AppSettings.userType()
-        if (role === "ADMIN" || role === "SUPER_ADMIN")
-            return 0
-        return 4
+        // Home tab (index 0) for everyone: it is Home for clients/agents and
+        // the Dashboard for admins, which is also index 0.
+        return 0
     }
 
     // Clears any pushed pages and shows the page this session belongs on.

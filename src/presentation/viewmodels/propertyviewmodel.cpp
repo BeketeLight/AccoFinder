@@ -166,6 +166,10 @@ QVariantList PropertyViewModel::propertiesForView() const
         row["village"] = m_propertyListModel->data(idx, PropertyListModel::VillageRole);
         row["price"] = m_propertyListModel->data(idx, PropertyListModel::PriceRole);
         row["verificationStatus"] = m_propertyListModel->data(idx, PropertyListModel::VerificationStatusRole);
+        // Surfaced on the agent's own listings so a rejected property shows the
+        // admin's reason (previously omitted here, so it was always blank).
+        row["rejectionReason"] = m_propertyListModel->data(idx, PropertyListModel::RejectionReasonRole);
+        row["approvedByName"] = m_propertyListModel->data(idx, PropertyListModel::ApprovedByNameRole);
         row["propertyType"] = m_propertyListModel->data(idx, PropertyListModel::PropertyTypeRole);
         row["agentId"] = m_propertyListModel->data(idx, PropertyListModel::AgentIdRole);
         //Property-Host
