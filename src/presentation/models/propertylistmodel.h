@@ -24,6 +24,7 @@ public:
         AgentIdRole,
         AgentPhoneRole,
         LandlordIdRole,
+        LandlordRole,
         CreatedAtRole,
         DescriptionRole,
         StatusRole,

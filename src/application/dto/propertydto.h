@@ -79,6 +79,7 @@ public:
     QString ownerPhone;
     //
     QString landlordId;
+    QString landlord;
     QString landlordPhone;
     QString propertyType;
     QString verificationStatus;

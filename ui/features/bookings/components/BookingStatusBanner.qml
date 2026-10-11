@@ -30,8 +30,8 @@ Rectangle {
                 bg: "#FEF3C7",
                 iconBg: "#D97706",
                 iconSource: "qrc:/ui/assets/pending-icon.svg",
-                title: qsTr("Awaiting host confirmation"),
-                subtitle: qsTr("The host has not confirmed this booking yet."),
+                title: qsTr("Awaiting payment confirmation"),
+                subtitle: qsTr("The payment is not successful yet for this booking."),
                 titleColor: "#B45309",
                 subtitleColor: "#92400E"
             }
@@ -99,7 +99,6 @@ Rectangle {
                 icon.width: 18
                 icon.height: 18
                 icon.color: "#FFFFFF"
-                // Remove the default ToolButton background
                 background: null
             }
         }

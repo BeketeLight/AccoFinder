@@ -76,6 +76,8 @@ QVariant PropertyListModel::data(const QModelIndex &index, int role) const
             return property->getVillage();
         case AmenitiesRole:
             return property->getAmenities();
+        case LandlordRole:
+            return property->getLandlord();
         case LandlordPhoneRole:
             return property->getLandlordPhone();
         case VerificationStatusRole:
@@ -133,6 +135,7 @@ QHash<int, QByteArray> PropertyListModel::roleNames() const
         {DistrictRole, "district"},
         {VillageRole, "village"},
         {AmenitiesRole, "amenities"},
+        {LandlordRole, "landlord"},
         {LandlordPhoneRole, "landlordPhone"},
         {VerificationStatusRole, "verificationStatus"},
         {IsActiveRole, "isActive"},
@@ -223,7 +226,8 @@ QVariantMap PropertyListModel::at(int index) const
     row["status"] = data(idx, VerificationStatusRole);
     row["verificationStatus"] = data(idx, VerificationStatusRole);
     row["amenities"] = data(idx, AmenitiesRole);
-    row["landlord"] = data(idx, LandlordIdRole);
+    row["landlordId"] = data(idx, LandlordIdRole);
+    row["landlord"] = data(idx, LandlordRole);
     row["landlordPhone"] = data(idx, LandlordPhoneRole);
     {
         // The listing account arrives in the populated `owner` object

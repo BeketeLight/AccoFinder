@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Effects
 import "../models"
+import "../components"
 import "../../../utils/Utils.js" as Helper
 Rectangle {
     id: delegateRoot
@@ -60,63 +61,27 @@ Rectangle {
     radius: 8
     border.color: "#E2E8F0"
     border.width: 1
-
-    //Countdown for expiration of booking
-    // readonly property string holdCountdownText: {
-    //     var _ = tick   // re-evaluate every second
-    //     if (!holdExpiresAt || holdExpiresAt.length === 0)
-    //         return ""
-    //     var end = Date.parse(holdExpiresAt)
-    //     if (isNaN(end))
-    //         return ""
-    //     var s = Math.max(0, Math.floor((end - Date.now()) / 1000))
-    //     if (s <= 0)
-    //         return qsTr("Hold expired")
-    //     var h = Math.floor(s / 3600)
-    //     var m = Math.floor((s % 3600) / 60)
-    //     var sec = s % 60
-    //     if (h > 0)
-    //         return qsTr("This booking expires in %1h %2m").arg(h).arg(m)
-    //     if (m > 0)
-    //         return qsTr("This booking expires in %1m %2s").arg(m).arg(sec)
-    //     return qsTr("Expires in %1s").arg(sec)
-    // }
-     Timer {
-         interval: 1000
-         running: delegateRoot.holdExpiresAt.length > 0
-         repeat: true
+    Timer {
+        interval: 1000
+        running: delegateRoot.holdExpiresAt.length > 0
+        repeat: true
         onTriggered: delegateRoot.tick++
     }
      readonly property string holdCountdownText: {
-         var _ = tick
+        var _ = tick
         // return .holdCountdownText(holdExpiresAt)
-         return Helper.holdCountdownText(delegateRoot.status, holdExpiresAt)
+        return Helper.holdCountdownText(delegateRoot.status, holdExpiresAt)
      }
 
      readonly property bool canPay: {
-         var _ = tick
-         return Helper.canPayBooking(status, holdExpiresAt)
+        var _ = tick
+        return Helper.canPayBooking(status, holdExpiresAt)
      }
 
      readonly property bool showHoldActions: {
-         var _ = tick
-         return Helper.canPayBooking(status, holdExpiresAt)
+        var _ = tick
+        return Helper.canPayBooking(status, holdExpiresAt)
      }
-    // //To make payment when booking is pending need this
-    // //Conditions has to be checked first
-    // //Countdown must be greater than Zero
-    // readonly property bool canPay: {
-    //     switch (statusKey) {
-    //     case "PENDING PAYMENT":
-    //     case "PAYMENT PROCESSING":
-    //     case "PAYMENT FAILED":
-    //     case "PENDING":
-    //         return holdCountdownText.length > 0
-    //             && holdCountdownText !== qsTr("Hold expired")
-    //     default:
-    //         return false
-    //     }
-    // }
     ColumnLayout {
         id: cardContent
         anchors.left: parent.left
@@ -125,77 +90,23 @@ Rectangle {
         anchors.margins: 12
         spacing: 10
         z:1
-        // --- 1. HEADER ROW: STATUS ---
-
-
-        // // --- 2. LANDLORD / STORE BADGE ---
-        // RowLayout {
-        //     spacing: 6
-
-
-        // }
-         RowLayout {
+        RowLayout{
+            //Layout.alignment: Qt.AlignHCenter
+            Rectangle{
+                width: 6
+                height: 6
+                radius: 3
+                color: "black"
+            }
+            BookingStatusBadge{
+                status: delegateRoot.status
+            }
+        }
+        Rectangle{
             Layout.fillWidth: true
-            Text {
-                text: "Date: " + delegateRoot.dateRange
-                font.pixelSize: 12
-                color: "#000000"
-            }
-            Item { Layout.fillWidth: true }
-
-            Rectangle {
-                id: badge
-                Layout.alignment: Qt.AlignVCenter
-                implicitWidth: statusLabel.implicitWidth + 16
-                implicitHeight: 20
-                radius: 14
-                color: {
-                    switch(delegateRoot.statusKey){
-                    case "CONFIRMED":
-                    case "PAID":
-                        return "#DCFCE7"
-
-                    case "PENDING PAYMENT":
-                    case "PAYMENT PROCESSING":
-                    case "PAYMENT FAILED":
-                    case "PENDING":
-                        return "#FEF3C7"
-
-                    case "CANCELLED":
-                    case "EXPIRED":
-                        return "#FEE2E2"
-
-                    default:
-                        return "#F1F5F9" //Watch
-                    }
-
-                }
-                Text {
-                    id: statusLabel
-                    text: delegateRoot.status
-                    anchors.centerIn: parent
-                    font.pixelSize: 12
-                    font.bold: false
-                    color: {
-                        switch (delegateRoot.statusKey) {
-                        case "CONFIRMED":
-                        case "PAID":
-                            return "#16A34A"
-                        case "PENDING PAYMENT":
-                        case "PAYMENT PROCESSING":
-                        case "PAYMENT FAILED":
-                        case "PENDING":
-                            return "#D97706"
-                        case "CANCELLED":
-                        case "EXPIRED":
-                        case "REJECTED":
-                            return "#DC2626"
-                        default:
-                            return "#64748B"
-                        }
-                    }
-                }
-            }
+            height: 1
+            radius: 2
+            color: "#E2E8F0"
         }
         // --- 3. MAIN CONTENT: THUMBNAIL & PROPERTY INFO ---
         RowLayout {
@@ -218,7 +129,6 @@ Rectangle {
                     asynchronous: true
                     visible: false
                 }
-
                 MultiEffect {
                     anchors.fill: propImage
                     source: propImage
@@ -235,34 +145,28 @@ Rectangle {
                     }
                 }
             }
-
             ColumnLayout {
                 Layout.fillWidth: true
-                spacing: 4
+                spacing: 2
                 Text {
-                    text: delegateRoot.houseName
+                    text:"Property: " + delegateRoot.houseName
                     font.pixelSize: 14
                     color: "#2563EB"
                 }
                 RowLayout{
                     spacing: 0
                     Text {
-                        text: "Room Type: " + delegateRoot.details
+                        text: "Room: " + delegateRoot.details
                         font.pixelSize: 12
                         color: "#888888"
                     }
-                    Item{Layout.fillWidth: true}
+                    Item{Layout.preferredWidth: 145}
                     ToolButton{
-                        icon.source: "qrc:/ui/assets/forward-icon.svg"
-                        icon.width: 6
-                        icon.height: 6
-                        icon.color: "#64748B"
-                        background: Rectangle{
-                            color: "#F1F5F9"
-                            implicitHeight: 24
-                            implicitWidth: 24
-                            radius: 12
-                        }
+                        icon.source: "qrc:/ui/assets/bookings/forward-icon.svg"
+                        icon.width: 8
+                        icon.height: 8
+                        icon.color: "#616161"
+                        background: null
                     }
                 }
                 Text {
@@ -283,49 +187,51 @@ Rectangle {
 
         }
         Rectangle { Layout.fillWidth: true; implicitHeight: 1; color: "#F1F5F9"; visible:  holdCountdownText.length > 0}
-        RowLayout{
-            // Text {
-            //     visible: holdCountdownText.length > 0
-            //     text: holdCountdownText
-            //     font.pixelSize: 12
-            //     font.bold: true
-            //     color: "#D97706"
-            // }
-            //Item{Layout.fillWidth: true}
-            Rectangle {
-                id: pay
-                visible: holdCountdownText.length > 0
-                Layout.fillWidth: true
-                implicitHeight: 40
-                radius: 24
-                color: "#22C55E"
-                Text {
-                    anchors.centerIn: parent
-                    text: qsTr("Pay now")
-                    color: "#FFFFFF"
-                    font.pixelSize: 14
-                    font.bold: true
-                }
-                z:2
-                // MouseArea {
-                //     anchors.fill: pay
-                //     onClicked: delegateRoot.payNowRequested(
-                //         delegateRoot.bookingId,
-                //         delegateRoot.price,
-                //         delegateRoot.holdExpiresAt
-                //     )
-                // }
-                MouseArea {
-                    anchors.fill: pay
-                    onClicked: {
-                        console.log("Pay now", delegateRoot.bookingId, delegateRoot.price, delegateRoot.holdExpiresAt)
-                        delegateRoot.payNowRequested(
-                            delegateRoot.bookingId,
-                            Number(delegateRoot.price),
-                            delegateRoot.holdExpiresAt
-                        )
-                    }
-                }
+        // RowLayout{
+        //     Rectangle {
+        //         id: pay
+        //         visible: holdCountdownText.length > 0
+        //         Layout.preferredWidth: cardContent.implicitWidth - 12
+        //         implicitHeight: 40
+        //         radius: 12
+        //         color: delegateRoot.primaryColor//"#22C55E"
+        //         Text {
+        //             anchors.centerIn: parent
+        //             text: qsTr("Pay now")
+        //             color: "#FFFFFF"
+        //             font.pixelSize: 14
+        //             font.bold: true
+        //         }
+        //         z:2
+        //         MouseArea {
+        //             anchors.fill: pay
+        //             onClicked: {
+        //                 console.log("Pay now", delegateRoot.bookingId, delegateRoot.price, delegateRoot.holdExpiresAt)
+        //                 delegateRoot.payNowRequested(
+        //                     delegateRoot.bookingId,
+        //                     Number(delegateRoot.price),
+        //                     delegateRoot.holdExpiresAt
+        //                 )
+        //             }
+        //         }
+        //     }
+        // }
+        CustomButton{
+            id: payBtn
+            text: qsTr("Pay now")
+            textColor: "#FFFFFF"
+            cornerRadius: 12
+            visible: holdCountdownText.length > 0
+            Layout.preferredWidth: cardContent.implicitWidth - 8
+            implicitHeight: 50
+            buttonColor: delegateRoot.primaryColor
+            onClicked: {
+                console.log("Pay now", delegateRoot.bookingId, delegateRoot.price, delegateRoot.holdExpiresAt)
+                delegateRoot.payNowRequested(
+                    delegateRoot.bookingId,
+                    Number(delegateRoot.price),
+                    delegateRoot.holdExpiresAt
+                )
             }
         }
     }

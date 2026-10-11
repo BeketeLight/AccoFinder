@@ -65,6 +65,8 @@ public:
     void setVillage(const QString &village);
     QStringList getAmenities() const;
     void setAmenities(const QStringList &amenities);
+    QString getLandlord() const;
+    void setLandlord(const QString &newLandlord);
     QString getLandlordPhone() const;
     void setLandlordPhone(const QString &phone);
     QString getPropertyType() const;
@@ -116,6 +118,7 @@ private:
     QString m_ownerPhone;
     //
     QString m_landlordId;
+    QString m_landlord;
     QString m_landlordPhone;
     QString m_propertyType;
     QString m_verificationStatus;

@@ -143,6 +143,8 @@ QVariantList PropertyViewModel::propertiesForView() const
         row["ownerSurname"] = m_propertyListModel->data(idx, PropertyListModel::OwnerSurnameRole);
         row["ownerEmail"] = m_propertyListModel->data(idx, PropertyListModel::OwnerEmailRole);
         row["ownerPhone"] = m_propertyListModel->data(idx, PropertyListModel::OwnerPhoneRole);
+        row["landlord"] = m_propertyListModel->data(idx, PropertyListModel::LandlordRole);
+        row["landlordPhone"] = m_propertyListModel->data(idx, PropertyListModel::LandlordPhoneRole);
         list.append(row);
     }
     return list;

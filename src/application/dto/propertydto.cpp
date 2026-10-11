@@ -73,7 +73,7 @@ PropertyDto::PropertyDto(
       costCategory(QString()),
       createdAt(QDateTime())
 {
-    this->landlordId = landlord;
+    this->landlord = landlord;
     this->landlordPhone = landlordPhone;
 }
 
@@ -184,7 +184,7 @@ PropertyDto PropertyDto::fromJson(
         amens.append(v.toString());
     dto.amenities = amens;
 
-    dto.landlordId = json["landlord"].toString();
+    dto.landlord = json["landlord"].toString();
     dto.landlordPhone = json["landlordPhone"].toString();
     dto.propertyType = json["propertyType"].toString();
     dto.verificationStatus = json["verificationStatus"].toString();
@@ -296,7 +296,7 @@ Property* PropertyDto::toDomainModel() const
     property->setOwnerSurname(ownerSurname);
     property->setOwnerEmail(ownerEmail);
     property->setOwnerPhone(ownerPhone);
-
+    property->setLandlord(landlord);
     // Extended schema
     property->setDistrict(district);
     property->setVillage(village);
@@ -353,6 +353,8 @@ QJsonObject PropertyDto::toUpdateJson() const
 
     if(!landlordId.isEmpty())
         json["landlord"] = landlordId;
+    if(!landlord.isEmpty())
+        json["landlord"] = landlord;
     if(!landlordPhone.isEmpty())
         json["landlordPhone"] = landlordPhone;
     if(!verificationStatus.isEmpty())
@@ -385,6 +387,7 @@ QJsonObject PropertyDto::toCreateJson() const
     json["amenities"] = amens;
 
     json["landlord"] = landlordId;
+    json["landlord"] = landlord;
     json["landlordPhone"] = landlordPhone;
     json["verificationStatus"] = verificationStatus;
     json["isActive"] = isActive;

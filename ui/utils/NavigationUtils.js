@@ -235,6 +235,9 @@ function navigateToBookingsDetailsOwneByAgent(data){
             paymentStatus: data.paymentStatus || "Paid",
             paymentMethod: data.paymentMethod ?? "Credit Card (Visa ending in 4242)",
             paymentDate: data.paymentDate || "Oct 10, 2026",
+            landlord: data.landlord || "",
+            landlordInitials: data.landlordInitials || "" ,
+            landlordPhone: data.landlordPhone || ""
     });
 }
 

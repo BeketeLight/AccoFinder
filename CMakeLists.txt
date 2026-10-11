@@ -248,6 +248,10 @@ qt_add_qml_module(appAccoFinder
         QML_FILES ui/features/bookings/components/BookingStatusBanner.qml
         QML_FILES ui/features/bookings/delegates/AdminStatsDelegate.qml
         QML_FILES ui/features/bookings/pages/BookingOverviewAdminPage.qml
+        QML_FILES ui/features/bookings/components/BookingStatusBadge.qml
+        QML_FILES ui/features/bookings/components/UserInfoCard.qml
+        QML_FILES ui/features/bookings/components/PaymentSummaryCard.qml
+        QML_FILES ui/features/bookings/components/CustomButton.qml
 
 )
 

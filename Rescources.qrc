@@ -25,7 +25,6 @@
         <file>ui/assets/good-standing-icon.svg</file>
         <file>ui/assets/pending-icon.svg</file>
         <file>ui/assets/cancelled-icon.svg</file>
-        <file>ui/assets/your-bookings-icon.svg</file>
         <file>ui/assets/amount-icon.svg</file>
         <file>ui/assets/close-icon.svg</file>
         <file>ui/assets/photo-camera-icon.svg</file>
@@ -37,7 +36,6 @@
         <file>ui/assets/confirmed-icon.svg</file>
         <file>ui/assets/dispute-active-icon.svg</file>
         <file>ui/assets/message-icon.svg</file>
-        <file>ui/assets/location-icon.svg</file>
         <file>ui/assets/amenities/ac.svg</file>
         <file>ui/assets/amenities/balcony.svg</file>
         <file>ui/assets/amenities/borehole.svg</file>
@@ -60,5 +58,8 @@
         <file>ui/assets/payment-icon.svg</file>
         <file>ui/assets/forward-icon.svg</file>
         <file>ui/assets/cancel-icon.svg</file>
+        <file>ui/assets/bookings/location-icon.svg</file>
+        <file>ui/assets/bookings/landlord-icon.svg</file>
+        <file>ui/assets/bookings/forward-icon.svg</file>
     </qresource>
 </RCC>
