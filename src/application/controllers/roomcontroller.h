@@ -27,11 +27,13 @@ public:
     Q_INVOKABLE void deleteRoom(const QString& roomId);
     Q_INVOKABLE void loadRoom(const QString& roomId);
     Q_INVOKABLE void loadRooms();
+    Q_INVOKABLE void loadRoomsByProperty(const QString& propertyId);
 
 signals:
     void roomCreated(const QSharedPointer<Room>& room);
     void roomLoaded(const QSharedPointer<Room>& room);
     void roomsLoaded(const QList<QSharedPointer<Room>>& rooms);
+    void roomsForPropertyLoaded(const QString& propertyId, const QList<QSharedPointer<Room>>& rooms);
     void roomDeleted(const QString& roomId);
     void onError(const QString& message);
 

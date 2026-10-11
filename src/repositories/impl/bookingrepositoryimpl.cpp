@@ -44,6 +44,9 @@ static BookingStatus bookingStatusFromString(const QString &rawStatus)
         || s == QLatin1String("REJECTED"))
         return BookingStatus::Cancelled;
 
+    if (s == QLatin1String("REFUNDED"))
+        return BookingStatus::Refunded;
+
     return BookingStatus::PendingPayment;
 }
 
@@ -406,6 +409,27 @@ void BookingRepositoryImpl::confirmBooking(const QString &id)
             booking->setId(id);
             booking->setStatus(BookingStatus::Confirmed);
             emit bookingConfirmed(booking);
+        },
+        false);
+}
+
+// Release a confirmed booking back to the market after a refund. Admin/owner
+// only on the backend; the room becomes bookable again.
+void BookingRepositoryImpl::releaseBooking(const QString &id)
+{
+    APIClient::instance().patch(
+        QStringLiteral("/bookings/") + id + QStringLiteral("/release"),
+        QJsonObject{},
+        [this, id](bool success, const QJsonObject &response) {
+            if (!success) {
+                const QString msg = response.value(QStringLiteral("message")).toString();
+                emit bookingError(msg.isEmpty() ? QStringLiteral("Release failed") : msg);
+                return;
+            }
+            auto *booking = new Booking(this);
+            booking->setId(id);
+            booking->setStatus(BookingStatus::Refunded);
+            emit bookingReleased(booking);
         },
         false);
 }

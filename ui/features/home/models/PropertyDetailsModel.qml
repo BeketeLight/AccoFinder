@@ -15,13 +15,9 @@ Item {
     readonly property int roomCount: roomsModelId.count
 
     // Logging property changes for count bindings
-    onRoomCountChanged: {
-        console.log("PropertyDetailsModel [BINDING]: roomCount property updated ->", roomCount);
-    }
+    onRoomCountChanged: {}
 
-    onImageCountChanged: {
-        console.log("PropertyDetailsModel [BINDING]: imageCount property updated ->", imageCount);
-    }
+    onImageCountChanged: {}
 
     property bool _roomsFetchRequested: false
     property bool _mediaFetchRequested: false
@@ -29,16 +25,12 @@ Item {
     // Models
     ListModel {
         id: imageListModelId
-        onCountChanged: {
-            console.log("PropertyDetailsModel [MODEL]: imageListModel count changed ->", count);
-        }
+        onCountChanged: {}
     }
 
     ListModel {
         id: roomsModelId
-        onCountChanged: {
-            console.log("PropertyDetailsModel [MODEL]: roomsModel count changed ->", count);
-        }
+        onCountChanged: {}
     }
 
     // Utility Functions
@@ -199,8 +191,6 @@ Item {
                 continue;
 
             var mediaRoomId = String(item.roomId);
-            console.log("comparing sought for room id ", targetIndexStr, " to found media room id ", mediaRoomId);
-            //console.log("comparing sought for room id ", roomId, " to found media room id ", item.roomId);
             var isMatch = (mediaRoomId === targetRoomId && targetRoomId.length > 0) || (mediaRoomId === targetIndexStr);
 
             if (!isMatch)
@@ -234,8 +224,6 @@ Item {
 
         for (var i = 0; i < media.length; i++) {
             var item = media[i];
-
-            console.log("the sought roomId for whole proprty pictures ", item.roomId);
 
             if (!item || !isPropertyLevel(item.roomId))
                 continue;
@@ -304,6 +292,9 @@ Item {
             var roomType = getRoomType(room);
             var roomPrice = getRoomPrice(room);
             var roomAvailable = getRoomAvailability(room);
+            var roomHoldActive = room.holdActive === true || room.holdActive === "true" || room.holdActive === 1;
+            var roomHoldExpiresAt = (room.holdExpiresAt !== undefined && room.holdExpiresAt !== null) ? String(room.holdExpiresAt) : "";
+            var roomStatusLabel = (room.statusLabel !== undefined && room.statusLabel !== null) ? String(room.statusLabel) : "";
             var roomSize = (room.size !== undefined && room.size !== null) ? String(room.size) : "";
 
             // 1. Get array of all images
@@ -319,6 +310,9 @@ Item {
                 type: roomType,
                 price: roomPrice,
                 available: roomAvailable,
+                holdActive: roomHoldActive,
+                holdExpiresAt: roomHoldExpiresAt,
+                statusLabel: roomStatusLabel,
                 size: roomSize,
                 imageUrl: primaryRoomImage,
                 images: roomImages

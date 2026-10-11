@@ -21,7 +21,7 @@ Item {
     signal paymentsRequested()
     signal disputesRequested()
     signal notificationsRequested()
-    signal activityTriggered(var kind)
+    signal activityTriggered(var kind, var targetId)
     signal menuRequested()
 
     property bool refreshing: false
@@ -45,7 +45,9 @@ Item {
             return
         root.refreshing = true
         DashboardController.refreshStats()
-        PropertyViewModel.getProperties()
+        // Admin listing: every verification status, so pending/rejected
+        // properties feed the activity list and the all-properties view.
+        PropertyViewModel.getAdminProperties()
         RoomViewModel.loadRooms()
         BookingViewModel.fetchBookings()
         NotificationViewModel.getNotifications()
@@ -73,7 +75,7 @@ Item {
             onPaymentsRequested: root.paymentsRequested()
             onDisputesRequested: root.disputesRequested()
             onNotificationsRequested: root.notificationsRequested()
-            onActivityTriggered: (kind) => root.activityTriggered(kind)
+            onActivityTriggered: (kind, targetId) => root.activityTriggered(kind, targetId)
         }
     }
 

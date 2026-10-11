@@ -12,9 +12,9 @@ Item {
         Component.onCompleted: {
             if (initialPayload)
                 detailPage.applyPayload(initialPayload)
-            // Rooms are stored in the separate /rooms/ collection, so fetch
-            // them up front; the page rebuilds its room list once they arrive.
-            RoomViewModel.loadRooms()
+            // Room fetching is per-property now: PropertyDetailsPage pulls this
+            // property's rooms itself (loadRoomsForProperty), so there is no
+            // need to load the whole platform room list here.
             // Photos live in the separate /media/ collection. Server-backed
             // properties (with a property id) pull their photos here; drafts
             // keep the local photos supplied by their payload.

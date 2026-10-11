@@ -43,6 +43,7 @@ public:
     void appendMedia(const QSharedPointer<Media>& media);
     void removeMedia(const QString& mediaId);
     void setMediaPrimary(const QString& mediaId, bool isPrimary);
+    void setMediaRoom(const QString& mediaId, const QString& roomId);
     void clearMedia();
 
     QVariantList mediaForProperty(const QString& propertyId) const;

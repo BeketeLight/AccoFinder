@@ -8,6 +8,9 @@ Rectangle {
     property string title: ""
     property string detail: ""
     property string kind: ""
+    // Backend id of the subject (e.g. the property awaiting verification), so
+    // tapping a row can open that item's detail instead of only its list.
+    property string targetId: ""
 
     property color surfaceColor: "#FFFFFF"
     property color softAmberColor: "#FFFBEB"
@@ -15,7 +18,7 @@ Rectangle {
     property color textColor: "#1F2937"
     property color mutedColor: "#6B7280"
 
-    signal clicked(var kind)
+    signal clicked(var kind, var targetId)
 
     Layout.fillWidth: true
     implicitHeight: activityContent.implicitHeight + 16
@@ -66,6 +69,6 @@ Rectangle {
         id: mouseArea
         anchors.fill: parent
         cursorShape: Qt.PointingHandCursor
-        onClicked: root.clicked(root.kind)
+        onClicked: root.clicked(root.kind, root.targetId)
     }
 }

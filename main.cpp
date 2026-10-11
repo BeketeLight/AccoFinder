@@ -13,6 +13,7 @@
 #include "src/application/controllers/usercontroller.h"
 #include "src/application/controllers/agentcontroller.h"
 #include "src/application/controllers/dashboardcontroller.h"
+#include "src/application/controllers/settingscontroller.h"
 #include "src/presentation/viewmodels/propertyviewmodel.h"
 #include "src/presentation/viewmodels/roomviewmodel.h"
 #include "src/presentation/viewmodels/mediaviewmodel.h"
@@ -121,6 +122,7 @@ int main(int argc, char *argv[])
     UserController userController;
     AgentController agentController;
     DashboardController dashboardController;
+    SettingsController settingsController;
     PropertyViewModel propertyViewModel;
     RoomViewModel roomViewModel;
     MediaViewModel mediaViewModel;
@@ -148,6 +150,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("UserController", &userController);
     engine.rootContext()->setContextProperty("AgentController", &agentController);
     engine.rootContext()->setContextProperty("DashboardController", &dashboardController);
+    engine.rootContext()->setContextProperty("SettingsController", &settingsController);
     engine.rootContext()->setContextProperty("PropertyViewModel", &propertyViewModel);
     engine.rootContext()->setContextProperty("RoomViewModel", &roomViewModel);
     engine.rootContext()->setContextProperty("MediaViewModel", &mediaViewModel);
@@ -232,6 +235,10 @@ int main(int argc, char *argv[])
             });
         }
     });
+    paymentController.fetchOperators();
+    // Pull the admin-controlled platform booking fee at startup and cache it
+    // in AppSettings, so checkout reads the latest value without a round trip.
+    settingsController.fetchPlatformSettings();
     QObject::connect(
         &engine,
         &QQmlApplicationEngine::objectCreationFailed,

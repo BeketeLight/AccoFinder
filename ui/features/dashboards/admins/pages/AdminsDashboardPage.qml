@@ -37,7 +37,7 @@ Item {
     signal paymentsRequested()
     signal disputesRequested()
     signal notificationsRequested()
-    signal activityTriggered(var kind)
+    signal activityTriggered(var kind, var targetId)
 
     implicitWidth: 400
     implicitHeight: contentColumn.implicitHeight
@@ -266,7 +266,8 @@ Item {
                 title: model.title
                 detail: model.detail
                 kind: model.kind
-                onClicked: (kind) => root.activityTriggered(kind)
+                targetId: model.targetId !== undefined ? String(model.targetId) : ""
+                onClicked: (kind, targetId) => root.activityTriggered(kind, targetId)
             }
         }
 

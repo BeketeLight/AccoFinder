@@ -19,6 +19,11 @@ public:
 
     Q_INVOKABLE void loadRooms();
     Q_INVOKABLE void loadRoom(const QString& roomId);
+    // Loads only the given property's rooms and reports them via
+    // roomsForPropertyLoaded (does not touch the shared roomListModel). Detail
+    // pages use this so their room list stays correct regardless of the global
+    // /rooms/?limit=100 page.
+    Q_INVOKABLE void loadRoomsForProperty(const QString& propertyId);
     Q_INVOKABLE void createRoom(const QString& propertyId, const QString& type, bool available);
     Q_INVOKABLE void createRoomWithPrice(const QString& propertyId, const QString& type, double price, bool available);
     Q_INVOKABLE void updateRoom(const QString& roomId, const QString& type, double price, bool available);
@@ -28,10 +33,9 @@ public:
     Q_INVOKABLE int bookedRoomsCount() const;
 
     // Returns the rooms that belong to the given property id as a list of
-    // {roomType, price, available} maps. The QML detail pages use this because
-    // the property document does not embed its rooms (they live in /rooms/).
+    // {roomId, roomType, price, available, holdActive, holdExpiresAt,
+    // statusLabel} maps, read from the shared roomListModel cache.
     Q_INVOKABLE QVariantList roomsForProperty(const QString& propertyId) const;
-    // Add under public Q_INVOKABLE methods in roomviewmodel.h:
     Q_INVOKABLE QVariantMap getRoomById(const QString& roomId) const; //b---added
 
 private:
@@ -47,11 +51,16 @@ private slots:
     void onRoomCreated(const QSharedPointer<Room>& room);
     void onRoomDeleted(const QString& roomId);
     void onError(const QString& message);
+    void onRoomsForPropertyLoaded(const QString& propertyId,
+                                  const QList<QSharedPointer<Room>>& rooms);
 
 signals:
     void isLoadingChanged(bool isLoading);
     void roomError(const QString& error);
     void roomDeletedSignal(const QString& roomId);
+    // Emitted in response to loadRoomsForProperty, carrying the same room-map
+    // shape as RoomListModel::roomsForProperty.
+    void roomsForPropertyLoaded(const QString& propertyId, const QVariantList& rooms);
 };
 
 #endif // ROOMVIEWMODEL_H

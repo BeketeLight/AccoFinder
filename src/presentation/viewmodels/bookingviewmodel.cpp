@@ -155,6 +155,8 @@ BookingViewModel::BookingViewModel(QObject *parent)
             this, &BookingViewModel::onBookingCancelled);
     connect(m_bookingController.data(), &BookingController::bookingConfirmed,
             this, &BookingViewModel::onBookingConfirmed);
+    connect(m_bookingController.data(), &BookingController::bookingReleased,
+            this, &BookingViewModel::onBookingReleased);
     connect(m_bookingController.data(), &BookingController::bookingDeleted,
             this, &BookingViewModel::onBookingDeleted);
     connect(m_bookingController.data(), &BookingController::isLoadingChanged,
@@ -197,6 +199,12 @@ void BookingViewModel::deleteBooking(const QString& id)
 {
     if (m_bookingController)
         m_bookingController->deleteBooking(id);
+}
+
+void BookingViewModel::releaseBooking(const QString& id)
+{
+    if (m_bookingController)
+        m_bookingController->releaseBooking(id);
 }
 
 void BookingViewModel::onBookingLoaded(Booking* booking)
@@ -242,6 +250,13 @@ void BookingViewModel::onBookingConfirmed(Booking *booking)
 void BookingViewModel::onBookingCancelled(Booking *booking)
 {
     Q_UNUSED(booking);
+    fetchBookings();
+}
+
+void BookingViewModel::onBookingReleased(Booking *booking)
+{
+    Q_UNUSED(booking);
+    // Re-pull so the row shows the terminal "Refunded" state from the server.
     fetchBookings();
 }
 

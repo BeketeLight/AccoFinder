@@ -70,6 +70,11 @@ Page {
     readonly property bool agentMode: AppSettings.userType() === "AGENT"
                                       || AppSettings.userType() === "ADMIN"
                                       || AppSettings.userType() === "SUPER_ADMIN"
+
+    // AccoFinder is a booking service: the listed rent is informational, and a
+    // client books by paying a single platform booking fee that an admin sets
+    // for every listing. Read from AppSettings so no API call is needed.
+    readonly property real bookingFee: AppSettings.bookingFee()
     property bool editMode: false
 
     property string editNameValue: ""
@@ -155,7 +160,8 @@ Page {
                     var staged = root.photosList.slice()
                     staged.push({ path: path,
                                   mediaId: "",
-                                  isPrimary: firstOverall })
+                                  isPrimary: firstOverall,
+                                  roomId: "-1" })
                     root.photosList = staged
                 }
             }
@@ -207,13 +213,17 @@ Page {
     }
 
     // Rooms live in the separate /rooms/ collection, keyed by propertyId. The
-    // property document does not embed them, so pull the matching rooms from
-    // RoomViewModel (via C++) and shape them for display. Drafts are local
+    // property document does not embed them, so fetch this property's rooms
+    // from RoomViewModel (via C++) and shape them for display. A per-property
+    // fetch is used so the list stays complete even when the platform has more
+    // rooms than the shared /rooms/?limit=100 page returns. Drafts are local
     // (not in /rooms/), so keep the rooms their payload already supplied.
     function loadRooms() {
         if (root.isDraftItem)
             return
-        root.roomsList = root.propertyId ? RoomViewModel.roomsForProperty(root.propertyId) : []
+        root.roomsList = []
+        if (root.propertyId)
+            RoomViewModel.loadRoomsForProperty(root.propertyId)
     }
 
     // Amenities come from the property document (via C++). Fetching them here
@@ -227,12 +237,11 @@ Page {
     }
 
     Connections {
-        target: RoomViewModel.roomListModel
-        function onCountChanged() { root.loadRooms() }
-        function onModelReset() { root.loadRooms() }
-        function onRowsInserted(parent, first, last) { root.loadRooms() }
-        function onRowsRemoved(parent, first, last) { root.loadRooms() }
-        function onDataChanged(topLeft, bottomRight, roles) { root.loadRooms() }
+        target: RoomViewModel
+        function onRoomsForPropertyLoaded(propertyId, rooms) {
+            if (String(propertyId) === String(root.propertyId))
+                root.roomsList = rooms
+        }
     }
 
     // Surface backend failures from room create/update/delete so a silent
@@ -523,6 +532,60 @@ Page {
         root.photoOpError = ""
     }
 
+    // Photo-to-room assignment, mirroring the create wizard's PropertyPhotosPage.
+    // "Whole property / common areas" maps to roomId "-1"; every other option
+    // maps to the room's server id. Existing server photos are reassigned via
+    // the media PATCH endpoint; staged photos simply carry the chosen roomId
+    // until submitServerSave uploads them.
+    function photoRoomOptions() {
+        var options = [qsTr("Whole property / common areas")]
+        for (var i = 0; i < root.roomsList.length; i++) {
+            var r = root.roomsList[i] || {}
+            var t = r.roomType !== undefined ? String(r.roomType) : ""
+            if (t.length === 0 && r.type !== undefined)
+                t = String(r.type)
+            if (t.length === 0)
+                t = qsTr("Room")
+            options.push(qsTr("Room %1 · %2").arg(i + 1).arg(t))
+        }
+        return options
+    }
+
+    function photoRoomIdForOption(optionIndex) {
+        if (optionIndex <= 0 || optionIndex > root.roomsList.length)
+            return "-1"
+        return String(root.roomsList[optionIndex - 1].roomId)
+    }
+
+    function photoOptionIndexForRoom(roomId) {
+        if (roomId === undefined || roomId === null)
+            return 0
+        var want = String(roomId)
+        if (want === "" || want === "-1")
+            return 0
+        for (var i = 0; i < root.roomsList.length; i++)
+            if (String(root.roomsList[i].roomId) === want)
+                return i + 1
+        return 0
+    }
+
+    function assignPhotoRoom(index, optionIndex) {
+        if (index < 0 || index >= root.photosList.length)
+            return
+        var newRoomId = root.photoRoomIdForOption(optionIndex)
+        var arr = root.photosList.slice()
+        var entry = {}
+        var src = arr[index] || {}
+        for (var key in src)
+            entry[key] = src[key]
+        entry.roomId = newRoomId
+        arr[index] = entry
+        root.photosList = arr
+        root.photoOpError = ""
+        if (!root.isDraftItem && String(entry.mediaId || "").length > 0)
+            MediaViewModel.updateMediaRoom(entry.mediaId, newRoomId)
+    }
+
     // Draft rooms live only in the local roomsList (no /rooms/ backend row).
     // These helpers edit that list directly; the draft save persists them.
     function addDraftRoom(type, price, available) {
@@ -564,10 +627,20 @@ Page {
         if (root.isDraftItem || root.propertyId.length === 0)
             return
         var serverPhotos = MediaViewModel.mediaForProperty(root.propertyId)
-        if (serverPhotos && serverPhotos.length > 0)
-            root.photosList = serverPhotos
-        else
+        if (!serverPhotos || serverPhotos.length === 0) {
             MediaViewModel.getMediaByProperty(root.propertyId)
+            return
+        }
+        // Server rows are authoritative, but staged (not-yet-uploaded) photos
+        // live only in the local grid. Keep them so refreshing after a cover /
+        // room change never silently discards a just-picked photo.
+        var merged = serverPhotos.slice()
+        var cur = root.photosList || []
+        for (var i = 0; i < cur.length; i++) {
+            if (String(cur[i].mediaId || "").length === 0)
+                merged.push(cur[i])
+        }
+        root.photosList = merged
     }
 
     // A photo finished uploading during a server save. Collect each server
@@ -727,7 +800,8 @@ Page {
                                        staged[i].path,
                                        "image",
                                        i === 0 && firstIsPrimary,
-                                       "-1")
+                                       String(staged[i].roomId !== undefined && staged[i].roomId !== null
+                                              ? staged[i].roomId : "-1"))
         }
     }
 
@@ -1049,6 +1123,16 @@ Page {
                         text: qsTr("Approved by %1").arg(root.approvedByName)
                         color: Qt.rgba(1, 1, 1, 0.85)
                         font.pixelSize: 12
+                        elide: Text.ElideRight
+                    }
+
+                    Label {
+                        visible: !root.editMode && root.agentMode && root.bookingFee > 0
+                        Layout.fillWidth: true
+                        text: qsTr("Platform booking fee: MK %1").arg(Number(root.bookingFee).toLocaleString(Qt.locale(), "f", 0))
+                        color: Qt.rgba(1, 1, 1, 0.9)
+                        font.pixelSize: 12
+                        font.bold: true
                         elide: Text.ElideRight
                     }
                 }
@@ -1461,6 +1545,85 @@ Page {
                 wrapMode: Text.WordWrap
             }
 
+            // Assign each photo to a room while editing/resubmitting, mirroring
+            // the create wizard's "Assign each photo to a room" step. New photos
+            // carry the chosen room to upload; existing photos are reassigned on
+            // the server immediately.
+            ColumnLayout {
+                visible: root.editMode && root.photosList.length > 0
+                Layout.fillWidth: true
+                spacing: 8
+
+                Label {
+                    Layout.fillWidth: true
+                    text: qsTr("Assign each photo to a room")
+                    color: root.textColor
+                    font.pixelSize: 14
+                    font.bold: true
+                }
+
+                Repeater {
+                    model: root.photosList
+
+                    delegate: Rectangle {
+                        required property var modelData
+                        required property int index
+                        Layout.fillWidth: true
+                        implicitHeight: assignRow.implicitHeight + 20
+                        radius: 12
+                        color: root.surfaceColor
+                        border.color: root.borderColor
+                        border.width: 1
+
+                        RowLayout {
+                            id: assignRow
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            anchors.top: parent.top
+                            anchors.margins: 10
+                            spacing: 10
+
+                            Rectangle {
+                                Layout.preferredWidth: 46
+                                Layout.preferredHeight: 46
+                                radius: 8
+                                color: root.softBlueColor
+                                border.color: modelData.isPrimary ? root.primaryColor : root.borderColor
+                                border.width: modelData.isPrimary ? 2 : 1
+                                clip: true
+
+                                Image {
+                                    anchors.fill: parent
+                                    anchors.margins: 2
+                                    source: modelData.path
+                                    sourceSize.width: 280
+                                    sourceSize.height: 280
+                                    fillMode: Image.PreserveAspectCrop
+                                    asynchronous: true
+                                    smooth: true
+                                }
+                            }
+
+                            AppDropdown {
+                                id: assignDropdown
+                                Layout.fillWidth: true
+                                fieldHeight: 42
+                                fontSize: 12
+                                backgroundColor: root.surfaceColor
+                                borderColor: root.borderColor
+                                focusBorderColor: root.primaryColor
+                                textColor: root.textColor
+                                model: root.photoRoomOptions()
+                                currentIndex: root.photoOptionIndexForRoom(modelData.roomId)
+                                onActivated: function (optionIndex) {
+                                    root.assignPhotoRoom(index, optionIndex)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             ColumnLayout {
                 Layout.fillWidth: true
                 spacing: 10
@@ -1566,8 +1729,11 @@ Page {
                             }
 
                             StatusChip {
-                                textValue: modelData.available ? qsTr("Available") : qsTr("Unavailable")
-                                variant: modelData.available ? "success" : "neutral"
+                                readonly property bool roomHeld: modelData.holdActive === true
+                                readonly property string label: String(modelData.statusLabel !== undefined ? modelData.statusLabel : "")
+                                textValue: label.length > 0 ? label
+                                                            : (modelData.available ? qsTr("Available") : qsTr("Unavailable"))
+                                variant: roomHeld ? "warning" : (modelData.available ? "success" : "neutral")
                             }
                         }
 

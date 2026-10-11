@@ -1,8 +1,8 @@
-import QtQuick 2.15
+import QtQuick
 import QtQuick.Controls
 
 Button {
-    id: root
+    id: button
 
     // ---- Public API ----
     property color customBackgroundColor: "#2563EB"
@@ -12,25 +12,28 @@ Button {
     property color customBorderColor: "transparent"
     property int customBorderWidth: 0
 
-    text: root.customText
+    text: button.customText
 
     contentItem: Text {
-        text: root.text
-        font: root.font
-        color: root.customTextColor
-        opacity: root.enabled ? 1.0 : 0.4
+        text: button.text
+        font: button.font
+        color: button.customTextColor
+        opacity: button.enabled ? 1.0 : 0.4
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         elide: Text.ElideRight
     }
 
     background: Rectangle {
-        implicitWidth: root.implicitWidth
-        implicitHeight: root.implicitHeight
-        radius: root.customRadius
-        color: root.customBackgroundColor
-        opacity: root.enabled ? 1.0 : 0.4
-        border.color: root.customBorderColor
-        border.width: root.customBorderWidth
+        // IMPORTANT: no implicitWidth / implicitHeight here.
+        // The Button sizes its background; setting the background's
+        // implicit size to the Button's own implicit size creates a
+        // feedback loop, because Button.implicitWidth is derived from
+        // background.implicitWidth + insets.
+        radius: button.customRadius
+        color: button.customBackgroundColor
+        opacity: button.enabled ? 1.0 : 0.4
+        border.color: button.customBorderColor
+        border.width: button.customBorderWidth
     }
 }

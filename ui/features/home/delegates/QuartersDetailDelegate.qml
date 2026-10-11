@@ -35,6 +35,12 @@ Page {
     // payment screen to use it - so this only blocks when the room is held by
     // someone else or permanently booked.
     readonly property bool canBookRoom: isquarterAvailable && !isOnHold
+
+    // The platform is a booking service: rent is never collected here. To book
+    // a room the client pays a single flat booking fee, set by an admin for all
+    // listings and cached in AppSettings so checkout needs no network call.
+    // The agent separately earns a commission on the booking.
+    readonly property real bookingFee: AppSettings.bookingFee()
     property string description: "Spacious quarter with en-suite bathroom and walk-in closet. Features large windows with natural light and a beautiful view of the garden."
 
     // Agent information
@@ -293,6 +299,16 @@ Page {
                     color: "#2563EB"
                 }
 
+                // The client does not pay rent in the app; the booking fee is
+                // the whole amount due at checkout.
+                Label {
+                    visible: root.bookingFee > 0
+                    text: qsTr("Booking fee: MK %1").arg(Number(root.bookingFee).toLocaleString(Qt.locale(), "f", 0))
+                    font.pixelSize: 14
+                    font.bold: true
+                    color: "#111827"
+                }
+
                 // Availability badge
                 Rectangle {
                     height: 28
@@ -300,16 +316,12 @@ Page {
                     width: availabilityText.width + 24
                     // Amber for a hold, so "temporarily spoken for" is
                     // visually distinct from "permanently booked".
-                    color: !root.isquarterAvailable ? "#EF4444"
-                         : root.isOnHold            ? "#F59E0B"
-                                                    : "#22C55E"
+                    color: !root.isquarterAvailable ? "#EF4444" : root.isOnHold ? "#F59E0B" : "#22C55E"
 
                     Label {
                         id: availabilityText
                         anchors.centerIn: parent
-                        text: !root.isquarterAvailable ? "✗ Currently Booked"
-                             : root.isOnHold            ? "⏳ On Hold"
-                                                         : "✓ Available Now"
+                        text: !root.isquarterAvailable ? "✗ Currently Booked" : root.isOnHold ? "⏳ On Hold" : "✓ Available Now"
                         color: "white"
                         font.pixelSize: 13
                         font.bold: true
@@ -504,6 +516,11 @@ Page {
                 }
 
                 onClicked: {
+                    // Not signed in → route to auth instead of details.
+                    if (!AppSettings.isLoggedIn()) {
+                        NavUtils.navigateToAccount();
+                        return;
+                    }
                     if (!root.quarterId) {
                         console.warn("Missing quarterId");
                         return;
@@ -513,20 +530,30 @@ Page {
                     // hold flag arrives from the server after the button may
                     // already be live.
                     if (root.isOnHold || !root.isquarterAvailable) {
-                        console.warn("[Booking] Blocked: room is "
-                                     + (root.isOnHold ? "on hold" : "booked"));
-                        errorDialog.errorText = root.isOnHold
-                            ? "This room is currently on hold by another user."
-                            : "This room is no longer available.";
+                        console.warn("[Booking] Blocked: room is " + (root.isOnHold ? "on hold" : "booked"));
+                        errorDialog.errorText = root.isOnHold ? "This room is currently on hold by another user." : "This room is no longer available.";
                         errorDialog.open();
                         return;
                     }
 
-                    var commission = root.quarterPrice * 0.10;  // 10%
+                    // The booking fee is the whole amount due; without it there
+                    // is nothing to charge, so refuse rather than create a
+                    // zero-amount booking the backend would reject.
+                    if (root.bookingFee <= 0) {
+                        console.warn("[Booking] Blocked: platform booking fee is not set");
+                        errorDialog.errorText = "Booking is not available right now. Please try again later.";
+                        errorDialog.open();
+                        return;
+                    }
+
+                    // The client pays the platform booking fee; the owning agent
+                    // earns a commission on that booking (a % of what is paid,
+                    // set by the admin and cached in AppSettings).
+                    var commission = root.bookingFee * (AppSettings.platformCommissionRate() / 100);
 
                     BookingController.createBooking(root.quarterId      // roomId
-                    , root.quarterPrice   // amount
-                    , commission           // commissionAmount
+                    , root.bookingFee   // amount (platform booking fee, admin-set)
+                    , commission         // commissionAmount (agent's earning)
                     );
                 }
             }
@@ -567,13 +594,7 @@ Page {
             // Carry the hold deadline into the payment screen so it can count
             // down. The booking is a hold, not a confirmation, so the user needs
             // to see how long the room is theirs for.
-            NavUtils.navigateToPayments(
-                booking.id,
-                booking.amount,
-                booking.holdExpiresAt !== undefined
-                    ? booking.holdExpiresAt
-                    : null
-            );
+            NavUtils.navigateToPayments(booking.id, booking.amount, booking.holdExpiresAt !== undefined ? booking.holdExpiresAt : null);
         }
 
         function onBookingError(error) {

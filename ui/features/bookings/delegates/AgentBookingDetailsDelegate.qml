@@ -44,6 +44,8 @@ Item{
     // --- SIGNALS ---
     signal contactHostRequested()
     signal viewMapRequested()
+    // Ask the page to refund the client and put the room back on the market.
+    signal releaseRequested()
 
         // ------------------------------------------
         // 1. POPULATED DATA VIEW
