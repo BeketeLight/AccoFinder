@@ -292,6 +292,9 @@ Item {
             var roomType = getRoomType(room);
             var roomPrice = getRoomPrice(room);
             var roomAvailable = getRoomAvailability(room);
+            var roomHoldActive = room.holdActive === true || room.holdActive === "true" || room.holdActive === 1;
+            var roomHoldExpiresAt = (room.holdExpiresAt !== undefined && room.holdExpiresAt !== null) ? String(room.holdExpiresAt) : "";
+            var roomStatusLabel = (room.statusLabel !== undefined && room.statusLabel !== null) ? String(room.statusLabel) : "";
             var roomSize = (room.size !== undefined && room.size !== null) ? String(room.size) : "";
 
             // 1. Get array of all images
@@ -307,6 +310,9 @@ Item {
                 type: roomType,
                 price: roomPrice,
                 available: roomAvailable,
+                holdActive: roomHoldActive,
+                holdExpiresAt: roomHoldExpiresAt,
+                statusLabel: roomStatusLabel,
                 size: roomSize,
                 imageUrl: primaryRoomImage,
                 images: roomImages

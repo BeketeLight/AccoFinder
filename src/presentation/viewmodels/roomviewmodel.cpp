@@ -11,6 +11,8 @@ RoomViewModel::RoomViewModel(QObject *parent)
             this, &RoomViewModel::onRoomLoaded);
     connect(m_roomController, &RoomController::roomsLoaded,
             this, &RoomViewModel::onRoomsLoaded);
+    connect(m_roomController, &RoomController::roomsForPropertyLoaded,
+            this, &RoomViewModel::onRoomsForPropertyLoaded);
     connect(m_roomController, &RoomController::roomDeleted,
             this, &RoomViewModel::onRoomDeleted);
     connect(m_roomController, &RoomController::onError,
@@ -44,6 +46,12 @@ void RoomViewModel::loadRoom(const QString &roomId)
     m_roomController->loadRoom(roomId);
 }
 
+void RoomViewModel::loadRoomsForProperty(const QString &propertyId)
+{
+    if (propertyId.isEmpty())
+        return;
+    m_roomController->loadRoomsByProperty(propertyId);
+}
 void RoomViewModel::createRoom(const QString &propertyId, const QString &type, bool available)
 {
     m_roomController->createRoom(propertyId, type, available);
@@ -69,6 +77,14 @@ void RoomViewModel::onRoomsLoaded(const QList<QSharedPointer<Room>> &rooms)
     setLoading(false);
     if (m_roomListModel)
         m_roomListModel->setRooms(rooms);
+}
+
+void RoomViewModel::onRoomsForPropertyLoaded(const QString &propertyId,
+                                             const QList<QSharedPointer<Room>> &rooms)
+{
+    // Read-only projection for the detail pages; the shared roomListModel cache
+    // (used for dashboard counts) is intentionally left untouched here.
+    emit roomsForPropertyLoaded(propertyId, RoomListModel::toVariantList(rooms));
 }
 
 void RoomViewModel::onRoomLoaded(const QSharedPointer<Room> &room)

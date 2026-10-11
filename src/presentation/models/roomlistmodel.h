@@ -25,6 +25,9 @@ public:
         LocationRole,
         CreatedAtRole,
         PriceRole,
+        HoldActiveRole,
+        HoldExpiresAtRole,
+        StatusLabelRole,
     };
     explicit RoomListModel(QObject *parent = nullptr);
 
@@ -46,6 +49,9 @@ public:
     // Rooms belonging to the given property id, shaped for QML display as
     // {roomId, roomType, price, available} maps.
     QVariantList roomsForProperty(const QString& propertyId) const;
+    // Shapes a room list for QML display. Shared with the per-property fetch so
+    // both paths produce identical maps for the detail pages.
+    static QVariantList toVariantList(const QList<QSharedPointer<Room>>& rooms);
     QVariantMap getRoomById(const QString& roomId) const; //b----added
 
 signals:

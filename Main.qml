@@ -267,11 +267,26 @@ ApplicationWindow {
             function onNotificationsRequested() {
                 NavUtils.push(Qt.resolvedUrl("./ui/features/dashboards/admins/screens/SystemNotificationsScreen.qml"))
             }
-            function onActivityTriggered(kind) {
+            function onActivityTriggered(kind, targetId) {
                 if (kind === "users" || kind === "agents-register")
                     NavUtils.push(Qt.resolvedUrl("./ui/features/dashboards/admins/screens/UserManagementScreen.qml"))
-                else if (kind === "approvals")
-                    NavUtils.push(Qt.resolvedUrl("./ui/features/dashboards/admins/screens/PropertyApprovalScreen.qml"))
+                else if (kind === "approvals") {
+                    // The activity row carries the property id, so open that
+                    // property's review detail directly instead of the queue.
+                    // Falls back to the queue when its payload is not loaded.
+                    var activityPropertyId = (targetId !== undefined) ? String(targetId) : ""
+                    var activityPayload = activityPropertyId.length > 0
+                                        ? PropertyViewModel.registrationPayloadFor(activityPropertyId)
+                                        : null
+                    if (activityPayload && activityPayload.propertyId !== undefined
+                            && String(activityPayload.propertyId).length > 0)
+                        NavUtils.push(Qt.resolvedUrl("./ui/features/dashboards/admins/screens/PropertyApprovalDetailScreen.qml"),
+                                      { propertyPayload: activityPayload,
+                                        propertyId: activityPropertyId,
+                                        listingsModel: null })
+                    else
+                        NavUtils.push(Qt.resolvedUrl("./ui/features/dashboards/admins/screens/PropertyApprovalScreen.qml"))
+                }
                 else if (kind === "payments")
                     NavUtils.push(Qt.resolvedUrl("./ui/features/dashboards/admins/screens/PaymentsOversightScreen.qml"))
                 else if (kind === "disputes")

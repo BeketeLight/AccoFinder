@@ -85,6 +85,28 @@ void RoomRepositoryImpl::getRooms()
     );
 }
 
+void RoomRepositoryImpl::getRoomsByProperty(const QString& propertyId)
+{
+    // Per-property listing: one indexed query, decorated with hold state by the
+    // backend. Used by the detail pages so they never depend on the global
+    // /rooms/?limit=100 page (which silently drops rooms on a large platform).
+    APIClient::instance().get(
+        "/rooms/property/" + propertyId,
+        [this, propertyId](bool success,
+                           const QJsonObject& response)
+        {
+            if (!success)
+                return;
+            QList<QSharedPointer<Room>> rooms;
+            const QJsonArray roomsArray = response["data"].toArray();
+            rooms.reserve(roomsArray.size());
+            for (const QJsonValue& value : std::as_const(roomsArray))
+                rooms.append(RoomDto::fromJson(value.toObject()).toDomainModel());
+            emit roomsForPropertyLoaded(propertyId, rooms);
+        }, false
+    );
+}
+
 void RoomRepositoryImpl::getRoomById(const QString &id)
 {
     APIClient::instance().get(

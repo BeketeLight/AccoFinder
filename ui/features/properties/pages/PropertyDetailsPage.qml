@@ -70,6 +70,11 @@ Page {
     readonly property bool agentMode: AppSettings.userType() === "AGENT"
                                       || AppSettings.userType() === "ADMIN"
                                       || AppSettings.userType() === "SUPER_ADMIN"
+
+    // AccoFinder is a booking service: the listed rent is informational, and a
+    // client books by paying a single platform booking fee that an admin sets
+    // for every listing. Read from AppSettings so no API call is needed.
+    readonly property real bookingFee: AppSettings.bookingFee()
     property bool editMode: false
 
     property string editNameValue: ""
@@ -207,13 +212,17 @@ Page {
     }
 
     // Rooms live in the separate /rooms/ collection, keyed by propertyId. The
-    // property document does not embed them, so pull the matching rooms from
-    // RoomViewModel (via C++) and shape them for display. Drafts are local
+    // property document does not embed them, so fetch this property's rooms
+    // from RoomViewModel (via C++) and shape them for display. A per-property
+    // fetch is used so the list stays complete even when the platform has more
+    // rooms than the shared /rooms/?limit=100 page returns. Drafts are local
     // (not in /rooms/), so keep the rooms their payload already supplied.
     function loadRooms() {
         if (root.isDraftItem)
             return
-        root.roomsList = root.propertyId ? RoomViewModel.roomsForProperty(root.propertyId) : []
+        root.roomsList = []
+        if (root.propertyId)
+            RoomViewModel.loadRoomsForProperty(root.propertyId)
     }
 
     // Amenities come from the property document (via C++). Fetching them here
@@ -227,12 +236,11 @@ Page {
     }
 
     Connections {
-        target: RoomViewModel.roomListModel
-        function onCountChanged() { root.loadRooms() }
-        function onModelReset() { root.loadRooms() }
-        function onRowsInserted(parent, first, last) { root.loadRooms() }
-        function onRowsRemoved(parent, first, last) { root.loadRooms() }
-        function onDataChanged(topLeft, bottomRight, roles) { root.loadRooms() }
+        target: RoomViewModel
+        function onRoomsForPropertyLoaded(propertyId, rooms) {
+            if (String(propertyId) === String(root.propertyId))
+                root.roomsList = rooms
+        }
     }
 
     // Surface backend failures from room create/update/delete so a silent
@@ -1051,6 +1059,16 @@ Page {
                         font.pixelSize: 12
                         elide: Text.ElideRight
                     }
+
+                    Label {
+                        visible: !root.editMode && root.agentMode && root.bookingFee > 0
+                        Layout.fillWidth: true
+                        text: qsTr("Platform booking fee: MK %1").arg(Number(root.bookingFee).toLocaleString(Qt.locale(), "f", 0))
+                        color: Qt.rgba(1, 1, 1, 0.9)
+                        font.pixelSize: 12
+                        font.bold: true
+                        elide: Text.ElideRight
+                    }
                 }
             }
 
@@ -1566,8 +1584,11 @@ Page {
                             }
 
                             StatusChip {
-                                textValue: modelData.available ? qsTr("Available") : qsTr("Unavailable")
-                                variant: modelData.available ? "success" : "neutral"
+                                readonly property bool roomHeld: modelData.holdActive === true
+                                readonly property string label: String(modelData.statusLabel !== undefined ? modelData.statusLabel : "")
+                                textValue: label.length > 0 ? label
+                                                            : (modelData.available ? qsTr("Available") : qsTr("Unavailable"))
+                                variant: roomHeld ? "warning" : (modelData.available ? "success" : "neutral")
                             }
                         }
 

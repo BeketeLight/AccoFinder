@@ -66,6 +66,29 @@ void PropertyRepositoryImpl::getProperties(const QString &owner)
 
 }
 
+void PropertyRepositoryImpl::getAdminProperties()
+{
+    // Authenticated admin listing: returns every status. Uses a high limit so
+    // the admin pages are not silently truncated by the default pagination.
+    APIClient::instance().get(
+        "/house-listing/admin?limit=100",
+        [this] (bool success, const QJsonObject& response)
+        {
+            if (!success) {
+                emit propertyError(response.value("message").toString(
+                                       QStringLiteral("Failed to load properties")));
+                return;
+            }
+            if (!response.contains("data")) {
+                emit propertyError(QStringLiteral("Failed to load properties"));
+                return;
+            }
+            QList<Property*> properties = parseListingResponse(response);
+            emit propertiesLoaded(properties);
+        }
+    );
+}
+
 void PropertyRepositoryImpl::getPropertiesOwnedBy(const QString &ownerId)
 {
     if (ownerId.isEmpty())
@@ -81,6 +104,24 @@ void PropertyRepositoryImpl::getPropertiesOwnedBy(const QString &ownerId)
             // A failed owner request must not stop the caller from walking the
             // remaining owners, so the signal fires either way.
             emit ownedPropertiesLoaded(properties);
+        }
+    );
+}
+
+void PropertyRepositoryImpl::getPendingProperties()
+{
+    // Authenticated admin listing filtered to PENDING. The unauthenticated
+    // public endpoint cannot see the caller's role and would return VERIFIED
+    // listings instead.
+    APIClient::instance().get(
+        "/house-listing/admin?verificationStatus=PENDING&limit=100",
+        [this] (bool success, const QJsonObject& response)
+        {
+            QList<Property*> properties;
+            if (success && response.contains("data"))
+                properties = parseListingResponse(response);
+            // Emitted either way so the caller's loading state always settles.
+            emit pendingPropertiesLoaded(properties);
         }
     );
 }

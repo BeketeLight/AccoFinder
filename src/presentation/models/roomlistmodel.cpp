@@ -39,6 +39,15 @@ QVariant RoomListModel::data(const QModelIndex &index, int role) const
     case PriceRole:
         return room->getPrice();
 
+    case HoldActiveRole:
+        return room->getHoldActive();
+
+    case HoldExpiresAtRole:
+        return room->getHoldExpiresAt();
+
+    case StatusLabelRole:
+        return room->getStatusLabel();
+
     }
 
     // FIXME: Implement me!
@@ -57,7 +66,10 @@ QHash<int, QByteArray> RoomListModel::roleNames() const
         {TitleRole,"title"},
         {LocationRole,"location"},
         {CreatedAtRole,"createdAt"},
-        {PriceRole,"price"}
+        {PriceRole,"price"},
+        {HoldActiveRole,"holdActive"},
+        {HoldExpiresAtRole,"holdExpiresAt"},
+        {StatusLabelRole,"statusLabel"}
     };
 
     return mapping;
@@ -73,6 +85,9 @@ QVariantMap RoomListModel::getRoomById(const QString& roomId) const
             map["type"] = roomPtr->getType();
             map["price"] = roomPtr->getPrice();
             map["available"] = roomPtr->getAvailable(); // Matched to your header
+            map["holdActive"] = roomPtr->getHoldActive();
+            map["holdExpiresAt"] = roomPtr->getHoldExpiresAt();
+            map["statusLabel"] = roomPtr->getStatusLabel();
             return map;
         }
     }
@@ -150,17 +165,32 @@ int RoomListModel::bookedCount() const
 
 QVariantList RoomListModel::roomsForProperty(const QString &propertyId) const
 {
-    QVariantList result;
+    QList<QSharedPointer<Room>> matching;
+    matching.reserve(m_rooms.size());
     for (const auto& room : std::as_const(m_rooms)) {
+        if (room && room->getPropertyId() == propertyId)
+            matching.append(room);
+    }
+    return RoomListModel::toVariantList(matching);
+}
+
+QVariantList RoomListModel::toVariantList(const QList<QSharedPointer<Room>> &rooms)
+{
+    QVariantList result;
+    result.reserve(rooms.size());
+    for (const auto& room : std::as_const(rooms)) {
         if (!room)
-            continue;
-        if (room->getPropertyId() != propertyId)
             continue;
         QVariantMap m;
         m["roomId"] = room->getId();
         m["roomType"] = room->getType();
         m["price"] = room->getPrice();
         m["available"] = room->getAvailable();
+        // Hold/booked decoration so the property details page can label a room
+        // "On hold" / "Booked" instead of only "Available"/"Unavailable".
+        m["holdActive"] = room->getHoldActive();
+        m["holdExpiresAt"] = room->getHoldExpiresAt();
+        m["statusLabel"] = room->getStatusLabel();
         result.append(m);
     }
     return result;

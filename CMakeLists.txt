@@ -288,6 +288,8 @@ set(ACCOFINDER_LOGIC_SOURCES
     src/application/controllers/agentcontroller.cpp
     src/application/controllers/dashboardcontroller.h
     src/application/controllers/dashboardcontroller.cpp
+    src/application/controllers/settingscontroller.h
+    src/application/controllers/settingscontroller.cpp
     src/application/dto/bookingdto.h src/application/dto/bookingdto.cpp
     src/application/dto/propertydto.h src/application/dto/propertydto.cpp
     src/application/dto/paymentdto.h src/application/dto/paymentdto.cpp
@@ -326,6 +328,7 @@ set(ACCOFINDER_LOGIC_SOURCES
     src/repositories/impl/agentrepositoryimpl.h src/repositories/impl/agentrepositoryimpl.cpp
     src/repositories/interfaces/IDashboardRepository.h src/repositories/impl/dashboardrepositoryimpl.h src/repositories/impl/dashboardrepositoryimpl.cpp
     src/repositories/interfaces/IPaymentsOverviewRepository.h src/repositories/impl/paymentsoverviewrepositoryimpl.h src/repositories/impl/paymentsoverviewrepositoryimpl.cpp
+    src/repositories/interfaces/ISettingsRepository.h src/repositories/impl/settingsrepositoryimpl.h src/repositories/impl/settingsrepositoryimpl.cpp
     src/repositories/interfaces/IAdminNotificationsRepository.h src/repositories/impl/adminnotificationsrepositoryimpl.h src/repositories/impl/adminnotificationsrepositoryimpl.cpp
     src/core/utils/EPropertyStatus.h
     src/core/utils/EBookingStatus.h
