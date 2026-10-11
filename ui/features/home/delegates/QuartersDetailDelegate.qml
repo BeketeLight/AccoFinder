@@ -500,6 +500,11 @@ Page {
                 }
 
                 onClicked: {
+                    // Not signed in → route to auth instead of details.
+                    if (!AppSettings.isLoggedIn()) {
+                        NavUtils.navigateToAccount();
+                        return;
+                    }
                     if (!root.quarterId) {
                         console.warn("Missing quarterId");
                         return;
