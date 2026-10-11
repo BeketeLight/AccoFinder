@@ -32,6 +32,8 @@ public:
     int getRating() const;
     QString getComment() const;
     QDateTime getCreatedAt() const;
+    void setRating(int r);
+    void setComment(const QString& c);
 
 private:
     QString m_id;

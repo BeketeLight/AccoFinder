@@ -20,6 +20,8 @@ public:
                               const QString& comment) = 0;
     virtual void updateReview(const QString& id, int rating, const QString& comment) = 0;
     virtual void deleteReview(const QString& id) = 0;
+    virtual void checkCanReview(const QString& propertyId)  = 0;
+    virtual void getSummary(const QString& propertyId)      = 0;
 
 signals:
     void reviewsFetched(const QList<QSharedPointer<Review>>& reviews);
@@ -27,6 +29,8 @@ signals:
     void reviewUpdated(QSharedPointer<Review> review);
     void reviewDeleted(const QString& id);
     void error(const QString& message);
+    void canReviewChecked(bool canReview, const QString& reason, const QString& existingId);
+    void summaryLoaded(double average, int count);
 
 };
 

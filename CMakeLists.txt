@@ -248,6 +248,10 @@ qt_add_qml_module(appAccoFinder
         QML_FILES ui/features/bookings/components/BookingStatusBanner.qml
         QML_FILES ui/features/bookings/delegates/AdminStatsDelegate.qml
         QML_FILES ui/features/bookings/pages/BookingOverviewAdminPage.qml
+        QML_FILES ui/features/reviews/models/ReviewsModel.qml
+        QML_FILES ui/features/reviews/components/StarRating.qml
+        QML_FILES ui/features/reviews/components/StarInput.qml
+        QML_FILES ui/features/reviews/components/ReviewHeader.qml
 
 )
 

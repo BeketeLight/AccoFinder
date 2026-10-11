@@ -21,6 +21,8 @@ public:
                       int rating,
                       const QString& comment) override;
     void deleteReview(const QString& id) override;
+    void checkCanReview(const QString& propertyId)  override;
+    void getSummary(const QString& propertyId)      override;          // → emits summaryLoaded(double average, int count)
 };
 
 #endif // REVIEWREPOSITORYIMPL_H

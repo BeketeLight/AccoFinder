@@ -109,3 +109,42 @@ void ReviewRepositoryImpl::deleteReview(const QString& id)
         }
         );
 }
+
+void ReviewRepositoryImpl::checkCanReview(const QString& propertyId)
+{
+    APIClient::instance().get(
+        "/reviews/can-review/" + propertyId,
+        [this](bool success, const QJsonObject& response)
+        {
+            if (!success) {
+                emit error(response.value("message").toString());
+                return;
+            }
+            const QJsonObject data = response.value("data").toObject();
+            emit canReviewChecked(
+                data.value("canReview").toBool(),
+                data.value("reason").toString(),
+                data.value("reviewId").toString()
+                );
+        }, false
+        );
+}
+
+void ReviewRepositoryImpl::getSummary(const QString& propertyId)
+{
+    APIClient::instance().get(
+        "/reviews/property/" + propertyId + "/summary",
+        [this](bool success, const QJsonObject& response)
+        {
+            if (!success) {
+                emit error(response.value("message").toString());
+                return;
+            }
+            const QJsonObject data = response.value("data").toObject();
+            emit summaryLoaded(
+                data.value("average").toDouble(),
+                data.value("count").toInt()
+                );
+        }, false
+        );
+}
