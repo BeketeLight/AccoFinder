@@ -42,6 +42,8 @@ Item{
     // --- SIGNALS ---
     signal contactHostRequested()
     signal viewMapRequested()
+    // Ask the page to refund the client and put the room back on the market.
+    signal releaseRequested()
 
         // ------------------------------------------
         // 1. POPULATED DATA VIEW
@@ -203,7 +205,7 @@ Item{
                         ColumnLayout {
                             spacing: 6
                             RowLayout {
-                                Text { text: "Room price"; font.pixelSize: 12; color: "#64748B" }
+                                Text { text: "Booking fee"; font.pixelSize: 12; color: "#64748B" }
                                 Item { Layout.fillWidth: true }
                                 Text { text:"MK" + detailsPage.price; font.pixelSize: 12; font.bold: true; color: "#0F172A" }
                             }
@@ -436,6 +438,36 @@ Item{
                 MouseArea {
                     anchors.fill: parent
                     onClicked: detailsPage.cancelBookingRequested()
+                }
+            }
+
+            // --- REFUND / RELIST ACTION ---
+            // A settled booking can be refunded, which returns the room to the
+            // market. It is a deliberate, separate control because it frees a
+            // paid-for room.
+            Rectangle {
+                visible: String(detailsPage.status).toLowerCase() === "confirmed"
+                Layout.fillWidth: true
+                implicitHeight: 44
+                radius: 22
+                border.color: "#7C3AED"
+                border.width: 1
+                color: "transparent"
+
+                RowLayout {
+                    anchors.centerIn: parent
+                    spacing: 6
+                    Text {
+                        text: "Refund & relist room"
+                        font.pixelSize: 13
+                        font.bold: true
+                        color: "#7C3AED"
+                    }
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: detailsPage.releaseRequested()
                 }
             }
         }

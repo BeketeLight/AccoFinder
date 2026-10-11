@@ -27,15 +27,22 @@ Rectangle {
 
     signal confirmRequested(var bookingId)
     signal cancelRequested(var bookingId)
+    signal releaseRequested(var bookingId)
 
     readonly property color statusTint: Utils.bookingStatusBucket(root.status) === "CONFIRMED" ? "#16A34A"
                                          : Utils.bookingStatusBucket(root.status) === "CANCELLED" ? "#DC2626"
+                                         : Utils.bookingStatusBucket(root.status) === "REFUNDED" ? "#7C3AED"
                                          : Utils.bookingStatusBucket(root.status) === "EXPIRED" ? "#6B7280"
                                          : "#D97706"
     // Driven by the shared bucket rule rather than `status === "Pending"`: the
     // list model renders the open hold as "Pending payment", so that equality
     // was never true and the action buttons below never appeared.
     readonly property bool isActionable: Utils.isActionableBooking(root.status)
+    // A confirmed booking is settled, but an admin can still refund it and put
+    // the room back on the market. Only offered once, since a refunded booking
+    // becomes terminal.
+    readonly property bool isConfirmed: Utils.bookingStatusBucket(root.status) === "CONFIRMED"
+    readonly property bool isRefunded: Utils.bookingStatusBucket(root.status) === "REFUNDED"
 
     // Mongo ObjectIds are 24 characters long and mean nothing to an admin, so
     // only their leading characters are shown as a reference.
@@ -228,6 +235,52 @@ Rectangle {
                 size: 16
                 lineWidth: 2
                 color: "#2563EB"
+                running: visible
+            }
+
+            Item { Layout.fillWidth: true }
+        }
+
+        // A settled booking can still be refunded by an admin. Doing so releases
+        // the room back to the market, so it is a deliberate, separate action
+        // from Cancel (which never frees a paid-for room).
+        RowLayout {
+            Layout.fillWidth: true
+            spacing: 8
+            visible: root.isConfirmed
+
+            Button {
+                id: releaseButton
+                enabled: !root.busy
+                text: qsTr("Refund & relist")
+                implicitHeight: 30
+
+                contentItem: Label {
+                    text: releaseButton.text
+                    color: "#7C3AED"
+                    font.pixelSize: 11
+                    font.bold: true
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                }
+
+                background: Rectangle {
+                    radius: 8
+                    color: releaseButton.down ? "#EDE9FE" : "#FFFFFF"
+                    border.color: "#DDD6FE"
+                    border.width: 1
+                }
+
+                onClicked: root.releaseRequested(root.bookingId)
+            }
+
+            AppSpinner {
+                visible: root.busy
+                Layout.preferredWidth: 16
+                Layout.preferredHeight: 16
+                size: 16
+                lineWidth: 2
+                color: "#7C3AED"
                 running: visible
             }
 

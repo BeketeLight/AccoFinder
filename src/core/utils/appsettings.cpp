@@ -228,6 +228,28 @@ double AppSettings::commissionRate() const {
     return m_settings.value("agent/commissionRate", 0.0).toDouble();
 }
 
+// PLATFORM
+
+void AppSettings::setBookingFee(double value) {
+    if (qFuzzyCompare(bookingFee() + 1.0, value + 1.0))
+        return;
+    m_settings.setValue("platform/bookingFee", value);
+    emit bookingFeeChanged();
+}
+double AppSettings::bookingFee() const {
+    return m_settings.value("platform/bookingFee", 0.0).toDouble();
+}
+
+void AppSettings::setPlatformCommissionRate(double value) {
+    if (qFuzzyCompare(platformCommissionRate() + 1.0, value + 1.0))
+        return;
+    m_settings.setValue("platform/commissionRate", value);
+    emit platformCommissionRateChanged();
+}
+double AppSettings::platformCommissionRate() const {
+    return m_settings.value("platform/commissionRate", 10.0).toDouble();
+}
+
 void AppSettings::setAgentActive(bool value) {
     m_settings.setValue("agent/isActive", value);
 }

@@ -15,6 +15,18 @@ Item {
 
     signal decisionMade(var propertyId, var title, var approved)
 
+    function openReview(propertyId) {
+        var payload = approvalsPage.listingsModel.registrationPayloadFor(propertyId, "propertyId")
+        if (!payload)
+            return false
+        NavUtils.push(Qt.resolvedUrl("PropertyApprovalDetailScreen.qml"), {
+            propertyPayload: payload,
+            propertyId: propertyId,
+            listingsModel: approvalsPage.listingsModel
+        })
+        return true
+    }
+
     AppScrollablePage {
         anchors.fill: parent
         // Also cover the owner walk that fills the verification queue: the
@@ -27,14 +39,7 @@ Item {
             Layout.fillWidth: true
 
             onDecisionMade: (propertyId, title, approved) => root.decisionMade(propertyId, title, approved)
-            onReviewRequested: (propertyId) => {
-                var payload = approvalsPage.listingsModel.registrationPayloadFor(propertyId, "propertyId")
-                NavUtils.push(Qt.resolvedUrl("PropertyApprovalDetailScreen.qml"), {
-                    propertyPayload: payload,
-                    propertyId: propertyId,
-                    listingsModel: approvalsPage.listingsModel
-                })
-            }
+            onReviewRequested: (propertyId) => root.openReview(propertyId)
         }
     }
 }

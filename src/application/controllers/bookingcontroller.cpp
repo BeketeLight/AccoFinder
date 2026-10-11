@@ -26,6 +26,10 @@ BookingController::BookingController(QObject *parent)
         stopLoading();
         emit bookingConfirmed(b);
     });
+    connect(m_bookingRepository, &BookingRepositoryImpl::bookingReleased, this, [this, stopLoading](Booking* b){
+        stopLoading();
+        emit bookingReleased(b);
+    });
     connect(m_bookingRepository, &BookingRepositoryImpl::bookingDeleted, this, [this, stopLoading](const QString& id){
         stopLoading();
         emit bookingDeleted(id);
@@ -105,4 +109,11 @@ void BookingController::deleteBooking(const QString &id)
     if(id.isEmpty()) return;
     setLoading(true);
     m_bookingRepository->deleteBooking(id);
+}
+
+void BookingController::releaseBooking(const QString &id)
+{
+    if(id.isEmpty()) return;
+    setLoading(true);
+    m_bookingRepository->releaseBooking(id);
 }

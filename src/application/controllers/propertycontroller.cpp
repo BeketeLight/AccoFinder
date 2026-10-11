@@ -8,6 +8,8 @@ PropertyController::PropertyController(QObject *parent)
             this, &PropertyController::propertiesLoaded);
     connect(m_propertyRepositoryImpl, &PropertyRepositoryImpl::ownedPropertiesLoaded,
             this, &PropertyController::ownedPropertiesLoaded);
+    connect(m_propertyRepositoryImpl, &PropertyRepositoryImpl::pendingPropertiesLoaded,
+            this, &PropertyController::pendingPropertiesLoaded);
     connect(m_propertyRepositoryImpl, &PropertyRepositoryImpl::propertyLoaded,
             this, &PropertyController::propertyLoaded);
     connect(m_propertyRepositoryImpl, &PropertyRepositoryImpl::propertyUpdated,
@@ -36,6 +38,12 @@ void PropertyController::getProperties(const QString &owner)
     m_propertyRepositoryImpl->getProperties(owner);
 }
 
+void PropertyController::getAdminProperties()
+{
+    setLoading(true);
+    m_propertyRepositoryImpl->getAdminProperties();
+}
+
 void PropertyController::getPropertiesOwnedBy(const QString &ownerId)
 {
     if (ownerId.isEmpty())
@@ -43,6 +51,13 @@ void PropertyController::getPropertiesOwnedBy(const QString &ownerId)
     // Deliberately does not touch isLoading: the shared property list stays
     // usable while the admin queue walks the owners one by one.
     m_propertyRepositoryImpl->getPropertiesOwnedBy(ownerId);
+}
+
+void PropertyController::getPendingProperties()
+{
+    // Deliberately does not toggle isLoading: the shared property list stays
+    // usable while the admin queue refreshes.
+    m_propertyRepositoryImpl->getPendingProperties();
 }
 
 void PropertyController::getPropertyById(const QString& houseId)

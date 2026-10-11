@@ -2,6 +2,7 @@
 #define ROOMDTO_H
 
 #include <QJsonObject>
+#include <QDateTime>
 #include"models/room.h"
 
 
@@ -13,7 +14,9 @@ public:
             const QString& propertyId,
             const QString& type,
             double price,
-            bool available );
+            bool available,
+            bool holdActive = false,
+            const QDateTime& holdExpiresAt = QDateTime());
 
 
     QString m_id;
@@ -21,6 +24,8 @@ public:
     QString m_type;
     double m_price = 0;
     bool m_available;
+    bool m_holdActive = false;
+    QDateTime m_holdExpiresAt;
 
 
     static RoomDto fromJson(

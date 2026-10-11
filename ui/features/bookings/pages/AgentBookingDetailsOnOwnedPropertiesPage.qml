@@ -74,9 +74,53 @@ Page{
             anchors.leftMargin: 10
             width: Math.min(parent.width - 32, 600)
 
+            onReleaseRequested: releaseDialog.open()
+
             // onPayNowRequested: {
             //     console.log("Processing payment for booking:", bookingId)
             // }
+        }
+    }
+
+    // Refunding frees the room, so require a deliberate confirmation before the
+    // release call goes out.
+    Dialog {
+        id: releaseDialog
+        modal: true
+        anchors.centerIn: parent
+        width: Math.min(parent ? parent.width - 40 : 320, 340)
+        title: qsTr("Refund & relist room")
+
+        contentItem: ColumnLayout {
+            spacing: 12
+
+            Label {
+                Layout.fillWidth: true
+                wrapMode: Text.WordWrap
+                text: qsTr("This refunds the client and returns the room to the market so it can be booked again. This cannot be undone.")
+                color: "#64748B"
+            }
+
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: 10
+
+                Button {
+                    Layout.fillWidth: true
+                    text: qsTr("Cancel")
+                    onClicked: releaseDialog.reject()
+                }
+
+                Button {
+                    Layout.fillWidth: true
+                    text: qsTr("Refund & relist")
+                    onClicked: {
+                        if (String(root.bookingId).length > 0)
+                            BookingController.releaseBooking(root.bookingId)
+                        releaseDialog.accept()
+                    }
+                }
+            }
         }
     }
 }

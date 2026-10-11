@@ -85,6 +85,7 @@ public:
     Q_INVOKABLE void fetchBookingById(const QString& id);
     Q_INVOKABLE void cancelBooking(const QString& id);
     Q_INVOKABLE void confirmBooking(const QString& id);
+    Q_INVOKABLE void releaseBooking(const QString& id);
     Q_INVOKABLE void deleteBooking(const QString& id);
 
     Q_INVOKABLE int pendingBookingsCount() const;
@@ -100,6 +101,7 @@ private slots:
     void onBookingLoaded(Booking *booking);
     void onBookingConfirmed(Booking *booking);
     void onBookingCancelled(Booking *booking);
+    void onBookingReleased(Booking *booking);
     void onBookingDeleted(const QString &id);
     void onBookingError(const QString &error);
 

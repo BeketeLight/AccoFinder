@@ -10,6 +10,8 @@ RoomController::RoomController(QObject *parent)
             this, &RoomController::roomLoaded);
     connect(m_repository, &RoomRepositoryImpl::roomsLoaded,
             this, &RoomController::roomsLoaded);
+    connect(m_repository, &RoomRepositoryImpl::roomsForPropertyLoaded,
+            this, &RoomController::roomsForPropertyLoaded);
     connect(m_repository, &RoomRepositoryImpl::roomDeleted,
             this, &RoomController::roomDeleted);
     connect(m_repository, &RoomRepositoryImpl::error,
@@ -78,4 +80,13 @@ void RoomController::loadRoom(const QString &roomId)
 void RoomController::loadRooms()
 {
     m_repository->getRooms();
+}
+
+void RoomController::loadRoomsByProperty(const QString &propertyId)
+{
+    if (propertyId.isEmpty()) {
+        emit onError("propertyId cannot be empty");
+        return;
+    }
+    m_repository->getRoomsByProperty(propertyId);
 }
