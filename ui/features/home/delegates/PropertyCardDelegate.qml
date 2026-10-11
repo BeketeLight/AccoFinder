@@ -190,13 +190,15 @@ Item {
                         visible: root.location.length > 0
 
                         // Pin icon (unicode; swap for an SVG if you prefer)
-                        Label {
-                            text: "\uD83D\uDCCD"      // 📍
-                            font.pixelSize: 11
-                            color: "#E5E7EB"
-                            Layout.alignment: Qt.AlignVCenter
+                        Image {
+                            height: 19
+                            width: 19
+                            source: "qrc:/ui/assets/location-2955.svg"
+                            sourceSize.width: 19
+                            sourceSize.height: 19
+                            fillMode: Image.PreserveAspectFit
+                            smooth: true
                         }
-
                         Label {
                             Layout.fillWidth: true
                             text: root.location

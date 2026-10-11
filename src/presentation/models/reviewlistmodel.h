@@ -6,45 +6,47 @@
 #include <QList>
 #include <QByteArray>
 #include <QVector>
+#include <QSharedPointer>
 #include "models/review.h"
 
 class ReviewListModel : public QAbstractListModel
 {
     Q_OBJECT
-    //custom rows for QML access
+    Q_PROPERTY(int count READ count NOTIFY countChanged)
+
 public:
-    enum reviewRoles{
+    enum reviewRoles {
         IdRole = Qt::UserRole,
+        ClientIdRole,
+        PropertyIdRole,
+        AgentIdRole,
         RatingRole,
         CommentRole,
         CreatedAtRole,
     };
 
-    explicit ReviewListModel(QObject *parent = nullptr);
+    explicit ReviewListModel(QObject* parent = nullptr);
     ~ReviewListModel();
 
-    // Header:
     QVariant headerData(int section,
                         Qt::Orientation orientation,
                         int role = Qt::DisplayRole) const override;
 
-    // Basic functionality:
-    int rowCount(const QModelIndex &parent = QModelIndex()) const override;
+    int rowCount(const QModelIndex& parent = QModelIndex()) const override;
+    int count() const { return m_reviews.size(); }
 
-    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
+    QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
     QHash<int, QByteArray> roleNames() const override;
 
-    // === INVOCABLE METHODS FOR QML
-    Q_INVOKABLE void addReview(Review* review);
+    Q_INVOKABLE void addReview(QSharedPointer<Review> review);
     Q_INVOKABLE void removeReview(int index);
-   
+    Q_INVOKABLE void clear();
 
 signals:
     void countChanged(int newcount);
-    void reviewSubmitted(Review* review);
 
 private:
-    QVector<QSharedPointer<Review>> m_reviews; //storing pointers to review objetct
+    QVector<QSharedPointer<Review>> m_reviews;
 };
 
 #endif // REVIEWLISTMODEL_H

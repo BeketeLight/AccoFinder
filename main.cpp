@@ -13,6 +13,8 @@
 #include "src/application/controllers/usercontroller.h"
 #include "src/application/controllers/agentcontroller.h"
 #include "src/application/controllers/dashboardcontroller.h"
+#include "src/application/controllers/reviewcontroller.h"
+#include "src/presentation/viewmodels/reviewviewmodel.h"
 #include "src/presentation/viewmodels/propertyviewmodel.h"
 #include "src/presentation/viewmodels/roomviewmodel.h"
 #include "src/presentation/viewmodels/mediaviewmodel.h"
@@ -120,9 +122,11 @@ int main(int argc, char *argv[])
     RoomController roomController;
     UserController userController;
     AgentController agentController;
+    ReviewController reviewController;
     DashboardController dashboardController;
     PropertyViewModel propertyViewModel;
     RoomViewModel roomViewModel;
+    ReviewViewModel reviewViewModel;
     MediaViewModel mediaViewModel;
     DraftViewModel draftViewModel(&propertyViewModel);
     BookingViewModel bookingViewModel;
@@ -148,8 +152,10 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("UserController", &userController);
     engine.rootContext()->setContextProperty("AgentController", &agentController);
     engine.rootContext()->setContextProperty("DashboardController", &dashboardController);
+    engine.rootContext()->setContextProperty("ReviewController", &reviewController);
     engine.rootContext()->setContextProperty("PropertyViewModel", &propertyViewModel);
     engine.rootContext()->setContextProperty("RoomViewModel", &roomViewModel);
+    engine.rootContext()->setContextProperty("ReviewViewModel", &reviewViewModel);
     engine.rootContext()->setContextProperty("MediaViewModel", &mediaViewModel);
     engine.rootContext()->setContextProperty("DraftViewModel", &draftViewModel);
     engine.rootContext()->setContextProperty("BookingViewModel", &bookingViewModel);

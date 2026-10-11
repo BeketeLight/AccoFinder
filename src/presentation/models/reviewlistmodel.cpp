@@ -7,14 +7,11 @@ ReviewListModel::ReviewListModel(QObject *parent)
 ReviewListModel::~ReviewListModel()
 {}
 
-int ReviewListModel::rowCount(const QModelIndex &parent) const
+int ReviewListModel::rowCount(const QModelIndex& parent) const
 {
-    // For list models only the root node (an invalid parent) should return the list's size. For all
-    // other (valid) parents, rowCount() should return 0 so that it does not become a tree model.
-  Q_UNUSED(parent);
-  return m_reviews.count();
-
-    // FIXME: Implement me!
+    if (parent.isValid())
+        return 0;
+    return m_reviews.count();
 }
 QVariant ReviewListModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
@@ -28,52 +25,56 @@ QVariant ReviewListModel::headerData(int section, Qt::Orientation orientation, i
 QHash<int, QByteArray> ReviewListModel::roleNames() const
 {
     static QHash<int, QByteArray> roles;
-    roles[IdRole] = "reviewId";
-    roles[RatingRole] = "rating";
-    roles[CommentRole] = "comment";
-    roles[CreatedAtRole] = "comment";
+    roles[IdRole]         = "reviewId";
+    roles[ClientIdRole]   = "clientId";
+    roles[PropertyIdRole] = "propertyId";
+    roles[AgentIdRole]    = "agentId";
+    roles[RatingRole]     = "rating";
+    roles[CommentRole]    = "comment";
+    roles[CreatedAtRole]  = "createdAt";
     return roles;
 }
 
-QVariant ReviewListModel::data(const QModelIndex &index, int role) const
+QVariant ReviewListModel::data(const QModelIndex& index, int role) const
 {
-    if (!index.isValid() || index.row() < 0 || index.row() >= m_reviews.size()){
+    if (!index.isValid() || index.row() < 0 || index.row() >= m_reviews.size())
         return QVariant();
-    }
-    
-    Review* review = m_reviews.at(index.row()).data();
-        // return QVariant();
-    
-    switch(role)
-    {
-    case IdRole:
-        return review->getId();
-    case RatingRole:
-        return review->getRating();
-    case CommentRole:
-        return review->getComment();
-    case CreatedAtRole:
-        return review->getCreatedAt().toString("dd/MM/yyyy");        
 
-    } 
-    // FIXME: Implement me!
+    const auto& ptr = m_reviews.at(index.row());
+    if (!ptr)
+        return QVariant();
+
+    Review* review = ptr.data();
+
+    switch (role) {
+    case IdRole:         return review->getId();
+    case ClientIdRole:   return review->getClientId();
+    case PropertyIdRole: return review->getPropertyId();
+    case AgentIdRole:    return review->getAgentId();
+    case RatingRole:     return review->getRating();
+    case CommentRole:    return review->getComment();
+    case CreatedAtRole:  return review->getCreatedAt().toString("dd/MM/yyyy");
+    }
     return QVariant();
 }
 
-void ReviewListModel::addReview(Review* review)
+void ReviewListModel::addReview(QSharedPointer<Review> review)
 {
-    if(!review)
-        return;
-    
-    beginInsertRows(QModelIndex(), m_reviews.size(), m_reviews.count());
-    m_reviews.append(QSharedPointer<Review>(review));
+    if (!review) return;
+
+    beginInsertRows(QModelIndex(), m_reviews.size(), m_reviews.size());
+    m_reviews.append(review);
     endInsertRows();
 
     emit countChanged(m_reviews.size());
-    emit reviewSubmitted(review);
-    
-    qDebug() << "Review added";// for checking execution
-    
+}
+
+void ReviewListModel::clear()
+{
+    beginResetModel();
+    m_reviews.clear();
+    endResetModel();
+    emit countChanged(0);
 }
 void ReviewListModel::removeReview(int index)
 {

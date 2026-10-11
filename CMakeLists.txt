@@ -360,7 +360,11 @@ set(ACCOFINDER_LOGIC_SOURCES
     src/presentation/viewmodels/adminnotificationsviewmodel.h src/presentation/viewmodels/adminnotificationsviewmodel.cpp
 )
 
-add_library(AccoFinderLogic STATIC ${ACCOFINDER_LOGIC_SOURCES})
+add_library(AccoFinderLogic STATIC ${ACCOFINDER_LOGIC_SOURCES}
+    src/repositories/interfaces/IReviewRepository.h
+    src/repositories/impl/reviewrepositoryimpl.h src/repositories/impl/reviewrepositoryimpl.cpp
+    src/application/controllers/reviewcontroller.h src/application/controllers/reviewcontroller.cpp
+    src/application/dto/reviewdto.h src/application/dto/reviewdto.cpp)
 
 target_include_directories(AccoFinderLogic
     PUBLIC
