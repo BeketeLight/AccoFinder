@@ -232,6 +232,7 @@ int main(int argc, char *argv[])
             });
         }
     });
+    paymentController.fetchOperators();
     QObject::connect(
         &engine,
         &QQmlApplicationEngine::objectCreationFailed,

@@ -6,10 +6,13 @@ Item {
     readonly property bool loading: BookingViewModel.isLoading
     // Backend Enum Constants
     readonly property var bookingStatus: Object.freeze({
-        PENDING: 'Pending',
-        PAID: 'Paid',
+        PENDING_PAYMENT: 'Pending payment',
+        PAYMENT_PROCESSING: 'Payment processing',
         CONFIRMED: 'Confirmed',
-        CANCELLED: 'Cancelled'
+        EXPIRED: 'Expired',
+        CANCELLED: 'Cancelled',
+        PAYMENT_FAILED: 'Payment failed',
+        PENDING: 'Pending' // legacy compatibility
     })
 
     // Filtering API matching UI tabs: "All", "Pending", "Confirmed", "Paid", "Cancelled"
@@ -17,7 +20,7 @@ Item {
     property string searchText: ""
     property int resultCount: 0
     property int totalCount: 0
-    property int pendingCount: 0
+    property int pendingPaymentCount: 0
     property int confirmedCount: 0
     property int cancelledCount: 0
 
@@ -33,15 +36,14 @@ Item {
     ListModel {
         id: filterChipsModelId
         ListElement { label: "All" }
-        ListElement { label: "Pending" }
+        ListElement { label: "Pending Payment" }
         ListElement { label: "Confirmed" } // Updated from "Approved" to align with BookingStatus
-        ListElement { label: "Paid" }
         ListElement { label: "Cancelled" }
     }
     //Looping and summing up statuses
     function updateStatusCount(){
         var total = 0
-        var pending = 0
+        var pendingPayment = 0
         var confirmed = 0
         var cancelled = 0
 
@@ -50,49 +52,63 @@ Item {
             total++
 
             switch(status){
+            //Payment window----Anything related to payment before window expires will be counted a Pending_payment
+            case "PENDING PAYMENT":
+            case "PAYMENT PROCESSING":
+            case "PAYMENT FAILED":
             case "PENDING":
-                pending++
+                pendingPayment++
                 break
 
             case "CONFIRMED":
+            case "PAID":
                 confirmed++
                 break
 
             case "CANCELLED":
+            case "EXPIRED":
                 cancelled++
                 break
             }
         }
         root.totalCount = total
-        root.pendingCount = pending
+        root.pendingPaymentCount = pendingPayment
         root.confirmedCount = confirmed
         root.cancelledCount  = cancelled
+    }
+    //Function to match filters
+    function matchesStatusFilter(status){
+        var currentStatus = String(status || "").trim().toUpperCase()
+        var filter = String(root.statusFilter || "All").trim().toUpperCase()
+        //ALL
+        if(filter === "ALL")
+            return true
+
+        if(filter === "PENDING PAYMENT"){
+            return currentStatus === "PENDING PAYMENT"
+                || currentStatus === "PAYMENT PROCESSING"
+                || currentStatus === "PAYMENT FAILED"
+                || currentStatus === "PENDING"
+        }
+
+        if(filter === "CONFIRMED"){
+            return currentStatus ===  "CONFIRMED"
+                || currentStatus === "PAID"
+        }
+
+        if(filter === "CANCELLED"){
+            return currentStatus === "CANCELLED"
+                || currentStatus === "EXPIRED"
+        }
+        return false
     }
     // --- 1. SEARCH & FILTERING LOGIC ---
     function applyFilters() {
         var count = 0
         var q = root.searchText.trim().toLowerCase()
-
-        // Normalize selected filter chip string
-        var rawWanted = root.statusFilter.toUpperCase()
-        var wanted = (rawWanted === "ALL") ? "" : rawWanted
-
-        // Handle UI alias mapping if legacy views still send "APPROVED"
-        if (wanted === "APPROVED") {
-            wanted = root.bookingStatus.CONFIRMED.toUpperCase()
-        }
-
         for (var i = 0; i < bookingsModelId.count; i++) {
             var it = bookingsModelId.get(i)
-
-            var itemStatus = String(it.status).toUpperCase()
-
-            // Normalize backend item status for legacy compatibility
-            if (itemStatus === "APPROVED") {
-                itemStatus = root.bookingStatus.CONFIRMED.toUpperCase()
-            }
-
-            var okStatus = (wanted.length === 0) || (itemStatus === wanted)
+            var okStatus = root.matchesStatusFilter(it.status)// status has to be matched from matchesStatusFilter function
 
             var okSearch = q.length === 0
                           || (it.clientName && it.clientName.toLowerCase().indexOf(q) !== -1)
@@ -131,56 +147,7 @@ Item {
         }
         return {}
     }
-    ///Extracting property image here from the mediaviewmodel
-    // function coverImageFor(propertyId) {
-    //     if (!propertyId || typeof MediaViewModel === "undefined")
-    //         return ""
-
-    //     // Ask the media layer to load this property’s media (safe to call many times)
-    //     MediaViewModel.getMediaByProperty(propertyId)
-
-    //     var list = MediaViewModel.mediaForProperty(propertyId)
-    //     if (!list || list.length === 0)
-    //         return ""
-
-    //     // Prefer the primary photo, otherwise the first one
-    //     for (var i = 0; i < list.length; i++) {
-    //         if (list[i].isPrimary)
-    //             return list[i].url || list[i].path || ""
-    //     }
-    //     return list[0].url || list[0].path || ""
-    // }
-
-    // function coverImageFor(propertyId, roomId) {
-    //     if (!propertyId || typeof MediaViewModel === "undefined")
-    //         return ""
-
-    //     // Ensure media for this property is loaded
-    //     MediaViewModel.getMediaByProperty(propertyId)
-
-    //     var list = MediaViewModel.mediaForProperty(propertyId)
-    //     if (!list || list.length === 0){
-    //         console.log("coverImageFor: no media yet prop", propertyId, "room", roomId)
-    //         return ""
-    //     }
-    //     console.log("coverImageFor prop", propertyId, "want room", roomId, "count", list.length)
-    //     // 1. Prefer image that belongs to the booked room
-    //     if (roomId) {
-    //         for (var i = 0; i < list.length; i++) {
-    //             if (String(list[i].roomId) === String(roomId))
-    //                 return list[i].url || list[i].path || ""
-    //         }
-    //     }
-
-    //     // 2. Fall back to the property’s primary / cover image
-    //     for (var j = 0; j < list.length; j++) {
-    //         if (list[j].isPrimary)
-    //             return list[j].url || list[j].path || ""
-    //     }
-
-    //     // 3. Last resort – first image
-    //     return list[0].url || list[0].path || ""
-    // }
+    //EXtracting booked Image
     function coverImageFor(propertyId, roomId) {
         if (!propertyId || typeof MediaViewModel === "undefined")
             return ""
@@ -250,8 +217,15 @@ Item {
             "location": (it.district && it.village) ? (it.district + ", " + it.village) : (it.district || it.village || "Location N/A"),
             "propertyImage": it.propertyImage,
             "landlord": it.landlord,
-            "landlordPhone": it.landlordPhone
+            "landlordPhone": it.landlordPhone,
+            //Expiration window
+            "holdExpiresAt": it.holdExpiresAt,
+            "holdSecondsRemaining": it.holdSecondsRemaining,
+            "holdActive": it.holdActive
+
+
         }
+
     }
 
     // --- 4. RELOAD & DATA JOINING ENGINE ---
@@ -329,6 +303,10 @@ Item {
             var cName  = m.data(idx, Qt.UserRole + 7) || "Client"
             var cPhone = m.data(idx, Qt.UserRole + 8) || "N/A"
             var cEmail = m.data(idx, Qt.UserRole + 9) || "N/A"
+
+            var holdExpiresAt = m.data(idx, Qt.UserRole + 10)
+            var holdSecondsRemaining = m.data(idx, Qt.UserRole + 11)
+            var holdActive = m.data(idx, Qt.UserRole + 12)
             // Extract first letter of client's full name
             var clientInitial = cName.trim().charAt(0).toUpperCase()
             // Append aggregated item to QML model
@@ -360,7 +338,11 @@ Item {
                 "ownerSurname": ownerSurname,
                 "hostName": hostName,
                 "hostInitials": hostInitials,
-                "clientInitial": clientInitial
+                "clientInitial": clientInitial,
+
+                "holdExpiresAt": holdExpiresAt,
+                "holdSecondsRemaining": Number(holdSecondsRemaining) || 0,
+                "holdActive": Boolean(holdActive)
             })
         }
         root.updateStatusCount()

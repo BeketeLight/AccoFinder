@@ -244,12 +244,11 @@ qt_add_qml_module(appAccoFinder
         QML_FILES ui/features/payments/pages/PaymentStatusPage.qml
         QML_FILES ui/features/payments/pages/PaymentsHistoryPage.qml
         QML_FILES ui/features/payments/models/PaymentsModel.qml
-
         QML_FILES ui/features/bookings/models/BookingsModel.qml
-        QML_FILES ui/features/bookings/components/LoadingSkeleton.qml
         QML_FILES ui/features/bookings/components/BookingStatusBanner.qml
         QML_FILES ui/features/bookings/delegates/AdminStatsDelegate.qml
         QML_FILES ui/features/bookings/pages/BookingOverviewAdminPage.qml
+
 )
 
 # ─────────────────────────────────────────────────────────────

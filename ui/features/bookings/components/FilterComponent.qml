@@ -5,7 +5,7 @@ import QtQuick.Layouts
 Item {
     id: root
 
-    property var model: ["All", "Pending", "Confirmed", "Cancelled"]
+    property var model: ["All", "Pending Payment", "Confirmed", "Cancelled"]
     property int currentIndex: 0
 
     readonly property string currentText: {
