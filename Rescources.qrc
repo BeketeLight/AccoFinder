@@ -62,5 +62,7 @@
         <file>ui/assets/bookings/location-icon.svg</file>
         <file>ui/assets/bookings/landlord-icon.svg</file>
         <file>ui/assets/bookings/forward-icon.svg</file>
+        <file>ui/assets/bookings/room-icon.svg</file>
+        <file>ui/assets/bookings/email-icon.svg</file>
     </qresource>
 </RCC>

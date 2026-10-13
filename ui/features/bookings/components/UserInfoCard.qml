@@ -6,12 +6,15 @@ Rectangle {
     id: userCard
     property string cardTitle: "Client Info"
     property string cardIcon: "qrc:/ui/assets/account-icon.svg"
+    property string  emailIcon: ""
+    property string userEmail: "@"
     property string userName: "Unknown"
     property string userPhone: ""
     property string userInitial: "D"
     property string userAvatar: "" // if image path
     property int custIconHeight: 12
     property int custIconWidth: 12
+
     Layout.fillWidth: true
     implicitHeight: hostRow.implicitHeight + 52
     radius: 12
@@ -52,9 +55,9 @@ Rectangle {
 
             // Avatar / Initial Circle
             Rectangle {
-                implicitWidth: 44
-                implicitHeight: 44
-                radius: 22
+                implicitWidth: 40
+                implicitHeight: 40
+                radius: 20
                 color: "#E2E8F0"
                 clip: true
 
@@ -70,7 +73,7 @@ Rectangle {
                     anchors.centerIn: parent
                     text: userCard.userInitial
                     color: "#2563EB"
-                    font.pointSize: 16
+                    font.pointSize: 14
                     font.bold: true
                     visible: userCard.userAvatar === ""
                 }
@@ -94,6 +97,21 @@ Rectangle {
                         text: userCard.userPhone
                         font.pixelSize: 11
                         color: "#64748B"
+                    }
+                    RowLayout{
+                        spacing: 0
+                        visible: userCard.userEmail !== ""
+                        ToolButton{
+                            icon.source: userCard.emailIcon
+                            icon.height: 14
+                            icon.width: 14
+                            background: null
+                        }
+                        Text {
+                            text: userCard.userEmail
+                            font.pixelSize: 11
+                            color: "#64748B"
+                        }
                     }
                 }
                Item{Layout.fillWidth: true}

@@ -26,7 +26,7 @@ Page {
     property alias clientPhone: detailDelegate.clientPhone
     property alias clientEmail: detailDelegate.clientEmail
 
-    property alias checkIn: detailDelegate.checkIn
+    property alias bookingDate: detailDelegate.bookingDate
     property alias price: detailDelegate.price
     property alias paymentStatus: detailDelegate.paymentStatus
     property alias paymentMethod: detailDelegate.paymentMethod

@@ -32,7 +32,7 @@ Item{
     property string clientEmail: ""
     property int guestCount: 0
 
-    property string checkIn: ""
+    property string bookingDate: ""
     property string checkOut: ""
     property int nightsCount: 0
     property string clientNotes: ""
@@ -161,7 +161,7 @@ Item{
 
             BookingsCard{
                 cardTitle: "Property & Date Info"
-                bookingDate: detailsPage.checkIn
+                bookingDate: detailsPage.bookingDate
                 roomType: detailsPage.roomType
             }
             PaymentSummaryCard{
@@ -174,6 +174,7 @@ Item{
                 userName: detailsPage.hostName
                 cardTitle: "Property Host"
                 userInitial: detailsPage.hostInitials
+                userEmail: ""
             }
             // Actions while hold is open ---
 

@@ -15,19 +15,19 @@ Rectangle {
     property string ownerFirstName: model.ownerFirstName ?? ""
     property string hostName: model.hostName ?? ""
     property string hostInitials: model.hostInitials ?? ""
-    property string imageUrl: model.propertyImage ?? model.imageUrl ?? ""
+    property string propertyImage: model.propertyImage ?? model.imageUrl ?? ""
     property string status: model.status ?? "Pending"
     readonly property string statusKey: String(status).trim().toUpperCase()
     property string clientName: model.clientName ?? "Guest"
     property string clientPhone: model.clientPhone ?? "N/A"
-    property string dateRange: model.bookingDate ?? model.dateRange ?? "N/A"
+    property string bookingDate: model.bookingDate ?? model.bookingDate ?? "N/A"
     //Expires at details
     property string holdExpiresAt: model.holdExpiresAt ?? ""
     property bool holdActive: model.holdActive === true || model.holdActive === 1
     property int tick: 0
     // Robust numeric check for price
     property real price: Number(model.amount ?? 0)
-    property string propertyLocation: model.location ?? ""
+    property string propertyLocation: model.propertyLocation ?? ""
     property string roomType: model.roomType ?? "Standard Room"
     property string details: model.details ?? model.roomType ?? "Standard Room"
     property string clientEmail: model.clientEmail ?? ""
@@ -96,7 +96,7 @@ Rectangle {
                 width: 6
                 height: 6
                 radius: 3
-                color: "black"
+                color: "#BDBDBD"//"#E2E8F0"
             }
             BookingStatusBadge{
                 status: delegateRoot.status
@@ -124,7 +124,7 @@ Rectangle {
                 Image {
                     id: propImage
                     anchors.fill: parent
-                    source: delegateRoot.imageUrl !== "" ? delegateRoot.imageUrl : "qrc:/assets/placeholder.png"
+                    source: delegateRoot.propertyImage !== "" ? delegateRoot.propertyImage : "qrc:/assets/placeholder.png"
                     fillMode: Image.PreserveAspectCrop
                     asynchronous: true
                     visible: false
@@ -169,12 +169,20 @@ Rectangle {
                         background: null
                     }
                 }
-                Text {
-                    text:"Location: " + delegateRoot.propertyLocation
-                    font.pixelSize: 12
-                    color: "#888888"
-                    elide: Text.ElideRight
-                    Layout.fillWidth: true
+                RowLayout{
+                    ToolButton{
+                        icon.source: "qrc:/ui/assets/bookings/location-icon.svg"
+                        icon.width: 10
+                        icon.height: 10
+                        icon.color:"#000000"//"#64748B"
+                        background: null
+                    }
+                    Text {
+                        text: delegateRoot.propertyLocation
+                        font.pixelSize: 11
+                        color: "#94A3B8"
+                        Layout.fillWidth: true
+                    }
                 }
 
                 Text {

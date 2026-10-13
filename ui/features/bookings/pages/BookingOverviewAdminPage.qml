@@ -7,6 +7,7 @@ import "../components"
 import "../../../components/indicators"
 import "../../properties/components"
 import "../../../components/inputs"
+import "../../../utils/NavigationUtils.js" as NavUtils
 Page {
     id: root
     readonly property color primaryColor: "#2563EB"
@@ -22,6 +23,9 @@ Page {
     readonly property color textColor: "#1F2937"
     readonly property color mutedColor: "#6B7280"
     readonly property color borderColor: "#E5E7EB"
+
+    readonly property bool busy: adminBookingsModel.loading
+            || BookingViewModel.isLoading
     background: Rectangle { color: "#F8FAFC" }
 
     BookingsModel { id: adminBookingsModel }
@@ -41,7 +45,7 @@ Page {
 
         ColumnLayout {
             anchors.fill: parent
-            anchors.margins: 16
+            anchors.margins: 12
             spacing: 12
 
             // ---- 1. STAT GRID (2×2) ----
@@ -60,7 +64,7 @@ Page {
                 StatCard {
                     Layout.fillWidth: true
                     label: qsTr("Pending Bookings")
-                    valueText: String(adminBookingsModel.pendingCount)
+                    valueText: String(adminBookingsModel.pendingPaymentCount)
                     accentColor: root.warningColor
                 }
                 StatCard {
@@ -84,7 +88,7 @@ Page {
             FilterComponent {
                 id: filterBar
                 Layout.fillWidth: true
-                model: ["All", "Pending", "Confirmed", "Cancelled"]
+                model: ["All", "Pending payment", "Confirmed", "Cancelled"]
                 onFilterChanged: function(text) {
                     adminBookingsModel.statusFilter = text
                 }
@@ -97,30 +101,70 @@ Page {
                 spacing: 10
 
                 Repeater{
-
+                    id: repeater
                     model: adminBookingsModel.bookingsModel
                     delegate: AdminStatsDelegate {
                         Layout.fillWidth: true
-                        // prefer model.matches from BookingsModel
-                        // visible handled inside via matches or activeFilter
-                        activeFilter: filterBar.currentText
 
-                        bookingId: model.bookingId ?? ""
-                        houseName: model.houseName ?? ""
-                        imageUrl: model.propertyImage ?? ""
-                        status: model.status ?? ""
-                        clientName: model.clientName ?? ""
-                        hostName: model.hostName ?? ""
-                        roomType: model.roomType ?? ""
-                        propertyLocation: (model.district && model.village)
-                            ? (model.district + ", " + model.village)
-                            : (model.district || model.village || "")
-                        price: Number(model.amount ?? 0)
-                        dateRange: model.bookingDate ?? ""
-
-                        onViewDetailsRequested: {
-                            NavUtils.navigateToBookingsDetailsAdmin({ /* payload */ })
+                        onViewDetailsRequested: function(data) {
+                            NavUtils.navigateToBookingDetailsForAdmin({
+                                bookingId: model.bookingId ?? "",
+                                houseName: model.houseName ?? "",
+                                hostName: model.hostName,
+                                hostInitials: model.hostInitials,
+                                hostEmail: model.hostEmail ?? "",
+                                hostPhone: model.hostPhone ?? "",
+                                status: model.status ?? "",
+                                clientName: model.clientName ?? "",
+                                clientPhone: model.clientPhone ?? "",
+                                landlord: model.landlord,
+                                landlordInitials: model.landlordInitials,
+                                landlordPhone: model.landlordPhone,
+                                bookingDate: model.bookingDate ?? "",
+                                price: model.amount ? model.amount.toString() : "0",
+                                propertyLocation: model.propertyLocation ?? "", //(model.district && model.village) ? (model.district + ", " + model.village) : "N/A",
+                                propertyImage: model.propertyImage,
+                                roomType: model.roomType ?? "",
+                                clientEmail: model.clientEmail ?? "",
+                                clientInitial: model.clientInitial ?? "",
+                                commission: model.commissionAmount ?? 0.0,
+                            });
                         }
+                    }
+                }
+            }
+            AppEmptyState {
+                anchors.bottom: repeater.bottom
+                anchors.right: repeater.right
+                anchors.left: repeater.left
+                anchors.topMargin: 80
+               // anchors.bottomMargin: 60
+                anchors.leftMargin: 16
+                anchors.rightMargin: 16
+                visible: !adminBookingsModel.loading && adminBookingsModel.resultCount === 0
+                iconSource: "qrc:/ui/assets/bookings-icon.svg"
+                title: {
+                    switch (String(filterBar.currentText || "All")) {
+                    case "Pending payment":
+                        return qsTr("No pending bookings")
+                    case "Confirmed":
+                        return qsTr("No confirmed bookings")
+                    case "Cancelled":
+                        return qsTr("No cancelled bookings")
+                    default:
+                        return qsTr("No bookings yet")
+                    }
+                }
+                subtitle: {
+                    switch (String(filterBar.currentText || "All")) {
+                    case "Pending payment":
+                        return qsTr("Bookings waiting for payment will show up here.")
+                    case "Confirmed":
+                        return qsTr("Confirmed bookings will appear here after payment succeeds.")
+                    case "Cancelled":
+                        return qsTr("Cancelled or expired bookings will appear here.")
+                    default:
+                        return qsTr("Book a property to see your bookings here.")
                     }
                 }
             }

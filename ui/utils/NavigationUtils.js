@@ -200,7 +200,7 @@ function navigateToBookingsDetailsClient(data) {
         propertyImage: data.propertyImage || data.imageUrl || "",
         propertyLocation: data.propertyLocation || data.location || "",
         roomType: data.roomType || "",
-        checkIn: data.checkIn || data.bookingDate || data.dateRange || "",
+        bookingDate: data.bookingDate ||  "",
         paymentStatus: data.paymentStatus || "Unpaid",
         paymentMethod: data.paymentMethod || "",
         paymentDate: data.paymentDate || "",
@@ -239,6 +239,31 @@ function navigateToBookingsDetailsOwneByAgent(data){
             landlordInitials: data.landlordInitials || "" ,
             landlordPhone: data.landlordPhone || ""
     });
+}
+function navigateToBookingDetailsForAdmin(data){
+    push("../features/bookings/pages/AdminBookingDetailsPage.qml",{
+        bookingId: data.bookingId || "",
+        houseName: data.houseName || "",
+        hostName: data.hostName || "",
+        hostInitials: data.hostInitials || "",
+        hostEmail: data.hostEmail || "",
+        hostPhone: data.hostPhone || "",
+        status: data.status || "Pending payment",
+        clientName: data.clientName || "",
+        clientPhone: data.clientPhone || "",
+        clientEmail: data.clientEmail || "",
+        clientInitial: data.clientInitial || "",
+        landlord: data.landlord || "",
+        landlordInitials: data.landlordInitials,
+        landlordPhone: data.landlordPhone,
+        bookingDate: data.bookingDate ?? "",
+        price: data.price, //? model.amount.toString() : "0",
+        commission: data.commission,
+        propertyLocation: data.propertyLocation || "124 Lakeview Drive, Sector 4",
+        propertyImage: data.propertyImage,
+        roomType: data.roomType || "",
+    });
+
 }
 
 var Navigation = {

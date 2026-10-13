@@ -252,6 +252,8 @@ qt_add_qml_module(appAccoFinder
         QML_FILES ui/features/bookings/components/UserInfoCard.qml
         QML_FILES ui/features/bookings/components/PaymentSummaryCard.qml
         QML_FILES ui/features/bookings/components/CustomButton.qml
+        QML_FILES ui/features/bookings/delegates/AdminBookingDetailsDelegate.qml
+        QML_FILES ui/features/bookings/pages/AdminBookingDetailsPage.qml
 
 )
 

@@ -91,11 +91,11 @@ Page {
             bookingId: model.bookingId ?? ""
             houseName: model.houseName ?? ""
             ownerFirstName: model.ownerFirstName ?? ""
-            imageUrl: model.propertyImage ?? ""
+            propertyImage: model.propertyImage ?? ""
             status: model.status ?? ""
             clientName: model.clientName ?? ""
             clientPhone: model.clientPhone ?? ""
-            dateRange: model.bookingDate ?? ""
+            bookingDate: model.bookingDate ?? ""
             price: model.amount
             propertyLocation: (model.district && model.village) ? (model.district + ", " + model.village) : "N/A"
             roomType: model.roomType ?? ""
@@ -121,7 +121,7 @@ Page {
                         ? (model.district + ", " + model.village)
                         : (model.location || ""),
                     roomType: model.roomType || "",
-                    checkIn: model.bookingDate || "",
+                    bookingDate: model.bookingDate || "",
                     landlordName: model.landlord || "",
                     landlordPhone: model.landlordPhone || "",
                     paymentStatus: model.paymentStatus || "Unpaid",
