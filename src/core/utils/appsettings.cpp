@@ -373,6 +373,22 @@ bool AppSettings::isRoomFavorite(const QString &quarterId) const {
     return favoriteRoomIds().contains(quarterId);
 }
 
+
+void AppSettings::setFavoritePropertyIds(const QStringList &value) {
+    m_settings.setValue("favorites/propertyIds", value);
+    emit favoritePropertyIdsChanged();
+}
+void AppSettings::toggleFavoriteProperty(const QString &propertyId) {
+    if (propertyId.isEmpty()) return;
+    QStringList ids = favoritePropertyIds();
+    if (ids.contains(propertyId))
+        ids.removeAll(propertyId);
+    else
+        ids.append(propertyId);
+    m_settings.setValue("favorites/propertyIds", ids);
+    emit favoritePropertyIdsChanged();
+}
+
 void AppSettings::toggleFavoriteRoom(const QString &quarterId) {
     if (quarterId.isEmpty())
         return;

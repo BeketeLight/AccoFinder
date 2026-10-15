@@ -262,6 +262,12 @@ qt_add_qml_module(appAccoFinder
         QML_FILES ui/features/bookings/components/CustomButton.qml
         QML_FILES ui/features/bookings/delegates/AdminBookingDetailsDelegate.qml
         QML_FILES ui/features/bookings/pages/AdminBookingDetailsPage.qml
+        QML_FILES ui/features/favourites/components/SavesTabStrip.qml
+        QML_FILES ui/features/favourites/components/SavesEmptyState.qml
+        QML_FILES ui/features/favourites/delegates/SavedPropertyDelegate.qml
+        QML_FILES ui/features/favourites/delegates/SavedRoomDelegate.qml
+        QML_FILES ui/features/favourites/models/SavedPropertiesModel.qml
+        QML_FILES ui/features/favourites/models/SavedRoomsModel.qml
 
 
 )

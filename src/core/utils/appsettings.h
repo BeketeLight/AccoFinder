@@ -256,6 +256,9 @@ signals:
     // Emitted when the user's saved-room list changes, so QML hearts and
     // the Saves screen can re-read favouriteRoomIds().
     void roomFavoritesChanged();
+    // appsettings.h — add to signals:
+    void favoritePropertyIdsChanged();
+    void propertyFavoritesChanged();   // if you also add property snapshots later
 
 private:
     // A registration draft is only offered back to the user for this long,
