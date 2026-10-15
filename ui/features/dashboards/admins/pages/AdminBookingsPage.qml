@@ -43,6 +43,14 @@ Item {
         root.bookingAction("cancel", bookingId)
     }
 
+    function releaseBooking(bookingId) {
+        if (!bookingId || root.bookingsModel.busyBookingId.length > 0)
+            return
+        root.bookingsModel.busyBookingId = bookingId
+        BookingViewModel.releaseBooking(bookingId)
+        root.bookingAction("release", bookingId)
+    }
+
     ColumnLayout {
         id: contentColumn
         anchors.left: parent.left
@@ -160,6 +168,7 @@ Item {
 
                 onConfirmRequested: (id) => root.confirmBooking(id)
                 onCancelRequested: (id) => root.cancelBooking(id)
+                onReleaseRequested: (id) => root.releaseBooking(id)
             }
         }
 

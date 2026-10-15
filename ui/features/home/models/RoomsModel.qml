@@ -24,6 +24,9 @@ Item {
                 roomType: r.roomType || "Room",
                 price: Number(r.price || 0),
                 available: r.available === true || String(r.available) === "true",
+                holdActive: r.holdActive === true || String(r.holdActive) === "true",
+                holdExpiresAt: r.holdExpiresAt !== undefined ? r.holdExpiresAt : "",
+                statusLabel: r.statusLabel !== undefined ? String(r.statusLabel) : "",
                 // placeholders until backend supplies these
                 size: "",
                 imageUrl: "",

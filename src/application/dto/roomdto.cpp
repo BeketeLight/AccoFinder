@@ -6,12 +6,16 @@ RoomDto::RoomDto(const QString &id,
                  const QString &propertyId,
                  const QString &type,
                  double price,
-                 bool available)
+                 bool available,
+                 bool holdActive,
+                 const QDateTime &holdExpiresAt)
     :m_id(id)
     ,m_propertyId(propertyId)
     ,m_type(type)
     ,m_price(price)
     ,m_available(available)
+    ,m_holdActive(holdActive)
+    ,m_holdExpiresAt(holdExpiresAt)
 {
 
 }
@@ -33,6 +37,13 @@ RoomDto RoomDto::fromJson(const QJsonObject &json)
         dto.m_propertyId = propRef.toString();
 
     dto.m_available = json["available"].toBool();
+
+    // Hold decoration added by the backend on every room listing. Defaults are
+    // safe for older payloads that predate the hold model.
+    dto.m_holdActive = json["holdActive"].toBool();
+    const QString hold = json["holdExpiresAt"].toString();
+    if (!hold.isEmpty())
+        dto.m_holdExpiresAt = QDateTime::fromString(hold, Qt::ISODateWithMs);
 
     dto.m_type = json["type"].toString();
 
@@ -59,12 +70,18 @@ QJsonObject RoomDto::toJson() const
     json["available"] =
         m_available;
 
+    json["holdActive"] = m_holdActive;
+
+    if (m_holdExpiresAt.isValid())
+        json["holdExpiresAt"] = m_holdExpiresAt.toString(Qt::ISODateWithMs);
+
         return json;
 }
 
 QSharedPointer<Room> RoomDto::toDomainModel() const
 {
-    return QSharedPointer<Room>::create(m_id,m_propertyId,m_type,m_price,m_available);
+    return QSharedPointer<Room>::create(m_id,m_propertyId,m_type,m_price,m_available,
+                                        m_holdActive,m_holdExpiresAt);
 }
 
 

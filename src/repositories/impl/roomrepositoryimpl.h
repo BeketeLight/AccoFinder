@@ -25,6 +25,7 @@ public:
                              double price,
                              bool available) override;
     void getRooms() override;
+    void getRoomsByProperty(const QString& propertyId) override;
     void getRoomById(const QString& id) override;
     void updateRoom(const QString& roomId,
                     const QString& type,
@@ -35,6 +36,7 @@ private:
     QList<QSharedPointer<Room>> m_rooms;
 signals:
     void roomsLoaded(const QList<QSharedPointer<Room>>& rooms);
+    void roomsForPropertyLoaded(const QString& propertyId, const QList<QSharedPointer<Room>>& rooms);
     void roomLoaded(const QSharedPointer<Room> &room);
     void roomCreated(const QSharedPointer<Room> &room);
     void roomDeleted(const QString& roomId);

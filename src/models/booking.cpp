@@ -98,6 +98,7 @@ QString Booking::getStatusString() const
     case BookingStatus::Expired:         return QStringLiteral("Expired");
     case BookingStatus::Cancelled:       return QStringLiteral("Cancelled");
     case BookingStatus::Failed:          return QStringLiteral("Payment failed");
+    case BookingStatus::Refunded:        return QStringLiteral("Refunded");
     case BookingStatus::Pending:         return QStringLiteral("Pending");
     case BookingStatus::Paid:            return QStringLiteral("Paid");
     }

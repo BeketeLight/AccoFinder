@@ -26,15 +26,27 @@ public:
     bool isLoading() const { return m_isLoading; }
 
     Q_INVOKABLE QVariantList propertiesForView() const;
+    // Payload for the single-property review detail, built from the shared list
+    // model. Empty map when the id is not loaded. Lets callers (e.g. a dashboard
+    // activity row) open the detail directly without an intermediate list.
+    Q_INVOKABLE QVariantMap registrationPayloadFor(const QString& propertyId) const;
     Q_INVOKABLE int pendingPropertiesCount() const;
     Q_INVOKABLE int verifiedPropertiesCount() const;
     Q_INVOKABLE void getProperties(const QString& owner = QString());
+    // Admin-only shared listing: fetches every verification status (not just
+    // VERIFIED) into propertyListModel, for the admin's all-properties view.
+    Q_INVOKABLE void getAdminProperties();
     Q_INVOKABLE void getPropertiesByStatus(const QString& status);
     // Fill pendingListModel with the listings that still need a decision by
     // walking the given listing owners (agents) one request at a time, then
     // emit pendingListingsLoaded(). Owners are walked in order and a failed
     // request only skips that owner, so one bad id cannot empty the queue.
     Q_INVOKABLE void loadPendingListings(const QStringList& ownerIds);
+    // Fetch every listing awaiting a decision in one admin-scoped request and
+    // fill pendingListModel. Preferred over loadPendingListings(ownerIds): the
+    // listing's owner is a user id, which is not necessarily present in the
+    // agent list, so the owner walk can miss listings the dashboard counts.
+    Q_INVOKABLE void loadAllPendingListings();
     // Record a decision on a queued listing so it leaves the queue (or stays in
     // it when a verified listing is put back to pending).
     Q_INVOKABLE void setPendingListingStatus(const QString& propertyId,
@@ -94,6 +106,7 @@ private:
 private slots:
     void onPropertiesLoaded(QList<Property*>& properties);
     void onOwnedPropertiesLoaded(QList<Property*>& properties);
+    void onPendingPropertiesLoaded(QList<Property*>& properties);
     void onGetPropertyById(Property* property);
     void onUpdateProperty(Property* property);
     void onCreateProperty(Property* property);

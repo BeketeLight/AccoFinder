@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Effects
 import "../models"
+import "../components"
 Rectangle {
     id: delegateRoot
     // --- REQUIRED MODEL PROPERTIES ---
@@ -12,9 +13,13 @@ Rectangle {
     property string ownerFirstName: model.ownerFirstName ?? ""
     property string hostName: model.hostName ?? ""
     property string hostInitials: model.hostInitials ?? ""
-    property string  clientInitial: model.clientInitial ?? ""
+    property string landlord: model.landlord ?? ""
+    property string landlordInitials: model.landlordInitials ?? ""
+    property string landlordPhone: model.landlordPhone ?? ""
+    property string clientInitial: model.clientInitial ?? ""
     property string imageUrl: model.propertyImage ?? model.imageUrl ?? ""
     property string status: model.status ?? "Pending"
+    readonly property string statusKey: String(status).trim().toUpperCase()
     property string clientName: model.clientName ?? "Guest"
     property string clientPhone: model.clientPhone ?? "N/A"
     property string dateRange: model.bookingDate ?? model.dateRange ?? "N/A"
@@ -25,16 +30,12 @@ Rectangle {
     property string roomType: model.roomType ?? "Standard Room"
     property string details: model.details ?? model.roomType ?? "Standard Room"
     property string clientEmail: model.clientEmail ?? ""
-    // --- ACTIVE FILTER PROP (FOR INLINE LISTVIEW FILTERING) ---
-    property string activeFilter: "All"
-
     // --- INTERACTION SIGNALS ---
     signal approveBooking()
     signal viewDetailsRequested(var data)
 
     // --- VISIBILITY & LAYOUT BEHAVIOR ---
-    visible: activeFilter === "All" || status === activeFilter
-    //visible: model.matches ?? true
+    visible: model.matches ?? true
     width: ListView.view ? ListView.view.width : parent.width
     implicitHeight: visible ? cardContent.implicitHeight + 16 : 0
     color: "#FFFFFF"
@@ -49,42 +50,23 @@ Rectangle {
         anchors.top: parent.top
         anchors.margins: 12
         spacing: 10
-        // --- 2. LANDLORD / STORE BADGE ---
-        RowLayout {
-            spacing: 6
-
-            Text {
-                text: delegateRoot.houseName
-                font.pixelSize: 14
-                color: "#2563EB"
+        RowLayout{
+            //Layout.alignment: Qt.AlignHCenter
+            Rectangle{
+                width: 6
+                height: 6
+                radius: 3
+                color: "black"
             }
-
-            Item { Layout.fillWidth: true }
-
-
-            Rectangle {
-                id: badge
-                Layout.alignment: Qt.AlignVCenter
-                implicitWidth: statusLabel.implicitWidth + 16
-                implicitHeight: 28
-                radius: 14
-                color: delegateRoot.status === "Confirmed" ? "#DCFCE7"
-                     : delegateRoot.status === "Pending" ? "#FEF3C7"
-                     : delegateRoot.status === "Cancelled" ? "#FEE2E2"
-                     : "#F1F5F9"
-
-                Text {
-                    id: statusLabel
-                    anchors.centerIn: parent
-                    text: delegateRoot.status
-                    font.pixelSize: 12
-                    font.bold: true
-                    color: delegateRoot.status === "Confirmed" ? "#15803D"
-                         : delegateRoot.status === "Pending" ? "#B45309"
-                         : delegateRoot.status === "Cancelled" ? "#B91C1C"
-                         : "#475569"
-                }
+            BookingStatusBadge{
+                status: delegateRoot.status
             }
+        }
+        Rectangle{
+            Layout.fillWidth: true
+            height: 1
+            radius: 2
+            color: "#E2E8F0"
         }
 
         // --- 3. MAIN CONTENT: THUMBNAIL & PROPERTY INFO ---
@@ -125,10 +107,15 @@ Rectangle {
                     }
                 }
             }
-
             ColumnLayout {
                 Layout.fillWidth: true
                 spacing: 4
+
+                Text {
+                    text:"Property: " + delegateRoot.houseName
+                    font.pixelSize: 14
+                    color: "#2563EB"
+                }
                 RowLayout{
                     spacing: 0
                     Text {
@@ -136,18 +123,19 @@ Rectangle {
                         font.pixelSize: 12
                         color: "#888888"
                    }
-                    Item{Layout.fillWidth: true}
+                    Item{Layout.preferredWidth: 145}
                     ToolButton{
-                        icon.source: "qrc:/ui/assets/forward-icon.svg"
+                        icon.source: "qrc:/ui/assets/bookings/forward-icon.svg"
                         icon.width: 8
                         icon.height: 8
-                        icon.color: "#64748B"
-                        background: Rectangle{
-                            color: "#F1F5F9"
-                            implicitHeight: 24
-                            implicitWidth: 24
-                            radius: 12
-                        }
+                        icon.color: "#616161"//"#64748B"
+                        // background: Rectangle{
+                        //     color: "#F1F5F9"
+                        //     implicitHeight: 24
+                        //     implicitWidth: 24
+                        //     radius: 12
+                        // }
+                        background: null
                     }
                 }
                 Text {

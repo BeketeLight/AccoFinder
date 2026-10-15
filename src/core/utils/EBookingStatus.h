@@ -16,6 +16,10 @@ enum class BookingStatus {
     Cancelled,        // "Cancelled"        user backed out, room released
     Failed,           // "Failed"           payment failed, hold still retryable
 
+    // A confirmed booking was refunded and released by an admin/owner. The room
+    // is back on the market. Terminal, like Cancelled.
+    Refunded,         // "Refunded"
+
     // Legacy values kept so historical bookings still render. The hold model
     // no longer produces either of these.
     Pending,

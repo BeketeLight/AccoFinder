@@ -75,6 +75,8 @@ function bookingStatusBucket(value) {
         return "CANCELLED"
     if (s === "EXPIRED")
         return "EXPIRED"
+    if (s === "REFUNDED")
+        return "REFUNDED"
     return ""
 }
 

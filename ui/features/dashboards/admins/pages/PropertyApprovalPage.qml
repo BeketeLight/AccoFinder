@@ -35,38 +35,16 @@ Item {
 
     readonly property bool queueLoading: !root.queueSettled || PropertyViewModel.isLoading
 
-    // Ids of the accounts whose listings have to be checked. Agents are the
-    // only accounts that list properties, and every owner already visible in the
-    // shared list is included so a listing submitted before the agent list
-    // arrived is still picked up.
-    function ownerIdsToCheck() {
-        var owners = []
-        function add(id) {
-            var value = String(id || "")
-            if (value.length > 0 && owners.indexOf(value) === -1)
-                owners.push(value)
-        }
-
-        var agents = AgentViewModel.agentListModel
-        if (agents) {
-            for (var i = 0; i < agents.size(); i++)
-                add(agents.at(i).agentId)
-        }
-        var shared = PropertyViewModel.propertiesForView() || []
-        for (var j = 0; j < shared.length; j++)
-            add(shared[j].ownerId)
-
-        return owners
-    }
-
     // The listing endpoint hides unverified listings from the unfiltered list,
-    // so the queue is fetched per owner into PropertyViewModel.pendingListModel
-    // instead of being read from the shared list alone.
+    // so the queue is fetched directly as PENDING instead. Unlike walking
+    // owners, this catches every listing the backend counts as pending: a
+    // listing's owner is a user id, which is not necessarily present in the
+    // agent list, so the owner walk could silently return nothing.
     function loadPendingListings() {
         if (root.pendingLoadStarted)
             return
         root.pendingLoadStarted = true
-        PropertyViewModel.loadPendingListings(root.ownerIdsToCheck())
+        PropertyViewModel.loadAllPendingListings()
     }
 
     // Append every listing still awaiting a decision from a model. Accepts both
@@ -167,12 +145,6 @@ Item {
         }
     }
 
-    // The owner walk can only start once the agents are known.
-    Connections {
-        target: AgentViewModel.agentListModel
-        function onCountChanged() { root.loadPendingListings() }
-    }
-
     // The shared property model is populated asynchronously after the network
     // fetch resolves. Rebuild the queue whenever it changes so newly fetched
     // listings actually appear (instead of only at Component.onCompleted).
@@ -188,7 +160,6 @@ Item {
 
     Component.onCompleted: {
         refreshQueue()
-        AgentViewModel.getAgents()
         loadPendingListings()
     }
 

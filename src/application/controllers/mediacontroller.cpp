@@ -59,3 +59,12 @@ void MediaController::updateMediaPrimary(const QString &mediaId, bool isPrimary)
     }
     m_mediaRepositoryImpl->updateMedia(mediaId, isPrimary);
 }
+
+void MediaController::updateMediaRoom(const QString &mediaId, const QString &roomId)
+{
+    if (mediaId.isEmpty()) {
+        emit onError("mediaId cannot be empty");
+        return;
+    }
+    m_mediaRepositoryImpl->updateMediaRoom(mediaId, roomId);
+}

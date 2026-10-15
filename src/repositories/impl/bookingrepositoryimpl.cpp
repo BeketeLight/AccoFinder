@@ -44,6 +44,9 @@ static BookingStatus bookingStatusFromString(const QString &rawStatus)
         || s == QLatin1String("REJECTED"))
         return BookingStatus::Cancelled;
 
+    if (s == QLatin1String("REFUNDED"))
+        return BookingStatus::Refunded;
+
     return BookingStatus::PendingPayment;
 }
 
@@ -357,34 +360,6 @@ void BookingRepositoryImpl::getBookingById(const QString& id)
         false);
 }
 
-// void BookingRepositoryImpl::cancelBooking(const QString& id)
-// {
-//     QJsonObject payload;
-//     payload["id"] = id;
-
-//     APIClient::instance().patch(
-//         "/bookings/" + id + "/cancel",
-//         payload,
-//         [this] (bool success, const QJsonObject& response)
-//         {
-//             if(success){
-//                 Booking* booking = new Booking(
-//                     response["id"].toString(),
-//                     response["clientId"].toString(),
-//                     response["roomId"].toString(),
-//                     QDateTime::fromString(response["bookingDate"].toString(), Qt::ISODate),
-//                     response["amount"].toDouble(),
-//                     response["commissionAmount"].toDouble(),
-//                     this
-//                 );
-//                emit bookingCancelled(booking);
-//             } else{
-//                 emit bookingError(response["error"].toString());
-//             }
-           
-//     }, false);
-// }
-
 void BookingRepositoryImpl::deleteBooking(const QString& id)
 {
     APIClient::instance().del(
@@ -400,36 +375,6 @@ void BookingRepositoryImpl::deleteBooking(const QString& id)
     }, false);
 }
 
-// void BookingRepositoryImpl::confirmBooking(const QString& id)
-// {
-//     QJsonObject payload;
-//     payload["id"] = id;
-
-//     APIClient::instance().patch(
-//         "/bookings/" + id + "/confirm",
-//         payload,
-//         [this] (bool success, const QJsonObject& response)
-//         {
-//             Booking* booking = nullptr;
-//             if(success){
-//                 if(response.contains("id")){
-//                 Booking* booking = new Booking(
-//                     response["id"].toString(),
-//                     response["clientId"].toString(),
-//                     response["roomId"].toString(),
-//                     QDateTime::fromString(response["bookingDate"].toString(), Qt::ISODate),
-//                     response["amount"].toDouble(),
-//                     response["commissionAmount"].toDouble(),
-//                     this
-//                 );
-//               }
-//                emit bookingConfirmed(booking ? booking : nullptr);
-//             }else{
-//                 emit bookingError(response["error"].toString());
-//             }
-           
-//         }, false);
-// }
 void BookingRepositoryImpl::cancelBooking(const QString &id)
 {
     APIClient::instance().patch(
@@ -464,6 +409,27 @@ void BookingRepositoryImpl::confirmBooking(const QString &id)
             booking->setId(id);
             booking->setStatus(BookingStatus::Confirmed);
             emit bookingConfirmed(booking);
+        },
+        false);
+}
+
+// Release a confirmed booking back to the market after a refund. Admin/owner
+// only on the backend; the room becomes bookable again.
+void BookingRepositoryImpl::releaseBooking(const QString &id)
+{
+    APIClient::instance().patch(
+        QStringLiteral("/bookings/") + id + QStringLiteral("/release"),
+        QJsonObject{},
+        [this, id](bool success, const QJsonObject &response) {
+            if (!success) {
+                const QString msg = response.value(QStringLiteral("message")).toString();
+                emit bookingError(msg.isEmpty() ? QStringLiteral("Release failed") : msg);
+                return;
+            }
+            auto *booking = new Booking(this);
+            booking->setId(id);
+            booking->setStatus(BookingStatus::Refunded);
+            emit bookingReleased(booking);
         },
         false);
 }

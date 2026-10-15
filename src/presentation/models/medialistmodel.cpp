@@ -185,6 +185,23 @@ void MediaListModel::setMediaPrimary(const QString &mediaId, bool isPrimary)
     }
 }
 
+void MediaListModel::setMediaRoom(const QString &mediaId, const QString &roomId)
+{
+    for (int i = 0; i < m_media.size(); ++i)
+    {
+        const QSharedPointer<Media> &media = m_media.at(i);
+        if (!media || media->getId() != mediaId)
+            continue;
+        if (media->getRoomId() != roomId)
+        {
+            media->setRoomId(roomId);
+            const QModelIndex idx = index(i, 0);
+            emit dataChanged(idx, idx, {RoomIdRole});
+        }
+        return;
+    }
+}
+
 void MediaListModel::clearMedia()
 {
     if (m_media.isEmpty())

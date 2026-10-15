@@ -165,7 +165,11 @@ Item {
         // model, then trigger a fresh fetch. This prevents the page from
         // showing null if the initial network call fails or is slow.
         root.reload()
-        PropertyViewModel.getProperties()
+        // This model is only used by the admin screens, so fetch the
+        // authenticated admin listing (every status). The public listing hides
+        // unverified properties, which is why it previously showed only the
+        // verified subset.
+        PropertyViewModel.getAdminProperties()
         // Rooms are stored in a separate /rooms/ collection (not embedded in
         // the property document), so fetch them to hydrate per-property counts
         // and the detail page's room list.

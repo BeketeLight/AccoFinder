@@ -202,6 +202,14 @@ void Property::setAmenities(const QStringList &amenities)
     m_amenities = amenities;
 }
 
+QString Property::getLandlord() const
+{
+    return m_landlord;
+}
+void Property::setLandlord(const QString &newLandlord)
+{
+    m_landlord = newLandlord;
+}
 QString Property::getLandlordPhone() const
 {
     return m_landlordPhone;

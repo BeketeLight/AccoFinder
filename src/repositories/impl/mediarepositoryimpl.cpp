@@ -94,3 +94,26 @@ void MediaRepositoryImpl::updateMedia(const QString &mediaId, bool isPrimary)
         }
     );
 }
+
+void MediaRepositoryImpl::updateMediaRoom(const QString &mediaId, const QString &roomId)
+{
+    QJsonObject data;
+    data["roomId"] = roomId;
+
+    APIClient::instance().patch(
+        "https://accofinder-trsm.onrender.com/media/" + mediaId,
+        data,
+        [this](bool success, const QJsonObject& response)
+        {
+            if (success) {
+                const QJsonObject mediaObj = response["data"].toObject();
+                if (!mediaObj.isEmpty()) {
+                    MediaDto dto = MediaDto::fromJson(mediaObj);
+                    emit mediaUpdated(dto.toDomainModel());
+                    return;
+                }
+            }
+            emit error(response.value("message").toString());
+        }
+    );
+}

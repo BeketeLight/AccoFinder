@@ -13,7 +13,9 @@ class PropertyRepositoryImpl : public IPropertyRepository
 public:
     explicit PropertyRepositoryImpl(QObject *parent = nullptr);
     void getProperties(const QString& owner = QString()) override;
+    void getAdminProperties() override;
     void getPropertiesOwnedBy(const QString& ownerId) override;
+    void getPendingProperties() override;
     void getPropertyById(const QString& houseId) override;
     void getPropertiesByStatus(const QString& status) override;
     void createProperty(const QString& title, const QString& description,
@@ -43,6 +45,10 @@ signals:
     // verification queue. Always emitted, with an empty list when the request
     // failed, so a caller walking several owners always advances.
     void ownedPropertiesLoaded(QList<Property*>& properties);
+    // Every pending listing, fetched for the admin verification queue in a
+    // single admin-scoped request. Always emitted, with an empty list when the
+    // request failed.
+    void pendingPropertiesLoaded(QList<Property*>& properties);
     void propertyUpdated(Property* properties);
     void propertyCreated(Property* property);
     void propertyDeleted(const QString& houseId);

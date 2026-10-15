@@ -20,6 +20,7 @@ public:
     virtual void getBookingById(const QString& id) = 0;
     virtual void cancelBooking(const QString& id) = 0;
     virtual void confirmBooking(const QString& id) = 0;
+    virtual void releaseBooking(const QString& id) = 0;
     virtual void deleteBooking(const QString& id) = 0;
 
     virtual ~IBookingRepository() {}

@@ -45,7 +45,8 @@ ApplicationWindow {
             var role = AppSettings.userType()
             if (role === "ADMIN" || role === "SUPER_ADMIN")
                 return "./ui/features/dashboards/admins/screens/AdminsDashboardScreen.qml"
-            return "./ui/features/auth/pages/Profile.qml"
+            // Clients and agents land on Home, not on the Account tab.
+            return "./ui/features/home/screens/HomeScreen.qml"
         }
         // A sign-up interrupted by the user leaving to read their emailed OTP
         // resumes straight into the wizard with their answers restored, rather
@@ -57,12 +58,9 @@ ApplicationWindow {
     }
 
     function sessionLandingNavIndex() {
-        if (!AppSettings.isLoggedIn())
-            return 0
-        var role = AppSettings.userType()
-        if (role === "ADMIN" || role === "SUPER_ADMIN")
-            return 0
-        return 4
+        // Home tab (index 0) for everyone: it is Home for clients/agents and
+        // the Dashboard for admins, which is also index 0.
+        return 0
     }
 
     // Clears any pushed pages and shows the page this session belongs on.
@@ -267,11 +265,26 @@ ApplicationWindow {
             function onNotificationsRequested() {
                 NavUtils.push(Qt.resolvedUrl("./ui/features/dashboards/admins/screens/SystemNotificationsScreen.qml"))
             }
-            function onActivityTriggered(kind) {
+            function onActivityTriggered(kind, targetId) {
                 if (kind === "users" || kind === "agents-register")
                     NavUtils.push(Qt.resolvedUrl("./ui/features/dashboards/admins/screens/UserManagementScreen.qml"))
-                else if (kind === "approvals")
-                    NavUtils.push(Qt.resolvedUrl("./ui/features/dashboards/admins/screens/PropertyApprovalScreen.qml"))
+                else if (kind === "approvals") {
+                    // The activity row carries the property id, so open that
+                    // property's review detail directly instead of the queue.
+                    // Falls back to the queue when its payload is not loaded.
+                    var activityPropertyId = (targetId !== undefined) ? String(targetId) : ""
+                    var activityPayload = activityPropertyId.length > 0
+                                        ? PropertyViewModel.registrationPayloadFor(activityPropertyId)
+                                        : null
+                    if (activityPayload && activityPayload.propertyId !== undefined
+                            && String(activityPayload.propertyId).length > 0)
+                        NavUtils.push(Qt.resolvedUrl("./ui/features/dashboards/admins/screens/PropertyApprovalDetailScreen.qml"),
+                                      { propertyPayload: activityPayload,
+                                        propertyId: activityPropertyId,
+                                        listingsModel: null })
+                    else
+                        NavUtils.push(Qt.resolvedUrl("./ui/features/dashboards/admins/screens/PropertyApprovalScreen.qml"))
+                }
                 else if (kind === "payments")
                     NavUtils.push(Qt.resolvedUrl("./ui/features/dashboards/admins/screens/PaymentsOversightScreen.qml"))
                 else if (kind === "disputes")
