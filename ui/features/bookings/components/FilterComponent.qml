@@ -27,7 +27,7 @@ Item {
         anchors.rightMargin: 12
         anchors.topMargin: 8
         anchors.bottomMargin: 8
-        spacing: 8
+        spacing: 4
 
         Repeater {
             model: root.model

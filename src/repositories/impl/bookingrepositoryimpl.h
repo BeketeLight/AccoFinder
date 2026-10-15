@@ -20,6 +20,7 @@ public:
     void getBooking() override;
     void cancelBooking(const QString& id) override;
     void confirmBooking(const QString& id) override;
+    void releaseBooking(const QString& id) override;
     void deleteBooking(const QString& id) override;
     void getBookingById(const QString& id) override;
 
@@ -29,6 +30,7 @@ signals:
     void bookingsLoaded(const QList<Booking*>& bookings);
     void bookingCancelled(Booking* booking);
     void bookingConfirmed(Booking* booking);
+    void bookingReleased(Booking* booking);
     void bookingDeleted(const QString& id);
     void bookingError(const QString& error);
 };

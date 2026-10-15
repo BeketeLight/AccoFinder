@@ -16,6 +16,11 @@ class IRoomRepository
                                          double price,
                                          bool available) = 0;
         virtual void getRooms() = 0;
+        // Fetch only the rooms for one property. Unlike getRooms() (which is
+        // capped at one page and shared by every screen), this returns the
+        // complete set for a single property, so a detail page never misses
+        // rooms that fall outside the global page.
+        virtual void getRoomsByProperty(const QString& propertyId) = 0;
         virtual void getRoomById(const QString& id) = 0;
         virtual void updateRoom(const QString& roomId,
                                 const QString& type,

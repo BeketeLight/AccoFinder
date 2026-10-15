@@ -10,6 +10,8 @@ PropertyViewModel::PropertyViewModel(QObject *parent)
             this, &PropertyViewModel::onPropertiesLoaded);
     connect(m_propertyController, &PropertyController::ownedPropertiesLoaded,
             this, &PropertyViewModel::onOwnedPropertiesLoaded);
+    connect(m_propertyController, &PropertyController::pendingPropertiesLoaded,
+            this, &PropertyViewModel::onPendingPropertiesLoaded);
     connect(m_propertyController, &PropertyController::propertyLoaded,
             this, &PropertyViewModel::onGetPropertyById);
     connect(m_propertyController, &PropertyController::propertyUpdated,
@@ -61,6 +63,12 @@ void PropertyViewModel::getProperties(const QString &owner)
 {
     setLoading(true);
     m_propertyController->getProperties(owner);
+}
+
+void PropertyViewModel::getAdminProperties()
+{
+    setLoading(true);
+    m_propertyController->getAdminProperties();
 }
 
 void PropertyViewModel::getPropertiesByStatus(const QString &status)
@@ -116,6 +124,29 @@ void PropertyViewModel::onOwnedPropertiesLoaded(QList<Property *> &properties)
     fetchNextOwnerListings();
 }
 
+void PropertyViewModel::loadAllPendingListings()
+{
+    m_propertyController->getPendingProperties();
+}
+
+void PropertyViewModel::onPendingPropertiesLoaded(QList<Property *> &properties)
+{
+    m_pendingListModel->clear();
+    for (Property *property : properties) {
+        if (!property)
+            continue;
+        // The status-filtered endpoint returns PENDING only, but a row that
+        // slipped through with any other status must not land in the queue.
+        const QString status = property->getVerificationStatus();
+        if (status.compare(QStringLiteral("PENDING"), Qt::CaseInsensitive) != 0) {
+            delete property;
+            continue;
+        }
+        m_pendingListModel->appendProperty(property);
+    }
+    emit pendingListingsLoaded();
+}
+
 void PropertyViewModel::setPendingListingStatus(const QString &propertyId, const QString &status,
                                                 const QString &reason)
 {
@@ -135,6 +166,10 @@ QVariantList PropertyViewModel::propertiesForView() const
         row["village"] = m_propertyListModel->data(idx, PropertyListModel::VillageRole);
         row["price"] = m_propertyListModel->data(idx, PropertyListModel::PriceRole);
         row["verificationStatus"] = m_propertyListModel->data(idx, PropertyListModel::VerificationStatusRole);
+        // Surfaced on the agent's own listings so a rejected property shows the
+        // admin's reason (previously omitted here, so it was always blank).
+        row["rejectionReason"] = m_propertyListModel->data(idx, PropertyListModel::RejectionReasonRole);
+        row["approvedByName"] = m_propertyListModel->data(idx, PropertyListModel::ApprovedByNameRole);
         row["propertyType"] = m_propertyListModel->data(idx, PropertyListModel::PropertyTypeRole);
         row["agentId"] = m_propertyListModel->data(idx, PropertyListModel::AgentIdRole);
         //Property-Host
@@ -143,9 +178,49 @@ QVariantList PropertyViewModel::propertiesForView() const
         row["ownerSurname"] = m_propertyListModel->data(idx, PropertyListModel::OwnerSurnameRole);
         row["ownerEmail"] = m_propertyListModel->data(idx, PropertyListModel::OwnerEmailRole);
         row["ownerPhone"] = m_propertyListModel->data(idx, PropertyListModel::OwnerPhoneRole);
+        row["landlord"] = m_propertyListModel->data(idx, PropertyListModel::LandlordRole);
+        row["landlordPhone"] = m_propertyListModel->data(idx, PropertyListModel::LandlordPhoneRole);
         list.append(row);
     }
     return list;
+}
+
+QVariantMap PropertyViewModel::registrationPayloadFor(const QString &propertyId) const
+{
+    // Shape a single property from the shared list model into the same payload
+    // MyPropertiesModel.registrationPayloadFor produces, so a caller can open
+    // the review detail directly (no intermediate approval list). Rooms, photos
+    // and amenities are fetched by the detail page itself, so only the fields
+    // that are actually rendered from the payload are populated here. Returns
+    // an empty map when the property is not loaded yet.
+    QVariantMap payload;
+    const int count = m_propertyListModel->rowCount();
+    for (int i = 0; i < count; ++i) {
+        const QVariantMap row = m_propertyListModel->at(i);
+        if (row.value("propertyId").toString() != propertyId)
+            continue;
+
+        payload["propertyId"] = row.value("propertyId");
+        payload["title"] = row.value("title");
+        payload["description"] = row.value("description");
+        QVariantMap address;
+        address["district"] = row.value("district");
+        address["village"] = row.value("village");
+        payload["physicalAddress"] = address;
+        payload["verificationStatus"] = row.value("status");
+        payload["rejectionReason"] = row.value("rejectionReason");
+        payload["amenities"] = m_propertyListModel->amenitiesFor(propertyId);
+        payload["isActive"] = true;
+        payload["price"] = row.value("price");
+        payload["landlord"] = row.value("landlord");
+        payload["landlordPhone"] = row.value("landlordPhone");
+        payload["ownerName"] = row.value("ownerName");
+        payload["ownerPhone"] = row.value("ownerPhone");
+        payload["approvedByName"] = row.value("approvedByName");
+        payload["approvedById"] = row.value("approvedById");
+        break;
+    }
+    return payload;
 }
 
 void PropertyViewModel::getPropertyById(const QString &houseId)
@@ -153,7 +228,6 @@ void PropertyViewModel::getPropertyById(const QString &houseId)
     setLoading(true);
     m_propertyController->getPropertyById(houseId);
 }
-
 int PropertyViewModel::indexOfProperty(const QString &houseId) const
 {
     const int count = m_propertyListModel->rowCount();

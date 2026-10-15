@@ -6,6 +6,7 @@ import "../components"
 import "../../../components/buttons"
 import "../../../components/dialogs"
 import "../../../utils/Utils.js" as Helper
+import "../../../utils/NavigationUtils.js" as NavUtils
 
 Item{
     id: detailsPage
@@ -31,7 +32,7 @@ Item{
     property string clientEmail: ""
     property int guestCount: 0
 
-    property string checkIn: ""
+    property string bookingDate: ""
     property string checkOut: ""
     property int nightsCount: 0
     property string clientNotes: ""
@@ -43,21 +44,28 @@ Item{
     property string createdTime: ""
     property string holdExpiresAt:  ""
     property int tick: 0
+
+    property color primaryColor: "#2563EB"
+    property color secondaryColor: "#22C55E"
+    property color pageColor: "#FFFFFF"
+    property color surfaceColor: "#F5F5F5"
+    property color textColor: "#1F2937"
+    property color mutedColor: "#6B7280"
+    property color borderColor: "#E5E7EB"
+    property color errorColor: "#EF4444"
+
     // --- SIGNALS ---
     signal backRequested()
     signal cancelBookingRequested()
     signal contactHostRequested()
     signal payNowRequested(string bookingId, real amount, var holdExpiresAt)
 
-        // ------------------------------------------
-        // 1. POPULATED DATA VIEW
-        // ------------------------------------------
     Timer {
         interval: 1000
         running: detailsPage.holdExpiresAt.length > 0
         repeat: true
-       onTriggered: detailsPage.tick++
-   }
+        onTriggered: detailsPage.tick++
+    }
     readonly property string holdCountdownText: {
         var _ = tick
        // return .holdCountdownText(holdExpiresAt)
@@ -128,13 +136,12 @@ Item{
                             font.bold: true
                             color: "#0F172A"
                         }
-
                         RowLayout {
                             spacing: 0
                             ToolButton{
-                                icon.source: "qrc:/ui/assets/location-icon.svg"
-                                icon.height: 12
-                                icon.width: 12
+                                icon.source: "qrc:/ui/assets/bookings/location-icon.svg"
+                                icon.height: 16
+                                icon.width: 16
                                 background: null
                             }
                             Text {
@@ -152,225 +159,60 @@ Item{
                 status: detailsPage.status
             }
 
-            // Booking detaiils
-            Rectangle {
-                Layout.fillWidth: true
-                implicitHeight: resCol.implicitHeight + 24
-                radius: 12
-                color: "#FFFFFF"
-                border.color: "#E2E8F0"
-                border.width: 1
-
-                ColumnLayout {
-                    id: resCol
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.top: parent.top
-                    anchors.margins: 12
-                    spacing: 4
-
-                    RowLayout {
-                        spacing: 0
-                        ToolButton{
-                            icon.source: "qrc:/ui/assets/reservation-icon.svg"
-                            icon.height: 12
-                            icon.width: 12
-                            background: null
-                        }
-                        Text {
-                            text: "Booking Details"
-                            font.pixelSize: 14
-                            font.bold: true
-                            color: "#0F172A"
-                        }
-                    }
-
-                    GridLayout {
-                        columns: 2
-                        Layout.fillWidth: true
-                        columnSpacing: 24
-                        rowSpacing: 12
-                        // Row 2 Col 1
-                        ColumnLayout {
-                            spacing: 2
-                            Text { text: "Booking date"; font.pixelSize: 13; color:"#0F172A"  }
-                            Item{Layout.preferredWidth: 250}
-                            Text { text: detailsPage.checkIn; font.pixelSize: 11; color:  "#64748B"}
-                        }
-
-                        // Row 2 Col 2
-                        ColumnLayout {
-                            spacing: 2
-                            Text { text: "Room Type"; font.pixelSize: 13; color: "#0F172A" }
-                            Item{Layout.preferredWidth: 250}
-                            Text { text: detailsPage.roomType; font.pixelSize: 11; color: "#64748B" }
-                        }
-                    }
-                }
+            BookingsCard{
+                cardTitle: "Property & Date Info"
+                bookingDate: detailsPage.bookingDate
+                roomType: detailsPage.roomType
+            }
+            PaymentSummaryCard{
+                roomPrice: detailsPage.price
+                commission: ""
+                totalAmount: detailsPage.price
             }
 
-            // --- PAYMENT SUMMARY CARD ---
-            Rectangle {
-                Layout.fillWidth: true
-                implicitHeight: payCol.implicitHeight + 24
-                radius: 12
-                color: "#FFFFFF"
-                border.color: "#E2E8F0"
-                border.width: 1
-                ColumnLayout {
-                    id: payCol
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.top: parent.top
-                    anchors.margins: 12
-                    spacing: 4
-
-                    RowLayout {
-                        spacing: 0
-                        ToolButton{
-                            icon.source: "qrc:/ui/assets/payment-icon.svg"
-                            icon.height: 16
-                            icon.width: 16
-                            background: null
-                        }
-                        Text { text: "Payment Summary"; font.pixelSize: 14; font.bold: true; color: "#0F172A" }
-                    }
-
-                    RowLayout {
-                        Layout.fillWidth: true
-                        ColumnLayout {
-                            spacing: 6
-                            RowLayout {
-                                Text { text: "Room price"; font.pixelSize: 12; color: "#64748B" }
-                                Item { Layout.fillWidth: true }
-                                Text { text:"MWK" + detailsPage.price; font.pixelSize: 12; font.bold: true; color: "#0F172A" }
-                            }
-                        }
-                    }
-                    Rectangle { Layout.fillWidth: true; implicitHeight: 1; color: "#F1F5F9" }
-
-                    RowLayout {
-                        Layout.fillWidth: true
-                        Text { text: "Total"; font.pixelSize: 13; font.bold: true; color: "#0F172A" }
-                        Item { Layout.fillWidth: true }
-                        Text { text:"MWK" + detailsPage.price; font.pixelSize: 15; font.bold: true; color: "#0F172A" }
-                    }
-                }
+            UserInfoCard{
+                userName: detailsPage.hostName
+                cardTitle: "Property Host"
+                userInitial: detailsPage.hostInitials
+                userEmail: ""
             }
-
-            // --- PROPERTY HOST CARD ---
-            Rectangle {
-                Layout.fillWidth: true
-                implicitHeight: hostRow.implicitHeight + 48
-                radius: 12
-                border.color: "#E2E8F0"
-                border.width: 1
-                color: "#FFFFFF"
-
-                ColumnLayout {
-                    id: hostCol
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.top: parent.top
-                    anchors.margins: 12
-                    spacing: 4
-
-                    RowLayout {
-                        spacing: 0
-                        RowLayout {
-                            spacing: 0
-                            ToolButton{
-                            icon.source: "qrc:/ui/assets/account-icon.svg"
-                            icon.height: 12
-                            icon.width: 12
-                            background: null
-                        }
-                        Text { text: "Property Host"; font.pixelSize: 14; font.bold: true; color: "#0F172A" }
-                    }
-
-                    }
-
-                    RowLayout {
-                        id: hostRow
-                        Layout.fillWidth: true
-                        spacing: 12
-
-                        Rectangle {
-                            implicitWidth: 44
-                            implicitHeight: 44
-                            radius: 22
-                            color: "#E2E8F0"
-                            clip: true
-                            Text{
-                                anchors.centerIn: parent
-                                text: detailsPage.hostInitials
-                                color: "blue"
-                                font.pointSize: 14
-                                font.bold: true
-                            }
-                        }
-
-                        ColumnLayout {
-                            spacing: 2
-                            Text { text: detailsPage.hostName; font.pixelSize: 13; font.bold: true; color: "#0F172A" }
-                            // Text { text: "📞 " + detailsPage.hostPhone; font.pixelSize: 11; color: "#64748B" }
-                        }
-                    }
-                }
-            }
-            // Cancel action button
             // Actions while hold is open ---
-            RowLayout {
+
+            ColumnLayout {
                 Layout.fillWidth: true
                 Layout.topMargin: 8
                 spacing: 12
                 visible: detailsPage.showHoldActions
-
-                Rectangle {
-                    id: cancel
+                CustomButton{
+                    id: payBtn
+                    text: qsTr("Pay now")
+                    textColor: "#FFFFFF"
+                    cornerRadius: 12
+                    //visible: holdCountdownText.length > 0
                     Layout.fillWidth: true
-                    implicitHeight: 40
-                    radius: 24
-                    border.width: 1
-                    border.color: "#F43F5E"
-                    color: "transparent"
-                    Text {
-                        anchors.centerIn: parent
-                        text: qsTr("Cancel booking")
-                        color: "#F43F5E"
-                        font.pixelSize: 14
-                        font.bold: true
-                    }
-                    MouseArea {
-                        anchors.fill: parent
-                        onClicked: {
-                            //cancelBookingDialog.visibleDialog = true
-                            //detailsPage.cancelBookingRequested()
-                            cancelBookingDialog.open()
-                        }
-                    }
-                }
-
-                Rectangle {
-                    id: pay
-                    Layout.fillWidth: true
-                    implicitHeight: 40
-                    radius: 24
-                    color: "#22C55E"
-                    Text {
-                        anchors.centerIn: parent
-                        text: qsTr("Pay now")
-                        color: "#FFFFFF"
-                        font.pixelSize: 14
-                        font.bold: true
-                    }
-                    MouseArea {
-                        anchors.fill: pay
-                        onClicked: detailsPage.payNowRequested(
-                            detailsPage.bookingId,
-                            detailsPage.price,
+                    implicitHeight: 50
+                    buttonColor: detailsPage.primaryColor
+                    onClicked: {
+                        console.log("Pay now", delegateRoot.bookingId, delegateRoot.price, delegateRoot.holdExpiresAt)
+                        detailsPage.payNowRequested(
+                            detailPage.bookingId,
+                            Number(delegateRoot.price),
                             detailsPage.holdExpiresAt
                         )
+                    }
+                }
+                CustomButton{
+                    id: cancelBtn
+                    text: qsTr("Cancel booking")
+                    textColor: "#F43F5E"
+                    Layout.fillWidth: true
+                    implicitHeight: 50
+                    cornerRadius: 12
+                    borderColor: "#FCA5A5"
+                    borderWidth: 1
+                    buttonColor: "#FEE2E2"
+                    onClicked: {
+                        cancelBookingDialog.open()
                     }
                 }
             }

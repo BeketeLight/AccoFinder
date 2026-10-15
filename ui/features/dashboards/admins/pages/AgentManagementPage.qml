@@ -114,9 +114,7 @@ Item {
                 Layout.fillWidth: true
                 lableFontSize: 18
                 label: qsTr("Platform commission")
-                valueText: (root.agentsModel.averageCommission > 0
-                            ? Number(root.agentsModel.averageCommission).toFixed(1)
-                            : "10") + "%"
+                valueText: Number(AppSettings.platformCommissionRate()).toFixed(1) + "%"
                 accentColor: root.warningColor
             }
         }
@@ -414,6 +412,40 @@ Item {
                 Label { id: commissionError; visible: text.length > 0; text: ""; color: "#DC2626"; font.pixelSize: 11 }
             }
 
+            ColumnLayout {
+                Layout.fillWidth: true
+                spacing: 4
+
+                Label { text: qsTr("Platform booking fee (MK)"); font.pixelSize: 12; font.bold: true; color: "#1F2937" }
+
+                AppTextInput {
+                    id: bookingFeeInput
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 44
+                    fieldHeight: 44
+                    label: ""
+                    placeholder: ""
+                    text: String(AppSettings.bookingFee())
+                    fontPixelSize: 13
+                    inputMethodHints: Qt.ImhDigitsOnly
+                    backgroundColor: "#FFFFFF"
+                    textColor: "#111827"
+                    borderColor: "#E5E7EB"
+                    focusColor: "#2563EB"
+                    errorColor: "#DC2626"
+                }
+
+                Label {
+                    Layout.fillWidth: true
+                    text: qsTr("The flat amount a client pays to book any property. Applies to every listing; the owning agent still earns commission separately.")
+                    color: root.mutedColor
+                    font.pixelSize: 10
+                    wrapMode: Text.WordWrap
+                }
+
+                Label { id: bookingFeeError; visible: text.length > 0; text: ""; color: "#DC2626"; font.pixelSize: 11 }
+            }
+
             RowLayout {
                 Layout.fillWidth: true
                 spacing: 10
@@ -468,8 +500,19 @@ Item {
                             commissionError.text = qsTr("Commission must be between 0 and 100")
                             return
                         }
-                        root.agentsModel.setAllCommission(Math.round(rate))
+                        var fee = parseFloat(bookingFeeInput.text)
+                        if (isNaN(fee) || fee < 0) {
+                            bookingFeeError.text = qsTr("Booking fee must be zero or more")
+                            return
+                        }
                         commissionError.text = ""
+                        bookingFeeError.text = ""
+                        root.agentsModel.setAllCommission(Math.round(rate))
+                        AppSettings.setBookingFee(fee)
+                        AppSettings.setPlatformCommissionRate(rate)
+                        // Persist the platform settings so every device picks
+                        // them up on startup, not just this one.
+                        SettingsController.updatePlatformSettings(fee, rate)
                         commissionDialog.accept()
                     }
                 }

@@ -1,35 +1,42 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import QtQuick.Effects
+import "../components"
+
 Rectangle {
     id: root
     property string bookingId: model.bookingId ?? ""
     property string houseName: model.houseName ?? "Hostel/Apartment"
-    property string landlordName: model.landlordName ?? model.hostName ?? "Landlord / Agent"
     property string ownerFirstName: model.ownerFirstName ?? ""
+    property string landlord: model.landlord ?? ""
+    property string landlordInitials: model.landlordInitials ?? ""
+    property string landlordPhone: model.landlordPhone ?? ""
     property string hostName: model.hostName ?? ""
     property string hostInitials: model.hostInitials ?? ""
-    property string  clientInitial: model.clientInitial ?? ""
-    property string imageUrl: model.propertyImage ?? model.imageUrl ?? ""
+    property string hostEmail: model.hostEmail ?? ""
+    property string hostPhone: model.hostPhone ?? ""
+    property string propertyImage: model.propertyImage ?? model.imageUrl ?? ""
     property string status: model.status ?? "Pending"
     property string clientName: model.clientName ?? "Guest"
     property string clientPhone: model.clientPhone ?? "N/A"
-    property string dateRange: model.bookingDate ?? model.dateRange ?? "N/A"
-    property real price: Number(model.amount ?? 0) // !== undefined && model.amount !== null ? model.amount.toString() : (model.price ?? "0")
-    property real commission: Number(model.commissionAmount ?? 0)
-    property string propertyLocation: model.location ?? ""
+    property string clientEmail: model.clientEmail ?? ""
+    property string clientInitial: model.clientInitial ?? ""
+    property string bookingDate: model.bookingDate ?? model.dateRange ?? "Date"
+    property string propertyLocation: model.propertyLocation ?? ""
     property string roomType: model.roomType ?? "Standard Room"
     property string details: model.details ?? model.roomType ?? "Standard Room"
-    property string clientEmail: model.clientEmail ?? ""
-    property string activeFilter: "All"
+    property real price: Number(model.amount ?? 0) // !== undefined && model.amount !== null ? model.amount.toString() : (model.price ?? "0")
+    property real commission: Number(model.commissionAmount ?? 0)
 
-    // --- INTERACTION SIGNALS ---
+
+
+    //Signals
     signal approveBooking()
     signal viewDetailsRequested(var data)
 
-    // --- VISIBILITY & LAYOUT BEHAVIOR ---
-    visible: activeFilter === "All" || status === activeFilter
-    //visible: model.matches ?? true
+    //Status match
+    visible: model.matches ?? true
     width: ListView.view ? ListView.view.width : parent.width
     implicitHeight: visible ? cardContent.implicitHeight + 16 : 0
     color: "#FFFFFF"
@@ -52,52 +59,60 @@ Rectangle {
                 color: "#0F172A"
             }
             Item{Layout.fillWidth: true}
-            Rectangle {
-                Layout.alignment: Qt.AlignRight
-                implicitWidth: st.implicitWidth + 14
-                implicitHeight: 22
-                radius: 11
-                color: {
-                    var s = String(root.status)
-                    if (s === "Confirmed" || s === "Approved") return "#DCFCE7"
-                    if (s === "Pending") return "#FEF3C7"
-                    if (s === "Paid") return "#DBEAFE"
-                    if (s === "Cancelled" || s === "Rejected") return "#FEE2E2"
-                    return "#F1F5F9"
+            RowLayout{
+                Rectangle{
+                    width: 6
+                    height: 6
+                    radius: 3
+                    color: "#BDBDBD"//"#E2E8F0"
                 }
-                Text {
-                    id: st
-                    anchors.centerIn: parent
-                    text: root.status
-                    font.pixelSize: 11
-                    font.bold: true
-                    color: {
-                        var s = String(root.status)
-                        if (s === "Confirmed" || s === "Approved") return "#15803D"
-                        if (s === "Pending") return "#B45309"
-                        if (s === "Paid") return "#2563EB"
-                        if (s === "Cancelled" || s === "Rejected") return "#B91C1C"
-                        return "#475569"
-                    }
+                BookingStatusBadge{
+                    status: root.status
                 }
             }
+        }
+        Rectangle{
+            Layout.fillWidth: true
+            height: 1
+            radius: 2
+            color: "#E2E8F0"
         }
 
         RowLayout{
             Layout.fillWidth: true
             spacing: 6
             // Image
+
             Rectangle {
-                Layout.preferredWidth: 72
-                Layout.preferredHeight: 72
+                id: imageContainer
+                Layout.preferredWidth: 118
+                Layout.preferredHeight: 118
                 radius: 10
+                color: "#F0F0F0"
                 clip: true
-                color: "#F1F5F9"
+
                 Image {
+                    id: propImage
                     anchors.fill: parent
-                    source: root.imageUrl || "qrc:/assets/placeholder.png"
+                    source: root.propertyImage !== "" ? root.propertyImage : "qrc:/assets/placeholder.png"
                     fillMode: Image.PreserveAspectCrop
                     asynchronous: true
+                    visible: false
+                }
+                MultiEffect {
+                    anchors.fill: propImage
+                    source: propImage
+                    maskEnabled: true
+                    maskThresholdMin: 0.5
+
+                    maskSource: ShaderEffectSource {
+                        sourceItem: Rectangle {
+                            width: imageContainer.width
+                            height: imageContainer.height
+                            radius: imageContainer.radius
+                            color: "black"
+                        }
+                    }
                 }
             }
 
@@ -112,20 +127,34 @@ Rectangle {
                     elide: Text.ElideRight
                     Layout.fillWidth: true
                 }
+                Text {
+                    text: "Booked: " + root.bookingDate
+                    font.pixelSize: 11
+                    color: "#64748B"
+                }
                 RowLayout{
                     spacing: 0
-                    Text {
-                        text: root.propertyLocation
-                        font.pixelSize: 11
-                        color: "#94A3B8"
-                        elide: Text.ElideRight
-                        Layout.fillWidth: true
+
+                    RowLayout{
+                        ToolButton{
+                            icon.source: "qrc:/ui/assets/bookings/location-icon.svg"
+                            icon.width: 10
+                            icon.height: 10
+                            icon.color:"#000000"//"#64748B"
+                            background: null
+                        }
+                        Text {
+                            text: root.propertyLocation
+                            font.pixelSize: 11
+                            color: "#94A3B8"
+                            Layout.fillWidth: true
+                        }
                     }
-                    Item{Layout.fillWidth: true}
+                    Item{Layout.preferredWidth: 145}
                     ToolButton{
-                        icon.source: "qrc:/ui/assets/forward-icon.svg"
-                        icon.width: 6
-                        icon.height: 6
+                        icon.source: "qrc:/ui/assets/bookings/forward-icon.svg"
+                        icon.width: 8
+                        icon.height: 8
                         icon.color:"#64748B"
                         background: null
                     }
@@ -141,17 +170,28 @@ Rectangle {
                     font.pixelSize: 11
                     color: "#94A3B8"
                 }
-                Text {
-                    text: "Room: " + root.roomType
-                    font.pixelSize: 11
-                    color: "#64748B"
+                RowLayout{
+                    //spacing: 0
+                    ToolButton{
+                        icon.source: "qrc:/ui/assets/bookings/room-icon.svg"
+                        icon.width: 10
+                        icon.height: 10
+                        icon.color:"#000000"
+                        background: null
+                    }
+                    Text {
+                        text: root.roomType
+                        font.pixelSize: 11
+                        color: "#94A3B8"
+                        //elide: Text.ElideRight
+                        Layout.fillWidth: true
+                    }
                 }
             }
         }
     }
-
     MouseArea {
         anchors.fill: parent
-        onClicked: root.viewDetailsRequested()
+        onClicked: root.viewDetailsRequested(data)
     }
 }

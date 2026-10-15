@@ -90,6 +90,21 @@ public:
     Q_INVOKABLE void setCommissionRate(double value);
     Q_INVOKABLE double commissionRate() const;
 
+    // =========================
+    // PLATFORM
+    // =========================
+    // Flat booking fee (in MK) applied to every booking. Admin-controlled and
+    // cached here so the booking screen reads it locally instead of hitting the
+    // API on every checkout.
+    Q_INVOKABLE void setBookingFee(double value);
+    Q_INVOKABLE double bookingFee() const;
+
+    // Agent commission on a booking, as a percentage of the booking fee
+    // (e.g. 10 = 10% of what the client pays). Cached from the API so checkout
+    // computes the agent's earning locally.
+    Q_INVOKABLE void setPlatformCommissionRate(double value);
+    Q_INVOKABLE double platformCommissionRate() const;
+
     Q_INVOKABLE void setAgentActive(bool value);
     Q_INVOKABLE bool agentActive() const;
 
@@ -213,6 +228,12 @@ signals:
 
     // Emitted when the camera page stores a freshly captured photo path.
     void capturedPhotoPathChanged();
+
+    // Emitted when the platform booking fee changes so QML bindings refresh.
+    void bookingFeeChanged();
+
+    // Emitted when the platform commission rate changes so QML bindings refresh.
+    void platformCommissionRateChanged();
 
 private:
     // A registration draft is only offered back to the user for this long,

@@ -26,6 +26,7 @@ public:
     Q_INVOKABLE void fetchBookingById(const QString& id);
     Q_INVOKABLE void cancelBooking(const QString& id);
     Q_INVOKABLE void confirmBooking(const QString& id);
+    Q_INVOKABLE void releaseBooking(const QString& id);
     Q_INVOKABLE void deleteBooking(const QString& id);
 
 signals:
@@ -34,6 +35,7 @@ signals:
     void bookingsLoaded(const QList<Booking*>& bookings);
     void bookingCancelled(Booking* booking);
     void bookingConfirmed(Booking* booking);
+    void bookingReleased(Booking* booking);
     void bookingDeleted(const QString& id);
     void bookingError(const QString& error);
     void isLoadingChanged(bool isLoading);

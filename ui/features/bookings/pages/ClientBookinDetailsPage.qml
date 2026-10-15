@@ -2,8 +2,10 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import "../delegates" // Adjust path to where ClientBookingDetailDelegate.qml lives
+import "../delegates"
 import "../components"
+import "../../../utils/NavigationUtils.js" as NavUtils
+
 Page {
     id: detailPage
     background: Rectangle{
@@ -23,56 +25,40 @@ Page {
     property alias clientName: detailDelegate.clientName
     property alias clientPhone: detailDelegate.clientPhone
     property alias clientEmail: detailDelegate.clientEmail
-    //readonly property int guestCount: model.guestCount ?? 3
 
-    property alias checkIn: detailDelegate.checkIn
-    //property string checkOut:
-    //readonly property int nightsCount: model.nightsCount ?? 3
-    //readonly property string clientNotes: model.clientNotes ?? "Please provide an extra crib if available. Late check-in expected."
+    property alias bookingDate: detailDelegate.bookingDate
     property alias price: detailDelegate.price
     property alias paymentStatus: detailDelegate.paymentStatus
     property alias paymentMethod: detailDelegate.paymentMethod
     property alias paymentDate: detailDelegate.paymentDate
     property alias holdExpiresAt: detailDelegate.holdExpiresAt
-    //----Binding header here
-    property string pageTitle: detailPage.status
+    //property string pageTitle: detailPage.status
     property bool showHeader: true
-    property bool showBack: true
+    property bool showBack: false
     property bool isSearchBar: false
-    property bool showBottomBorder: true
+    property bool showBottomBorder: false
 
-    // Status badge on the right side of AppHeader
-        // property Component rightComponentAction: Component {
-        //     Item {
-        //         implicitWidth: badge.implicitWidth
-        //         implicitHeight: 36
-        //         Layout.rightMargin: 20
-
-        //         Rectangle {
-        //             id: badge
-        //             anchors.verticalCenter: parent.verticalCenter
-        //             implicitWidth: statusLabel.implicitWidth + 16
-        //             implicitHeight: 28
-        //             radius: 14
-        //             color: detailPage.status === "Confirmed" ? "#DCFCE7"
-        //                  : detailPage.status === "Pending" ? "#FEF3C7"
-        //                  : detailPage.status === "Cancelled" ? "#FEE2E2"
-        //                  : "#F1F5F9"
-
-        //             Text {
-        //                 id: statusLabel
-        //                 anchors.centerIn: parent
-        //                 text: detailPage.status
-        //                 font.pixelSize: 12
-        //                 font.bold: true
-        //                 color: detailPage.status === "Confirmed" ? "#15803D"
-        //                      : detailPage.status === "Pending" ? "#B45309"
-        //                      : detailPage.status === "Cancelled" ? "#B91C1C"
-        //                      : "#475569"
-        //             }
-        //         }
-        //     }
-        // }
+    property Component leftComponentAction: Component {
+        RowLayout {
+            spacing: 4
+            ToolButton {
+                implicitWidth: 48
+                implicitHeight: 48
+                icon.source: "qrc:/ui/assets/back-icons.svg"
+                icon.color: "#111111"
+                icon.width: 10
+                icon.height: 16
+                onClicked: {
+                    if (typeof NavUtils !== "undefined")
+                        NavUtils.pop()
+                }
+            }
+            BookingStatusBadge {
+                Layout.alignment: Qt.AlignVCenter
+                status: detailPage.status
+            }
+        }
+    }
 
     ScrollView {
         anchors.topMargin: 6

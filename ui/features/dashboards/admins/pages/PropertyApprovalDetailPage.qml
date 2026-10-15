@@ -81,9 +81,12 @@ Item {
 
     // Rooms live in the separate /rooms/ collection keyed by propertyId, so
     // pull them from RoomViewModel (via C++) instead of the (room-less) payload
-    // snapshot. This also reacts to rooms arriving late via the Connections below.
+    // snapshot. A per-property fetch is used (not the shared /rooms/ page) so
+    // the list is complete regardless of how many rooms exist platform-wide.
     function syncRooms() {
-        root.propRooms = root.propertyId ? RoomViewModel.roomsForProperty(root.propertyId) : []
+        root.propRooms = []
+        if (root.propertyId)
+            RoomViewModel.loadRoomsForProperty(root.propertyId)
     }
 
     function confirmReject() {
@@ -217,13 +220,14 @@ Item {
         root.syncRooms()
         root.syncAmenities()
         root.loadMedia()
-        RoomViewModel.loadRooms()
     }
 
     Connections {
-        target: RoomViewModel.roomListModel
-        function onCountChanged() { root.syncRooms() }
-        function onModelReset() { root.syncRooms() }
+        target: RoomViewModel
+        function onRoomsForPropertyLoaded(propertyId, rooms) {
+            if (String(propertyId) === String(root.propertyId))
+                root.propRooms = rooms
+        }
     }
 
     Connections {
@@ -671,8 +675,12 @@ Item {
                         }
 
                         StatusChip {
-                            textValue: modelData.available === false ? qsTr("Unavailable") : qsTr("Available")
-                            variant: modelData.available === false ? "neutral" : "success"
+                            readonly property bool roomHeld: modelData.holdActive === true
+                            readonly property bool roomBooked: modelData.available === false
+                            readonly property string label: String(modelData.statusLabel !== undefined ? modelData.statusLabel : "")
+                            textValue: label.length > 0 ? label
+                                                        : (roomBooked ? qsTr("Unavailable") : qsTr("Available"))
+                            variant: roomHeld ? "warning" : (roomBooked ? "neutral" : "success")
                         }
                     }
                 }

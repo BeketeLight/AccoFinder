@@ -10,11 +10,64 @@ import "../../../utils/NavigationUtils.js" as NavUtils
 Page {
     id: overviewPage
     title: "My Bookings"
+    background: Rectangle{
+        color: "#F8F9FB"
+    }
+    property bool refreshing: false
+    property bool loading: false
+    property double _refreshStart: 0
+    property int _minVisible: 600
 
-    //--- TOOLBAR & TABBAR HEADER ---
+    readonly property bool busy: clientBookingModel.loading
+            || BookingViewModel.isLoading
+
+    function refresh() {
+            if (overviewPage.refreshing || overviewPage.loading)
+                return
+
+            overviewPage._refreshStart = Date.now()
+            overviewPage.refreshing = true
+            overviewPage.loading = true
+
+            // Same data the model needs for joins
+            RoomViewModel.loadRooms()
+            PropertyViewModel.getProperties("")
+            BookingViewModel.fetchBookings()
+            // BookingsModel Connections will call reload() when models update
+        }
+
+        function onRequestsSettled() {
+            if (overviewPage.busy)
+                return
+
+            overviewPage.refreshing = false
+            var elapsed = Date.now() - overviewPage._refreshStart
+            var remain = overviewPage._minVisible - elapsed
+            if (remain > 0) {
+                hideLoaderTimer.interval = remain
+                hideLoaderTimer.restart()
+            } else {
+                hideLoaderTimer.stop()
+                overviewPage.loading = false
+            }
+        }
+
+        Timer {
+            id: hideLoaderTimer
+            interval: overviewPage._minVisible
+            repeat: false
+            onTriggered: overviewPage.loading = false
+        }
+
+        Connections {
+            target: BookingViewModel
+            function onIsLoadingChanged() { overviewPage.onRequestsSettled() }
+        }
+        Component.onCompleted: overviewPage.refresh()
+
     header: FilterComponent {
         id: filterBar
-        model: ["All", "Pending Payment", "Confirmed", "Cancelled"]
+        model: ["All", "Pending payment", "Confirmed", "Cancelled"]
         onFilterChanged: function(text) {
             clientBookingModel.statusFilter = text
         }
@@ -24,15 +77,7 @@ Page {
     BookingsModel {
         id: clientBookingModel
     }
-    // PopUpPaymentSheet{
-    //     id: popUpPayment
-    //     onPaymentSubmitted: function(bookingId, amount, method) {
-    //             console.log("Processing payment for booking:", bookingId, "via:", method)
-    //             // Call your payment controller here:
-    //             PaymentController.processPayment(bookingId, amount, method)
-    //         }
-    // }
-    // --- MAIN LIST VIEW ---
+    // Main Listview
     ListView {
         id: statsListView
         anchors.fill: parent
@@ -43,27 +88,14 @@ Page {
         model: clientBookingModel.bookingsModel
 
         delegate: ClientStatsDelegate {
-            // activeFilter: {
-            //         var t = filterBar.currentText
-            //         if (t === "Approved") return "Confirmed"
-            //         return t
-            //     }
-            // Map Model Roles -> Delegate Properties
-            // onPayNowRequested: function(bId, amt, expiresAt) {
-            //             popUpPayment.bookingId = bId
-            //             popUpPayment.amount = amt
-            //             popUpPayment.holdExpiresAt = expiresAt
-            //             popUpPayment.selectedMethod = "" // Reset previous selection
-            //            popUpPayment.open() // Pops up the bottom sheet
-            //         }
             bookingId: model.bookingId ?? ""
             houseName: model.houseName ?? ""
             ownerFirstName: model.ownerFirstName ?? ""
-            imageUrl: model.propertyImage ?? ""
+            propertyImage: model.propertyImage ?? ""
             status: model.status ?? ""
             clientName: model.clientName ?? ""
             clientPhone: model.clientPhone ?? ""
-            dateRange: model.bookingDate ?? ""
+            bookingDate: model.bookingDate ?? ""
             price: model.amount
             propertyLocation: (model.district && model.village) ? (model.district + ", " + model.village) : "N/A"
             roomType: model.roomType ?? ""
@@ -71,10 +103,6 @@ Page {
             baseAmount: model.amount ?? 0.0
             serviceFee: model.commissionAmount ?? 0.0
             holdExpiresAt: model.holdExpiresAt ?? ""
-
-            // Dynamic filter binding tied to active tab text
-            // activeFilter: filterTabBar.currentItem ? filterTabBar.currentItem.text : "All"
-
             // Action Signals
             onRemoveRequested: {
                 console.log("Action requested for booking:", model.bookingId)
@@ -93,7 +121,7 @@ Page {
                         ? (model.district + ", " + model.village)
                         : (model.location || ""),
                     roomType: model.roomType || "",
-                    checkIn: model.bookingDate || "",
+                    bookingDate: model.bookingDate || "",
                     landlordName: model.landlord || "",
                     landlordPhone: model.landlordPhone || "",
                     paymentStatus: model.paymentStatus || "Unpaid",
@@ -124,12 +152,46 @@ Page {
             }
         }
     }
+    AppEmptyState {
+        anchors.top: parent.top
+        anchors.right: parent.right
+        anchors.left: parent.left
+        anchors.topMargin: 80
+        anchors.leftMargin: 16
+        anchors.rightMargin: 16
+        visible: !clientBookingModel.loading && clientBookingModel.resultCount === 0
+        iconSource: "qrc:/ui/assets/bookings-icon.svg"
+        title: {
+            switch (String(filterBar.currentText || "All")) {
+            case "Pending payment":
+                return qsTr("No pending bookings")
+            case "Confirmed":
+                return qsTr("No confirmed bookings")
+            case "Cancelled":
+                return qsTr("No cancelled bookings")
+            default:
+                return qsTr("No bookings yet")
+            }
+        }
+        subtitle: {
+            switch (String(filterBar.currentText || "All")) {
+            case "Pending payment":
+                return qsTr("Bookings waiting for payment will show up here.")
+            case "Confirmed":
+                return qsTr("Confirmed bookings will appear here after payment succeeds.")
+            case "Cancelled":
+                return qsTr("Cancelled or expired bookings will appear here.")
+            default:
+                return qsTr("Book a property to see your bookings here.")
+            }
+        }
+    }
     AppSpinner{
         id: loadingSpinner
         anchors.centerIn: parent
         running: clientBookingModel.loading
         color: "#2563EB"
         size: 36
-        z: 100
+        z: 50
     }
 }

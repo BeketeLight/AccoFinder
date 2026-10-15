@@ -255,8 +255,8 @@ Item {
             // --- RELATIONAL JOIN: LOOKUP ROOM & PROPERTY ---
             var roomInfo = RoomViewModel.getRoomById(rId) || {}
             console.log("room count", RoomViewModel.roomListModel
-                            ? RoomViewModel.roomListModel.rowCount()
-                            : -1)
+                ? RoomViewModel.roomListModel.rowCount()
+                : -1)
                 console.log("roomInfo", JSON.stringify(roomInfo))
                 console.log("booking", bId, "clientId", cId, "roomId", rId)
             var roomTypeVal = roomInfo.type || m.data(idx, Qt.UserRole + 11) || "Private Room"
@@ -268,32 +268,52 @@ Item {
             var houseTitle = (propInfo && propInfo.title) ? propInfo.title : "Hostel/Apartment"
             var dist = (propInfo && propInfo.district) ? propInfo.district : ""
             var vill = (propInfo && propInfo.village) ? propInfo.village : ""
+            //modelling property location from district & village
+            var propertyLocation = (propInfo.district && propInfo.village)
+                ? propInfo.district + ", " + propInfo.village
+                : ""
             var landlord = (propInfo && propInfo.landlord) ? propInfo.landlord : ""
             var landlordPhone = (propInfo && propInfo.landlordPhone) ? propInfo.landlordPhone : ""
+            //Function to extract initials
+            function initialsFromName(full) {
+                var s = String(full || "").trim()
+                if (!s.length)
+                    return "?"
+
+                var parts = s.split(/\s+/).filter(function (p) { return p.length > 0 })
+
+                if (parts.length === 1)
+                    return parts[0].charAt(0).toUpperCase()
+
+                if (parts.length === 2)
+                    return (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase()
+
+                // 3+: first name + last name (skip middle)
+                return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase()
+            }
+            var landlordInitials = initialsFromName(landlord)
+
+            console.log("propId", propId,
+                        "propInfo", JSON.stringify(propInfo))
+            console.log("landlord", landlord, "phone", landlordPhone)
             //Real Host
             var ownerFirstName = (propInfo && propInfo.ownerFirstName)
-                    ? propInfo.ownerFirstName
-                    : ""
+                ? propInfo.ownerFirstName
+                : ""
 
             var ownerSurname = (propInfo && propInfo.ownerSurname)
-                    ? propInfo.ownerSurname
-                    : ""
-
+                ? propInfo.ownerSurname
+                : ""
+            var hostEmail = (propInfo && propInfo.ownerEmail)
+                ? propInfo.ownerEmail
+                : ""
             var hostName = (ownerFirstName + " " + ownerSurname).trim()
             if (!hostName.length)
                 hostName = propInfo.ownerName || propInfo.landlord || "Host"
+            var hostPhone = (propInfo && propInfo.ownerPhone)
+                ? propInfo.ownerPhone
+                : ""
 
-            //Extracting Initials
-            var hostInitials = "?"
-            if (ownerFirstName.length && ownerSurname.length)
-                hostInitials = (ownerFirstName.charAt(0) + ownerSurname.charAt(0)).toUpperCase()
-            else if (hostName.length && hostName !== "Host") {
-                var parts = hostName.split(/\s+/).filter(function (p) { return p.length > 0 })
-                if (parts.length >= 2)
-                    hostInitials = (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase()
-                else if (parts.length === 1)
-                    hostInitials = parts[0].substring(0, Math.min(2, parts[0].length)).toUpperCase()
-            }
             //Extracting exact image booked by the user-----
             var imgUrl = coverImageFor(propId, rId)
 
@@ -308,7 +328,8 @@ Item {
             var holdSecondsRemaining = m.data(idx, Qt.UserRole + 11)
             var holdActive = m.data(idx, Qt.UserRole + 12)
             // Extract first letter of client's full name
-            var clientInitial = cName.trim().charAt(0).toUpperCase()
+            var hostInitials = initialsFromName(hostName)
+            var clientInitial = initialsFromName(cName)
             // Append aggregated item to QML model
             bookingsModelId.append({
                 "bookingId": bId,
@@ -331,13 +352,16 @@ Item {
                 "district": dist,
                 "village": vill,
                 "propertyImage": imgUrl,
+                "propertyLocation": propertyLocation,
+                //"propertyLocation": l
                 "landlord": propInfo.landlord || "",
                 "landlordPhone": propInfo.landlordPhone || "",
+                "landlordInitials": landlordInitials,
 
-                "ownerFirstName": ownerFirstName,
-                "ownerSurname": ownerSurname,
                 "hostName": hostName,
+                "hostEmail": hostEmail,
                 "hostInitials": hostInitials,
+                "hostPhone": hostPhone,
                 "clientInitial": clientInitial,
 
                 "holdExpiresAt": holdExpiresAt,
@@ -357,17 +381,14 @@ Item {
         RoomViewModel.loadRooms()
         PropertyViewModel.getProperties("")
         BookingViewModel.fetchBookings()
-        // if(typeof UserViewModel !== "undefined")
-        //     UserViewModel.getUsers()
-        // BookingViewModel.fetchBookingById(bookingId)
         reload()
     }
 
     Connections {
-            target: BookingViewModel.bookingListModel
-            function onRowsInserted(parent, first, last) { root.reload() }
-            function onRowsRemoved(parent, first, last) { root.reload() }
-            function onModelReset() { root.reload() }
+        target: BookingViewModel.bookingListModel
+        function onRowsInserted(parent, first, last) { root.reload() }
+        function onRowsRemoved(parent, first, last) { root.reload() }
+        function onModelReset() { root.reload() }
     }
 
     Connections {
