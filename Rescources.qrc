@@ -65,5 +65,7 @@
         <file>ui/assets/bookings/forward-icon.svg</file>
         <file>ui/assets/bookings/room-icon.svg</file>
         <file>ui/assets/bookings/email-icon.svg</file>
+        <file>ui/assets/save-instagram-black-outline.svg</file>
+        <file>ui/assets/tiktok-save-bookmark-symbol-blue.svg</file>
     </qresource>
 </RCC>

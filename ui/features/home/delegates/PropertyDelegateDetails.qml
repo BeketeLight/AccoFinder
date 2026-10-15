@@ -40,6 +40,7 @@ Page {
     property string agentLastName: ""
     property real agentRating: 0
     property int agentReviewCount: 0
+    property bool propertyFavourite: AppSettings.isRoomFavorite(root.propertyId)
 
     // ========== DETAILS MODEL (media + rooms) ==========
     PropertyDetailsModel {
@@ -278,10 +279,10 @@ Page {
 
                 Image {
                     id: favouriteImg
-                    source: root.favouriteChecked ? "qrc:/ui/assets/favorite-filled.svg" : "qrc:/ui/assets/favorite-outline.svg"
-                    width: 22
-                    height: 22
-                    sourceSize.width: 48
+                    source: root.quarterFavourite ? "qrc:/ui/assets/tiktok-save-bookmark-symbol-blue.svg" : "qrc:/ui/assets/save-instagram-black-outline.svg"
+                    width: 28
+                    height: 38
+                    sourceSize.width: 38
                     sourceSize.height: 48
                     fillMode: Image.PreserveAspectFit
                     antialiasing: true
@@ -293,9 +294,26 @@ Page {
                     MouseArea {
                         anchors.fill: parent
                         onClicked: {
-                            root.favoriteToggled();
-                            root.favouriteChecked = !root.favouriteChecked;
-                            AppSettings.setFavoritePropertyIds(root.propertyId);
+                            if (!AppSettings.isLoggedIn()) {
+                                NavUtils.navigateToAccount();
+                                return;
+                            }
+                            const wasFav = AppSettings.isRoomFavorite(root.quarterId);
+                            AppSettings.toggleFavoriteRoom(root.propertyId);
+                            if (!wasFav) {
+                                AppSettings.saveRoomSnapshot(root.quarterId, {
+                                    quarterId: root.quarterId,
+                                    propertyId: root.propertyId,
+                                    title: root.quarterTitle,
+                                    type: root.quarterType,
+                                    price: root.quarterPrice,
+                                    location: root.location,
+                                    imageUrl: root.roomImage,
+                                    available: root.isquarterAvailable,
+                                    holdActive: root.isOnHold,
+                                    savedAt: Date.now()
+                                });
+                            }
                         }
                     }
                 }
@@ -335,12 +353,12 @@ Page {
                             height: amenityText.height + 10
                             radius: 10
                             color: "#2563EB"
-                            border.width: 1
                             Label {
                                 id: amenityText
                                 text: root.amenityLabel(modelData)
                                 font.pixelSize: 11
                                 font.weight: Font.Medium
+                                color: "white"
                                 anchors.centerIn: parent
                             }
                         }

@@ -23,6 +23,15 @@ Page {
     property bool isquarterAvailable: true
     property string propertyId: ""
 
+    property bool quarterFavourite: AppSettings.isRoomFavorite(root.quarterId)
+
+    Connections {
+        target: AppSettings
+        function onRoomFavoritesChanged() {
+            root.quarterFavourite = AppSettings.isRoomFavorite(root.quarterId);
+        }
+    }
+
     // Provisional hold state, surfaced by GET /rooms/:id (holdActive /
     // holdExpiresAt). The backend only sets available=false once a booking is
     // CONFIRMED, so a room that is temporarily spoken for still arrives with
@@ -210,6 +219,46 @@ Page {
                                     color: "white"
                                     font.pixelSize: 14
                                     opacity: 0.7
+                                }
+                            }
+                            Image {
+                                id: favouriteImg
+                                source: root.quarterFavourite ? "qrc:/ui/assets/tiktok-save-bookmark-symbol-blue.svg" : "qrc:/ui/assets/save-instagram-black-outline.svg"
+                                width: 28
+                                height: 38
+                                sourceSize.width: 48
+                                sourceSize.height: 48
+                                fillMode: Image.PreserveAspectFit
+                                antialiasing: true
+                                smooth: true
+                                anchors.top: parent.top
+                                anchors.right: parent.right
+                                anchors.margins: 8
+
+                                MouseArea {
+                                    anchors.fill: parent
+                                    onClicked: {
+                                        if (!AppSettings.isLoggedIn()) {
+                                            NavUtils.navigateToAccount();
+                                            return;
+                                        }
+                                        const wasFav = AppSettings.isRoomFavorite(root.quarterId);
+                                        AppSettings.toggleFavoriteRoom(root.quarterId);
+                                        if (!wasFav) {
+                                            AppSettings.saveRoomSnapshot(root.quarterId, {
+                                                quarterId: root.quarterId,
+                                                propertyId: root.propertyId,
+                                                title: root.quarterTitle,
+                                                type: root.quarterType,
+                                                price: root.quarterPrice,
+                                                location: root.location,
+                                                imageUrl: root.roomImage,
+                                                available: root.isquarterAvailable,
+                                                holdActive: root.isOnHold,
+                                                savedAt: Date.now()
+                                            });
+                                        }
+                                    }
                                 }
                             }
                         }

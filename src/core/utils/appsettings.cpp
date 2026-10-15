@@ -356,6 +356,69 @@ QStringList AppSettings::favoritePropertyIds() const {
     return m_settings.value("favorites/propertyIds").toStringList();
 }
 
+// FAVORITES — ROOMS / QUARTERS
+
+namespace {
+constexpr auto kRoomIdsKey   = "favorites/roomIds";
+constexpr auto kRoomCacheKey = "favorites/roomCache"; // JSON: { id : { snapshot } }
+}
+
+QStringList AppSettings::favoriteRoomIds() const {
+    return m_settings.value(kRoomIdsKey).toStringList();
+}
+
+bool AppSettings::isRoomFavorite(const QString &quarterId) const {
+    if (quarterId.isEmpty())
+        return false;
+    return favoriteRoomIds().contains(quarterId);
+}
+
+void AppSettings::toggleFavoriteRoom(const QString &quarterId) {
+    if (quarterId.isEmpty())
+        return;
+
+    QStringList ids = favoriteRoomIds();
+    const bool wasFav = ids.contains(quarterId);
+
+    if (wasFav) {
+        ids.removeAll(quarterId);
+
+        // Drop the cached snapshot alongside the id so the Saves screen
+        // never shows an orphaned card.
+        QJsonObject cache = QJsonDocument::fromJson(
+                                m_settings.value(kRoomCacheKey).toByteArray()).object();
+        cache.remove(quarterId);
+        m_settings.setValue(kRoomCacheKey,
+                            QJsonDocument(cache).toJson(QJsonDocument::Compact));
+    } else {
+        ids.append(quarterId);
+    }
+
+    m_settings.setValue(kRoomIdsKey, ids);
+    emit roomFavoritesChanged();
+}
+
+void AppSettings::saveRoomSnapshot(const QString &quarterId,
+                                   const QVariantMap &data) {
+    if (quarterId.isEmpty())
+        return;
+
+    QJsonObject cache = QJsonDocument::fromJson(
+                            m_settings.value(kRoomCacheKey).toByteArray()).object();
+    cache.insert(quarterId, QJsonObject::fromVariantMap(data));
+    m_settings.setValue(kRoomCacheKey,
+                        QJsonDocument(cache).toJson(QJsonDocument::Compact));
+    emit roomFavoritesChanged();
+}
+
+QVariantMap AppSettings::favoriteRoomSnapshot(const QString &quarterId) const {
+    const QJsonObject cache = QJsonDocument::fromJson(
+                                  m_settings.value(kRoomCacheKey).toByteArray()).object();
+    if (!cache.contains(quarterId))
+        return {};
+    return cache.value(quarterId).toObject().toVariantMap();
+}
+
 // NOTIFICATIONS
 
 void AppSettings::setNotificationsEnabled(bool value) {

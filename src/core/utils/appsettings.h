@@ -13,6 +13,9 @@
 #endif
 
 #include <QCoreApplication>
+#include <QJsonObject>
+#include <QJsonDocument>
+#include <QVariantMap>
 
 class AppSettings : public QObject
 {
@@ -160,6 +163,21 @@ public:
     Q_INVOKABLE QStringList favoritePropertyIds() const;
 
     // =========================
+    // FAVORITES — ROOMS / QUARTERS
+    // =========================
+    // Saved rooms live in their own key so a property and a room can be
+    // saved independently. Each saved room also carries a small JSON
+    // snapshot (title, price, image, propertyId, …) so the Saves screen
+    // can render a card without a network round-trip.
+    Q_INVOKABLE void        toggleFavoriteRoom(const QString &quarterId);
+    Q_INVOKABLE QStringList favoriteRoomIds() const;
+    Q_INVOKABLE bool        isRoomFavorite(const QString &quarterId) const;
+
+    Q_INVOKABLE void        saveRoomSnapshot(const QString &quarterId,
+                                      const QVariantMap &data);
+    Q_INVOKABLE QVariantMap favoriteRoomSnapshot(const QString &quarterId) const;
+
+    // =========================
     // NOTIFICATIONS
     // =========================
     Q_INVOKABLE void setNotificationsEnabled(bool value);
@@ -234,6 +252,10 @@ signals:
 
     // Emitted when the platform commission rate changes so QML bindings refresh.
     void platformCommissionRateChanged();
+
+    // Emitted when the user's saved-room list changes, so QML hearts and
+    // the Saves screen can re-read favouriteRoomIds().
+    void roomFavoritesChanged();
 
 private:
     // A registration draft is only offered back to the user for this long,
