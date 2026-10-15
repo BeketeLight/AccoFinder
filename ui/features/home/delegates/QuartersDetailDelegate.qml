@@ -21,6 +21,7 @@ Page {
     property string location: "Area 47, Lilongwe"
     property real quarterPrice: 250000
     property bool isquarterAvailable: true
+    property string propertyId: ""
 
     // Provisional hold state, surfaced by GET /rooms/:id (holdActive /
     // holdExpiresAt). The backend only sets available=false once a booking is
@@ -604,6 +605,15 @@ Page {
             text: errorDialog.errorText
             wrapMode: Text.WordWrap
             // Let the Dialog manage width; don't hard-code 260 here.
+        }
+    }
+    Component.onCompleted: {
+        if (root.propertyId.length > 0) {
+            ReviewViewModel.loadForProperty(root.propertyId);
+            ReviewViewModel.loadSummary(root.propertyId);
+            if (AppSettings.isLoggedIn()) {
+                ReviewViewModel.checkCanReview(root.propertyId);
+            }
         }
     }
 }

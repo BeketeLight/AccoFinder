@@ -15,7 +15,7 @@ Item {
 
     // How far back "recent" goes, in hours. Exposed so a screen can
     // temporarily widen or narrow the window without touching this file.
-    property int recentsWindowHours: 24
+    property int recentsWindowHours: 168
 
     // Guards getMediaByProperty(pid) so it fires at most once per property
     // per Home session.
