@@ -107,28 +107,6 @@ Page {
         return map[key] !== undefined ? map[key] : "";
     }
 
-    // ========== REVIEWS (placeholder until API exists) ==========
-    property var reviewsModel: [
-        {
-            name: "Mary Phiri",
-            rating: 5,
-            comment: "Very clean and well maintained. Agent was helpful.",
-            date: "2 weeks ago"
-        },
-        {
-            name: "James Banda",
-            rating: 4,
-            comment: "Good location, peaceful area. Would recommend.",
-            date: "1 month ago"
-        },
-        {
-            name: "Grace Mwale",
-            rating: 5,
-            comment: "Excellent experience. Fast response from the agent.",
-            date: "1 month ago"
-        }
-    ]
-
     // ========== SIGNALS ==========
     signal backRequested
     signal bookRequested
@@ -353,35 +331,17 @@ Page {
 
                         Rectangle {
                             required property string modelData
-                            width: (amenitiesFlow.width - amenitiesFlow.spacing * 2) / 3
-                            height: 50
+                            width: amenityText.width + 9 //(amenitiesFlow.width - amenitiesFlow.spacing * 2) / 3
+                            height: amenityText.height + 10
                             radius: 10
-                            color: "#F0FDF4"
-                            border.color: "#BBF7D0"
+                            color: "#2563EB"
                             border.width: 1
-
-                            ColumnLayout {
+                            Label {
+                                id: amenityText
+                                text: root.amenityLabel(modelData)
+                                font.pixelSize: 11
+                                font.weight: Font.Medium
                                 anchors.centerIn: parent
-                                spacing: 4
-
-                                Image {
-                                    source: root.amenityIcon(modelData)
-                                    width: 18
-                                    height: 18
-                                    sourceSize.width: 20
-                                    sourceSize.height: 20
-                                    fillMode: Image.PreserveAspectFit
-                                    Layout.alignment: Qt.AlignHCenter
-                                }
-
-                                Label {
-                                    text: root.amenityLabel(modelData)
-                                    font.pixelSize: 11
-                                    color: "#166534"
-                                    font.weight: Font.Medium
-                                    horizontalAlignment: Text.AlignHCenter
-                                    Layout.alignment: Qt.AlignHCenter
-                                }
                             }
                         }
                     }

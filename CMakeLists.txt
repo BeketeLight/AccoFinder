@@ -218,7 +218,11 @@ qt_add_qml_module(appAccoFinder
         ui/features/properties/screens/PropertiesScreen.qml
         ui/features/properties/screens/AddPropertyScreen.qml
         ui/features/properties/screens/DraftsScreen.qml
-        ui/features/properties/screens/MyPropertiesScreen.qml
+        ui/features/properties/screens/MyPropertiesScreen.qml  
+
+        #============Favourites/Saves===========
+        ui/features/favourites/pages/SavesPage.qml
+        ui/features/favourites/screen/SavesScreen.qml
 
         # Additional QML files registered at module level
         QML_FILES ui/features/auth/pages/Profile.qml
