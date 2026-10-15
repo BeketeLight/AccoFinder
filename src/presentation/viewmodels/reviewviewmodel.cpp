@@ -36,6 +36,19 @@ ReviewViewModel::ReviewViewModel(QObject* parent)
                 setLoading(false);
                 emit errorOccurred(e);
             });
+    connect(m_controller, &ReviewController::canReviewChanged, this,
+            [this]() {
+                m_canReview       = m_controller->canReview();
+                m_canReviewReason = m_controller->canReviewReason();
+                emit canReviewChanged();
+            });
+
+    connect(m_controller, &ReviewController::summaryChanged, this,
+            [this]() {
+                m_averageRating = m_controller->averageRating();
+                m_reviewCount   = m_controller->reviewCount();
+                emit summaryChanged();
+            });
 }
 
 void ReviewViewModel::setLoading(bool v)
@@ -74,4 +87,15 @@ void ReviewViewModel::editReview(const QString& id, int rating, const QString& c
 void ReviewViewModel::removeReview(const QString& id)
 {
     m_controller->removeReview(id);
+}
+void ReviewViewModel::checkCanReview(const QString& propertyId)
+{
+    if (m_controller)
+        m_controller->checkCanReview(propertyId);
+}
+
+void ReviewViewModel::loadSummary(const QString& propertyId)
+{
+    if (m_controller)
+        m_controller->loadSummary(propertyId);
 }

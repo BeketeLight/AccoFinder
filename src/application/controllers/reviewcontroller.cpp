@@ -14,6 +14,15 @@ ReviewController::ReviewController(QObject* parent)
             this, &ReviewController::reviewDeleted);
     connect(m_repository, &ReviewRepositoryImpl::error,
             this, &ReviewController::error);
+    connect(m_repository, &ReviewRepositoryImpl::canReviewChecked,
+            this, [this](bool can, const QString& reason, const QString& /*existingId*/) {
+                setCanReview(can, reason);
+            });
+
+    connect(m_repository, &ReviewRepositoryImpl::summaryLoaded,
+            this, [this](double average, int count) {
+                setSummary(average, count);
+            });
 }
 
 void ReviewController::loadReviewsForProperty(const QString& propertyId)
@@ -74,4 +83,40 @@ void ReviewController::removeReview(const QString& id)
         return;
     }
     m_repository->deleteReview(id);
+}
+
+void ReviewController::checkCanReview(const QString& propertyId)
+{
+    if (propertyId.isEmpty()) {
+        emit error("propertyId cannot be empty");
+        return;
+    }
+    m_repository->checkCanReview(propertyId);
+}
+
+void ReviewController::loadSummary(const QString& propertyId)
+{
+    if (propertyId.isEmpty()) {
+        emit error("propertyId cannot be empty");
+        return;
+    }
+    m_repository->getSummary(propertyId);
+}
+
+void ReviewController::setCanReview(bool can, const QString& reason)
+{
+    if (m_canReview == can && m_canReviewReason == reason)
+        return;
+    m_canReview       = can;
+    m_canReviewReason = reason;
+    emit canReviewChanged();
+}
+
+void ReviewController::setSummary(double average, int count)
+{
+    if (qFuzzyCompare(m_averageRating, average) && m_reviewCount == count)
+        return;
+    m_averageRating = average;
+    m_reviewCount   = count;
+    emit summaryChanged();
 }

@@ -5,6 +5,7 @@ import QtQuick.Effects
 import "../../../components/inputs"
 import "../components/"
 import "../models"
+import "../../reviews/screens"
 import "../../../utils/NavigationUtils.js" as NavUtils
 import "../../../utils/ImageUtils.js" as ImageUtils
 
@@ -316,6 +317,7 @@ Page {
                         onClicked: {
                             root.favoriteToggled();
                             root.favouriteChecked = !root.favouriteChecked;
+                            AppSettings.setFavoritePropertyIds(root.propertyId);
                         }
                     }
                 }
@@ -451,6 +453,7 @@ Page {
                         onClicked: {
                             root.navigateToQuarters({
                                 roomId: model.roomId,
+                                propertyId: root.propertyId,
                                 type: model.type,
                                 price: model.price,
                                 available: model.available,
@@ -474,35 +477,98 @@ Page {
                 Layout.margins: 16
                 spacing: 12
 
+                // Header row: title + average + count
                 RowLayout {
                     Layout.fillWidth: true
+                    spacing: 8
 
                     Label {
-                        text: "Reviews"
+                        text: qsTr("Reviews")
                         font.pixelSize: 16
                         font.weight: Font.DemiBold
                         color: "#1F2937"
+                    }
+
+                    Item {
                         Layout.fillWidth: true
                     }
 
-                    Label {
-                        text: root.agentReviewCount + " reviews"
-                        font.pixelSize: 13
-                        color: "#6B7280"
+                    RowLayout {
+                        spacing: 4
+                        visible: ReviewViewModel.reviewCount > 0
+
+                        Label {
+                            text: "★"
+                            color: "#F59E0B"
+                            font.pixelSize: 14
+                        }
+                        Label {
+                            text: ReviewViewModel.averageRating.toFixed(1)
+                            font.pixelSize: 14
+                            font.weight: Font.DemiBold
+                            color: "#1F2937"
+                        }
+                        Label {
+                            text: "(" + ReviewViewModel.reviewCount + ")"
+                            font.pixelSize: 12
+                            color: "#6B7280"
+                        }
                     }
                 }
 
-                Repeater {
-                    model: root.reviewsModel
+                // "Write a review" button — only when eligible
+                Button {
+                    Layout.fillWidth: true
+                    visible: ReviewViewModel.canReview
+                    text: qsTr("Write a review")
+                    onClicked: writeReviewSheet.open()
+                }
 
-                    Rectangle {
-                        required property var modelData
+                // Why can't they review?
+                Label {
+                    Layout.fillWidth: true
+                    visible: ReviewViewModel.canReviewReason === "already-reviewed"
+                    text: qsTr("You've already reviewed this property")
+                    color: "#6B7280"
+                    font.pixelSize: 12
+                }
+                Label {
+                    Layout.fillWidth: true
+                    visible: ReviewViewModel.canReviewReason === "no-booking"
+                    text: qsTr("Book this property to leave a review")
+                    color: "#6B7280"
+                    font.pixelSize: 12
+                }
+
+                // Loading spinner while reviews are being fetched
+                BusyIndicator {
+                    Layout.alignment: Qt.AlignHCenter
+                    running: ReviewViewModel.loading
+                    visible: ReviewViewModel.loading
+                }
+
+                // Empty state
+                Label {
+                    Layout.fillWidth: true
+                    visible: !ReviewViewModel.loading && ReviewViewModel.reviewCount === 0
+                    text: qsTr("No reviews yet. Be the first to review this property.")
+                    color: "#9CA3AF"
+                    font.pixelSize: 13
+                    wrapMode: Text.WordWrap
+                }
+
+                // The review list — reuse the C++ ReviewListModel directly.
+                Repeater {
+                    model: ReviewViewModel.model
+
+                    delegate: Rectangle {
+                        required property var model
                         Layout.fillWidth: true
                         radius: 12
                         color: "#F9FAFB"
                         border.color: "#E5E7EB"
                         border.width: 1
-                        height: reviewCol.height + 24
+                        implicitHeight: reviewCol.implicitHeight + 24
 
                         ColumnLayout {
                             id: reviewCol
@@ -516,14 +582,14 @@ Page {
                                 spacing: 8
 
                                 Rectangle {
-                                    width: 32
-                                    height: 32
-                                    radius: 16
+                                    width: 36
+                                    height: 36
+                                    radius: 18
                                     color: "#E0E7FF"
                                     Label {
                                         anchors.centerIn: parent
-                                        text: String(modelData.name).charAt(0)
-                                        font.pixelSize: 13
+                                        text: "?" // no user avatar yet; use a generic char
+                                        font.pixelSize: 14
                                         font.bold: true
                                         color: "#4338CA"
                                     }
@@ -532,13 +598,13 @@ Page {
                                 ColumnLayout {
                                     spacing: 1
                                     Label {
-                                        text: modelData.name
-                                        font.pixelSize: 13
+                                        text: qsTr("Client review")
+                                        font.pixelSize: 14
                                         font.weight: Font.Medium
                                         color: "#1F2937"
                                     }
                                     Label {
-                                        text: modelData.date
+                                        text: model.createdAt
                                         font.pixelSize: 11
                                         color: "#9CA3AF"
                                     }
@@ -549,14 +615,14 @@ Page {
                                 }
 
                                 Label {
-                                    text: "★".repeat(modelData.rating)
+                                    text: "★".repeat(model.rating)
                                     font.pixelSize: 12
                                     color: "#F59E0B"
                                 }
                             }
 
                             Label {
-                                text: modelData.comment
+                                text: model.comment
                                 font.pixelSize: 13
                                 color: "#4B5563"
                                 wrapMode: Text.WordWrap
@@ -565,6 +631,17 @@ Page {
                             }
                         }
                     }
+                }
+
+                // "See all reviews" — pushes a dedicated screen for large lists
+                Button {
+                    Layout.fillWidth: true
+                    visible: ReviewViewModel.reviewCount > 3
+                    text: qsTr("See all " + ReviewViewModel.reviewCount + " reviews")
+                    flat: true
+                    onClicked: NavUtils.push("qrc:/ui/features/reviews/screens/ReviewListScreen.qml", {
+                        propertyId: root.propertyId
+                    })
                 }
             }
 
@@ -596,7 +673,7 @@ Page {
             Button {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                text: "Check Reviews"
+                text: "Write a review"
                 background: Rectangle {
                     radius: 12
                     color: "#2563EB"
@@ -609,8 +686,26 @@ Page {
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                 }
-                onClicked: root.bookRequested()
+                onClicked: {
+                    NavUtils.push(Qt.resolvedUrl("../features/reviews/screens/WriteReviewScreen.qml"), {
+                        propertyId: root.propertyId,
+                        agentId: root.agentId ?? ""
+                    });
+                }
             }
         }
+    }
+    Component.onCompleted: {
+        if (root.propertyId.length > 0) {
+            ReviewViewModel.loadForProperty(root.propertyId);
+            ReviewViewModel.loadSummary(root.propertyId);
+            if (AppSettings.isLoggedIn()) {
+                ReviewViewModel.checkCanReview(root.propertyId);
+            }
+        }
+    }
+
+    Component.onDestruction: {
+        ReviewViewModel.model.clear();
     }
 }

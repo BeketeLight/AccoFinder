@@ -13,9 +13,9 @@
 #include "src/application/controllers/usercontroller.h"
 #include "src/application/controllers/agentcontroller.h"
 #include "src/application/controllers/dashboardcontroller.h"
+#include "src/application/controllers/settingscontroller.h"
 #include "src/application/controllers/reviewcontroller.h"
 #include "src/presentation/viewmodels/reviewviewmodel.h"
-#include "src/application/controllers/settingscontroller.h"
 #include "src/presentation/viewmodels/propertyviewmodel.h"
 #include "src/presentation/viewmodels/roomviewmodel.h"
 #include "src/presentation/viewmodels/mediaviewmodel.h"
@@ -87,12 +87,12 @@ int main(int argc, char *argv[])
 
     qputenv("QT_ANDROID_NO_EXIT_CALL", "true");
 
-    //Settings
+    // Settings
     QCoreApplication::setOrganizationName("accofinder");
     QCoreApplication::setOrganizationDomain("accofinder.com");
     QCoreApplication::setApplicationName("accofinder");
 
-    //SplashScreen
+    // SplashScreen
 #if defined(Q_OS_ANDROID)
     auto androidApp = app.nativeInterface<QNativeInterface::QAndroidApplication>();
     const bool hasAndroidSplash = (androidApp != nullptr);
@@ -110,11 +110,11 @@ int main(int argc, char *argv[])
     // Expose the provider to QML so delete flows can invalidate a removed
     // image's cache entry via ImageCache.invalidateUrl(url).
     engine.rootContext()->setContextProperty("ImageCache", cachedImageProvider);
-    //Appsettings
-    AppSettings& appSettings = AppSettings::instance();
-    //AppPermission
-    AppPermission& appPermission = AppPermission::instance();
-    //Controllers
+    // Appsettings
+    AppSettings &appSettings = AppSettings::instance();
+    // AppPermission
+    AppPermission &appPermission = AppPermission::instance();
+    // Controllers
     AuthController authController;
     PropertyController propertyController;
     BookingController bookingController;
@@ -142,7 +142,7 @@ int main(int argc, char *argv[])
     SocketIOClient socketIOClient;
     PropertyListModel propertyListModel;
     FcmService fcmService;
-    //ContextProperty
+    // ContextProperty
     engine.rootContext()->setContextProperty("AppSettings", &appSettings);
     engine.rootContext()->setContextProperty("AppPermission", &appPermission);
     engine.rootContext()->setContextProperty("AuthController", &authController);
@@ -155,10 +155,13 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("AgentController", &agentController);
     engine.rootContext()->setContextProperty("DashboardController", &dashboardController);
 <<<<<<< HEAD
+<<<<<<< HEAD
     engine.rootContext()->setContextProperty("ReviewController", &reviewController);
 =======
     engine.rootContext()->setContextProperty("SettingsController", &settingsController);
 >>>>>>> 4544851d56e306fb033165b0dbb7cb8430bc989c
+=======
+>>>>>>> feature/home
     engine.rootContext()->setContextProperty("PropertyViewModel", &propertyViewModel);
     engine.rootContext()->setContextProperty("RoomViewModel", &roomViewModel);
     engine.rootContext()->setContextProperty("ReviewViewModel", &reviewViewModel);
@@ -179,9 +182,11 @@ int main(int argc, char *argv[])
     // Realtime notifications: start the Socket.IO stream once signed in, stop it
     // on logout, and refresh the notification model immediately when a
     // "notification" event arrives (instead of waiting for the 30s poll).
-    auto startSocketForCurrentUser = [&socketIOClient]() {
-        const AppSettings& s = AppSettings::instance();
-        if (s.isLoggedIn() && !s.userId().isEmpty()) {
+    auto startSocketForCurrentUser = [&socketIOClient]()
+    {
+        const AppSettings &s = AppSettings::instance();
+        if (s.isLoggedIn() && !s.userId().isEmpty())
+        {
             qInfo() << "[Main] Starting socket for user:" << s.userId();
             socketIOClient.stop();
             socketIOClient.start(s.userId(), s.userType(), s.token());
@@ -191,29 +196,31 @@ int main(int argc, char *argv[])
     QObject::connect(&authController, &AuthController::signInSucceded, &app,
                      startSocketForCurrentUser);
     QObject::connect(&authController, &AuthController::userLoggedOut,
-                     &socketIOClient, [&socketIOClient]() {
-        socketIOClient.stop();
-    });
+                     &socketIOClient, [&socketIOClient]()
+                     { socketIOClient.stop(); });
     QObject::connect(&socketIOClient, &SocketIOClient::notificationReceived,
                      &notificationViewModel, &NotificationViewModel::refreshCurrent);
     QObject::connect(&appSettings, &AppSettings::userSessionChanged,
                      &app, startSocketForCurrentUser);
     QObject::connect(&socketIOClient, &SocketIOClient::errorOccurred,
-                     &app, [](const QString& msg) {
-        qWarning() << "[Main] SocketIO error:" << msg;
-    });
+                     &app, [](const QString &msg)
+                     { qWarning() << "[Main] SocketIO error:" << msg; });
 
     // FCM: register token on login, unregister on logout
     QObject::connect(&authController, &AuthController::signInSucceded, &fcmService,
-                     [&fcmService]() { fcmService.registerToken(); });
+                     [&fcmService]()
+                     { fcmService.registerToken(); });
     QObject::connect(&authController, &AuthController::userLoggedOut, &fcmService,
-                     [&fcmService]() { fcmService.unregisterToken(); });
+                     [&fcmService]()
+                     { fcmService.unregisterToken(); });
     QObject::connect(&appSettings, &AppSettings::userSessionChanged, &fcmService,
-                     [&fcmService]() {
-        if (AppSettings::instance().isLoggedIn()) {
-            fcmService.registerToken();
-        }
-    });
+                     [&fcmService]()
+                     {
+                         if (AppSettings::instance().isLoggedIn())
+                         {
+                             fcmService.registerToken();
+                         }
+                     });
     // Forward FCM foreground notifications to refresh the notification list
     QObject::connect(&fcmService, &FcmService::notificationReceived,
                      &notificationViewModel, &NotificationViewModel::refreshCurrent);
@@ -221,7 +228,8 @@ int main(int argc, char *argv[])
     // Shared, session-scoped lists must never leak from one user into the
     // next (or into the logged-out state). Reset them whenever the active
     // session changes.
-    auto resetSharedModels = [&propertyListModel, &mediaViewModel]() {
+    auto resetSharedModels = [&propertyListModel, &mediaViewModel]()
+    {
         propertyListModel.clear();
         mediaViewModel.clearMedia();
     };
@@ -236,14 +244,14 @@ int main(int argc, char *argv[])
     // the deep-link poll a short grace window, then cancel the sign-in and
     // clear the spinner instead of hanging.
     QObject::connect(&app, &QGuiApplication::applicationStateChanged,
-                     &app, [&authController](Qt::ApplicationState state) {
+                     &app, [&authController](Qt::ApplicationState state)
+                     {
         if (state == Qt::ApplicationActive && authController.isGoogleAuthPending()) {
             QTimer::singleShot(6000, [&authController]() {
                 if (authController.isGoogleAuthPending() && authController.isLoading())
                     authController.cancelGoogleAuth();
             });
-        }
-    });
+        } });
     paymentController.fetchOperators();
     // Pull the admin-controlled platform booking fee at startup and cache it
     // in AppSettings, so checkout reads the latest value without a round trip.
@@ -252,12 +260,14 @@ int main(int argc, char *argv[])
         &engine,
         &QQmlApplicationEngine::objectCreationFailed,
         &app,
-        []() { QCoreApplication::exit(-1); },
+        []()
+        { QCoreApplication::exit(-1); },
         Qt::QueuedConnection);
 
     // Routes an OAuth redirect into AuthController, rejecting anything that is
     // not one of ours so a stray link can never be mistaken for a session.
-    auto forwardGoogleRedirect = [&authController](const QString &url) {
+    auto forwardGoogleRedirect = [&authController](const QString &url)
+    {
         if (url.isEmpty() || !isGoogleRedirectUrl(url))
             return;
         // The redirect carries a bearer token in its query string, so log the
@@ -273,12 +283,13 @@ int main(int argc, char *argv[])
     // both a cold start and the case where the app is already running when the
     // OAuth flow redirects back to the app's custom scheme. Each captured URL
     // is forwarded to AuthController so the Google sign-in is finalised.
-    auto processAndroidDeepLink = [&forwardGoogleRedirect]() {
+    auto processAndroidDeepLink = [&forwardGoogleRedirect]()
+    {
         if (!hasPendingDeepLink())
             return;
         forwardGoogleRedirect(takePendingDeepLinkUrl());
     };
-    QTimer* deepLinkTimer = new QTimer(&app);
+    QTimer *deepLinkTimer = new QTimer(&app);
     QObject::connect(deepLinkTimer, &QTimer::timeout, &app, processAndroidDeepLink);
     deepLinkTimer->start(500);
 
@@ -287,11 +298,11 @@ int main(int argc, char *argv[])
 #endif
 
     // Desktop launches hand the redirect over as a plain command line argument.
-    for (const QString &arg : app.arguments()) {
+    for (const QString &arg : app.arguments())
+    {
         if (isGoogleRedirectUrl(arg))
-            QTimer::singleShot(0, &app, [forwardGoogleRedirect, arg]() {
-                forwardGoogleRedirect(arg);
-            });
+            QTimer::singleShot(0, &app, [forwardGoogleRedirect, arg]()
+                               { forwardGoogleRedirect(arg); });
     }
 
     // macOS delivers the same link as a QFileOpenEvent instead, both when the
@@ -306,7 +317,8 @@ int main(int argc, char *argv[])
     protected:
         bool eventFilter(QObject *watched, QEvent *event) override
         {
-            if (event->type() == QEvent::FileOpen) {
+            if (event->type() == QEvent::FileOpen)
+            {
                 auto *open = static_cast<QFileOpenEvent *>(event);
                 const QString url = open->url().toString();
                 if (!url.isEmpty() && m_sink)
@@ -328,13 +340,12 @@ int main(int argc, char *argv[])
     // frame has been rendered, so we give the event loop a single cycle to
     // paint, then remove it. A short fallback guarantees it never lingers.
 #if defined(Q_OS_ANDROID)
-    if (hasAndroidSplash) {
-        QTimer::singleShot(0, [androidApp]() {
-            androidApp->hideSplashScreen(300);
-        });
-        QTimer::singleShot(2000, [androidApp]() {
-            androidApp->hideSplashScreen(300);
-        });
+    if (hasAndroidSplash)
+    {
+        QTimer::singleShot(0, [androidApp]()
+                           { androidApp->hideSplashScreen(300); });
+        QTimer::singleShot(2000, [androidApp]()
+                           { androidApp->hideSplashScreen(300); });
     }
 #else
     Q_UNUSED(hasAndroidSplash)

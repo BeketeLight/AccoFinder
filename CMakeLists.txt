@@ -166,6 +166,10 @@ qt_add_qml_module(appAccoFinder
         ui/features/reviews/pages/WriteReviewsPage.qml
         ui/features/reviews/pages/ReviewsListPage.qml
         ui/features/reviews/screens/ReviewsScreen.qml
+        ui/features/reviews/models/ReviewsModel.qml
+        ui/features/reviews/components/StarRating.qml
+        ui/features/reviews/components/StarInput.qml
+        ui/features/reviews/components/ReviewHeader.qml
         #======FEATURE-SETTINGS======
         ui/features/settings/screens/SettingsScreen.qml
         ui/features/settings/pages/SettingsPage.qml
@@ -181,6 +185,7 @@ qt_add_qml_module(appAccoFinder
         ui/features/notifications/screens/NotificationsScreen.qml
         ui/features/payments/pages/PaymentsHistoryPage.qml
         ui/features/payments/screens/PaymentsScreen.qml
+        ui/features/payments/pages/PaymentStatusPage.qml
         #======FEATURE-PROPERTIES======
         ui/features/properties/components/StatCard.qml
         ui/features/properties/components/StatSummaryBar.qml
@@ -241,7 +246,6 @@ qt_add_qml_module(appAccoFinder
         QML_FILES ui/features/bookings/pages/BookingOverviewAgentPage.qml
         QML_FILES ui/features/bookings/pages/AgentBookingDetailsOnOwnedPropertiesPage.qml
         QML_FILES ui/utils/ImageUtils.js
-        QML_FILES ui/features/payments/pages/PaymentStatusPage.qml
         QML_FILES ui/features/payments/pages/PaymentsHistoryPage.qml
         QML_FILES ui/features/payments/models/PaymentsModel.qml
         QML_FILES ui/features/bookings/models/BookingsModel.qml
@@ -254,6 +258,7 @@ qt_add_qml_module(appAccoFinder
         QML_FILES ui/features/bookings/components/CustomButton.qml
         QML_FILES ui/features/bookings/delegates/AdminBookingDetailsDelegate.qml
         QML_FILES ui/features/bookings/pages/AdminBookingDetailsPage.qml
+
 
 )
 
