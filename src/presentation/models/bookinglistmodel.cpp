@@ -328,9 +328,16 @@ int BookingListModel::countByStatus(BookingStatus status) const
 
 double BookingListModel::sumAmount() const
 {
+    // Only realised bookings count towards booking value. Under the hold model a
+    // booking can sit in PendingPayment / PaymentInFlight, or end as Expired /
+    // Failed / Cancelled / Refunded without ever being paid; including those
+    // inflated the figure with holds that were never actually taken.
     double total = 0.0;
     for (const auto& b : m_bookings) {
-        if (b)
+        if (!b)
+            continue;
+        const BookingStatus status = b->getStatus();
+        if (status == BookingStatus::Confirmed || status == BookingStatus::Paid)
             total += b->getAmount();
     }
     return total;
@@ -338,9 +345,14 @@ double BookingListModel::sumAmount() const
 
 double BookingListModel::sumCommission() const
 {
+    // Commission is only earned on confirmed (paid) bookings, mirroring the
+    // server-side aggregation in the dashboard controller.
     double total = 0.0;
     for (const auto& b : m_bookings) {
-        if (b)
+        if (!b)
+            continue;
+        const BookingStatus status = b->getStatus();
+        if (status == BookingStatus::Confirmed || status == BookingStatus::Paid)
             total += b->getCommissionAmount();
     }
     return total;

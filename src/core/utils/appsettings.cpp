@@ -349,9 +349,6 @@ QString AppSettings::sortOrder() const {
 
 // FAVORITES
 
-void AppSettings::setFavoritePropertyIds(const QStringList &value) {
-    m_settings.setValue("favorites/propertyIds", value);
-}
 QStringList AppSettings::favoritePropertyIds() const {
     return m_settings.value("favorites/propertyIds").toStringList();
 }

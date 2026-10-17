@@ -161,6 +161,7 @@ public:
     // =========================
     Q_INVOKABLE void setFavoritePropertyIds(const QStringList &value);
     Q_INVOKABLE QStringList favoritePropertyIds() const;
+    Q_INVOKABLE void toggleFavoriteProperty(const QString &propertyId);
 
     // =========================
     // FAVORITES — ROOMS / QUARTERS

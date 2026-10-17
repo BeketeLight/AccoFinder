@@ -54,6 +54,15 @@ Item {
     property var propRooms: []
     property var propPhotos: []
     property string propStatus: propertyPayload ? String(propertyPayload.verificationStatus || "").toUpperCase() : "PENDING"
+    // Backend PropertyType enum: WHOLE / HOSTEL / QUARTER.
+    property string propPropertyType: propertyPayload ? String(propertyPayload.propertyType || "") : ""
+    readonly property string propPropertyTypeLabel: {
+        var t = String(root.propPropertyType).toUpperCase()
+        if (t === "WHOLE") return qsTr("Whole property")
+        if (t === "HOSTEL") return qsTr("Hostel")
+        if (t === "QUARTER") return qsTr("Quarter")
+        return t.length > 0 ? t : qsTr("Not specified")
+    }
 
     // Admin who approved this listing (VERIFIED). Read from the payload's
     // approvedBy so reviewers can see who verified a property.
@@ -521,6 +530,48 @@ Item {
                     font.pixelSize: 13
                     lineHeight: 1.25
                     wrapMode: Text.WordWrap
+                }
+            }
+
+            SectionHeader {
+                Layout.fillWidth: true
+                title: qsTr("Property type")
+            }
+
+            Rectangle {
+                Layout.fillWidth: true
+                implicitHeight: typeRow.implicitHeight + 24
+                radius: 12
+                color: root.surfaceColor
+                border.color: root.borderColor
+                border.width: 1
+
+                RowLayout {
+                    id: typeRow
+                    anchors.fill: parent
+                    anchors.margins: 12
+                    spacing: 12
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        spacing: 2
+
+                        Label {
+                            Layout.fillWidth: true
+                            text: root.propPropertyTypeLabel
+                            color: root.textColor
+                            font.pixelSize: 14
+                            font.bold: true
+                            elide: Text.ElideRight
+                        }
+
+                        Label {
+                            Layout.fillWidth: true
+                            text: qsTr("How this listing is offered to clients")
+                            color: root.mutedColor
+                            font.pixelSize: 11
+                            elide: Text.ElideRight
+                        }
+                    }
                 }
             }
 

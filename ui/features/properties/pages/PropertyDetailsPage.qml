@@ -37,6 +37,15 @@ Page {
     // verificationStatus mirrors the backend enum: PENDING / VERIFIED / REJECTED ("" = local draft)
     property string verificationStatus: "PENDING"
     property string rejectionReason: ""
+    // Backend PropertyType enum: WHOLE / HOSTEL / QUARTER.
+    property string propertyType: ""
+    readonly property string prettyPropertyType: {
+        var t = String(root.propertyType).toUpperCase()
+        if (t === "WHOLE") return qsTr("Whole property")
+        if (t === "HOSTEL") return qsTr("Hostel")
+        if (t === "QUARTER") return qsTr("Quarter")
+        return t.length > 0 ? t : qsTr("Not specified")
+    }
     // Admin who approved this listing (VERIFIED). Populated from the property
     // payload's approvedBy via applyPayload so the owner can see who verified it.
     property string approvedById: ""
@@ -202,6 +211,8 @@ Page {
             root.verificationStatus = String(p.verificationStatus)
         if (p.rejectionReason !== undefined)
             root.rejectionReason = String(p.rejectionReason)
+        if (p.propertyType !== undefined)
+            root.propertyType = String(p.propertyType)
         if (p.approvedByName !== undefined)
             root.approvedByName = String(p.approvedByName)
         if (p.approvedById !== undefined)
@@ -2232,6 +2243,64 @@ Page {
                     text: qsTr("%L1 / %L2 characters").arg(descriptionArea.length).arg(descriptionArea.maxLength)
                     color: descriptionArea.length >= descriptionArea.maxLength ? root.dangerColor : root.mutedColor
                     font.pixelSize: 10
+                }
+            }
+
+            SectionHeader {
+                Layout.fillWidth: true
+                title: qsTr("Property type")
+            }
+
+            Rectangle {
+                Layout.fillWidth: true
+                implicitHeight: propertyTypeRow.implicitHeight + 24
+                radius: 12
+                color: root.surfaceColor
+                border.color: root.borderColor
+                border.width: 1
+
+                RowLayout {
+                    id: propertyTypeRow
+                    anchors.fill: parent
+                    anchors.margins: 12
+                    spacing: 12
+
+                    Rectangle {
+                        Layout.preferredWidth: 36
+                        Layout.preferredHeight: 36
+                        radius: 10
+                        color: root.softBlueColor
+
+                        Label {
+                            anchors.centerIn: parent
+                            text: qsTr("Type")
+                            color: root.primaryColor
+                            font.pixelSize: 10
+                            font.bold: true
+                        }
+                    }
+
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        spacing: 2
+
+                        Label {
+                            Layout.fillWidth: true
+                            text: root.prettyPropertyType
+                            color: root.textColor
+                            font.pixelSize: 14
+                            font.bold: true
+                            elide: Text.ElideRight
+                        }
+
+                        Label {
+                            Layout.fillWidth: true
+                            text: qsTr("How this listing is offered to clients")
+                            color: root.mutedColor
+                            font.pixelSize: 11
+                            elide: Text.ElideRight
+                        }
+                    }
                 }
             }
 

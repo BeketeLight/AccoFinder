@@ -148,17 +148,23 @@ Item {
         }
         return n
     }
-    function sumBookingField(list, field) {
+    // Value and commission only count realised (confirmed/paid) bookings so
+    // pending holds, expired holds and cancellations never inflate the cards.
+    function sumRealisedField(field) {
+        var list = root.myBookings()
         var total = 0
-        for (var i = 0; i < list.length; i++)
-            total += Number(list[i][field] || 0)
+        for (var i = 0; i < list.length; i++) {
+            var st = String(list[i].status || "").toLowerCase()
+            if (st === "confirmed" || st === "paid")
+                total += Number(list[i][field] || 0)
+        }
         return total
     }
     property int pendingBookings: root.countBookingStatus(root.myBookings(), ["pending"]) + refreshTick - refreshTick
     property int confirmedBookings: root.countBookingStatus(root.myBookings(), ["confirmed", "paid"]) + refreshTick - refreshTick
     property int cancelledBookings: root.countBookingStatus(root.myBookings(), ["cancelled"]) + refreshTick - refreshTick
-    property real totalBookingValue: root.sumBookingField(root.myBookings(), "amount") + refreshTick - refreshTick
-    property real commissionEarned: root.sumBookingField(root.myBookings(), "commissionAmount") + refreshTick - refreshTick
+    property real totalBookingValue: root.sumRealisedField("amount") + refreshTick - refreshTick
+    property real commissionEarned: root.sumRealisedField("commissionAmount") + refreshTick - refreshTick
 
     readonly property alias attentionModel: attentionModelId
     // Live C++ list models. These are populated by their owning view models

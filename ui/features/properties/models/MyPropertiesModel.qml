@@ -107,6 +107,7 @@ Item {
                 village: it.village
             },
             verificationStatus: String(it.status),
+            propertyType: it.propertyType || "",
             rejectionReason: it.rejectionReason || "",
             amenities: it.propertyId ? PropertyViewModel.propertyListModel.amenitiesFor(it.propertyId) : [],
             isActive: true,
@@ -132,6 +133,7 @@ Item {
                 district: item.district, village: item.village,
                 price: item.price, status: item.status,
                 rooms: item.roomCount, matches: true,
+                propertyType: item.propertyType || "",
                 rejectionReason: item.rejectionReason || "",
                 amenities: m.amenitiesFor(pid),
                 landlord: item.landlord || item.landlordPhone || "",
