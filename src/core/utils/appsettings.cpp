@@ -351,9 +351,30 @@ QString AppSettings::sortOrder() const {
 
 void AppSettings::setFavoritePropertyIds(const QStringList &value) {
     m_settings.setValue("favorites/propertyIds", value);
+    emit favoritePropertyIdsChanged();
 }
 QStringList AppSettings::favoritePropertyIds() const {
     return m_settings.value("favorites/propertyIds").toStringList();
+}
+
+bool AppSettings::isPropertyFavorite(const QString &propertyId) const {
+    if (propertyId.isEmpty())
+        return false;
+    return favoritePropertyIds().contains(propertyId);
+}
+
+void AppSettings::toggleFavoriteProperty(const QString &propertyId) {
+    if (propertyId.isEmpty())
+        return;
+
+    QStringList ids = favoritePropertyIds();
+    if (ids.contains(propertyId))
+        ids.removeAll(propertyId);
+    else
+        ids.append(propertyId);
+
+    m_settings.setValue("favorites/propertyIds", ids);
+    emit favoritePropertyIdsChanged();
 }
 
 // FAVORITES — ROOMS / QUARTERS
@@ -371,22 +392,6 @@ bool AppSettings::isRoomFavorite(const QString &quarterId) const {
     if (quarterId.isEmpty())
         return false;
     return favoriteRoomIds().contains(quarterId);
-}
-
-
-void AppSettings::setFavoritePropertyIds(const QStringList &value) {
-    m_settings.setValue("favorites/propertyIds", value);
-    emit favoritePropertyIdsChanged();
-}
-void AppSettings::toggleFavoriteProperty(const QString &propertyId) {
-    if (propertyId.isEmpty()) return;
-    QStringList ids = favoritePropertyIds();
-    if (ids.contains(propertyId))
-        ids.removeAll(propertyId);
-    else
-        ids.append(propertyId);
-    m_settings.setValue("favorites/propertyIds", ids);
-    emit favoritePropertyIdsChanged();
 }
 
 void AppSettings::toggleFavoriteRoom(const QString &quarterId) {

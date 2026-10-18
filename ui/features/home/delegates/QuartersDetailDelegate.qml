@@ -221,301 +221,312 @@ Page {
                                     opacity: 0.7
                                 }
                             }
-                            Image {
-                                id: favouriteImg
-                                source: root.quarterFavourite ? "qrc:/ui/assets/tiktok-save-bookmark-symbol-blue.svg" : "qrc:/ui/assets/save-instagram-black-outline.svg"
-                                width: 28
-                                height: 38
-                                sourceSize.width: 48
-                                sourceSize.height: 48
-                                fillMode: Image.PreserveAspectFit
-                                antialiasing: true
-                                smooth: true
-                                anchors.top: parent.top
-                                anchors.right: parent.right
-                                anchors.margins: 8
+                        }
+                    }
+                    Rectangle {
+                        id: favouriteButton
+                        width: 40
+                        height: 40
+                        radius: 20
+                        anchors.top: parent.top
+                        anchors.right: parent.right
+                        anchors.margins: 12
+                        color: "#CCFFFFFF"
+                        border.color: "#E5E7EB"
+                        border.width: 1
 
-                                MouseArea {
-                                    anchors.fill: parent
-                                    onClicked: {
-                                        if (!AppSettings.isLoggedIn()) {
-                                            NavUtils.navigateToAccount();
-                                            return;
-                                        }
-                                        const wasFav = AppSettings.isRoomFavorite(root.quarterId);
-                                        AppSettings.toggleFavoriteRoom(root.quarterId);
-                                        if (!wasFav) {
-                                            AppSettings.saveRoomSnapshot(root.quarterId, {
-                                                quarterId: root.quarterId,
-                                                propertyId: root.propertyId,
-                                                title: root.quarterTitle,
-                                                type: root.quarterType,
-                                                price: root.quarterPrice,
-                                                location: root.location,
-                                                imageUrl: root.roomImage,
-                                                available: root.isquarterAvailable,
-                                                holdActive: root.isOnHold,
-                                                savedAt: Date.now()
-                                            });
-                                        }
-                                    }
+                        Image {
+                            anchors.centerIn: parent
+                            source: root.quarterFavourite ? "qrc:/ui/assets/favorite-filled.svg" : "qrc:/ui/assets/favorite-outline.svg"
+                            sourceSize.width: 22
+                            sourceSize.height: 22
+                            width: 22
+                            height: 22
+                            fillMode: Image.PreserveAspectFit
+                            antialiasing: true
+                            smooth: true
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: {
+                                if (!AppSettings.isLoggedIn()) {
+                                    NavUtils.navigateToAccount();
+                                    return;
+                                }
+                                const wasFav = AppSettings.isRoomFavorite(root.quarterId);
+                                AppSettings.toggleFavoriteRoom(root.quarterId);
+                                if (!wasFav) {
+                                    AppSettings.saveRoomSnapshot(root.quarterId, {
+                                        quarterId: root.quarterId,
+                                        propertyId: root.propertyId,
+                                        title: root.quarterTitle,
+                                        type: root.quarterType,
+                                        price: root.quarterPrice,
+                                        location: root.location,
+                                        imageUrl: root.roomImage,
+                                        available: root.isquarterAvailable === true,
+                                        holdActive: root.isOnHold === true,
+                                        savedAt: Date.now()
+                                    });
                                 }
                             }
                         }
                     }
                 }
-
-                // Media counter
-                Rectangle {
-                    anchors.left: parent.left
-                    anchors.bottom: parent.bottom
-                    anchors.margins: 12
-                    height: 24
-                    radius: 12
-                    color: "#80000000"
-                    width: counterText.width + 16
-
-                    Label {
-                        id: counterText
-                        anchors.centerIn: parent
-                        text: (mediaSwipe.currentIndex + 1) + " / " + Math.max(mediaSwipe.count, 1)
-                        color: "white"
-                        font.pixelSize: 12
-                    }
-                }
-
-                // Media type indicator
-                Rectangle {
-                    anchors.right: parent.right
-                    anchors.bottom: parent.bottom
-                    anchors.rightMargin: 20
-                    anchors.bottomMargin: 12
-                    height: 24
-                    radius: 12
-                    color: "#80000000"
-                    width: mediaTypeText.width + 16
-
-                    Label {
-                        id: mediaTypeText
-                        anchors.centerIn: parent
-                        text: mediaSwipe.currentItem ? (mediaSwipe.currentItem.isVideo ? "🎥 Video" : "📷 Photo") : "📷 Photo"
-                        color: "white"
-                        font.pixelSize: 12
-                    }
-                }
             }
 
-            // ===== MAIN INFO =====
-            ColumnLayout {
-                Layout.fillWidth: true
-                Layout.margins: 16
-                spacing: 8
-
-                Label {
-                    text: root.quarterType
-                    font.pixelSize: 22
-                    font.weight: Font.DemiBold
-                    color: "#1F2937"
-                    wrapMode: Text.WordWrap
-                    Layout.fillWidth: true
-                }
-
-                Label {
-                    text: root.quarterTitle
-                    font.pixelSize: 15
-                    color: "#6B7280"
-                    wrapMode: Text.WordWrap
-                    Layout.fillWidth: true
-                }
-
-                RowLayout {
-                    spacing: 4
-                    Label {
-                        text: "📍"
-                        font.pixelSize: 14
-                    }
-                    Label {
-                        text: root.location
-                        font.pixelSize: 14
-                        color: "#6B7280"
-                        Layout.fillWidth: true
-                    }
-                }
-
-                Label {
-                    text: "MWK " + Number(root.quarterPrice).toLocaleString(Qt.locale(), "f", 0)
-                    font.pixelSize: 26
-                    font.bold: true
-                    color: "#2563EB"
-                }
-
-                // The client does not pay rent in the app; the booking fee is
-                // the whole amount due at checkout.
-                Label {
-                    visible: root.bookingFee > 0
-                    text: qsTr("Booking fee: MK %1").arg(Number(root.bookingFee).toLocaleString(Qt.locale(), "f", 0))
-                    font.pixelSize: 14
-                    font.bold: true
-                    color: "#111827"
-                }
-
-                // Availability badge
-                Rectangle {
-                    height: 28
-                    radius: 14
-                    width: availabilityText.width + 24
-                    // Amber for a hold, so "temporarily spoken for" is
-                    // visually distinct from "permanently booked".
-                    color: !root.isquarterAvailable ? "#EF4444" : root.isOnHold ? "#F59E0B" : "#22C55E"
-
-                    Label {
-                        id: availabilityText
-                        anchors.centerIn: parent
-                        text: !root.isquarterAvailable ? "✗ Currently Booked" : root.isOnHold ? "⏳ On Hold" : "✓ Available Now"
-                        color: "white"
-                        font.pixelSize: 13
-                        font.bold: true
-                    }
-                }
-            }
-
+            // Media counter
             Rectangle {
-                Layout.fillWidth: true
-                height: 8
-                color: "#F5F5F5"
-            }
-
-            // ===== DESCRIPTION =====
-            ColumnLayout {
-                Layout.fillWidth: true
-                Layout.margins: 16
-                spacing: 8
+                anchors.left: parent.left
+                anchors.bottom: parent.bottom
+                anchors.margins: 12
+                height: 24
+                radius: 12
+                color: "#80000000"
+                width: counterText.width + 16
 
                 Label {
-                    text: "About This Room"
+                    id: counterText
+                    anchors.centerIn: parent
+                    text: (mediaSwipe.currentIndex + 1) + " / " + Math.max(mediaSwipe.count, 1)
+                    color: "white"
+                    font.pixelSize: 12
+                }
+            }
+
+            // Media type indicator
+            Rectangle {
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                anchors.rightMargin: 20
+                anchors.bottomMargin: 12
+                height: 24
+                radius: 12
+                color: "#80000000"
+                width: mediaTypeText.width + 16
+
+                Label {
+                    id: mediaTypeText
+                    anchors.centerIn: parent
+                    text: mediaSwipe.currentItem ? (mediaSwipe.currentItem.isVideo ? "🎥 Video" : "📷 Photo") : "📷 Photo"
+                    color: "white"
+                    font.pixelSize: 12
+                }
+            }
+        }
+
+        // ===== MAIN INFO =====
+        ColumnLayout {
+            Layout.fillWidth: true
+            Layout.margins: 16
+            spacing: 8
+
+            Label {
+                text: root.quarterType
+                font.pixelSize: 22
+                font.weight: Font.DemiBold
+                color: "#1F2937"
+                wrapMode: Text.WordWrap
+                Layout.fillWidth: true
+            }
+
+            Label {
+                text: root.quarterTitle
+                font.pixelSize: 15
+                color: "#6B7280"
+                wrapMode: Text.WordWrap
+                Layout.fillWidth: true
+            }
+
+            RowLayout {
+                spacing: 4
+                Label {
+                    text: "📍"
+                    font.pixelSize: 14
+                }
+                Label {
+                    text: root.location
+                    font.pixelSize: 14
+                    color: "#6B7280"
+                    Layout.fillWidth: true
+                }
+            }
+
+            Label {
+                text: "MWK " + Number(root.quarterPrice).toLocaleString(Qt.locale(), "f", 0)
+                font.pixelSize: 26
+                font.bold: true
+                color: "#2563EB"
+            }
+
+            // The client does not pay rent in the app; the booking fee is
+            // the whole amount due at checkout.
+            Label {
+                visible: root.bookingFee > 0
+                text: qsTr("Booking fee: MK %1").arg(Number(root.bookingFee).toLocaleString(Qt.locale(), "f", 0))
+                font.pixelSize: 14
+                font.bold: true
+                color: "#111827"
+            }
+
+            // Availability badge
+            Rectangle {
+                height: 28
+                radius: 14
+                width: availabilityText.width + 24
+                // Amber for a hold, so "temporarily spoken for" is
+                // visually distinct from "permanently booked".
+                color: !root.isquarterAvailable ? "#EF4444" : root.isOnHold ? "#F59E0B" : "#22C55E"
+
+                Label {
+                    id: availabilityText
+                    anchors.centerIn: parent
+                    text: !root.isquarterAvailable ? "✗ Currently Booked" : root.isOnHold ? "⏳ On Hold" : "✓ Available Now"
+                    color: "white"
+                    font.pixelSize: 13
+                    font.bold: true
+                }
+            }
+        }
+
+        Rectangle {
+            Layout.fillWidth: true
+            height: 8
+            color: "#F5F5F5"
+        }
+
+        // ===== DESCRIPTION =====
+        ColumnLayout {
+            Layout.fillWidth: true
+            Layout.margins: 16
+            spacing: 8
+
+            Label {
+                text: "About This Room"
+                font.pixelSize: 16
+                font.weight: Font.DemiBold
+                color: "#1F2937"
+            }
+
+            Label {
+                text: root.description
+                font.pixelSize: 14
+                color: "#4B5563"
+                wrapMode: Text.WordWrap
+                Layout.fillWidth: true
+                lineHeight: 1.35
+            }
+        }
+
+        Rectangle {
+            Layout.fillWidth: true
+            height: 8
+            color: "#F5F5F5"
+        }
+
+        // ===== REVIEWS =====
+        ColumnLayout {
+            Layout.fillWidth: true
+            Layout.margins: 16
+            spacing: 12
+
+            RowLayout {
+                Layout.fillWidth: true
+                Label {
+                    text: "Reviews"
                     font.pixelSize: 16
                     font.weight: Font.DemiBold
                     color: "#1F2937"
+                    Layout.fillWidth: true
                 }
-
                 Label {
-                    text: root.description
-                    font.pixelSize: 14
-                    color: "#4B5563"
-                    wrapMode: Text.WordWrap
-                    Layout.fillWidth: true
-                    lineHeight: 1.35
+                    text: root.agentReviewCount + " reviews"
+                    font.pixelSize: 13
+                    color: "#6B7280"
                 }
             }
 
-            Rectangle {
-                Layout.fillWidth: true
-                height: 8
-                color: "#F5F5F5"
-            }
+            Repeater {
+                model: root.reviewsModel
 
-            // ===== REVIEWS =====
-            ColumnLayout {
-                Layout.fillWidth: true
-                Layout.margins: 16
-                spacing: 12
-
-                RowLayout {
+                Rectangle {
                     Layout.fillWidth: true
-                    Label {
-                        text: "Reviews"
-                        font.pixelSize: 16
-                        font.weight: Font.DemiBold
-                        color: "#1F2937"
-                        Layout.fillWidth: true
-                    }
-                    Label {
-                        text: root.agentReviewCount + " reviews"
-                        font.pixelSize: 13
-                        color: "#6B7280"
-                    }
-                }
+                    radius: 12
+                    color: "#F9FAFB"
+                    border.color: "#E5E7EB"
+                    border.width: 1
+                    height: reviewCol.height + 24
 
-                Repeater {
-                    model: root.reviewsModel
+                    ColumnLayout {
+                        id: reviewCol
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.top: parent.top
+                        anchors.margins: 12
+                        spacing: 6
 
-                    Rectangle {
-                        Layout.fillWidth: true
-                        radius: 12
-                        color: "#F9FAFB"
-                        border.color: "#E5E7EB"
-                        border.width: 1
-                        height: reviewCol.height + 24
+                        RowLayout {
+                            spacing: 8
 
-                        ColumnLayout {
-                            id: reviewCol
-                            anchors.left: parent.left
-                            anchors.right: parent.right
-                            anchors.top: parent.top
-                            anchors.margins: 12
-                            spacing: 6
-
-                            RowLayout {
-                                spacing: 8
-
-                                Rectangle {
-                                    width: 36
-                                    height: 36
-                                    radius: 18
-                                    color: "#E0E7FF"
-                                    Label {
-                                        anchors.centerIn: parent
-                                        text: modelData.name.charAt(0)
-                                        font.pixelSize: 14
-                                        font.bold: true
-                                        color: "#4338CA"
-                                    }
-                                }
-
-                                ColumnLayout {
-                                    spacing: 1
-                                    Label {
-                                        text: modelData.name
-                                        font.pixelSize: 14
-                                        font.weight: Font.Medium
-                                        color: "#1F2937"
-                                    }
-                                    Label {
-                                        text: modelData.date
-                                        font.pixelSize: 11
-                                        color: "#9CA3AF"
-                                    }
-                                }
-
-                                Item {
-                                    Layout.fillWidth: true
-                                }
-
+                            Rectangle {
+                                width: 36
+                                height: 36
+                                radius: 18
+                                color: "#E0E7FF"
                                 Label {
-                                    text: "★".repeat(modelData.rating)
-                                    font.pixelSize: 12
-                                    color: "#F59E0B"
+                                    anchors.centerIn: parent
+                                    text: modelData.name.charAt(0)
+                                    font.pixelSize: 14
+                                    font.bold: true
+                                    color: "#4338CA"
                                 }
+                            }
+
+                            ColumnLayout {
+                                spacing: 1
+                                Label {
+                                    text: modelData.name
+                                    font.pixelSize: 14
+                                    font.weight: Font.Medium
+                                    color: "#1F2937"
+                                }
+                                Label {
+                                    text: modelData.date
+                                    font.pixelSize: 11
+                                    color: "#9CA3AF"
+                                }
+                            }
+
+                            Item {
+                                Layout.fillWidth: true
                             }
 
                             Label {
-                                text: modelData.comment
-                                font.pixelSize: 13
-                                color: "#4B5563"
-                                wrapMode: Text.WordWrap
-                                Layout.fillWidth: true
-                                lineHeight: 1.3
+                                text: "★".repeat(modelData.rating)
+                                font.pixelSize: 12
+                                color: "#F59E0B"
                             }
+                        }
+
+                        Label {
+                            text: modelData.comment
+                            font.pixelSize: 13
+                            color: "#4B5563"
+                            wrapMode: Text.WordWrap
+                            Layout.fillWidth: true
+                            lineHeight: 1.3
                         }
                     }
                 }
             }
+        }
 
-            // Bottom spacer
-            Item {
-                Layout.fillWidth: true
-                Layout.preferredHeight: 100
-            }
+        // Bottom spacer
+        Item {
+            Layout.fillWidth: true
+            Layout.preferredHeight: 100
         }
     }
 

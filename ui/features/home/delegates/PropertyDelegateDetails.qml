@@ -40,7 +40,14 @@ Page {
     property string agentLastName: ""
     property real agentRating: 0
     property int agentReviewCount: 0
-    property bool propertyFavourite: AppSettings.isRoomFavorite(root.propertyId)
+    property bool propertyFavourite: AppSettings.isPropertyFavorite(root.propertyId)
+
+    Connections {
+        target: AppSettings
+        function onFavoritePropertyIdsChanged() {
+            root.propertyFavourite = AppSettings.isPropertyFavorite(root.propertyId);
+        }
+    }
 
     // ========== DETAILS MODEL (media + rooms) ==========
     PropertyDetailsModel {
@@ -90,24 +97,6 @@ Page {
         return map[key] !== undefined ? map[key] : key;
     }
 
-    function amenityIcon(token) {
-        var map = {
-            "WIFI": "qrc:/ui/assets/amenities/wifi.svg",
-            "PARKING": "qrc:/ui/assets/amenities/parking.svg",
-            "SECURITY": "qrc:/ui/assets/amenities/security.svg",
-            "WATER": "qrc:/ui/assets/amenities/water.svg",
-            "ELECTRICITY": "qrc:/ui/assets/amenities/electricity.svg",
-            "FURNISHED": "qrc:/ui/assets/amenities/furnished.svg",
-            "AC": "qrc:/ui/assets/amenities/ac.svg",
-            "GARDEN": "qrc:/ui/assets/amenities/garden.svg",
-            "BALCONY": "qrc:/ui/assets/amenities/balcony.svg",
-            "BOREHOLE": "qrc:/ui/assets/amenities/borehole.svg",
-            "COOKER": "qrc:/ui/assets/amenities/cooker.svg"
-        };
-        var key = String(token).toUpperCase();
-        return map[key] !== undefined ? map[key] : "";
-    }
-
     // ========== SIGNALS ==========
     signal backRequested
     signal bookRequested
@@ -144,6 +133,7 @@ Page {
         NavUtils.push(Qt.resolvedUrl("./QuartersDetailDelegate.qml"), {
             quarterId: roomData.roomId,
             quarterType: roomData.type,
+            propertyId: root.propertyId,
             quarterPrice: roomData.price,
             isquarterAvailable: roomData.available,
             // Provisional hold state from GET /rooms. A held room still comes
@@ -277,43 +267,39 @@ Page {
                     }
                 }
 
-                Image {
-                    id: favouriteImg
-                    source: root.quarterFavourite ? "qrc:/ui/assets/tiktok-save-bookmark-symbol-blue.svg" : "qrc:/ui/assets/save-instagram-black-outline.svg"
-                    width: 28
-                    height: 38
-                    sourceSize.width: 38
-                    sourceSize.height: 48
-                    fillMode: Image.PreserveAspectFit
-                    antialiasing: true
-                    smooth: true
+                Rectangle {
+                    id: favouriteButton
+                    width: 40
+                    height: 40
+                    radius: 20
                     anchors.top: parent.top
                     anchors.right: parent.right
-                    anchors.margins: 8
+                    anchors.margins: 12
+                    color: "#CCFFFFFF"
+                    border.color: "#E5E7EB"
+                    border.width: 1
+
+                    Image {
+                        anchors.centerIn: parent
+                        source: root.propertyFavourite ? "qrc:/ui/assets/favorite-filled.svg" : "qrc:/ui/assets/favorite-outline.svg"
+                        sourceSize.width: 22
+                        sourceSize.height: 22
+                        width: 22
+                        height: 22
+                        fillMode: Image.PreserveAspectFit
+                        antialiasing: true
+                        smooth: true
+                    }
 
                     MouseArea {
                         anchors.fill: parent
+                        cursorShape: Qt.PointingHandCursor
                         onClicked: {
                             if (!AppSettings.isLoggedIn()) {
                                 NavUtils.navigateToAccount();
                                 return;
                             }
-                            const wasFav = AppSettings.isRoomFavorite(root.quarterId);
-                            AppSettings.toggleFavoriteRoom(root.propertyId);
-                            if (!wasFav) {
-                                AppSettings.saveRoomSnapshot(root.quarterId, {
-                                    quarterId: root.quarterId,
-                                    propertyId: root.propertyId,
-                                    title: root.quarterTitle,
-                                    type: root.quarterType,
-                                    price: root.quarterPrice,
-                                    location: root.location,
-                                    imageUrl: root.roomImage,
-                                    available: root.isquarterAvailable,
-                                    holdActive: root.isOnHold,
-                                    savedAt: Date.now()
-                                });
-                            }
+                            AppSettings.toggleFavoriteProperty(root.propertyId);
                         }
                     }
                 }
