@@ -15,6 +15,7 @@ Rectangle {
     property string clientId: ""
     property string clientName: ""
     property string clientPhone: ""
+    property string clientEmail: ""
     property string roomId: ""
     property string bookingDate: ""
     property real amount: 0
@@ -28,6 +29,9 @@ Rectangle {
     signal confirmRequested(var bookingId)
     signal cancelRequested(var bookingId)
     signal releaseRequested(var bookingId)
+    // Raised when the row body itself is tapped (never by the action buttons
+    // below), so the page can open this booking's detail screen.
+    signal viewDetailsRequested(var data)
 
     readonly property color statusTint: Utils.bookingStatusBucket(root.status) === "CONFIRMED" ? "#16A34A"
                                          : Utils.bookingStatusBucket(root.status) === "CANCELLED" ? "#DC2626"
@@ -51,12 +55,40 @@ Rectangle {
         return s.length > 8 ? s.substring(0, 8) : s
     }
 
+    // What this row knows about the booking, handed to the screen on tap. The
+    // screen adds the room/property the stay belongs to, which the list row
+    // does not carry.
+    function detailsPayload() {
+        return {
+            bookingId: root.bookingId,
+            clientId: root.clientId,
+            roomId: root.roomId,
+            bookingDate: root.bookingDate,
+            amount: root.amount,
+            commissionAmount: root.commissionAmount,
+            status: root.status,
+            clientName: root.clientName,
+            clientPhone: root.clientPhone,
+            clientEmail: root.clientEmail
+        }
+    }
+
     Layout.fillWidth: true
     implicitHeight: cardColumn.implicitHeight + 20
     radius: 12
-    color: "#FFFFFF"
+    color: rowMouse.pressed ? "#F9FAFB" : "#FFFFFF"
     border.color: "#E5E7EB"
     border.width: 1
+
+    // Declared first so it stacks under the card content: labels are
+    // transparent to the mouse, while the Confirm/Cancel/Refund buttons sit
+    // above and keep the clicks they own.
+    MouseArea {
+        id: rowMouse
+        anchors.fill: parent
+        cursorShape: Qt.PointingHandCursor
+        onClicked: root.viewDetailsRequested(root.detailsPayload())
+    }
 
     ColumnLayout {
         id: cardColumn

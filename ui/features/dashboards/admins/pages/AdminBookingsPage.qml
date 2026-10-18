@@ -5,6 +5,7 @@ import "../../../../components/indicators"
 import "../../../properties/components"
 import "../../models"
 import "../../../../utils/Utils.js" as Utils
+import "../../../../utils/NavigationUtils.js" as NavUtils
 import "../delegates"
 
 Item {
@@ -49,6 +50,77 @@ Item {
         root.bookingsModel.busyBookingId = bookingId
         BookingViewModel.releaseBooking(bookingId)
         root.bookingAction("release", bookingId)
+    }
+
+    // The list rows only carry the booking's own columns; the detail screen
+    // also shows the room and property the stay belongs to, so the row is
+    // joined against the room/property view models here - the same join
+    // BookingsModel performs for the client and agent booking lists.
+    function findPropertyFor(propId) {
+        if (!propId || !PropertyViewModel || !PropertyViewModel.propertiesForView)
+            return {}
+        var list = PropertyViewModel.propertiesForView() || []
+        for (var i = 0; i < list.length; i++) {
+            if (list[i] && String(list[i].id) === String(propId))
+                return list[i]
+        }
+        return {}
+    }
+
+    function initialsFor(name) {
+        var s = String(name || "").trim()
+        if (s.length === 0)
+            return ""
+        var parts = s.split(/\s+/).filter(function (p) { return p.length > 0 })
+        if (parts.length === 1)
+            return parts[0].charAt(0).toUpperCase()
+        return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase()
+    }
+
+    function openBookingDetails(row) {
+        var roomInfo = (row.roomId && typeof RoomViewModel !== "undefined")
+            ? (RoomViewModel.getRoomById(row.roomId) || {})
+            : {}
+        var propId = roomInfo.propertyId ? String(roomInfo.propertyId) : ""
+        var propInfo = propId.length > 0 ? root.findPropertyFor(propId) : {}
+
+        var hostName = ((propInfo.ownerFirstName || "") + " " + (propInfo.ownerSurname || "")).trim()
+        if (hostName.length === 0)
+            hostName = propInfo.ownerName || propInfo.landlord || ""
+        var landlord = propInfo.landlord || ""
+
+        NavUtils.navigateToBookingDetailsForAdmin({
+            bookingId: row.bookingId || "",
+            status: row.status || "",
+            bookingDate: row.bookingDate || "",
+            price: Number(row.amount) || 0,
+            commission: Number(row.commissionAmount) || 0,
+
+            clientName: row.clientName || "",
+            clientPhone: row.clientPhone || "",
+            clientEmail: row.clientEmail || "",
+            clientInitial: root.initialsFor(row.clientName),
+
+            houseName: propInfo.title || "",
+            propertyLocation: (propInfo.district && propInfo.village)
+                ? (propInfo.district + ", " + propInfo.village)
+                : (propInfo.district || propInfo.village || ""),
+            roomType: roomInfo.type || "",
+
+            // No photo travels with the list row: the detail screen pulls the
+            // booked room's image from the (asynchronously loaded) media model.
+            propertyId: propId,
+            roomId: row.roomId || "",
+            propertyImage: "",
+
+            hostName: hostName,
+            hostInitials: root.initialsFor(hostName),
+            hostEmail: propInfo.ownerEmail || "",
+            hostPhone: propInfo.ownerPhone || "",
+            landlord: landlord,
+            landlordInitials: root.initialsFor(landlord),
+            landlordPhone: propInfo.landlordPhone || ""
+        })
     }
 
     ColumnLayout {
@@ -159,6 +231,7 @@ Item {
                 clientId: model.clientId
                 clientName: model.clientName || ""
                 clientPhone: model.clientPhone || ""
+                clientEmail: model.clientEmail || ""
                 roomId: model.roomId
                 bookingDate: model.bookingDate
                 amount: model.amount
@@ -169,6 +242,7 @@ Item {
                 onConfirmRequested: (id) => root.confirmBooking(id)
                 onCancelRequested: (id) => root.cancelBooking(id)
                 onReleaseRequested: (id) => root.releaseBooking(id)
+                onViewDetailsRequested: (data) => root.openBookingDetails(data)
             }
         }
 
