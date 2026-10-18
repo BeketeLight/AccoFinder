@@ -262,6 +262,10 @@ function navigateToBookingDetailsForAdmin(data){
         propertyLocation: data.propertyLocation || "124 Lakeview Drive, Sector 4",
         propertyImage: data.propertyImage,
         roomType: data.roomType || "",
+        // Lets the detail screen fetch the booked room's photo when the caller
+        // (e.g. the admin bookings list) has no image to hand over.
+        propertyId: data.propertyId || "",
+        roomId: data.roomId || "",
     });
 
 }

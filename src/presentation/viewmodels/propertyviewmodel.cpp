@@ -208,6 +208,7 @@ QVariantMap PropertyViewModel::registrationPayloadFor(const QString &propertyId)
         address["village"] = row.value("village");
         payload["physicalAddress"] = address;
         payload["verificationStatus"] = row.value("status");
+        payload["propertyType"] = row.value("propertyType");
         payload["rejectionReason"] = row.value("rejectionReason");
         payload["amenities"] = m_propertyListModel->amenitiesFor(propertyId);
         payload["isActive"] = true;

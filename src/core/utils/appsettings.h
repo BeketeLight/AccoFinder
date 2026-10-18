@@ -23,7 +23,7 @@ class AppSettings : public QObject
 
 public:
     explicit AppSettings(QObject *parent = nullptr);
-    static AppSettings& instance();
+    static AppSettings &instance();
 
     Q_INVOKABLE void setStatusBarAppearance(const QColor &backgroundColor, bool darkIcons);
 
@@ -161,8 +161,11 @@ public:
     // =========================
     Q_INVOKABLE void setFavoritePropertyIds(const QStringList &value);
     Q_INVOKABLE QStringList favoritePropertyIds() const;
-    Q_INVOKABLE bool        isPropertyFavorite(const QString &propertyId) const;
-    Q_INVOKABLE void        toggleFavoriteProperty(const QString &propertyId);
+
+    Q_INVOKABLE bool isPropertyFavorite(const QString &propertyId) const;
+
+    Q_INVOKABLE void toggleFavoriteProperty(const QString &propertyId);
+
 
     // =========================
     // FAVORITES — ROOMS / QUARTERS
@@ -171,11 +174,11 @@ public:
     // saved independently. Each saved room also carries a small JSON
     // snapshot (title, price, image, propertyId, …) so the Saves screen
     // can render a card without a network round-trip.
-    Q_INVOKABLE void        toggleFavoriteRoom(const QString &quarterId);
+    Q_INVOKABLE void toggleFavoriteRoom(const QString &quarterId);
     Q_INVOKABLE QStringList favoriteRoomIds() const;
-    Q_INVOKABLE bool        isRoomFavorite(const QString &quarterId) const;
+    Q_INVOKABLE bool isRoomFavorite(const QString &quarterId) const;
 
-    Q_INVOKABLE void        saveRoomSnapshot(const QString &quarterId,
+    Q_INVOKABLE void saveRoomSnapshot(const QString &quarterId,
                                       const QVariantMap &data);
     Q_INVOKABLE QVariantMap favoriteRoomSnapshot(const QString &quarterId) const;
 
