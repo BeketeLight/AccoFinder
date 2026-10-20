@@ -308,6 +308,7 @@ Page {
                         anchors.fill: parent
                         cursorShape: Qt.PointingHandCursor
                         onClicked: {
+                            console.log("propertyType from saved button", root.propertyType);
                             if (!AppSettings.isLoggedIn()) {
                                 NavUtils.navigateToAccount();
                                 return;
@@ -630,84 +631,80 @@ Page {
     }
 
     // ========== FOOTER (whole-house booking only) ==========
-    footer: root.propertyType === "WHOLE" ? bookingBar : null
-
-    Component {
+    footer: ToolBar {
         id: bookingBar
+        height: root.propertyType === "WHOLE" ? 72 : 0
+        visible: root.propertyType === "WHOLE"
 
-        ToolBar {
-            height: 72
-
-            background: Rectangle {
-                color: "#FFFFFF"
-                Rectangle {
-                    anchors.top: parent.top
-                    width: parent.width
-                    height: 1
-                    color: "#E5E7EB"
-                }
+        background: Rectangle {
+            color: "#FFFFFF"
+            Rectangle {
+                anchors.top: parent.top
+                width: parent.width
+                height: 1
+                color: "#E5E7EB"
             }
+        }
 
-            RowLayout {
-                anchors.fill: parent
-                anchors.margins: 12
-                spacing: 12
+        RowLayout {
+            anchors.fill: parent
+            anchors.margins: 12
+            spacing: 12
 
-                Button {
-                    id: bookButton
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    enabled: !BookingController.isLoading && root.canBookProperty
+            Button {
+                id: bookButton
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                enabled: !BookingController.isLoading && root.canBookProperty
 
-                    text: {
-                        if (BookingController.isLoading)
-                            return qsTr("Booking…");
-                        if (!root.isPropertyAvailable)
-                            return qsTr("Currently Booked");
-                        if (root.isPropertyOnHold)
-                            return qsTr("On Hold");
-                        return qsTr("Book Now");
+                text: {
+                    if (BookingController.isLoading)
+                        return qsTr("Booking…");
+                    if (!root.isPropertyAvailable)
+                        return qsTr("Currently Booked");
+                    if (root.isPropertyOnHold)
+                        return qsTr("On Hold");
+                    return qsTr("Book Now");
+                }
+
+                background: Rectangle {
+                    radius: 12
+                    color: bookButton.enabled ? "#2563EB" : "#9CA3AF"
+                }
+
+                contentItem: Label {
+                    text: bookButton.text
+                    color: "#FFFFFF"
+                    font.pixelSize: 16
+                    font.bold: true
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                }
+
+                onClicked: {
+                    if (!AppSettings.isLoggedIn()) {
+                        NavUtils.navigateToAccount();
+                        return;
                     }
 
-                    background: Rectangle {
-                        radius: 12
-                        color: bookButton.enabled ? "#2563EB" : "#9CA3AF"
+                    if (!root.canBookProperty) {
+                        errorDialog.errorText = root.isPropertyOnHold ? qsTr("This property is currently on hold by another user.") : qsTr("This property is no longer available.");
+                        errorDialog.open();
+                        return;
                     }
 
-                    contentItem: Label {
-                        text: bookButton.text
-                        color: "#FFFFFF"
-                        font.pixelSize: 16
-                        font.bold: true
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
+                    if (root.bookingFee <= 0) {
+                        errorDialog.errorText = qsTr("Booking is not available right now. Please try again later.");
+                        errorDialog.open();
+                        return;
                     }
 
-                    onClicked: {
-                        if (!AppSettings.isLoggedIn()) {
-                            NavUtils.navigateToAccount();
-                            return;
-                        }
+                    var commission = root.bookingFee * (AppSettings.platformCommissionRate() / 100);
 
-                        if (!root.canBookProperty) {
-                            errorDialog.errorText = root.isPropertyOnHold ? qsTr("This property is currently on hold by another user.") : qsTr("This property is no longer available.");
-                            errorDialog.open();
-                            return;
-                        }
-
-                        if (root.bookingFee <= 0) {
-                            errorDialog.errorText = qsTr("Booking is not available right now. Please try again later.");
-                            errorDialog.open();
-                            return;
-                        }
-
-                        var commission = root.bookingFee * (AppSettings.platformCommissionRate() / 100);
-
-                        // Whole-property booking: send propertyId instead of roomId.
-                        // BookingController needs a createPropertyBooking(...) entry
-                        // point that hits POST /bookings with { propertyId, … }.
-                        BookingController.createPropertyBooking(root.propertyId, root.bookingFee, commission);
-                    }
+                    // Whole-property booking: send propertyId instead of roomId.
+                    // BookingController needs a createPropertyBooking(...) entry
+                    // point that hits POST /bookings with { propertyId, … }.
+                    BookingController.createPropertyBooking(root.propertyId, root.bookingFee, commission);
                 }
             }
         }
