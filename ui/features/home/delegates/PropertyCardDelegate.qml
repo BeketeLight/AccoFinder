@@ -8,6 +8,7 @@ Item {
     id: root
 
     property string propertyId: ""
+    property string proprtyType: ""
     property string title: ""
     property string location: ""
     property real price: 0
@@ -327,6 +328,7 @@ Item {
             NavUtils.push(Qt.resolvedUrl("./PropertyDelegateDetails.qml"), {
                 propertyId: root.propertyId,
                 propertyTitle: root.title,
+                proprtyType: root.proprtyType,
                 location: root.location,
                 price: root.price,
                 status: root.status,

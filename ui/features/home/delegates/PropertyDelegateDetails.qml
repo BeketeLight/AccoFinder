@@ -23,6 +23,7 @@ Page {
     property string propertyId: ""
     property bool favouriteChecked: false
     property string propertyTitle: ""
+    property string propertyType: ""
     property string location: ""
     property real price: 0
     property string status: ""
@@ -34,6 +35,18 @@ Page {
     property string agentName: ""
     property string agentPhone: ""
     property var amenities: []
+
+    // Whole-house booking state — the equivalent of the room page's
+    // isquarterAvailable / isOnHold, but for the property itself.
+    property bool isPropertyAvailable: true
+    property bool isPropertyOnHold: false
+    property var propertyHoldExpiresAt: null
+
+    readonly property bool canBookProperty: root.propertyType === "WHOLE" && root.isPropertyAvailable && !root.isPropertyOnHold
+
+    // The booking fee is the entire amount due for a whole-property booking.
+    // Same admin-set value the room page uses.
+    readonly property real bookingFee: AppSettings.bookingFee()
 
     // ========== AGENT ==========
     property string agentFirstName: ""
@@ -616,47 +629,115 @@ Page {
         }
     }
 
-    // ========== FOOTER ==========
-    footer: ToolBar {
-        height: 72
-        background: Rectangle {
-            color: "#FFFFFF"
-            Rectangle {
-                anchors.top: parent.top
-                width: parent.width
-                height: 1
-                color: "#E5E7EB"
+    // ========== FOOTER (whole-house booking only) ==========
+    footer: root.propertyType === "WHOLE" ? bookingBar : null
+
+    Component {
+        id: bookingBar
+
+        ToolBar {
+            height: 72
+
+            background: Rectangle {
+                color: "#FFFFFF"
+                Rectangle {
+                    anchors.top: parent.top
+                    width: parent.width
+                    height: 1
+                    color: "#E5E7EB"
+                }
+            }
+
+            RowLayout {
+                anchors.fill: parent
+                anchors.margins: 12
+                spacing: 12
+
+                Button {
+                    id: bookButton
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    enabled: !BookingController.isLoading && root.canBookProperty
+
+                    text: {
+                        if (BookingController.isLoading)
+                            return qsTr("Booking…");
+                        if (!root.isPropertyAvailable)
+                            return qsTr("Currently Booked");
+                        if (root.isPropertyOnHold)
+                            return qsTr("On Hold");
+                        return qsTr("Book Now");
+                    }
+
+                    background: Rectangle {
+                        radius: 12
+                        color: bookButton.enabled ? "#2563EB" : "#9CA3AF"
+                    }
+
+                    contentItem: Label {
+                        text: bookButton.text
+                        color: "#FFFFFF"
+                        font.pixelSize: 16
+                        font.bold: true
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+
+                    onClicked: {
+                        if (!AppSettings.isLoggedIn()) {
+                            NavUtils.navigateToAccount();
+                            return;
+                        }
+
+                        if (!root.canBookProperty) {
+                            errorDialog.errorText = root.isPropertyOnHold ? qsTr("This property is currently on hold by another user.") : qsTr("This property is no longer available.");
+                            errorDialog.open();
+                            return;
+                        }
+
+                        if (root.bookingFee <= 0) {
+                            errorDialog.errorText = qsTr("Booking is not available right now. Please try again later.");
+                            errorDialog.open();
+                            return;
+                        }
+
+                        var commission = root.bookingFee * (AppSettings.platformCommissionRate() / 100);
+
+                        // Whole-property booking: send propertyId instead of roomId.
+                        // BookingController needs a createPropertyBooking(...) entry
+                        // point that hits POST /bookings with { propertyId, … }.
+                        BookingController.createPropertyBooking(root.propertyId, root.bookingFee, commission);
+                    }
+                }
             }
         }
+    }
 
-        RowLayout {
-            anchors.fill: parent
-            anchors.margins: 12
-            spacing: 12
+    Dialog {
+        id: errorDialog
+        property string errorText: ""
+        anchors.centerIn: parent
+        title: qsTr("Booking Failed")
+        modal: true
+        standardButtons: Dialog.Ok
+        width: Math.min(parent ? parent.width - 48 : 320, 360)
 
-            Button {
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                text: "Write a review"
-                background: Rectangle {
-                    radius: 12
-                    color: "#2563EB"
-                }
-                contentItem: Label {
-                    text: parent.text
-                    color: "#FFFFFF"
-                    font.pixelSize: 16
-                    font.bold: true
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                }
-                onClicked: {
-                    NavUtils.push(Qt.resolvedUrl("../features/reviews/screens/WriteReviewScreen.qml"), {
-                        propertyId: root.propertyId,
-                        agentId: root.agentId ?? ""
-                    });
-                }
-            }
+        contentItem: Label {
+            text: errorDialog.errorText
+            wrapMode: Text.WordWrap
+        }
+    }
+
+    Connections {
+        target: BookingController
+
+        function onBookingCreated(booking) {
+            NavUtils.navigateToPayments(booking.id, booking.amount, booking.holdExpiresAt !== undefined ? booking.holdExpiresAt : null);
+        }
+
+        function onBookingError(error) {
+            errorDialog.errorText = error;
+            errorDialog.open();
         }
     }
     Component.onCompleted: {
