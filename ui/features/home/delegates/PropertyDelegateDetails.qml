@@ -8,6 +8,7 @@ import "../models"
 import "../../reviews/screens"
 import "../../../utils/NavigationUtils.js" as NavUtils
 import "../../../utils/ImageUtils.js" as ImageUtils
+import "../../../utils/Utils.js" as Utils
 
 Page {
     id: root
@@ -328,12 +329,13 @@ Page {
             // ===== AMENITIES =====
             ColumnLayout {
                 Layout.fillWidth: true
-                Layout.margins: 10
-                spacing: 12
+                Layout.margins: 16
+                Layout.topMargin: 16
+                spacing: 10
                 visible: root.amenityTokens().length > 0
 
                 Label {
-                    text: "Amenities"
+                    text: qsTr("Amenities")
                     font.pixelSize: 16
                     font.weight: Font.DemiBold
                     color: "#1F2937"
@@ -349,10 +351,11 @@ Page {
 
                         Rectangle {
                             required property string modelData
-                            width: amenityText.width + 9 //(amenitiesFlow.width - amenitiesFlow.spacing * 2) / 3
-                            height: amenityText.height + 10
-                            radius: 10
+                            width: amenityText.width + 18
+                            height: 26
+                            radius: 13
                             color: "#2563EB"
+
                             Label {
                                 id: amenityText
                                 text: root.amenityLabel(modelData)
@@ -362,6 +365,109 @@ Page {
                                 anchors.centerIn: parent
                             }
                         }
+                    }
+                }
+            }
+
+            // Divider above the price/availability section.
+            // Show it whenever there is *something* above it (amenities or the gallery).
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.topMargin: 16
+                height: 8
+                color: "#F5F5F5"
+            }
+
+            // ===== PRICE + LOCATION + AVAILABILITY =====
+            ColumnLayout {
+                Layout.fillWidth: true
+                Layout.margins: 16
+                spacing: 12
+
+                // ---- Location ----
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: 6
+
+                    Image {
+                        width: 16
+                        height: 16
+                        source: "qrc:/ui/assets/location-2955.svg"
+                        sourceSize.width: 16
+                        sourceSize.height: 16
+                        fillMode: Image.PreserveAspectFit
+                        smooth: true
+                    }
+
+                    Label {
+                        text: root.location
+                        font.pixelSize: 14
+                        color: "#6B7280"
+                        elide: Text.ElideRight
+                        Layout.fillWidth: true
+                    }
+                }
+
+                // ---- Price block (whole-house only) ----
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    Layout.topMargin: 4
+                    spacing: 6
+                    visible: root.propertyType === "WHOLE"
+
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: 8
+
+                        Label {
+                            text: qsTr("Rental Fee")
+                            font.pixelSize: 13
+                            color: "#6B7280"
+                            Layout.fillWidth: true
+                        }
+                        Label {
+                            text: Utils.formatCurrency(root.price)
+                            font.pixelSize: 20
+                            font.bold: true
+                            color: "#2563EB"
+                        }
+                    }
+
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: 8
+                        visible: root.bookingFee > 0
+
+                        Label {
+                            text: qsTr("Booking Fee")
+                            font.pixelSize: 13
+                            color: "#6B7280"
+                            Layout.fillWidth: true
+                        }
+                        Label {
+                            text: Utils.formatCurrency(root.bookingFee)
+                            font.pixelSize: 16
+                            font.bold: true
+                            color: "#111827"
+                        }
+                    }
+                }
+
+                // ---- Availability badge ----
+                Rectangle {
+                    Layout.topMargin: 4
+                    height: 28
+                    radius: 14
+                    width: availabilityText.width + 24
+                    color: root.isPropertyAvailable && !root.isPropertyOnHold ? "#22C55E" : (root.isPropertyOnHold ? "#F59E0B" : "#EF4444")
+
+                    Label {
+                        id: availabilityText
+                        anchors.centerIn: parent
+                        text: !root.isPropertyAvailable ? qsTr("Currently Booked") : (root.isPropertyOnHold ? qsTr("On Hold") : qsTr("Available Now"))
+                        color: "white"
+                        font.pixelSize: 13
+                        font.bold: true
                     }
                 }
             }
