@@ -504,19 +504,29 @@ if(ANDROID)
     # Allow manual override (highest priority)
     set(OPENSSL_ROOT "" CACHE PATH "Path to android_openssl root")
 
-    # Known locations (team + local + fallback)
+    # Known locations (team + local + fallback).
+    # ${ANDROID_SDK_ROOT} comes from the active kit's toolchain file, so the
+    # lookup follows the SDK wherever it is mounted and survives the SDK drive
+    # being renamed or remounted.
     set(POSSIBLE_OPENSSL_DIRS
-        "$ENV{HOME}/Android/Sdk/android_openssl"
         "${OPENSSL_ROOT}"
         "$ENV{OPENSSL_ANDROID_ROOT}"
-        "/media/csociety/Backup/CISociety/Android/Sdk/android_openssl"
+        "${ANDROID_SDK_ROOT}/android_openssl"
+        "$ENV{HOME}/Android/Sdk/android_openssl"
+        "/media/csociety/Backup1/CISociety/Android/Sdk/android_openssl"
         "${CMAKE_CURRENT_SOURCE_DIR}/android/openssl"  # Added project-local fallback
     )
 
     set(FOUND_OPENSSL_ROOT "")
     set(FOUND_OPENSSL_LAYOUT "")  # Track which layout we found
+    set(TRIED_OPENSSL_DIRS "")
 
     foreach(dir IN LISTS POSSIBLE_OPENSSL_DIRS)
+        if(dir STREQUAL "")
+            continue()
+        endif()
+        list(APPEND TRIED_OPENSSL_DIRS "${dir}")
+
         # Case 1: flat ABI layout (Qt standard)
         if(EXISTS "${dir}/arm64-v8a/libssl_3.so")
             set(FOUND_OPENSSL_ROOT "${dir}")
@@ -535,11 +545,14 @@ if(ANDROID)
     endforeach()
 
     if(NOT FOUND_OPENSSL_ROOT)
+        string(REPLACE ";" "\n  - " TRIED_OPENSSL_DIRS_STR "${TRIED_OPENSSL_DIRS}")
         message(FATAL_ERROR
             "OpenSSL not found for Android build.\n\n"
             "Expected one of:\n"
             "  - <path>/arm64-v8a/libssl_3.so\n"
             "  - <path>/ssl_3/arm64-v8a/libssl_3.so\n\n"
+            "Looked in:\n"
+            "  - ${TRIED_OPENSSL_DIRS_STR}\n\n"
             "Fix options:\n"
             "  1) Set -DOPENSSL_ROOT=/path/to/android_openssl\n"
             "  2) export OPENSSL_ANDROID_ROOT=/path/to/android_openssl\n"
