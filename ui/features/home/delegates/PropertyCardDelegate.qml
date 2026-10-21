@@ -3,11 +3,13 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Effects
 import "../../../utils/NavigationUtils.js" as NavUtils
+import "../../../utils/Utils.js" as Utils
 
 Item {
     id: root
 
     property string propertyId: ""
+    property string propertyType: ""
     property string title: ""
     property string location: ""
     property real price: 0
@@ -227,7 +229,7 @@ Item {
                             Label {
                                 id: priceLabel
                                 anchors.centerIn: parent
-                                text: "MWK " + Number(root.price).toLocaleString(Qt.locale(), "f", 0)
+                                text: Utils.formatCurrency(root.price)
                                 color: "#FFFFFF"
                                 font.pixelSize: 12
                                 font.weight: Font.DemiBold
@@ -278,7 +280,7 @@ Item {
             // Price
             Label {
                 width: parent.width
-                text: "MWK " + Number(root.price).toLocaleString(Qt.locale(), "f", 0)
+                text: Utils.formatCurrency(root.price)
                 font.pixelSize: 12
                 font.bold: true
                 color: "#2563EB"
@@ -324,9 +326,11 @@ Item {
         anchors.fill: parent
         cursorShape: Qt.PointingHandCursor
         onClicked: {
+            console.log("the status is :", root.status);
             NavUtils.push(Qt.resolvedUrl("./PropertyDelegateDetails.qml"), {
                 propertyId: root.propertyId,
                 propertyTitle: root.title,
+                propertyType: root.propertyType,
                 location: root.location,
                 price: root.price,
                 status: root.status,

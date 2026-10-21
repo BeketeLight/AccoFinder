@@ -48,6 +48,7 @@ Item {
                     PropertyCardDelegate {
                         anchors.fill: parent
                         propertyId: model.propertyId
+                        propertyType: model.propertyType
                         title: model.title
                         location: model.location
                         price: model.price

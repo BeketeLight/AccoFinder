@@ -244,7 +244,6 @@ qt_add_qml_module(appAccoFinder
         QML_FILES ui/features/bookings/delegates/ClientBookingDetailsDelegate.qml
         QML_FILES ui/features/bookings/delegates/AgentStatsDelegate.qml
         QML_FILES ui/features/bookings/delegates/ClientStatsDelegate.qml
-        QML_FILES ui/features/bookings/models/BookingModel.qml
         QML_FILES ui/features/bookings/pages/BookingOverviewClientPage.qml
         QML_FILES ui/features/bookings/pages/ClientBookinDetailsPage.qml
         QML_FILES ui/features/bookings/pages/BookingOverviewAgentPage.qml

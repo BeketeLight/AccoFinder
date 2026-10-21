@@ -8,6 +8,7 @@ import "../models"
 import "../../reviews/screens"
 import "../../../utils/NavigationUtils.js" as NavUtils
 import "../../../utils/ImageUtils.js" as ImageUtils
+import "../../../utils/Utils.js" as Utils
 
 Page {
     id: root
@@ -23,6 +24,7 @@ Page {
     property string propertyId: ""
     property bool favouriteChecked: false
     property string propertyTitle: ""
+    property string propertyType: ""
     property string location: ""
     property real price: 0
     property string status: ""
@@ -35,12 +37,31 @@ Page {
     property string agentPhone: ""
     property var amenities: []
 
+    // Whole-house booking state — the equivalent of the room page's
+    // isquarterAvailable / isOnHold, but for the property itself.
+    property bool isPropertyAvailable: true
+    property bool isPropertyOnHold: false
+    property var propertyHoldExpiresAt: null
+
+    readonly property bool canBookProperty: root.propertyType === "WHOLE" && root.isPropertyAvailable && !root.isPropertyOnHold
+
+    // The booking fee is the entire amount due for a whole-property booking.
+    // Same admin-set value the room page uses.
+    readonly property real bookingFee: AppSettings.bookingFee()
+
     // ========== AGENT ==========
     property string agentFirstName: ""
     property string agentLastName: ""
     property real agentRating: 0
     property int agentReviewCount: 0
-    property bool propertyFavourite: AppSettings.isRoomFavorite(root.propertyId)
+    property bool propertyFavourite: AppSettings.isPropertyFavorite(root.propertyId)
+
+    Connections {
+        target: AppSettings
+        function onFavoritePropertyIdsChanged() {
+            root.propertyFavourite = AppSettings.isPropertyFavorite(root.propertyId);
+        }
+    }
 
     // ========== DETAILS MODEL (media + rooms) ==========
     PropertyDetailsModel {
@@ -90,24 +111,6 @@ Page {
         return map[key] !== undefined ? map[key] : key;
     }
 
-    function amenityIcon(token) {
-        var map = {
-            "WIFI": "qrc:/ui/assets/amenities/wifi.svg",
-            "PARKING": "qrc:/ui/assets/amenities/parking.svg",
-            "SECURITY": "qrc:/ui/assets/amenities/security.svg",
-            "WATER": "qrc:/ui/assets/amenities/water.svg",
-            "ELECTRICITY": "qrc:/ui/assets/amenities/electricity.svg",
-            "FURNISHED": "qrc:/ui/assets/amenities/furnished.svg",
-            "AC": "qrc:/ui/assets/amenities/ac.svg",
-            "GARDEN": "qrc:/ui/assets/amenities/garden.svg",
-            "BALCONY": "qrc:/ui/assets/amenities/balcony.svg",
-            "BOREHOLE": "qrc:/ui/assets/amenities/borehole.svg",
-            "COOKER": "qrc:/ui/assets/amenities/cooker.svg"
-        };
-        var key = String(token).toUpperCase();
-        return map[key] !== undefined ? map[key] : "";
-    }
-
     // ========== SIGNALS ==========
     signal backRequested
     signal bookRequested
@@ -144,6 +147,7 @@ Page {
         NavUtils.push(Qt.resolvedUrl("./QuartersDetailDelegate.qml"), {
             quarterId: roomData.roomId,
             quarterType: roomData.type,
+            propertyId: root.propertyId,
             quarterPrice: roomData.price,
             isquarterAvailable: roomData.available,
             // Provisional hold state from GET /rooms. A held room still comes
@@ -277,43 +281,40 @@ Page {
                     }
                 }
 
-                Image {
-                    id: favouriteImg
-                    source: root.quarterFavourite ? "qrc:/ui/assets/tiktok-save-bookmark-symbol-blue.svg" : "qrc:/ui/assets/save-instagram-black-outline.svg"
-                    width: 28
-                    height: 38
-                    sourceSize.width: 38
-                    sourceSize.height: 48
-                    fillMode: Image.PreserveAspectFit
-                    antialiasing: true
-                    smooth: true
+                Rectangle {
+                    id: favouriteButton
+                    width: 40
+                    height: 40
+                    radius: 20
                     anchors.top: parent.top
                     anchors.right: parent.right
-                    anchors.margins: 8
+                    anchors.margins: 12
+                    color: "#CCFFFFFF"
+                    border.color: "#E5E7EB"
+                    border.width: 1
+
+                    Image {
+                        anchors.centerIn: parent
+                        source: root.propertyFavourite ? "qrc:/ui/assets/favorite-filled.svg" : "qrc:/ui/assets/favorite-outline.svg"
+                        sourceSize.width: 22
+                        sourceSize.height: 22
+                        width: 22
+                        height: 22
+                        fillMode: Image.PreserveAspectFit
+                        antialiasing: true
+                        smooth: true
+                    }
 
                     MouseArea {
                         anchors.fill: parent
+                        cursorShape: Qt.PointingHandCursor
                         onClicked: {
+                            console.log("propertyType from saved button", root.propertyType);
                             if (!AppSettings.isLoggedIn()) {
                                 NavUtils.navigateToAccount();
                                 return;
                             }
-                            const wasFav = AppSettings.isRoomFavorite(root.quarterId);
-                            AppSettings.toggleFavoriteRoom(root.propertyId);
-                            if (!wasFav) {
-                                AppSettings.saveRoomSnapshot(root.quarterId, {
-                                    quarterId: root.quarterId,
-                                    propertyId: root.propertyId,
-                                    title: root.quarterTitle,
-                                    type: root.quarterType,
-                                    price: root.quarterPrice,
-                                    location: root.location,
-                                    imageUrl: root.roomImage,
-                                    available: root.isquarterAvailable,
-                                    holdActive: root.isOnHold,
-                                    savedAt: Date.now()
-                                });
-                            }
+                            AppSettings.toggleFavoriteProperty(root.propertyId);
                         }
                     }
                 }
@@ -328,12 +329,13 @@ Page {
             // ===== AMENITIES =====
             ColumnLayout {
                 Layout.fillWidth: true
-                Layout.margins: 10
-                spacing: 12
+                Layout.margins: 16
+                Layout.topMargin: 16
+                spacing: 10
                 visible: root.amenityTokens().length > 0
 
                 Label {
-                    text: "Amenities"
+                    text: qsTr("Amenities")
                     font.pixelSize: 16
                     font.weight: Font.DemiBold
                     color: "#1F2937"
@@ -349,10 +351,11 @@ Page {
 
                         Rectangle {
                             required property string modelData
-                            width: amenityText.width + 9 //(amenitiesFlow.width - amenitiesFlow.spacing * 2) / 3
-                            height: amenityText.height + 10
-                            radius: 10
+                            width: amenityText.width + 18
+                            height: 26
+                            radius: 13
                             color: "#2563EB"
+
                             Label {
                                 id: amenityText
                                 text: root.amenityLabel(modelData)
@@ -362,6 +365,109 @@ Page {
                                 anchors.centerIn: parent
                             }
                         }
+                    }
+                }
+            }
+
+            // Divider above the price/availability section.
+            // Show it whenever there is *something* above it (amenities or the gallery).
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.topMargin: 16
+                height: 8
+                color: "#F5F5F5"
+            }
+
+            // ===== PRICE + LOCATION + AVAILABILITY =====
+            ColumnLayout {
+                Layout.fillWidth: true
+                Layout.margins: 16
+                spacing: 12
+
+                // ---- Location ----
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: 6
+
+                    Image {
+                        width: 16
+                        height: 16
+                        source: "qrc:/ui/assets/location-2955.svg"
+                        sourceSize.width: 16
+                        sourceSize.height: 16
+                        fillMode: Image.PreserveAspectFit
+                        smooth: true
+                    }
+
+                    Label {
+                        text: root.location
+                        font.pixelSize: 14
+                        color: "#6B7280"
+                        elide: Text.ElideRight
+                        Layout.fillWidth: true
+                    }
+                }
+
+                // ---- Price block (whole-house only) ----
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    Layout.topMargin: 4
+                    spacing: 6
+                    visible: root.propertyType === "WHOLE"
+
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: 8
+
+                        Label {
+                            text: qsTr("Rental Fee")
+                            font.pixelSize: 13
+                            color: "#6B7280"
+                            Layout.fillWidth: true
+                        }
+                        Label {
+                            text: Utils.formatCurrency(root.price)
+                            font.pixelSize: 20
+                            font.bold: true
+                            color: "#2563EB"
+                        }
+                    }
+
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: 8
+                        visible: root.bookingFee > 0
+
+                        Label {
+                            text: qsTr("Booking Fee")
+                            font.pixelSize: 13
+                            color: "#6B7280"
+                            Layout.fillWidth: true
+                        }
+                        Label {
+                            text: Utils.formatCurrency(root.bookingFee)
+                            font.pixelSize: 16
+                            font.bold: true
+                            color: "#111827"
+                        }
+                    }
+                }
+
+                // ---- Availability badge ----
+                Rectangle {
+                    Layout.topMargin: 4
+                    height: 28
+                    radius: 14
+                    width: availabilityText.width + 24
+                    color: root.isPropertyAvailable && !root.isPropertyOnHold ? "#22C55E" : (root.isPropertyOnHold ? "#F59E0B" : "#EF4444")
+
+                    Label {
+                        id: availabilityText
+                        anchors.centerIn: parent
+                        text: !root.isPropertyAvailable ? qsTr("Currently Booked") : (root.isPropertyOnHold ? qsTr("On Hold") : qsTr("Available Now"))
+                        color: "white"
+                        font.pixelSize: 13
+                        font.bold: true
                     }
                 }
             }
@@ -630,9 +736,12 @@ Page {
         }
     }
 
-    // ========== FOOTER ==========
+    // ========== FOOTER (whole-house booking only) ==========
     footer: ToolBar {
-        height: 72
+        id: bookingBar
+        height: root.propertyType === "WHOLE" ? 72 : 0
+        visible: root.propertyType === "WHOLE"
+
         background: Rectangle {
             color: "#FFFFFF"
             Rectangle {
@@ -649,28 +758,89 @@ Page {
             spacing: 12
 
             Button {
+                id: bookButton
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                text: "Write a review"
+                enabled: !BookingController.isLoading && root.canBookProperty
+
+                text: {
+                    if (BookingController.isLoading)
+                        return qsTr("Booking…");
+                    if (!root.isPropertyAvailable)
+                        return qsTr("Currently Booked");
+                    if (root.isPropertyOnHold)
+                        return qsTr("On Hold");
+                    return qsTr("Book Now");
+                }
+
                 background: Rectangle {
                     radius: 12
-                    color: "#2563EB"
+                    color: bookButton.enabled ? "#2563EB" : "#9CA3AF"
                 }
+
                 contentItem: Label {
-                    text: parent.text
+                    text: bookButton.text
                     color: "#FFFFFF"
                     font.pixelSize: 16
                     font.bold: true
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                 }
+
                 onClicked: {
-                    NavUtils.push(Qt.resolvedUrl("../features/reviews/screens/WriteReviewScreen.qml"), {
-                        propertyId: root.propertyId,
-                        agentId: root.agentId ?? ""
-                    });
+                    if (!AppSettings.isLoggedIn()) {
+                        NavUtils.navigateToAccount();
+                        return;
+                    }
+
+                    if (!root.canBookProperty) {
+                        errorDialog.errorText = root.isPropertyOnHold ? qsTr("This property is currently on hold by another user.") : qsTr("This property is no longer available.");
+                        errorDialog.open();
+                        return;
+                    }
+
+                    if (root.bookingFee <= 0) {
+                        errorDialog.errorText = qsTr("Booking is not available right now. Please try again later.");
+                        errorDialog.open();
+                        return;
+                    }
+
+                    var commission = root.bookingFee * (AppSettings.platformCommissionRate() / 100);
+
+                    // Whole-property booking: send propertyId instead of roomId.
+                    // BookingController needs a createPropertyBooking(...) entry
+                    // point that hits POST /bookings with { propertyId, … }.
+                    BookingController.createPropertyBooking(root.propertyId, root.bookingFee, commission);
                 }
             }
+        }
+    }
+
+    Dialog {
+        id: errorDialog
+        property string errorText: ""
+        anchors.centerIn: parent
+        title: qsTr("Booking Failed")
+        modal: true
+        standardButtons: Dialog.Ok
+        width: Math.min(parent ? parent.width - 48 : 320, 360)
+
+        contentItem: Label {
+            text: errorDialog.errorText
+            wrapMode: Text.WordWrap
+        }
+    }
+
+    Connections {
+        target: BookingController
+
+        function onBookingCreated(booking) {
+            NavUtils.navigateToPayments(booking.id, booking.amount, booking.holdExpiresAt !== undefined ? booking.holdExpiresAt : null);
+        }
+
+        function onBookingError(error) {
+            errorDialog.errorText = error;
+            errorDialog.open();
         }
     }
     Component.onCompleted: {

@@ -1,4 +1,4 @@
-    #include "appsettings.h"
+#include "appsettings.h"
 
 #include <QDateTime>
 #include <QStringList>
@@ -6,9 +6,10 @@
 
 AppSettings::AppSettings(QObject *parent)
     : QObject{parent},
-    m_settings(QCoreApplication::organizationName(),
-               QCoreApplication::applicationName())
-{}
+      m_settings(QCoreApplication::organizationName(),
+                 QCoreApplication::applicationName())
+{
+}
 
 // SINGLETON
 
@@ -23,7 +24,8 @@ AppSettings &AppSettings::instance()
 void AppSettings::setStatusBarAppearance(const QColor &backgroundColor, bool darkIcons)
 {
 #if defined(Q_OS_ANDROID)
-    QNativeInterface::QAndroidApplication::runOnAndroidMainThread([=]() -> QVariant {
+    QNativeInterface::QAndroidApplication::runOnAndroidMainThread([=]() -> QVariant
+                                                                  {
         QJniObject activity = QNativeInterface::QAndroidApplication::context();
         if (!activity.isValid()) {
             qWarning() << "setStatusBarAppearance: No valid Android activity";
@@ -76,8 +78,8 @@ void AppSettings::setStatusBarAppearance(const QColor &backgroundColor, bool dar
             }
         }
 
-        return QVariant(true);
-    }).waitForFinished();
+        return QVariant(true); })
+        .waitForFinished();
 #else
     Q_UNUSED(backgroundColor);
     Q_UNUSED(darkIcons);
@@ -86,324 +88,410 @@ void AppSettings::setStatusBarAppearance(const QColor &backgroundColor, bool dar
 
 // AUTH
 
-void AppSettings::setToken(const QString &value) {
+void AppSettings::setToken(const QString &value)
+{
     m_settings.setValue("auth/token", value);
     emit userSessionChanged();
 }
-QString AppSettings::token() const {
+QString AppSettings::token() const
+{
     return m_settings.value("auth/token").toString();
 }
 
-void AppSettings::setRefreshToken(const QString &value) {
+void AppSettings::setRefreshToken(const QString &value)
+{
     m_settings.setValue("auth/refreshToken", value);
 }
-QString AppSettings::refreshToken() const {
+QString AppSettings::refreshToken() const
+{
     return m_settings.value("auth/refreshToken").toString();
 }
 
-void AppSettings::setUserId(const QString &value) {
+void AppSettings::setUserId(const QString &value)
+{
     m_settings.setValue("auth/userId", value);
 }
-QString AppSettings::userId() const {
+QString AppSettings::userId() const
+{
     return m_settings.value("auth/userId").toString();
 }
 
-void AppSettings::setUserType(const QString &value) {
+void AppSettings::setUserType(const QString &value)
+{
     if (userType() == value)
         return;
     m_settings.setValue("auth/userType", value);
     emit userSessionChanged();
 }
-QString AppSettings::userType() const {
+QString AppSettings::userType() const
+{
     return m_settings.value("auth/userType").toString();
 }
 
-void AppSettings::setIsLoggedIn(bool value) {
+void AppSettings::setIsLoggedIn(bool value)
+{
     if (isLoggedIn() == value)
         return;
     m_settings.setValue("auth/isLoggedIn", value);
     emit userSessionChanged();
 }
-bool AppSettings::isLoggedIn() const {
+bool AppSettings::isLoggedIn() const
+{
     return m_settings.value("auth/isLoggedIn", false).toBool();
 }
 
 // USER
 
-void AppSettings::setUserName(const QString &value) {
+void AppSettings::setUserName(const QString &value)
+{
     if (userName() == value)
         return;
     m_settings.setValue("user/name", value);
     emit userSessionChanged();
 }
-QString AppSettings::userName() const {
+QString AppSettings::userName() const
+{
     return m_settings.value("user/name").toString();
 }
 
-void AppSettings::setEmail(const QString &value) {
+void AppSettings::setEmail(const QString &value)
+{
     m_settings.setValue("user/email", value);
 }
-QString AppSettings::email() const {
+QString AppSettings::email() const
+{
     return m_settings.value("user/email").toString();
 }
 
-void AppSettings::setPhone(const QString &value) {
+void AppSettings::setPhone(const QString &value)
+{
     m_settings.setValue("user/phone", value);
 }
-QString AppSettings::phone() const {
+QString AppSettings::phone() const
+{
     return m_settings.value("user/phone").toString();
 }
 
-void AppSettings::setBankName(const QString &value) {
+void AppSettings::setBankName(const QString &value)
+{
     m_settings.setValue("user/bankName", value);
 }
-QString AppSettings::bankName() const {
+QString AppSettings::bankName() const
+{
     return m_settings.value("user/bankName").toString();
 }
 
-void AppSettings::setBankAccountNumber(const QString &value) {
+void AppSettings::setBankAccountNumber(const QString &value)
+{
     m_settings.setValue("user/bankAccountNumber", value);
 }
-QString AppSettings::bankAccountNumber() const {
+QString AppSettings::bankAccountNumber() const
+{
     return m_settings.value("user/bankAccountNumber").toString();
 }
 
-void AppSettings::setPaymentMethod(const QString &value) {
+void AppSettings::setPaymentMethod(const QString &value)
+{
     m_settings.setValue("user/paymentMethod", value);
 }
-QString AppSettings::paymentMethod() const {
+QString AppSettings::paymentMethod() const
+{
     return m_settings.value("user/paymentMethod", "Mobile money").toString();
 }
 
 // CLIENT
 
-void AppSettings::setIsStudent(bool value) {
+void AppSettings::setIsStudent(bool value)
+{
     m_settings.setValue("client/isStudent", value);
 }
-bool AppSettings::isStudent() const {
+bool AppSettings::isStudent() const
+{
     return m_settings.value("client/isStudent", false).toBool();
 }
 
-void AppSettings::setPreferredLocation(const QString &value) {
+void AppSettings::setPreferredLocation(const QString &value)
+{
     m_settings.setValue("client/preferredLocation", value);
 }
-QString AppSettings::preferredLocation() const {
+QString AppSettings::preferredLocation() const
+{
     return m_settings.value("client/preferredLocation").toString();
 }
 
-void AppSettings::setBudgetMin(double value) {
+void AppSettings::setBudgetMin(double value)
+{
     m_settings.setValue("client/budgetMin", value);
 }
-double AppSettings::budgetMin() const {
+double AppSettings::budgetMin() const
+{
     return m_settings.value("client/budgetMin", 0.0).toDouble();
 }
 
-void AppSettings::setBudgetMax(double value) {
+void AppSettings::setBudgetMax(double value)
+{
     m_settings.setValue("client/budgetMax", value);
 }
-double AppSettings::budgetMax() const {
+double AppSettings::budgetMax() const
+{
     return m_settings.value("client/budgetMax", 0.0).toDouble();
 }
 
 // AGENT
 
-void AppSettings::setEmployeeId(const QString &value) {
+void AppSettings::setEmployeeId(const QString &value)
+{
     m_settings.setValue("agent/employeeId", value);
 }
-QString AppSettings::employeeId() const {
+QString AppSettings::employeeId() const
+{
     return m_settings.value("agent/employeeId").toString();
 }
 
-void AppSettings::setAssignedArea(const QString &value) {
+void AppSettings::setAssignedArea(const QString &value)
+{
     m_settings.setValue("agent/assignedArea", value);
 }
-QString AppSettings::assignedArea() const {
+QString AppSettings::assignedArea() const
+{
     return m_settings.value("agent/assignedArea").toString();
 }
 
-void AppSettings::setCommissionRate(double value) {
+void AppSettings::setCommissionRate(double value)
+{
     m_settings.setValue("agent/commissionRate", value);
 }
-double AppSettings::commissionRate() const {
+double AppSettings::commissionRate() const
+{
     return m_settings.value("agent/commissionRate", 0.0).toDouble();
 }
 
 // PLATFORM
 
-void AppSettings::setBookingFee(double value) {
+void AppSettings::setBookingFee(double value)
+{
     if (qFuzzyCompare(bookingFee() + 1.0, value + 1.0))
         return;
     m_settings.setValue("platform/bookingFee", value);
     emit bookingFeeChanged();
 }
-double AppSettings::bookingFee() const {
+double AppSettings::bookingFee() const
+{
     return m_settings.value("platform/bookingFee", 0.0).toDouble();
 }
 
-void AppSettings::setPlatformCommissionRate(double value) {
+void AppSettings::setPlatformCommissionRate(double value)
+{
     if (qFuzzyCompare(platformCommissionRate() + 1.0, value + 1.0))
         return;
     m_settings.setValue("platform/commissionRate", value);
     emit platformCommissionRateChanged();
 }
-double AppSettings::platformCommissionRate() const {
+double AppSettings::platformCommissionRate() const
+{
     return m_settings.value("platform/commissionRate", 10.0).toDouble();
 }
 
-void AppSettings::setAgentActive(bool value) {
+void AppSettings::setAgentActive(bool value)
+{
     m_settings.setValue("agent/isActive", value);
 }
-bool AppSettings::agentActive() const {
+bool AppSettings::agentActive() const
+{
     return m_settings.value("agent/isActive", false).toBool();
 }
 
 // LANDLORD
 
-void AppSettings::setLandlordId(const QString &value) {
+void AppSettings::setLandlordId(const QString &value)
+{
     m_settings.setValue("landlord/id", value);
 }
-QString AppSettings::landlordId() const {
+QString AppSettings::landlordId() const
+{
     return m_settings.value("landlord/id").toString();
 }
 
-void AppSettings::setLandlordName(const QString &value) {
+void AppSettings::setLandlordName(const QString &value)
+{
     m_settings.setValue("landlord/name", value);
 }
-QString AppSettings::landlordName() const {
+QString AppSettings::landlordName() const
+{
     return m_settings.value("landlord/name").toString();
 }
 
-void AppSettings::setLandlordPhone(const QString &value) {
+void AppSettings::setLandlordPhone(const QString &value)
+{
     m_settings.setValue("landlord/phone", value);
 }
-QString AppSettings::landlordPhone() const {
+QString AppSettings::landlordPhone() const
+{
     return m_settings.value("landlord/phone").toString();
 }
 
 // APP
 
-void AppSettings::setTheme(const QString &value) {
+void AppSettings::setTheme(const QString &value)
+{
     m_settings.setValue("app/theme", value);
 }
-QString AppSettings::theme() const {
+QString AppSettings::theme() const
+{
     return m_settings.value("app/theme", "System").toString();
 }
 
-void AppSettings::setLanguage(const QString &value) {
+void AppSettings::setLanguage(const QString &value)
+{
     m_settings.setValue("app/language", value);
 }
-QString AppSettings::language() const {
+QString AppSettings::language() const
+{
     return m_settings.value("app/language", "en").toString();
 }
 
-void AppSettings::setFirstLaunch(bool value) {
+void AppSettings::setFirstLaunch(bool value)
+{
     m_settings.setValue("app/firstLaunch", value);
 }
-bool AppSettings::firstLaunch() const {
+bool AppSettings::firstLaunch() const
+{
     return m_settings.value("app/firstLaunch", true).toBool();
 }
 
-void AppSettings::setRememberLogin(bool value) {
+void AppSettings::setRememberLogin(bool value)
+{
     m_settings.setValue("app/rememberLogin", value);
 }
-bool AppSettings::rememberLogin() const {
+bool AppSettings::rememberLogin() const
+{
     return m_settings.value("app/rememberLogin", true).toBool();
 }
 
 // FILTERS
 
-void AppSettings::setFilterLocation(const QString &value) {
+void AppSettings::setFilterLocation(const QString &value)
+{
     m_settings.setValue("filters/location", value);
 }
-QString AppSettings::filterLocation() const {
+QString AppSettings::filterLocation() const
+{
     return m_settings.value("filters/location").toString();
 }
 
-void AppSettings::setMinPrice(double value) {
+void AppSettings::setMinPrice(double value)
+{
     m_settings.setValue("filters/minPrice", value);
 }
-double AppSettings::minPrice() const {
+double AppSettings::minPrice() const
+{
     return m_settings.value("filters/minPrice", 0.0).toDouble();
 }
 
-void AppSettings::setMaxPrice(double value) {
+void AppSettings::setMaxPrice(double value)
+{
     m_settings.setValue("filters/maxPrice", value);
 }
-double AppSettings::maxPrice() const {
+double AppSettings::maxPrice() const
+{
     return m_settings.value("filters/maxPrice", 0.0).toDouble();
 }
 
-void AppSettings::setPropertyType(const QString &value) {
+void AppSettings::setPropertyType(const QString &value)
+{
     m_settings.setValue("filters/propertyType", value);
 }
-QString AppSettings::propertyType() const {
+QString AppSettings::propertyType() const
+{
     return m_settings.value("filters/propertyType").toString();
 }
 
-void AppSettings::setSortOrder(const QString &value) {
+void AppSettings::setSortOrder(const QString &value)
+{
     m_settings.setValue("filters/sortOrder", value);
 }
-QString AppSettings::sortOrder() const {
+QString AppSettings::sortOrder() const
+{
     return m_settings.value("filters/sortOrder").toString();
 }
 
 // FAVORITES
 
-QStringList AppSettings::favoritePropertyIds() const {
-    return m_settings.value("favorites/propertyIds").toStringList();
-}
-
-// FAVORITES — ROOMS / QUARTERS
-
-namespace {
-constexpr auto kRoomIdsKey   = "favorites/roomIds";
-constexpr auto kRoomCacheKey = "favorites/roomCache"; // JSON: { id : { snapshot } }
-}
-
-QStringList AppSettings::favoriteRoomIds() const {
-    return m_settings.value(kRoomIdsKey).toStringList();
-}
-
-bool AppSettings::isRoomFavorite(const QString &quarterId) const {
-    if (quarterId.isEmpty())
-        return false;
-    return favoriteRoomIds().contains(quarterId);
-}
-
-
-void AppSettings::setFavoritePropertyIds(const QStringList &value) {
+void AppSettings::setFavoritePropertyIds(const QStringList &value)
+{
     m_settings.setValue("favorites/propertyIds", value);
     emit favoritePropertyIdsChanged();
 }
-void AppSettings::toggleFavoriteProperty(const QString &propertyId) {
-    if (propertyId.isEmpty()) return;
+QStringList AppSettings::favoritePropertyIds() const
+{
+    return m_settings.value("favorites/propertyIds").toStringList();
+}
+
+bool AppSettings::isPropertyFavorite(const QString &propertyId) const
+{
+    if (propertyId.isEmpty())
+        return false;
+    return favoritePropertyIds().contains(propertyId);
+}
+
+void AppSettings::toggleFavoriteProperty(const QString &propertyId)
+{
+    if (propertyId.isEmpty())
+        return;
+
     QStringList ids = favoritePropertyIds();
     if (ids.contains(propertyId))
         ids.removeAll(propertyId);
     else
         ids.append(propertyId);
+
     m_settings.setValue("favorites/propertyIds", ids);
     emit favoritePropertyIdsChanged();
 }
 
-void AppSettings::toggleFavoriteRoom(const QString &quarterId) {
+// FAVORITES — ROOMS / QUARTERS
+
+namespace
+{
+    constexpr auto kRoomIdsKey = "favorites/roomIds";
+    constexpr auto kRoomCacheKey = "favorites/roomCache"; // JSON: { id : { snapshot } }
+}
+
+QStringList AppSettings::favoriteRoomIds() const
+{
+    return m_settings.value(kRoomIdsKey).toStringList();
+}
+
+bool AppSettings::isRoomFavorite(const QString &quarterId) const
+{
+    if (quarterId.isEmpty())
+        return false;
+    return favoriteRoomIds().contains(quarterId);
+}
+
+void AppSettings::toggleFavoriteRoom(const QString &quarterId)
+{
     if (quarterId.isEmpty())
         return;
 
     QStringList ids = favoriteRoomIds();
     const bool wasFav = ids.contains(quarterId);
 
-    if (wasFav) {
+    if (wasFav)
+    {
         ids.removeAll(quarterId);
 
         // Drop the cached snapshot alongside the id so the Saves screen
         // never shows an orphaned card.
         QJsonObject cache = QJsonDocument::fromJson(
-                                m_settings.value(kRoomCacheKey).toByteArray()).object();
+                                m_settings.value(kRoomCacheKey).toByteArray())
+                                .object();
         cache.remove(quarterId);
         m_settings.setValue(kRoomCacheKey,
                             QJsonDocument(cache).toJson(QJsonDocument::Compact));
-    } else {
+    }
+    else
+    {
         ids.append(quarterId);
     }
 
@@ -412,21 +500,25 @@ void AppSettings::toggleFavoriteRoom(const QString &quarterId) {
 }
 
 void AppSettings::saveRoomSnapshot(const QString &quarterId,
-                                   const QVariantMap &data) {
+                                   const QVariantMap &data)
+{
     if (quarterId.isEmpty())
         return;
 
     QJsonObject cache = QJsonDocument::fromJson(
-                            m_settings.value(kRoomCacheKey).toByteArray()).object();
+                            m_settings.value(kRoomCacheKey).toByteArray())
+                            .object();
     cache.insert(quarterId, QJsonObject::fromVariantMap(data));
     m_settings.setValue(kRoomCacheKey,
                         QJsonDocument(cache).toJson(QJsonDocument::Compact));
     emit roomFavoritesChanged();
 }
 
-QVariantMap AppSettings::favoriteRoomSnapshot(const QString &quarterId) const {
+QVariantMap AppSettings::favoriteRoomSnapshot(const QString &quarterId) const
+{
     const QJsonObject cache = QJsonDocument::fromJson(
-                                  m_settings.value(kRoomCacheKey).toByteArray()).object();
+                                  m_settings.value(kRoomCacheKey).toByteArray())
+                                  .object();
     if (!cache.contains(quarterId))
         return {};
     return cache.value(quarterId).toObject().toVariantMap();
@@ -434,66 +526,79 @@ QVariantMap AppSettings::favoriteRoomSnapshot(const QString &quarterId) const {
 
 // NOTIFICATIONS
 
-void AppSettings::setNotificationsEnabled(bool value) {
+void AppSettings::setNotificationsEnabled(bool value)
+{
     m_settings.setValue("notifications/enabled", value);
 }
-bool AppSettings::notificationsEnabled() const {
+bool AppSettings::notificationsEnabled() const
+{
     return m_settings.value("notifications/enabled", true).toBool();
 }
 
-void AppSettings::setBookingNotifications(bool value) {
+void AppSettings::setBookingNotifications(bool value)
+{
     m_settings.setValue("notifications/bookings", value);
 }
-bool AppSettings::bookingNotifications() const {
+bool AppSettings::bookingNotifications() const
+{
     return m_settings.value("notifications/bookings", true).toBool();
 }
 
-void AppSettings::setPromotionNotifications(bool value) {
+void AppSettings::setPromotionNotifications(bool value)
+{
     m_settings.setValue("notifications/promotions", value);
 }
-bool AppSettings::promotionNotifications() const {
+bool AppSettings::promotionNotifications() const
+{
     return m_settings.value("notifications/promotions", true).toBool();
 }
 
-void AppSettings::setSystemNotifications(bool value) {
+void AppSettings::setSystemNotifications(bool value)
+{
     m_settings.setValue("notifications/system", value);
 }
-bool AppSettings::systemNotifications() const {
+bool AppSettings::systemNotifications() const
+{
     return m_settings.value("notifications/system", true).toBool();
 }
 
 // RECENT
 
-void AppSettings::setRecentPropertyId(const QString &value) {
+void AppSettings::setRecentPropertyId(const QString &value)
+{
     m_settings.setValue("recent/propertyId", value);
 }
-QString AppSettings::recentPropertyId() const {
+QString AppSettings::recentPropertyId() const
+{
     return m_settings.value("recent/propertyId").toString();
 }
 
-void AppSettings::setRecentRoomId(const QString &value) {
+void AppSettings::setRecentRoomId(const QString &value)
+{
     m_settings.setValue("recent/roomId", value);
 }
-QString AppSettings::recentRoomId() const {
+QString AppSettings::recentRoomId() const
+{
     return m_settings.value("recent/roomId").toString();
 }
 
 // REGISTRATION DRAFT
 
-namespace {
-qint64 nowMs()
+namespace
 {
-    return QDateTime::currentMSecsSinceEpoch();
-}
+    qint64 nowMs()
+    {
+        return QDateTime::currentMSecsSinceEpoch();
+    }
 } // namespace
 
 void AppSettings::saveRegistrationDraft(const QString &firstName,
-                                       const QString &lastName,
-                                       const QString &location,
-                                       const QString &phone,
-                                       const QString &email,
-                                       const QString &password,
-                                       int step)
+                                        const QString &lastName,
+                                        const QString &location,
+                                        const QString &phone,
+                                        const QString &email,
+                                        const QString &password,
+                                        int step)
 {
     m_settings.beginGroup(QStringLiteral("registrationDraft"));
     m_settings.setValue(QStringLiteral("firstName"), firstName);
@@ -548,11 +653,13 @@ bool AppSettings::hasRegistrationDraft() const
         QStringLiteral("lastName"),
         QStringLiteral("location"),
         QStringLiteral("phone"),
-        QStringLiteral("email")
-    };
-    for (const QString &field : fields) {
+        QStringLiteral("email")};
+    for (const QString &field : fields)
+    {
         if (!m_settings.value(QStringLiteral("registrationDraft/") + field)
-                 .toString().isEmpty()) {
+                 .toString()
+                 .isEmpty())
+        {
             return true;
         }
     }
@@ -615,12 +722,14 @@ int AppSettings::registrationDraftSecondsRemaining() const
 
 // CAMERA (transient, in-memory)
 
-void AppSettings::setCapturedPhotoPath(const QString &value) {
+void AppSettings::setCapturedPhotoPath(const QString &value)
+{
     if (m_capturedPhotoPath == value)
         return;
     m_capturedPhotoPath = value;
     emit capturedPhotoPathChanged();
 }
-QString AppSettings::capturedPhotoPath() const {
+QString AppSettings::capturedPhotoPath() const
+{
     return m_capturedPhotoPath;
 }

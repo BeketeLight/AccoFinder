@@ -78,7 +78,7 @@ Item {
                 Rectangle {
                     id: imageWrapper
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 180
+                    Layout.preferredHeight: 200
                     radius: 16
                     clip: true
 

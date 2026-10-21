@@ -269,6 +269,9 @@ function navigateToBookingDetailsForAdmin(data){
     });
 
 }
+function navigateToDummy(){
+    push("../features/bookings/screens/DummyScreen.qml")
+}
 
 var Navigation = {
     init: init,
