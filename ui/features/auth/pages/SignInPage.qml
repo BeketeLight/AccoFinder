@@ -327,7 +327,9 @@ Page {
         // The Google hand-off spends real time in the device browser, so offer
         // a way out instead of leaving the user on a spinner with no feedback.
         cancellable: root.pendingAction === "google"
-        message: "Completing sign in with Google…"
+        title: root.pendingAction === "google" ? "Signing in with Google" : "Signing in"
+        message: root.pendingAction === "google" ? "Completing sign in with Google…"
+                                                   : "Signing you in, please wait…"
         onCancelled: {
             root.pendingAction = "";
             loadingDialog.close();

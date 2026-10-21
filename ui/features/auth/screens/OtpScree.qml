@@ -78,6 +78,9 @@ Page {
 
     AppLoadingDialog {
         id: loadingDialog
+        title: root.pendingAction === "resendOtp" ? "Sending code" : "Verifying code"
+        message: root.pendingAction === "resendOtp" ? "Sending a new code to your email…"
+                                                   : "Checking the code you entered…"
     }
 
     function verifyOtp() {

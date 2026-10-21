@@ -648,7 +648,7 @@ Page {
     AppLoadingDialog {
         id: logoutDialog
         title: "Signing out"
-        message: "Signing out..."
+        message: "Ending your session on this device…"
     }
 
     Connections {

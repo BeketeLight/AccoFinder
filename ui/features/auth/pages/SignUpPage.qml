@@ -514,6 +514,17 @@ Page {
 
     AppLoadingDialog {
         id: loadingDialog
+        title: {
+            switch (root.pendingAction) {
+            case "signUp": return "Creating your account";
+            case "checkAccount": return "Checking your details";
+            case "resendOtp": return "Sending code";
+            case "requestOtp": return "Sending code";
+            default: return "Please wait";
+            }
+        }
+        message: root.pendingAction === "signUp" ? "Setting up your account…"
+                                                   : "Please wait a moment…"
     }
 
     Connections {
