@@ -3,7 +3,6 @@ import "../../../utils/Utils.js" as UtilsModule
 import "../pages"
 Item {
     id:propertiesdetailsId
-
     property var initialPayload: null
 
     PropertyDetailsPage{

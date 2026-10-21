@@ -12,7 +12,6 @@ import "../../../utils" as UtilsModule
 
 Page {
     id: root
-
     readonly property color pageColor: "#F8FAFC"
     readonly property color primaryColor: "#2563EB"
     readonly property color primaryDarkColor: "#1D4ED8"

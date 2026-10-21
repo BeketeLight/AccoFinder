@@ -44,7 +44,9 @@ Page{
     property bool showBack: false
     property bool isSearchBar: false
     property bool showBottomBorder: false
-
+    property bool collapsible: false
+    property bool transparentHeader: true
+    property real scrollY: scrollViewId.contentItem.contentY
     property Component leftComponentAction: Component {
         RowLayout {
             spacing: 4
@@ -68,6 +70,7 @@ Page{
     }
 
     ScrollView {
+        id: scrollViewId
         anchors.topMargin: 6
         anchors.fill: parent
         contentWidth: availableWidth
@@ -82,3 +85,4 @@ Page{
         }
     }
 }
+

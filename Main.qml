@@ -120,66 +120,116 @@ ApplicationWindow {
         anchors.fill: parent
         spacing: 0
 
-        AppHeader {
-            id: appHeader
-            Layout.fillWidth: true
-            //collapse header if not specified
-            Layout.preferredHeight: visible ? 64 : 0
-            visible: {
-                if (!currentPage)
-                    return false;
-                return typeof currentPage.showHeader !== "undefined" ? currentPage.showHeader : true;
-            }
-            //binding readonly to for searchBar
-            searchReadOnly: currentPage && typeof currentPage.searchReadOnly !== "undefined" ? currentPage.searchReadOnly : false
-
-            onSearchBarTapped: {
-                if (currentPage && typeof currentPage.onSearchBarTapped === "function") {
-                    currentPage.onSearchBarTapped();
-                }
-            }
-            title: currentPage && currentPage.pageTitle ? currentPage.pageTitle : ""
-            isSearchBar: Boolean(currentPage && currentPage.isSearchBar)
-            titleFontSize: (currentPage && typeof currentPage.titleFontSize !== "undefined") ? currentPage.titleFontSize : 15
-            showBottomBorder: (currentPage && typeof currentPage.showBottomBorder !== "undefined") ? currentPage.showBottomBorder : true
-            showBackButton: mainStack.depth > 0 || Boolean(currentPage && currentPage.showBack)
-            leftAction: (isAdminDashboard || agentMenuActive) ? hamburgerMenuComponent : (currentPage && currentPage.leftComponentAction ? currentPage.leftComponentAction : null)
-            rightAction: currentPage && currentPage.rightComponentAction ? currentPage.rightComponentAction : null
-
-            onBackClicked: {
-                if (currentPage && typeof currentPage.goBack === "function") {
-                    currentPage.goBack();
-                    return;
-                }
-                if (mainStack.depth > 0) {
-                    NavUtils.pop();
-                }
-            }
-            onMenuButtonClicked: {
-                if (agentMenuActive)
-                    agentDrawer.open();
-                else
-                    adminDrawer.open();
-            }
-        }
-        // Plain Item container: anchored children keep their size even while
-        // invisible, so the first push of a session always lands in a sized stack.
-        Item {
+        //Main area: page + floating header
+        Item{
             Layout.fillWidth: true
             Layout.fillHeight: true
 
-            Loader {
-                id: loader
+            ColumnLayout{
                 anchors.fill: parent
-                visible: mainStack.depth === 0
-                source: "./ui/features/home/screens/HomeScreen.qml"
+                spacing: 0
+
+                //Reserves space under solid header only
+                //On transparent header, 0 so the image starts from the top
+                Item{
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: {
+                        if(!appHeader.visible) return 0
+                        if(appHeader.transparentHeader) return 0
+                        return appHeader.implicitHeight
+                    }
+                }
+
+                Item{
+                    Layout.fillHeight: true
+                    Layout.fillWidth: true
+
+                    Loader {
+                        id: loader
+                        anchors.fill: parent
+                        visible: mainStack.depth === 0
+                        source: "./ui/features/home/screens/HomeScreen.qml"
+                    }
+                    MainStackview {
+                        id: mainStack
+                        anchors.fill: parent
+                        visible: depth > 0
+                    }
+                }
             }
-            MainStackview {
-                id: mainStack
-                anchors.fill: parent
-                visible: depth > 0
+            AppHeader {
+                id: appHeader
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.right: parent.right
+                height: implicitHeight
+                z:10
+                //collapse header if not specified
+                // Bind collapsible & transparency
+                transparentHeader: currentPage
+                                      && typeof currentPage.transparentHeader !== "undefined"
+                                      ? currentPage.transparentHeader
+                                      : false
+                collapsible: Boolean(currentPage && currentPage.collapsible)
+                scrollY: currentPage && typeof currentPage.scrollY !== "undefined" ? currentPage.scrollY : 0
+                visible: {
+                    if (!currentPage)
+                        return false;
+                    return typeof currentPage.showHeader !== "undefined" ? currentPage.showHeader : true;
+                }
+                //binding readonly to for searchBar
+                searchReadOnly: currentPage && typeof currentPage.searchReadOnly !== "undefined" ? currentPage.searchReadOnly : false
+
+                onSearchBarTapped: {
+                    if (currentPage && typeof currentPage.onSearchBarTapped === "function") {
+                        currentPage.onSearchBarTapped();
+                    }
+                }
+                title: currentPage && currentPage.pageTitle ? currentPage.pageTitle : ""
+                isSearchBar: Boolean(currentPage && currentPage.isSearchBar)
+                titleFontSize: (currentPage && typeof currentPage.titleFontSize !== "undefined") ? currentPage.titleFontSize : 15
+                showBottomBorder: (currentPage && typeof currentPage.showBottomBorder !== "undefined") ? currentPage.showBottomBorder : true
+                showBackButton: mainStack.depth > 0 || Boolean(currentPage && currentPage.showBack)
+                leftAction: (isAdminDashboard || agentMenuActive) ? hamburgerMenuComponent : (currentPage && currentPage.leftComponentAction ? currentPage.leftComponentAction : null)
+                rightAction: currentPage && currentPage.rightComponentAction ? currentPage.rightComponentAction : null
+
+                onBackClicked: {
+                    if (currentPage && typeof currentPage.goBack === "function") {
+                        currentPage.goBack();
+                        return;
+                    }
+                    if (mainStack.depth > 0) {
+                        NavUtils.pop();
+                    }
+                }
+                onMenuButtonClicked: {
+                    if (agentMenuActive)
+                        agentDrawer.open();
+                    else
+                        adminDrawer.open();
+                }
             }
         }
+        //header always on top page area
+
+        // Plain Item container: anchored children keep their size even while
+        // invisible, so the first push of a session always lands in a sized stack.
+        // Item {
+        //     Layout.fillWidth: true
+        //     Layout.fillHeight: true
+
+        //     Loader {
+        //         id: loader
+        //         anchors.fill: parent
+        //         visible: mainStack.depth === 0
+        //         source: "./ui/features/home/screens/HomeScreen.qml"
+        //     }
+        //     MainStackview {
+        //         id: mainStack
+        //         anchors.fill: parent
+        //         visible: depth > 0
+        //     }
+        // }
 
         Connections {
             target: AuthController
