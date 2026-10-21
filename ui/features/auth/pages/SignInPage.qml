@@ -31,6 +31,19 @@ Page {
         color: root.pageColor
     }
 
+    Component.onCompleted: {
+        rememberCheck.checked = AppSettings.rememberLogin();
+        if (!rememberCheck.checked || !AppSettings.hasRememberedCredentials())
+            return;
+
+        // The stored password comes back encrypted; it is only put in the field
+        // when it could actually be decrypted.
+        emailInput.text = AppSettings.rememberedEmail();
+        const rememberedPassword = AppSettings.rememberedPassword();
+        if (rememberedPassword.length > 0)
+            passwordInput.text = rememberedPassword;
+    }
+
     Flickable {
         anchors.fill: parent
         contentWidth: width
@@ -128,8 +141,10 @@ Page {
                 CheckBox {
                     id: rememberCheck
                     text: "Remember me"
-                    checked: true
+                    checked: false
                     font.pixelSize: 13
+                    // Turning the option off forgets what was stored before.
+                    onToggled: AppSettings.setRememberLogin(checked)
                     contentItem: Text {
                         text: rememberCheck.text
                         color: root.mutedColor
@@ -354,6 +369,8 @@ Page {
         }
 
         function onSignInSucceded(user) {
+            // The credentials are stored by the repository once the sign-in
+            // succeeded, so nothing has to be done here.
             root.pendingAction = "";
             errorLabel.text = "";
             loadingDialog.close();

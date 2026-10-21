@@ -23,8 +23,8 @@ void UserRepositoryImpl::signIn(
     APIClient::instance().post(
         "/auth/login",
         payload,
-        [this, email](bool success,
-                      const QJsonObject& response)
+        [this, email, password](bool success,
+                               const QJsonObject& response)
         {
             if(success){
                 QJsonObject data = response["data"].toObject();
@@ -88,6 +88,15 @@ void UserRepositoryImpl::signIn(
                 // authenticated endpoint (dashboard stats, rooms, bookings, …)
                 // carries the freshly issued token instead of a stale one.
                 APIClient::instance().setAuthToken(accessToken);
+
+                // Remember the credentials that were just used, so the next
+                // sign-in can be pre-filled. The password is encrypted before
+                // it is written; when "remember me" is off nothing is kept.
+                if (AppSettings::instance().rememberLogin())
+                    AppSettings::instance().rememberCredentials(
+                        email.trimmed().toLower(), password);
+                else
+                    AppSettings::instance().clearRememberedCredentials();
 
                 emit signInSucceded(user);
             }

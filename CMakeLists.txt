@@ -357,6 +357,7 @@ set(ACCOFINDER_LOGIC_SOURCES
     src/core/utils/EDisputeStatus.h
     src/core/utils/ERegistrationPurpose.h
     src/core/utils/appsettings.h src/core/utils/appsettings.cpp
+    src/core/utils/credentialstore.h src/core/utils/credentialstore.cpp
     src/core/utils/apppermission.h src/core/utils/apppermission.cpp
     src/presentation/models/propertylistmodel.h src/presentation/models/propertylistmodel.cpp
     src/presentation/models/roomlistmodel.h src/presentation/models/roomlistmodel.cpp

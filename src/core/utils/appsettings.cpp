@@ -1,5 +1,7 @@
 #include "appsettings.h"
 
+#include "credentialstore.h"
+
 #include <QDateTime>
 #include <QStringList>
 #include <QtGlobal>
@@ -362,10 +364,54 @@ bool AppSettings::firstLaunch() const
 void AppSettings::setRememberLogin(bool value)
 {
     m_settings.setValue("app/rememberLogin", value);
+    if (!value)
+        clearRememberedCredentials();
 }
 bool AppSettings::rememberLogin() const
 {
     return m_settings.value("app/rememberLogin", true).toBool();
+}
+
+// REMEMBERED CREDENTIALS
+
+void AppSettings::rememberCredentials(const QString &email, const QString &password)
+{
+    m_settings.setValue("auth/rememberedEmail", email);
+
+    if (password.isEmpty()) {
+        m_settings.remove("auth/rememberedSecret");
+        return;
+    }
+
+    const QString secret = CredentialStore::encrypt(password);
+    if (secret.isEmpty()) {
+        // No crypto backend available: keep the email only, never the clear
+        // password.
+        m_settings.remove("auth/rememberedSecret");
+        return;
+    }
+
+    m_settings.setValue("auth/rememberedSecret", secret);
+}
+QString AppSettings::rememberedEmail() const
+{
+    return m_settings.value("auth/rememberedEmail").toString();
+}
+QString AppSettings::rememberedPassword() const
+{
+    const QString secret = m_settings.value("auth/rememberedSecret").toString();
+    if (secret.isEmpty())
+        return QString();
+    return CredentialStore::decrypt(secret);
+}
+bool AppSettings::hasRememberedCredentials() const
+{
+    return !rememberedEmail().isEmpty();
+}
+void AppSettings::clearRememberedCredentials()
+{
+    m_settings.remove("auth/rememberedEmail");
+    m_settings.remove("auth/rememberedSecret");
 }
 
 // FILTERS

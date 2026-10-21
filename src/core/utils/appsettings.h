@@ -138,6 +138,15 @@ public:
     Q_INVOKABLE void setRememberLogin(bool value);
     Q_INVOKABLE bool rememberLogin() const;
 
+    // Remembered sign-in credentials.
+    // The password is kept encrypted (see CredentialStore); when no crypto
+    // backend is available only the email is stored, never a clear password.
+    Q_INVOKABLE void rememberCredentials(const QString &email, const QString &password);
+    Q_INVOKABLE QString rememberedEmail() const;
+    Q_INVOKABLE QString rememberedPassword() const;
+    Q_INVOKABLE bool hasRememberedCredentials() const;
+    Q_INVOKABLE void clearRememberedCredentials();
+
     // =========================
     // FILTERS
     // =========================

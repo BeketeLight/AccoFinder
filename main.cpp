@@ -4,6 +4,7 @@
 #include <QQuickStyle>
 #include "src/core/utils/appsettings.h"
 #include "src/core/utils/apppermission.h"
+#include "src/core/utils/credentialstore.h"
 #include "src/application/controllers/authcontroller.h"
 #include "src/application/controllers/propertycontroller.h"
 #include "src/application/controllers/bookingcontroller.h"
@@ -328,6 +329,12 @@ int main(int argc, char *argv[])
     app.installEventFilter(deepLinkFilter);
 
     engine.loadFromModule("AccoFinder", "Main");
+
+    // The remembered sign-in password can only be kept when a crypto backend
+    // is present. Warn at start-up when it is missing, so the failure is
+    // visible instead of silently degrading to "email only".
+    if (!CredentialStore::isAvailable())
+        qWarning() << "[CredentialStore] no crypto backend: remembered passwords cannot be stored";
 
     // Hide the sticky Android splash as soon as the UI is ready, instead of
     // waiting a fixed 3 seconds. The splash is dismissible once the first
