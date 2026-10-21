@@ -100,6 +100,7 @@ Item {
             },
             price: row.price,
             verificationStatus: row.verificationStatus,
+            propertyType: full ? (full.propertyType || "") : "",
             rejectionReason: (full ? (full.rejectionReason || "") : (row.rejectionReason || "")),
             propertyId: String(row.propertyId),
             isActive: true,
