@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import "../../../../components/indicators"
+import "../../../../components/inputs"
 import "../../../properties/components"
 import "../../models"
 import "../../../../utils/Utils.js" as Utils
@@ -160,6 +161,23 @@ Item {
                 label: qsTr("Booking value")
                 valueText: Utils.formatCurrency(BookingViewModel.totalBookingValue())
                 accentColor: root.primaryColor
+            }
+        }
+
+        AppSearchBar {
+            Layout.fillWidth: true
+            placeholder: qsTr("Search client name, email, phone, or booking/room ID")
+            backgroundColor: "#FFFFFF"
+            focusColor: "#2563EB"
+            fieldHeight: 48
+            text: root.bookingsModel.searchQuery
+            onTextEdited: {
+                root.bookingsModel.searchQuery = text
+                root.bookingsModel.applyFilters()
+            }
+            onCleared: {
+                root.bookingsModel.searchQuery = ""
+                root.bookingsModel.applyFilters()
             }
         }
 
