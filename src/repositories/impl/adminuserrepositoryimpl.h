@@ -15,11 +15,13 @@ public:
     void getUserById(const QString& userId) override;
     void updateUserRole(const QString& userId, const QString& role) override;
     void setAccountActive(const QString& userId, bool active) override;
+    void deleteUser(const QString& userId) override;
 
 signals:
     void usersLoaded(QList<User*>& users);
     void userLoaded(User* user);
     void userUpdated(User* user);
+    void userDeleted(const QString& userId);
     void userError(const QString& error);
 };
 

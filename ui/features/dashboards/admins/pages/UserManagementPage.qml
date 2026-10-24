@@ -13,6 +13,8 @@ Item {
 
     signal userToggled(var userId, var name, var active)
     signal userRoleChanged(var userId, var name, var newRole)
+    signal userDeleted(var userId, var name)
+    signal requestDeleteUser(var userId, var name)
 
     implicitWidth: 400
     implicitHeight: contentColumn.implicitHeight
@@ -123,6 +125,11 @@ Item {
                     confirmDialog.activate = activate
                     confirmDialog.open()
                 }
+                onDeleteRequested: (userId, name) => {
+                    deleteConfirmDialog.userId = userId
+                    deleteConfirmDialog.userName = name
+                    deleteConfirmDialog.open()
+                }
                 onForceClearBusyRequested: (userId) => {
                     if (root.usersModel.busyUserId === userId)
                         root.usersModel.busyUserId = ""
@@ -230,6 +237,100 @@ Item {
         background: Rectangle {
             radius: 14
             color: "#FFFFFF"
+        }
+    }
+
+    Popup {
+        id: deleteConfirmDialog
+        modal: true
+        anchors.centerIn: parent
+        width: Math.min(root.width - 32, 320)
+        padding: 16
+        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
+
+        property string userId: ""
+        property string userName: ""
+
+        background: Rectangle {
+            radius: 16
+            color: "#FFFFFF"
+        }
+
+        contentItem: ColumnLayout {
+            spacing: 10
+
+            Label {
+                Layout.fillWidth: true
+                text: qsTr("Delete user")
+                font.pixelSize: 15
+                font.bold: true
+                color: "#111827"
+            }
+
+            Label {
+                Layout.fillWidth: true
+                wrapMode: Text.WordWrap
+                text: qsTr("Delete %1 permanently? This action cannot be undone.").arg(deleteConfirmDialog.userName)
+                font.pixelSize: 12
+                color: "#374151"
+            }
+
+            RowLayout {
+                Layout.fillWidth: true
+                Layout.topMargin: 4
+                spacing: 8
+
+                Button {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 38
+                    text: qsTr("Cancel")
+
+                    contentItem: Label {
+                        text: parent.text
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        font.pixelSize: 12
+                        color: "#111827"
+                    }
+
+                    background: Rectangle {
+                        radius: 19
+                        color: "transparent"
+                        border.color: "#E5E7EB"
+                        border.width: 1
+                    }
+
+                    onClicked: deleteConfirmDialog.reject()
+                }
+
+                Button {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 38
+                    text: qsTr("Delete")
+
+                    contentItem: Label {
+                        text: parent.text
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        font.pixelSize: 12
+                        font.bold: true
+                        color: "#FFFFFF"
+                    }
+
+                    background: Rectangle {
+                        radius: 19
+                        color: parent.down ? "#991B1B" : "#DC2626"
+                    }
+
+                    onClicked: {
+                        if (typeof UserController !== "undefined" && UserController.deleteUser) {
+                            UserController.deleteUser(deleteConfirmDialog.userId)
+                        }
+                        root.userDeleted(deleteConfirmDialog.userId, deleteConfirmDialog.userName)
+                        deleteConfirmDialog.close()
+                    }
+                }
+            }
         }
     }
 }

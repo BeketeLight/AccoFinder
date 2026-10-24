@@ -84,3 +84,18 @@ void AdminUserRepositoryImpl::setAccountActive(const QString &userId, bool activ
         }, false
     );
 }
+
+void AdminUserRepositoryImpl::deleteUser(const QString &userId)
+{
+    APIClient::instance().del(
+        "/users/" + userId,
+        [this, userId](bool success, const QJsonObject& response)
+        {
+            if (success) {
+                emit userDeleted(userId);
+            } else {
+                emit userError(response.value("message").toString());
+            }
+        }, false
+    );
+}

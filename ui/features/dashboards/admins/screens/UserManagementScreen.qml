@@ -14,6 +14,7 @@ Item {
     function goBack() { NavUtils.pop() }
 
     signal userToggled(var userId, var name, var active)
+    signal userDeleted(var userId, var name)
 
     // True while a full re-fetch of the user list is running (e.g. on pull-to-
     // refresh). Drives the pull-to-refresh strip in AppScrollablePage.
@@ -45,6 +46,7 @@ Item {
             Layout.fillWidth: true
 
             onUserToggled: (userId, name, active) => root.userToggled(userId, name, active)
+            onUserDeleted: (userId, name) => root.userDeleted(userId, name)
         }
     }
 

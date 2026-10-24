@@ -10,6 +10,8 @@ UserController::UserController(QObject *parent)
             this, &UserController::userLoaded);
     connect(m_repository, &AdminUserRepositoryImpl::userUpdated,
             this, &UserController::userUpdated);
+    connect(m_repository, &AdminUserRepositoryImpl::userDeleted,
+            this, &UserController::userDeleted);
     connect(m_repository, &AdminUserRepositoryImpl::userError,
             this, &UserController::userError);
 }
@@ -60,4 +62,14 @@ void UserController::setAccountActive(const QString &userId, bool active)
     }
     setLoading(true);
     m_repository->setAccountActive(userId, active);
+}
+
+void UserController::deleteUser(const QString &userId)
+{
+    if (userId.isEmpty()) {
+        emit userError("userId cannot be empty");
+        return;
+    }
+    setLoading(true);
+    m_repository->deleteUser(userId);
 }
