@@ -48,7 +48,7 @@ Rectangle {
 
             Label {
                 Layout.fillWidth: true
-                text: root.paymentId + " · " + Utils.formatCurrency(root.amount)
+                text: (root.user && root.user.trim().length > 0 ? root.user : qsTr("Unknown payer")) + " · " + Utils.formatCurrency(root.amount)
                 color: "#111827"
                 font.pixelSize: 13
                 font.bold: true
@@ -63,7 +63,7 @@ Rectangle {
 
         Label {
             Layout.fillWidth: true
-            text: root.user + " · " + root.kind
+            text: (root.method || "") + (root.date ? " · " + root.date : "") + (root.transactionRef && root.transactionRef.length > 0 ? " · TXN " + root.transactionRef : "")
             color: root.mutedColor
             font.pixelSize: 11
             elide: Text.ElideRight

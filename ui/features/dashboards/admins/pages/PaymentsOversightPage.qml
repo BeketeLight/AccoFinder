@@ -105,14 +105,90 @@ Item {
 
         // ---- Payments tab ----
         ColumnLayout {
+            id: paymentsTabCol
             visible: root.activeTab === "PAYMENTS"
             Layout.fillWidth: true
             spacing: 10
+
+            property string paymentsStatusFilter: "ALL"
+            property string paymentsSearchText: ""
+
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: 8
+
+                Repeater {
+                    model: [
+                        { key: "ALL", label: qsTr("All") },
+                        { key: "Initiated", label: qsTr("Initiated") },
+                        { key: "Failed", label: qsTr("Failed") },
+                        { key: "Success", label: qsTr("Succeeded") }
+                    ]
+
+                    delegate: Button {
+                        id: payFilterBtn
+                        required property var model
+                        readonly property bool isCurrent: paymentsTabCol.paymentsStatusFilter === model.key
+                        Layout.preferredHeight: 32
+                        padding: 0
+
+                        contentItem: Label {
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                            text: payFilterBtn.model.label
+                            color: payFilterBtn.isCurrent ? "#FFFFFF" : "#374151"
+                            font.pixelSize: 11
+                            font.bold: true
+                        }
+
+                        background: Rectangle {
+                            radius: 16
+                            color: payFilterBtn.isCurrent ? root.primaryColor : "#FFFFFF"
+                            border.color: payFilterBtn.isCurrent ? root.primaryColor : "#E5E7EB"
+                            border.width: 1
+                        }
+
+                        onClicked: {
+                            paymentsTabCol.paymentsStatusFilter = payFilterBtn.model.key
+                        }
+                    }
+                }
+            }
+
+            TextField {
+                Layout.fillWidth: true
+                placeholderText: qsTr("Search by payer name, transaction ref, or booking ID")
+                font.pixelSize: 12
+                onTextChanged: {
+                    paymentsTabCol.paymentsSearchText = text
+                }
+            }
 
             Repeater {
                 model: root.paymentsModel.paymentsModel
 
                 delegate: PaymentRowDelegate {
+                    visible: {
+                        var col = paymentsTabCol
+                        if (!col || col.visible === false) return false
+                        if (col.paymentsStatusFilter && col.paymentsStatusFilter !== "ALL") {
+                            var s = String(model.status || "")
+                            if (col.paymentsStatusFilter === "Succeeded") {
+                                if (!(s === "Success" || s === "Completed" || s === "Paid" || s === "Settled")) return false
+                            } else {
+                                if (s !== col.paymentsStatusFilter) return false
+                            }
+                        }
+                        var q = String(col.paymentsSearchText || "").toLowerCase()
+                        if (q.length > 0) {
+                            var u = String(model.user || "").toLowerCase()
+                            var tr = String(model.transactionRef || "").toLowerCase()
+                            var bid = String(model.booking || model.bookingId || "").toLowerCase()
+                            var pid = String(model.paymentId || "").toLowerCase()
+                            if (u.indexOf(q) === -1 && tr.indexOf(q) === -1 && bid.indexOf(q) === -1 && pid.indexOf(q) === -1) return false
+                        }
+                        return true
+                    }
                     paymentId: model.paymentId
                     amount: model.amount
                     status: model.status
