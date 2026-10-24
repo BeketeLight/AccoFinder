@@ -5,6 +5,7 @@ import "../../../properties/components"
 import "../../models"
 import "../../../../utils/Utils.js" as Utils
 import "../delegates"
+import "../../../../components/inputs"
 
 Item {
     id: root
@@ -113,6 +114,21 @@ Item {
             property string paymentsStatusFilter: "ALL"
             property string paymentsSearchText: ""
 
+            AppSearchBar {
+                Layout.fillWidth: true
+                placeholder: qsTr("Search name, transaction ref, or booking ID")
+                backgroundColor: "#FFFFFF"
+                focusColor: "#2563EB"
+                fieldHeight: 48
+                text: paymentsTabCol.paymentsSearchText
+                onTextEdited: {
+                    paymentsTabCol.paymentsSearchText = text
+                }
+                onCleared: {
+                    paymentsTabCol.paymentsSearchText = ""
+                }
+            }
+
             RowLayout {
                 Layout.fillWidth: true
                 spacing: 8
@@ -152,15 +168,6 @@ Item {
                             paymentsTabCol.paymentsStatusFilter = payFilterBtn.model.key
                         }
                     }
-                }
-            }
-
-            TextField {
-                Layout.fillWidth: true
-                placeholderText: qsTr("Search by payer name, transaction ref, or booking ID")
-                font.pixelSize: 12
-                onTextChanged: {
-                    paymentsTabCol.paymentsSearchText = text
                 }
             }
 
