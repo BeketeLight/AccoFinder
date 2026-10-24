@@ -20,6 +20,8 @@ Item {
     property bool isSearchBar: true
     property bool searchReadOnly: false
     property int titleFontSize: 15
+    // property bool transparentHeader: true
+    property bool collapsible: true
 
     property Component rightComponentAction: Component {
         AppNotificationBell {

@@ -19,9 +19,17 @@ public:
 
     bool isLoading() const { return m_isLoading; }
 
+
+    // Room booking (existing QML call sites stay untouched).
     Q_INVOKABLE void createBooking(const QString& roomId,
                                    double amount,
                                    double commissionAmount);
+    // Whole-property booking. Wraps the same repository call with
+    // bookableItemType="Property". This is what PropertyDelegateDetails.qml
+    // already calls.
+    Q_INVOKABLE void createPropertyBooking(const QString& propertyId,
+                                           double amount,
+                                           double commissionAmount);
     Q_INVOKABLE void fetchBookings();
     Q_INVOKABLE void fetchBookingById(const QString& id);
     Q_INVOKABLE void cancelBooking(const QString& id);

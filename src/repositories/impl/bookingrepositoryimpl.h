@@ -12,7 +12,8 @@ public:
     explicit BookingRepositoryImpl(QObject *parent = nullptr);
 
     void createBooking(
-        const QString& roomId,
+        const QString& bookableItemType,
+        const QString& bookableItemId,
         const QString& clientId,
         double amount,
         double commissionAmount
