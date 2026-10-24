@@ -19,7 +19,7 @@ public:
     Q_INVOKABLE void getUserById(const QString& userId);
     Q_INVOKABLE void updateUserRole(const QString& userId, const QString& role);
     Q_INVOKABLE void toggleUserStatus(const QString& userId, bool active);
-    Q_INVOKABLE void deleteUser(const QString& userId);
+    Q_INVOKABLE void setAccountActive(const QString &userId, bool active);
     Q_INVOKABLE void deleteUser(const QString& userId);
 
 signals:

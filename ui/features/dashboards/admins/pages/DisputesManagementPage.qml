@@ -55,7 +55,7 @@ Item {
                     id: filterPill
                     required property var model
                     readonly property bool isCurrent: root.disputesModel.statusFilter === filterPill.model.key
-                    implicitHeight: 30
+                    implicitHeight: 35
                     padding: 0
 
                     contentItem: Label {
