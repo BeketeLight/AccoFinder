@@ -21,7 +21,7 @@ PaymentController::PaymentController(QObject *parent)
 
     connect(m_paymentRepo, &PaymentGatewayImpl::paymentCancelled, this, [this](Payment* payment) {
         setLoading(false);
-        emit paymentRefunded(payment);
+        emit paymentCancelled(payment);
     });
 
     connect(m_paymentRepo, &PaymentGatewayImpl::paymentError, this, [this](const QString& error) {

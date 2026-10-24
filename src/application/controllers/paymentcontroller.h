@@ -87,6 +87,7 @@ signals:
     void paymentCreated(Payment* payment);
     void paymentLoaded(Payment* payment);
     void paymentsLoaded(const QList<Payment*>& payments);
+    void paymentCancelled(Payment* payment);
     void paymentRefunded(Payment* payment);
     void paymentError(const QString& error);
     void isLoadingChanged(bool isLoading);
