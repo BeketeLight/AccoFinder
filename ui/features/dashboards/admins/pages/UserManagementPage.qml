@@ -62,7 +62,7 @@ Item {
                 delegate: Button {
                     required property var model
                     readonly property bool isCurrent: root.usersModel.roleFilter === model.key
-                    Layout.preferredHeight: 30
+                    Layout.preferredHeight: 35
                     padding: 0
 
                     contentItem: Label {
@@ -161,17 +161,22 @@ Item {
         property string userName: ""
         property string userId: ""
         property bool activate: false
+        property bool isDelete: false
 
-        title: qsTr("%1 account").arg(userName)
+        onClosed: confirmDialog.isDelete = false
+
+        title: confirmDialog.isDelete ? qsTr("Delete user") : qsTr("%1 account").arg(userName)
 
         contentItem: ColumnLayout {
             spacing: 12
 
             Label {
                 Layout.fillWidth: true
-                text: confirmDialog.activate
-                      ? qsTr("Reactivate %1's access to AccoFinder?").arg(confirmDialog.userName)
-                      : qsTr("Suspend %1's access? They will be signed out and unable to sign in.").arg(confirmDialog.userName)
+                text: confirmDialog.isDelete
+                      ? qsTr("Delete %1 permanently? This action cannot be undone.").arg(confirmDialog.userName)
+                      : (confirmDialog.activate
+                         ? qsTr("Reactivate %1's access to AccoFinder?").arg(confirmDialog.userName)
+                         : qsTr("Suspend %1's access? They will be signed out and unable to sign in.").arg(confirmDialog.userName))
                 wrapMode: Text.WordWrap
                 font.pixelSize: 13
                 color: "#374151"
