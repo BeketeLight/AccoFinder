@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import "../../../../components/inputs"
+import "../../../../components/indicators"
 import "../../models"
 import "../../../properties/components"
 import "../delegates"
@@ -213,15 +214,31 @@ Item {
                     id: confirmButton
                     Layout.fillWidth: true
                     Layout.preferredHeight: 42
-                    text: confirmDialog.isDelete ? qsTr("Delete") : (confirmDialog.activate ? qsTr("Activate") : qsTr("Suspend"))
+                    text: (typeof UserController !== "undefined" && UserController.isLoading) ? "" : (confirmDialog.isDelete ? qsTr("Delete") : (confirmDialog.activate ? qsTr("Activate") : qsTr("Suspend")))
+                    enabled: !(typeof UserController !== "undefined" && UserController.isLoading)
 
-                    contentItem: Label {
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                        text: confirmButton.text
-                        color: "#FFFFFF"
-                        font.pixelSize: 13
-                        font.bold: true
+                    contentItem: Item {
+                        anchors.fill: parent
+
+                        Label {
+                            visible: !(typeof UserController !== "undefined" && UserController.isLoading)
+                            anchors.centerIn: parent
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                            text: confirmButton.text
+                            color: "#FFFFFF"
+                            font.pixelSize: 13
+                            font.bold: true
+                        }
+
+                        AppSpinner {
+                            visible: typeof UserController !== "undefined" && UserController.isLoading
+                            anchors.centerIn: parent
+                            size: 18
+                            lineWidth: 2
+                            color: "#FFFFFF"
+                            running: visible
+                        }
                     }
 
                     background: Rectangle {

@@ -222,17 +222,43 @@ Item {
             }
 
             Label {
-                visible: (function() {
+                visible: {
                     var m = root.paymentsModel.paymentsModel
-                    if (!m) return true
-                    if (typeof m.count === "function") return m.count() === 0
-                    if (typeof m.rowCount === "function") return m.rowCount() === 0
-                    if (typeof m.count === "number") return m.count === 0
-                    return true
-                })()
+                    var total = 0
+                    if (!m) total = 0
+                    else if (typeof m.count === "function") total = m.count()
+                    else if (typeof m.rowCount === "function") total = m.rowCount()
+                    else if (typeof m.count === "number") total = m.count
+                    if (total === 0) return true
+                    var shown = 0
+                    for (var i = 0; i < total; i++) {
+                        var it = m.get ? m.get(i) : (m.at ? m.at(i) : null)
+                        if (!it) continue
+                        if (paymentsTabCol.paymentsStatusFilter && paymentsTabCol.paymentsStatusFilter !== "ALL") {
+                            var s = String(it.status || "")
+                            if (paymentsTabCol.paymentsStatusFilter === "Succeeded") {
+                                if (!(s === "Success" || s === "Completed" || s === "Paid" || s === "Settled")) continue
+                            } else {
+                                if (s !== paymentsTabCol.paymentsStatusFilter) continue
+                            }
+                        }
+                        var q = String(paymentsTabCol.paymentsSearchText || "").toLowerCase()
+                        if (q.length > 0) {
+                            var u = String(it.user || "").toLowerCase()
+                            var tr = String(it.transactionRef || "").toLowerCase()
+                            var bid = String(it.booking || it.bookingId || "").toLowerCase()
+                            var pid = String(it.paymentId || "").toLowerCase()
+                            if (u.indexOf(q) === -1 && tr.indexOf(q) === -1 && bid.indexOf(q) === -1 && pid.indexOf(q) === -1) continue
+                        }
+                        shown++
+                    }
+                    return shown === 0
+                }
                 Layout.fillWidth: true
                 horizontalAlignment: Text.AlignHCenter
-                text: qsTr("No payments recorded yet.")
+                text: (paymentsTabCol.paymentsSearchText && paymentsTabCol.paymentsSearchText.length > 0) || (paymentsTabCol.paymentsStatusFilter && paymentsTabCol.paymentsStatusFilter !== "ALL")
+                      ? qsTr("No payments match your filters.")
+                      : qsTr("No payments to show.")
                 color: root.mutedColor
                 font.pixelSize: 12
                 topPadding: 8
