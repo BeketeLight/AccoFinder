@@ -14,14 +14,16 @@ Rectangle {
     property string kind: ""
     property string method: ""
     property string date: ""
+    property string bookingId: ""
+    property string transactionRef: ""
 
     property color mutedColor: "#6B7280"
 
     signal actionRequested(var paymentId, var kind)
 
     function statusVariant(status) {
-        if (status === "Completed" || status === "Paid" || status === "Settled") return "success"
-        if (status === "Pending" || status === "Due") return "warning"
+        if (status === "Completed" || status === "Paid" || status === "Settled" || status === "Success") return "success"
+        if (status === "Pending" || status === "Due" || status === "Initiated") return "warning"
         return "danger"
     }
 
@@ -73,39 +75,70 @@ Rectangle {
 
             Label {
                 Layout.fillWidth: true
-                text: root.method + " · " + root.date
+                text: (root.method || "") + (root.date ? " · " + root.date : "")
                 color: root.mutedColor
                 font.pixelSize: 11
+                elide: Text.ElideRight
             }
 
-            Button {
-                id: payActionButton
-                visible: root.status === "Pending" || root.status === "Disputed"
-                Layout.preferredHeight: 28
-                text: root.status === "Pending" ? qsTr("Mark completed")
-                      : root.status === "Disputed" ? qsTr("Flag issue") : ""
+            RowLayout {
+                spacing: 6
+                Layout.alignment: Qt.AlignRight
 
-                contentItem: Label {
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                    text: payActionButton.text
-                    color: root.status === "Pending" ? "#166534" : "#B45309"
-                    font.pixelSize: 10
-                    font.bold: true
+                Button {
+                    id: cancelPayButton
+                    visible: root.status === "Pending" || root.status === "Initiated" || root.status === "Disputed"
+                    Layout.preferredHeight: 30
+                    text: qsTr("Cancel payment")
+
+                    contentItem: Label {
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        text: cancelPayButton.text
+                        color: "#DC2626"
+                        font.pixelSize: 10
+                        font.bold: true
+                    }
+
+                    background: Rectangle {
+                        radius: 14
+                        color: cancelPayButton.down ? "#FEF2F2" : "#FFFFFF"
+                        border.color: "#FCA5A5"
+                        border.width: 1
+                    }
+
+                    onClicked: root.actionRequested(root.paymentId, "cancel")
                 }
 
-                background: Rectangle {
-                    radius: 14
-                    color: payActionButton.down ? "#F3F4F6" : "#F9FAFB"
-                    border.color: "#E5E7EB"
-                    border.width: 1
-                }
+                Button {
+                    id: payActionButton
+                    visible: root.status === "Pending" || root.status === "Disputed"
+                    Layout.preferredHeight: 28
+                    text: root.status === "Pending" ? qsTr("Mark completed")
+                          : root.status === "Disputed" ? qsTr("Flag issue") : ""
 
-                onClicked: {
-                    if (root.status === "Pending")
-                        root.actionRequested(root.paymentId, "settled")
-                    else
-                        root.actionRequested(root.paymentId, "flagged")
+                    contentItem: Label {
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        text: payActionButton.text
+                        color: root.status === "Pending" ? "#166534" : "#B45309"
+                        font.pixelSize: 10
+                        font.bold: true
+                    }
+
+                    background: Rectangle {
+                        radius: 14
+                        color: payActionButton.down ? "#F3F4F6" : "#F9FAFB"
+                        border.color: "#E5E7EB"
+                        border.width: 1
+                    }
+
+                    onClicked: {
+                        if (root.status === "Pending")
+                            root.actionRequested(root.paymentId, "settled")
+                        else
+                            root.actionRequested(root.paymentId, "flagged")
+                    }
                 }
             }
         }

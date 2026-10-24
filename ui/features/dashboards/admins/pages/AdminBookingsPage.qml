@@ -180,7 +180,7 @@ Item {
                     required property var model
                     readonly property bool isCurrent: root.bookingsModel.statusFilter === model.key
 
-                    Layout.preferredHeight: 30
+                    Layout.preferredHeight: 35
                     padding: 0
 
                     contentItem: Label {

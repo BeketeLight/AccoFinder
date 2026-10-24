@@ -11,6 +11,15 @@ NotificationViewModel::NotificationViewModel(QObject *parent)
         setLoading(false);
         emit notificationsLoaded();
     });
+
+    connect(m_service, &NotificationServiceImpl::notificationMarkedRead,
+            this, [this]() {
+        refreshCurrent();
+    });
+    connect(m_service, &NotificationServiceImpl::allNotificationsMarkedRead,
+            this, [this]() {
+        refreshCurrent();
+    });
 }
 
 void NotificationViewModel::setLoading(bool loading)

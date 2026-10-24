@@ -12,6 +12,7 @@ Item {
     property string pageTitle: qsTr("Agent Dashboard")
     property bool showHeader: true
     property bool showBack: true
+    readonly property bool isAgentDashboardHost: true
 
     // Header bell (mirrors the admin dashboard): opens the account-level
     // notification list scoped to the viewer's role, so an agent sees

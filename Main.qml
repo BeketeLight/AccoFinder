@@ -35,7 +35,7 @@ ApplicationWindow {
 
     function isRootLandingPage(url) {
         var s = url.toString();
-        return s.endsWith("HomeScreen.qml") || s.endsWith("AdminsDashboardScreen.qml");
+        return s.endsWith("HomeScreen.qml") || s.endsWith("AdminsDashboardScreen.qml") || s.endsWith("AgentsDashboardScreen.qml") || s.endsWith("PropertiesScreen.qml");
     }
 
     // Picks the page the app should open on. Used both at startup and after a
@@ -45,7 +45,9 @@ ApplicationWindow {
             var role = AppSettings.userType();
             if (role === "ADMIN" || role === "SUPER_ADMIN")
                 return "./ui/features/dashboards/admins/screens/AdminsDashboardScreen.qml";
-            // Clients and agents land on Home, not on the Account tab.
+            if (role === "AGENT")
+                return "./ui/features/properties/screens/PropertiesScreen.qml";
+            // Clients land on Home.
             return "./ui/features/home/screens/HomeScreen.qml";
         }
         // A sign-up interrupted by the user leaving to read their emailed OTP
@@ -88,9 +90,15 @@ ApplicationWindow {
                 mainStack.stackView.clear();
                 return;
             }
-            // Root landing pages (Home for clients, Admin Dashboard for admins) exit the app
+            // Root landing pages (Home for clients, Admin Dashboard for admins, Agent Properties) exit the app
             if (!isRootLandingPage(loader.source)) {
-                loader.source = (AppSettings.isLoggedIn() && (AppSettings.userType() === "ADMIN" || AppSettings.userType() === "SUPER_ADMIN")) ? "./ui/features/dashboards/admins/screens/AdminsDashboardScreen.qml" : "./ui/features/home/screens/HomeScreen.qml";
+                var roleBack = AppSettings.userType();
+                if (AppSettings.isLoggedIn() && (roleBack === "ADMIN" || roleBack === "SUPER_ADMIN"))
+                    loader.source = "./ui/features/dashboards/admins/screens/AdminsDashboardScreen.qml";
+                else if (AppSettings.isLoggedIn() && roleBack === "AGENT")
+                    loader.source = "./ui/features/properties/screens/PropertiesScreen.qml";
+                else
+                    loader.source = "./ui/features/home/screens/HomeScreen.qml";
 
                 if (typeof bottomNavBar.currentIndex !== "undefined") {
                     bottomNavBar.currentIndex = 0;
@@ -342,7 +350,19 @@ ApplicationWindow {
             onAccountTapped: loader.source = AppSettings.isLoggedIn() ? "./ui/features/auth/pages/Profile.qml" : "./ui/features/auth/pages/CreateAccountPage.qml"
             onBookingsTapped: loader.source = "./ui/features/bookings/screens/BookingsScreen.qml"
             onSaveTapped: loader.source = "./ui/features/favourites/screen/SavesScreen.qml"
-            onDashboardTapped: loader.source = "./ui/features/dashboards/admins/screens/AdminsDashboardScreen.qml"
+            onDashboardTapped: {
+                if (AppSettings.isLoggedIn()) {
+                    var r = AppSettings.userType();
+                    if (r === "ADMIN" || r === "SUPER_ADMIN")
+                        loader.source = "./ui/features/dashboards/admins/screens/AdminsDashboardScreen.qml";
+                    else if (r === "AGENT")
+                        loader.source = "./ui/features/properties/screens/PropertiesScreen.qml";
+                    else
+                        loader.source = "./ui/features/home/screens/HomeScreen.qml";
+                } else {
+                    loader.source = "./ui/features/home/screens/HomeScreen.qml";
+                }
+            }
         }
     }
 

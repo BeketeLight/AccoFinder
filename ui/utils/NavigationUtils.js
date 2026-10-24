@@ -168,16 +168,21 @@ function navigateToAdminDashboard(){
 function navigateToDashboard(role){
     switch(role){
         case "admin":
-            replace("../features/dashboard/screens/AdminsDashboardScreen.qml")
+        case "ADMIN":
+        case "SUPER_ADMIN":
+            replace("../features/dashboards/admins/screens/AdminsDashboardScreen.qml")
             break;
         case "agent":
-            replace("../features/dashboard/screens/AgentsDashboardScreen.qml")
+        case "AGENT":
+            replace("../features/dashboards/Agets/screens/AgentsDashboardScreen.qml")
             break;
         case "client":
-            replace("../features/dashboard/screens/ClientsDashboardScreen.qml")
+        case "CLIENT":
+            // Clients don't have a separate dashboard screen; land on home
+            replace("../features/home/screens/HomeScreen.qml")
             break;
         default:
-            replace("../features/auth/screens/SignInScreen.qml")  
+            replace("../features/auth/screens/SignInScreen.qml")
     }
 
 }

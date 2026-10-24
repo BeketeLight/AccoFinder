@@ -80,7 +80,7 @@ Item {
                     required property var model
                     readonly property bool isCurrent: root.activeTab === model.key
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 32
+                    Layout.preferredHeight: 35
                     padding: 0
 
                     contentItem: Label {
@@ -120,11 +120,16 @@ Item {
                     kind: model.kind
                     method: model.method
                     date: model.date
+                    bookingId: model.booking || model.bookingId || ""
+                    transactionRef: model.transactionRef || ""
                     onActionRequested: (paymentId, kind) => {
                         if (kind === "settled") {
                             root.paymentsModel.setPaymentStatus(paymentId, "Completed")
                             console.log("Payment settled:", paymentId)
                             root.paymentAction("settled", paymentId)
+                        } else if (kind === "cancel") {
+                            console.log("Payment cancellation requested:", paymentId)
+                            root.paymentAction("cancel", paymentId)
                         } else {
                             console.log("Payment flagged for review:", paymentId)
                             root.paymentAction("flagged", paymentId)
@@ -134,7 +139,14 @@ Item {
             }
 
             Label {
-                visible: root.paymentsModel.paymentsModel.count === 0
+                visible: (function() {
+                    var m = root.paymentsModel.paymentsModel
+                    if (!m) return true
+                    if (typeof m.count === "function") return m.count() === 0
+                    if (typeof m.rowCount === "function") return m.rowCount() === 0
+                    if (typeof m.count === "number") return m.count === 0
+                    return true
+                })()
                 Layout.fillWidth: true
                 horizontalAlignment: Text.AlignHCenter
                 text: qsTr("No payments recorded yet.")
@@ -169,7 +181,14 @@ Item {
             }
 
             Label {
-                visible: root.paymentsModel.commissionsModel.count === 0
+                visible: (function() {
+                    var m = root.paymentsModel.commissionsModel
+                    if (!m) return true
+                    if (typeof m.count === "function") return m.count() === 0
+                    if (typeof m.rowCount === "function") return m.rowCount() === 0
+                    if (typeof m.count === "number") return m.count === 0
+                    return true
+                })()
                 Layout.fillWidth: true
                 horizontalAlignment: Text.AlignHCenter
                 text: qsTr("No commissions due yet.")
@@ -203,7 +222,14 @@ Item {
             }
 
             Label {
-                visible: root.paymentsModel.payoutsModel.count === 0
+                visible: (function() {
+                    var m = root.paymentsModel.payoutsModel
+                    if (!m) return true
+                    if (typeof m.count === "function") return m.count() === 0
+                    if (typeof m.rowCount === "function") return m.rowCount() === 0
+                    if (typeof m.count === "number") return m.count === 0
+                    return true
+                })()
                 Layout.fillWidth: true
                 horizontalAlignment: Text.AlignHCenter
                 text: qsTr("No payouts scheduled yet.")

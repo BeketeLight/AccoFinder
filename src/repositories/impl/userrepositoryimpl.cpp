@@ -166,7 +166,12 @@ void UserRepositoryImpl::signUp(
                 QJsonObject data = response["data"].toObject();
 
                 QString userId = data["_id"].toString();
-                QString fullName = data["name"].toString();
+                QString firstNameResp = data["firstName"].toString();
+                QString surnameResp = data["surname"].toString();
+                QString fullName = (firstNameResp + " " + surnameResp).trimmed();
+                if (fullName.isEmpty()) {
+                    fullName = data["name"].toString();
+                }
                 QString userEmail = data["email"].toString();
                 QString userPhone = data["phone"].toString();
                 QString address = data["residentialAddress"].toString();
@@ -175,9 +180,9 @@ void UserRepositoryImpl::signUp(
                 // Use the new constructor
                 User* user = new User(
                     userId,
-                    fullName,          // Backend sends single 'name' field
+                    fullName,
                     userEmail,
-                    address,
+                    address.isEmpty() ? residentialAddress : address,
                     role,
                     this
                     );
