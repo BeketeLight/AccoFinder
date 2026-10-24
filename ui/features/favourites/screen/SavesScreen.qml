@@ -99,7 +99,104 @@ Item {
     ColumnLayout {
         anchors.fill: parent
         spacing: 0
+        // ============================================================
+        // TEMPORARY DEBUG PANEL — remove before shipping.
+        // Shows exactly what AppSettings has persisted. If the saved
+        // lists are empty here, the bug is in AppSettings or the heart
+        // handlers, not in the Saves UI.
+        // ============================================================
+        Rectangle {
+            id: debugPanel
+            Layout.fillWidth: true
+            Layout.preferredHeight: debugColumn.implicitHeight + 16
+            color: "#0F172A"        // dark slate so it stands out from the app UI
+            radius: 0
 
+            property string propertyIdsText: ""
+            property string roomIdsText: ""
+            property string roomSnapshotsText: ""
+
+            function refresh() {
+                // Reads exactly what AppSettings stored.
+                var pIds = AppSettings.favoritePropertyIds;
+                var rIds = AppSettings.favoriteRoomIds;
+
+                propertyIdsText = (pIds && pIds.length) ? pIds.join(", ") : "(none)";
+
+                roomIdsText = (rIds && rIds.length) ? rIds.join(", ") : "(none)";
+
+                // For every saved room, print the cached snapshot in compact form.
+                // This is the same data SavedRoomDelegate renders from.
+                if (rIds && rIds.length) {
+                    var lines = [];
+                    for (var i = 0; i < rIds.length; i++) {
+                        var snap = AppSettings.favoriteRoomSnapshot(rIds[i]);
+                        var parsed = JSON.parse(JSON.stringify(snap));   // QVariantMap → plain
+                        var summary = parsed ? ["id=" + (parsed.quarterId || rIds[i]), "prop=" + (parsed.propertyId || ""), "type=" + (parsed.type || ""), "price=" + (parsed.price || 0), "img=" + (parsed.imageUrl ? "yes" : "no")].join("  ") : "(no snapshot)";
+                        lines.push("  • " + summary);
+                    }
+                    roomSnapshotsText = lines.join("\n");
+                } else {
+                    roomSnapshotsText = "  (none)";
+                }
+            }
+
+            Connections {
+                target: AppSettings
+                function onFavoritePropertyIdsChanged() {
+                    debugPanel.refresh();
+                }
+                function onRoomFavoritesChanged() {
+                    debugPanel.refresh();
+                }
+                function onUserSessionChanged() {
+                    debugPanel.refresh();
+                }
+            }
+
+            Component.onCompleted: refresh()
+
+            ColumnLayout {
+                id: debugColumn
+                anchors.fill: parent
+                anchors.margins: 8
+                spacing: 4
+
+                Label {
+                    text: qsTr("DEBUG — AppSettings persistence")
+                    color: "#FACC15"
+                    font.pixelSize: 11
+                    font.bold: true
+                }
+
+                Label {
+                    Layout.fillWidth: true
+                    text: "favoritePropertyIds (" + AppSettings.favoritePropertyIds.length + "): " + debugPanel.propertyIdsText
+                    color: "#E5E7EB"
+                    font.pixelSize: 10
+                    font.family: "monospace"
+                    wrapMode: Text.WrapAnywhere
+                }
+
+                Label {
+                    Layout.fillWidth: true
+                    text: "favoriteRoomIds (" + AppSettings.favoriteRoomIds.length + "): " + debugPanel.roomIdsText
+                    color: "#E5E7EB"
+                    font.pixelSize: 10
+                    font.family: "monospace"
+                    wrapMode: Text.WrapAnywhere
+                }
+
+                Label {
+                    Layout.fillWidth: true
+                    text: "roomSnapshots:\n" + debugPanel.roomSnapshotsText
+                    color: "#93C5FD"
+                    font.pixelSize: 10
+                    font.family: "monospace"
+                    wrapMode: Text.WrapAnywhere
+                }
+            }
+        }
         SavesTabStrip {
             Layout.fillWidth: true
             Layout.preferredHeight: 48
