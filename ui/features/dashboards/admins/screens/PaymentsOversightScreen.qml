@@ -5,7 +5,6 @@ import "../pages"
 import "../../../../components/pages"
 import "../../../../components/buttons"
 import "../../../../utils/NavigationUtils.js" as NavUtils
-import "../../../../utils/Utils.js" as Utils
 
 Item {
     id: root
@@ -21,6 +20,7 @@ Item {
     property string _cancelMethod: ""
     property string _cancelStatus: ""
     property bool _cancelInProgress: false
+    property string _cancelError: ""
 
     function goBack() { NavUtils.pop() }
 
@@ -34,39 +34,43 @@ Item {
         target: (typeof PaymentController !== "undefined") ? PaymentController : null
         ignoreUnknownSignals: true
         function onPaymentCancelled(payment) {
-            Utils.showToast(qsTr("Payment cancelled successfully"), "success")
-            PaymentsOverviewViewModel.refresh()
-            root._cancelInProgress = false
-            cancelDialog.close()
+            root.finishCancel(true, "")
         }
         function onPaymentRefunded(payment) {
-            Utils.showToast(qsTr("Payment cancelled successfully"), "success")
-            PaymentsOverviewViewModel.refresh()
-            root._cancelInProgress = false
-            cancelDialog.close()
+            root.finishCancel(true, "")
         }
         function onPaymentError(err) {
-            var msg = err || qsTr("Failed to cancel payment")
-            Utils.showToast(msg, "error")
-            root._cancelInProgress = false
+            root.finishCancel(false, err || qsTr("Failed to cancel payment"))
+        }
+    }
+
+    function finishCancel(success, message) {
+        root._cancelInProgress = false
+        if (success) {
+            root._cancelError = ""
+            console.log("[PaymentsOversight] payment cancelled successfully")
+            PaymentsOverviewViewModel.refresh()
             cancelDialog.close()
+        } else {
+            // Keep the dialog open so the admin can read the reason and retry.
+            root._cancelError = message
+            console.warn("[PaymentsOversight] payment cancel failed:", message)
         }
     }
 
     function performCancelPayment() {
         if (_cancelInProgress) return
         if (root._cancelPaymentId === "" && root._cancelBookingId === "" && root._cancelTxRef === "") {
-            Utils.showToast(qsTr("Missing payment details"), "error")
+            root._cancelError = qsTr("Missing payment details")
             return
         }
+        root._cancelError = ""
         _cancelInProgress = true
         if (typeof PaymentController !== "undefined" && PaymentController.cancelPayment) {
             PaymentController.cancelPayment(root._cancelPaymentId, root._cancelBookingId, root._cancelAmount, root._cancelMethod, root._cancelStatus, root._cancelTxRef)
             return
         }
-        Utils.showToast(qsTr("Payment cancellation unavailable"), "error")
-        _cancelInProgress = false
-        cancelDialog.close()
+        root.finishCancel(false, qsTr("Payment cancellation unavailable"))
     }
 
     AppScrollablePage {
@@ -105,6 +109,7 @@ Item {
                         root._cancelPaymentId = reference
                     }
                     _cancelInProgress = false
+                    root._cancelError = ""
                     cancelDialog.open()
                     return
                 }
@@ -143,6 +148,15 @@ Item {
                 text: qsTr("This payment will be marked as failed and the room will be released if not already confirmed. This action cannot be undone.")
                 color: "#6B7280"
                 font.pixelSize: 13
+                wrapMode: Text.WordWrap
+            }
+
+            Label {
+                Layout.fillWidth: true
+                visible: root._cancelError !== ""
+                text: root._cancelError
+                color: "#DC2626"
+                font.pixelSize: 12
                 wrapMode: Text.WordWrap
             }
 
