@@ -256,11 +256,16 @@ Rectangle {
                 }
             }
 
+            Item {
+                Layout.fillWidth: true
+            }
+
             Rectangle {
                 id: togglePill
                 implicitHeight: 24
                 implicitWidth: toggleLabel.implicitWidth + 20
                 radius: 12
+                Layout.alignment: Qt.AlignRight
                 color: toggleArea.pressed
                        ? (root.active ? "#FEE2E2" : "#DCFCE7")
                        : (root.active ? "#FEF2F2" : "#F0FDF4")
@@ -289,6 +294,7 @@ Rectangle {
                 implicitHeight: 24
                 implicitWidth: deleteLabel.implicitWidth + 20
                 radius: 12
+                Layout.alignment: Qt.AlignRight
                 visible: !root.isSelfAccount
                 color: deleteArea.pressed ? "#FEE2E2" : "#FEF2F2"
                 border.color: "#FECACA"
