@@ -20,6 +20,8 @@ Item {
     property bool isSearchBar: true
     property bool searchReadOnly: false
     property int titleFontSize: 15
+    // property bool transparentHeader: true
+    property bool collapsible: true
 
     property Component rightComponentAction: Component {
         AppNotificationBell {
@@ -27,9 +29,22 @@ Item {
         }
     }
 
+    // Host-injectable. main.qml sets this to the window-owned shared model via
+    // loader.onLoaded so SavesScreen sees the same rows HomeScreen does.
+    // Falls back to a private instance if HomeScreen is ever loaded without
+    // that injection (a debug path, a component preview).
+    property var propertiesModelRef: null
+
+    // Local fallback used only when propertiesModelRef is null.
     PropertiesModel {
-        id: sharedProperties
+        id: localProperties
+        visible: false
     }
+
+    // Every existing reference to `sharedProperties` in this file keeps
+    // working — it resolves to the injected instance when present, else to
+    // the private fallback.
+    readonly property var sharedProperties: root.propertiesModelRef !== null ? root.propertiesModelRef : localProperties
 
     property bool refreshing: false
     readonly property bool loading: sharedProperties.loading

@@ -8,7 +8,8 @@ Booking::Booking(QObject *parent)
 
 Booking::Booking(const QString &id,
                  const QString &clientId,
-                 const QString &roomId,
+                 const QString &bookableItemType,
+                 const QString &bookableItemId,
                  const QDateTime &bookingDate,
                  const double &amount,
                  const double &commissionAmount,
@@ -16,7 +17,8 @@ Booking::Booking(const QString &id,
     : QObject(parent)
     , m_id(id)
     , m_clientId(clientId)
-    , m_roomId(roomId)
+    , m_bookableItemType(bookableItemType)
+    , m_bookableItemId(bookableItemId)
     , m_bookingDate(bookingDate)
     , m_status(BookingStatus::Pending)
     , m_amount(amount)
@@ -48,9 +50,51 @@ QString Booking::getClientPhone() const
     return m_clientPhone;
 }
 
+
+QString Booking::getBookableItemType() const
+{
+    return m_bookableItemType;
+}
+
+void Booking::setBookableItemType(const QString &type)
+{
+    if (m_bookableItemType == type)
+        return;
+    m_bookableItemType = type;
+    emit bookableItemTypeChanged();
+    // Derived accessors depend on the pair.
+    emit roomIdChanged();
+    emit propertyIdChanged();
+}
+
+QString Booking::getBookableItemId() const
+{
+    return m_bookableItemId;
+}
+
+void Booking::setBookableItemId(const QString &id)
+{
+    if (m_bookableItemId == id)
+        return;
+    m_bookableItemId = id;
+    emit bookableItemIdChanged();
+    emit roomIdChanged();
+    emit propertyIdChanged();
+}
+
+// --- Derived, backwards-compatible accessors ---
 QString Booking::getRoomId() const
 {
-    return m_roomId;
+    return m_bookableItemType.compare(QLatin1String("Room"), Qt::CaseInsensitive) == 0
+               ? m_bookableItemId
+               : QString();
+}
+
+QString Booking::getPropertyId() const
+{
+    return m_bookableItemType.compare(QLatin1String("Property"), Qt::CaseInsensitive) == 0
+               ? m_bookableItemId
+               : QString();
 }
 
 
@@ -211,13 +255,6 @@ void Booking::setClientPhone(const QString &newClientPhone)
     emit clientPhoneChanged();
 }
 
-void Booking::setRoomId(const QString &newRoomId)
-{
-    if (m_roomId == newRoomId) return;
-    m_roomId = newRoomId;
-    emit roomIdChanged();
-}
-
 void Booking::setBookingDate(const QDateTime &newBookingDate)
 {
     if (m_bookingDate == newBookingDate) return;
@@ -236,6 +273,6 @@ void Booking::setCommissionAmount(double newCommissionAmount)
 {
     if (qFuzzyCompare(m_commissionAmount, newCommissionAmount)) return;
     m_commissionAmount = newCommissionAmount;
-     emit commissionAmountChanged();
+    emit commissionAmountChanged();
 }
 

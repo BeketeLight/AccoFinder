@@ -23,7 +23,7 @@ Item {
     function reload() {
         savedModel.clear();
 
-        var ids = AppSettings.favoritePropertyIds;   // QStringList → JS array
+        var ids = AppSettings.favoritePropertyIds();   // QStringList → JS array
         if (!ids || ids.length === 0)
             return;
 
@@ -79,9 +79,6 @@ Item {
     Connections {
         target: AppSettings
         function onFavoritePropertyIdsChanged() {
-            root.reload();
-        }
-        function onPropertyFavoritesChanged() {
             root.reload();
         }
     }

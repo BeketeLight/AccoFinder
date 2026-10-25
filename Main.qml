@@ -6,6 +6,7 @@ import "./ui/app"
 import "./ui/features/properties/screens"
 import "./ui/features/home/screens"
 import "./ui/features/home/components"
+import "./ui/features/home/models"
 import "./ui/utils/NavigationUtils.js" as NavUtils
 
 ApplicationWindow {
@@ -72,6 +73,18 @@ ApplicationWindow {
         if (typeof bottomNavBar.currentIndex !== "undefined")
             bottomNavBar.currentIndex = root.sessionLandingNavIndex();
     }
+
+    // -------------------------------------------------------------------
+    // Shared home feed.
+    //
+    // Owned by the window so HomeScreen and the Saves screen's property tab
+    // filter against the exact same rows. One fetch, one cache; a property
+    // bookmarked on Home shows up in Saves with the same title/price/image.
+    // -------------------------------------------------------------------
+    PropertiesModel {
+        id: sharedProperties
+    }
+
     readonly property var currentPage: (mainStack.depth > 0 && mainStack.currentItem) ? mainStack.currentItem : (loader.item ? loader.item : null)
     readonly property bool isAdminDashboard: currentPage && typeof currentPage.pageTitle !== "undefined" && currentPage.pageTitle === qsTr("Admin Dashboard")
     readonly property bool isAgentDashboard: currentPage && typeof currentPage.pageTitle !== "undefined" && currentPage.pageTitle === qsTr("Agent Dashboard")
@@ -129,26 +142,28 @@ ApplicationWindow {
         spacing: 0
 
         //Main area: page + floating header
-        Item{
+        Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
 
-            ColumnLayout{
+            ColumnLayout {
                 anchors.fill: parent
                 spacing: 0
 
                 //Reserves space under solid header only
                 //On transparent header, 0 so the image starts from the top
-                Item{
+                Item {
                     Layout.fillWidth: true
                     Layout.preferredHeight: {
-                        if(!appHeader.visible) return 0
-                        if(appHeader.transparentHeader) return 0
-                        return appHeader.implicitHeight
+                        if (!appHeader.visible)
+                            return 0;
+                        if (appHeader.transparentHeader)
+                            return 0;
+                        return appHeader.implicitHeight;
                     }
                 }
 
-                Item{
+                Item {
                     Layout.fillHeight: true
                     Layout.fillWidth: true
 
@@ -157,6 +172,23 @@ ApplicationWindow {
                         anchors.fill: parent
                         visible: mainStack.depth === 0
                         source: "./ui/features/home/screens/HomeScreen.qml"
+
+                        // Single injection point for every root-level page the
+                        // footer opens via loader.source. Dispatches by
+                        // objectName so we never overwrite this handler from a
+                        // tap-specific callback (onLoaded is a single slot on
+                        // the Loader, not a per-load signal).
+                        onLoaded: {
+                            if (!item)
+                                return;
+                            if (item.objectName === "SavesScreen") {
+                                if ("sharedPropertiesModelRef" in item)
+                                    item.sharedPropertiesModelRef = sharedProperties;
+                            } else if (item.objectName === "HomeScreen") {
+                                if ("propertiesModelRef" in item)
+                                    item.propertiesModelRef = sharedProperties;
+                            }
+                        }
                     }
                     MainStackview {
                         id: mainStack
@@ -171,13 +203,10 @@ ApplicationWindow {
                 anchors.left: parent.left
                 anchors.right: parent.right
                 height: implicitHeight
-                z:10
+                z: 10
                 //collapse header if not specified
                 // Bind collapsible & transparency
-                transparentHeader: currentPage
-                                      && typeof currentPage.transparentHeader !== "undefined"
-                                      ? currentPage.transparentHeader
-                                      : false
+                transparentHeader: currentPage && typeof currentPage.transparentHeader !== "undefined" ? currentPage.transparentHeader : false
                 collapsible: Boolean(currentPage && currentPage.collapsible)
                 scrollY: currentPage && typeof currentPage.scrollY !== "undefined" ? currentPage.scrollY : 0
                 visible: {
@@ -349,6 +378,9 @@ ApplicationWindow {
             onPropertiesTapped: loader.source = "./ui/features/properties/screens/PropertiesScreen.qml"
             onAccountTapped: loader.source = AppSettings.isLoggedIn() ? "./ui/features/auth/pages/Profile.qml" : "./ui/features/auth/pages/CreateAccountPage.qml"
             onBookingsTapped: loader.source = "./ui/features/bookings/screens/BookingsScreen.qml"
+            // loader.source swap keeps the footer visible (mainStack.depth stays
+            // 0). The shared PropertiesModel is injected by loader.onLoaded
+            // above, so the property tab is populated on first paint.
             onSaveTapped: loader.source = "./ui/features/favourites/screen/SavesScreen.qml"
             onDashboardTapped: {
                 if (AppSettings.isLoggedIn()) {

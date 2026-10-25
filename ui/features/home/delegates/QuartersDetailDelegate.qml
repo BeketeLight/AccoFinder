@@ -6,6 +6,7 @@ import "../../../utils/ImageUtils.js" as ImageUtils
 import "../../../utils/NavigationUtils.js" as NavUtils
 import "../../../utils/Utils.js" as Utils
 import "../../../components/indicators/"
+import "../../properties/components"
 
 Page {
     id: root
@@ -61,7 +62,7 @@ Page {
     property string agentPhone: "+265 999 123 456"
     property string agentEmail: "john.banda@realtor.mw"
     property real agentRating: 4.6
-    property int agentReviewCount: 28
+    property int agentReviewCount: 0
     // property var reviewsModel
 
     // Media - images and videos
@@ -301,13 +302,9 @@ Page {
                 Layout.margins: 16
                 spacing: 8
 
-                Label {
-                    text: root.quarterType
-                    font.pixelSize: 22
-                    font.weight: Font.DemiBold
-                    color: "#1F2937"
-                    wrapMode: Text.WordWrap
+                SectionHeader {
                     Layout.fillWidth: true
+                    title: root.quarterType
                 }
 
                 Label {
@@ -378,35 +375,6 @@ Page {
                 height: 8
                 color: "#F5F5F5"
             }
-
-            // ===== DESCRIPTION =====
-            ColumnLayout {
-                Layout.fillWidth: true
-                Layout.margins: 16
-                spacing: 8
-
-                Label {
-                    text: "About This Room"
-                    font.pixelSize: 16
-                    font.weight: Font.DemiBold
-                    color: "#1F2937"
-                }
-
-                Label {
-                    text: root.description
-                    font.pixelSize: 14
-                    color: "#4B5563"
-                    wrapMode: Text.WordWrap
-                    Layout.fillWidth: true
-                    lineHeight: 1.35
-                }
-            }
-
-            Rectangle {
-                Layout.fillWidth: true
-                height: 8
-                color: "#F5F5F5"
-            }
             // ===== REVIEWS =====
             ColumnLayout {
                 Layout.fillWidth: true
@@ -415,11 +383,8 @@ Page {
 
                 RowLayout {
                     Layout.fillWidth: true
-                    Label {
-                        text: "Reviews"
-                        font.pixelSize: 16
-                        font.weight: Font.DemiBold
-                        color: "#1F2937"
+                    SectionHeader {
+                        title: "Reviews"
                         Layout.fillWidth: true
                     }
                     Label {

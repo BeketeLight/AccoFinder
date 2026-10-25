@@ -8,6 +8,7 @@ import "../../../utils/NavigationUtils.js" as NavUtils
 
 Item {
     id: root
+    // Must match the case in main.qml's loader.onLoaded dispatcher.
     objectName: "SavesScreen"
 
     property string pageTitle: qsTr("Saves")
@@ -20,18 +21,21 @@ Item {
 
     property int currentTab: 0
 
-    // The shared home feed. Injected by the host (HomeScreen / MainStackView)
-    // so the Saves screen and the home screen see the same rows and neither
-    // fetches on its own.
-    property var sharedPropertiesModelRef: null
+    // Injected by main.qml's loader.onLoaded when the footer opens this
+    // screen. Falls back to a private instance so a deep-link / debug path
+    // still renders something instead of silently showing an empty tab.
+    property var sharedPropertiesModelRef: privateProperties
+    PropertiesModel {
+        id: privateProperties
+    }
 
     // Rebuilt on every save/unsave so the tab counters stay live.
     property int propertiesCount: 0
     property int roomsCount: 0
 
     function refreshCounts() {
-        propertiesCount = AppSettings.favoritePropertyIds.length;
-        roomsCount = AppSettings.favoriteRoomIds.length;
+        propertiesCount = AppSettings.favoritePropertyIds().length;
+        roomsCount = AppSettings.favoriteRoomIds().length;
     }
 
     function removeProperty(pid) {
@@ -54,23 +58,35 @@ Item {
     // rooms model each property uses). Expose it via a small helper here so
     // SavedRoomsModel stays agnostic about the storage format.
     function lookupRoom(roomId) {
-        // Adjust to however your home flow exposes rooms. If RoomViewModel
-        // already has a "roomById" accessor, use it directly. The shape the
-        // delegate expects is:
-        //   { roomId, propertyId, type, price, location, imageUrl,
-        //     available, holdActive, holdExpiresAt }
+        // 1) Live cache — the room is already in the shared roomListModel.
+        //    RoomViewModel exposes getRoomById(roomId), not roomById.
         try {
-            if (typeof RoomViewModel !== "undefined" && RoomViewModel.roomById !== undefined) {
-                var r = RoomViewModel.roomById(roomId);
-                if (r)
+            if (typeof RoomViewModel !== "undefined" && RoomViewModel.getRoomById !== undefined) {
+                var r = RoomViewModel.getRoomById(roomId);
+                if (r && r.id)
                     return r;
             }
         } catch (e) {}
 
-        // Fallback: scan every property's room list if your model offers one.
-        // Kept minimal here on purpose — point this at whatever source the home
-        // screen already populated, do not fetch.
-        return null;
+        // 2) Fallback: the snapshot written by QuartersDetailDelegate when
+        //    the user bookmarked the room. Works on a cold start before any
+        //    /rooms/ call, which is what the Saves screen needs.
+        var snap = AppSettings.favoriteRoomSnapshot(roomId);
+        if (!snap || !snap.quarterId)
+            return null;
+
+        return {
+            roomId: snap.quarterId,
+            propertyId: snap.propertyId,
+            type: snap.type,
+            title: snap.title,
+            price: snap.price,
+            location: snap.location,
+            imageUrl: snap.imageUrl,
+            available: snap.available === undefined ? true : snap.available,
+            holdActive: snap.holdActive === true,
+            holdExpiresAt: snap.holdExpiresAt || null
+        };
     }
 
     Connections {
@@ -82,9 +98,6 @@ Item {
             root.refreshCounts();
         }
         function onFavoritePropertyIdsChanged() {
-            root.refreshCounts();
-        }
-        function onPropertyFavoritesChanged() {
             root.refreshCounts();
         }
     }

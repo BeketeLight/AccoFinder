@@ -27,7 +27,7 @@ Item {
     function reload() {
         savedModel.clear();
 
-        var ids = AppSettings.favoriteRoomIds;
+        var ids = AppSettings.favoriteRoomIds();
         if (!ids || ids.length === 0)
             return;
         if (!root.lookupRoom)

@@ -14,7 +14,8 @@ public:
     BookingDto(
         const QString& id,
         const QString& clientId,
-        const QString& roomId,
+        const QString& bookableItemType,
+        const QString& bookableItemId,
         const QDateTime& bookingDate,
         const QString& status,
         double amount,
@@ -23,7 +24,8 @@ public:
 
     QString id;
     QString clientId;
-    QString roomId;
+    QString bookableItemType;    // "Room" | "Property"
+    QString bookableItemId;
     QDateTime bookingDate;
     QString status;
     double amount;
