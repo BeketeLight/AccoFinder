@@ -93,13 +93,13 @@ BookingRepositoryImpl::BookingRepositoryImpl(QObject *parent)
 }
 //===HELPER FUNCTION FOR STATUS===//
 void BookingRepositoryImpl::createBooking(
-    const QString& roomId,
+    const QString& bookableItemId,
     const QString& clientId,
     double amount,
     double commissionAmount)
 {
     QJsonObject payload;
-    payload["roomId"] = roomId;
+    payload["bookableItemId"]   = bookableItemId;
     payload["clientId"] = clientId;
     payload["amount"] = amount;
     payload["commissionAmount"]= commissionAmount;
@@ -108,7 +108,7 @@ void BookingRepositoryImpl::createBooking(
         "/bookings/",
         payload,
         [this](bool success,
-            const QJsonObject& response)
+               const QJsonObject& response)
         {
             if (success) {
                 // Backend wraps the resource in a "data" object
@@ -132,19 +132,28 @@ void BookingRepositoryImpl::createBooking(
                     clientId = clientVal.toString();
                 }
 
-                // roomId may be a string OR an object with _id
-                QString roomId;
-                const QJsonValue roomVal = data.value("roomId");
-                if (roomVal.isObject()) {
-                    roomId = readId(roomVal.toObject());
-                } else {
-                    roomId = roomVal.toString();
+                // Polymorphic pair. Every backend response that has been
+                // migrated carries both; older ones only carried `roomId`,
+                // which we fall back to with the matching type.
+                QString itemType = data.value("bookableItemType").toString();
+                QString itemId;
+                const QJsonValue itemVal = data.value("bookableItemId");
+                if (itemVal.isObject()) itemId = readId(itemVal.toObject());
+                else                    itemId = itemVal.toString();
+                if (itemId.isEmpty()) {
+                    const QJsonValue roomVal = data.value("roomId");
+                    if (!roomVal.isUndefined()) {
+                        itemType = QStringLiteral("Room");
+                        if (roomVal.isObject()) itemId = readId(roomVal.toObject());
+                        else                    itemId = roomVal.toString();
+                    }
                 }
 
                 Booking* booking = new Booking(
                     bookingId,
                     clientId,
-                    roomId,
+                    itemType,
+                    itemId,
                     QDateTime::fromString(data.value("bookingDate").toString(), Qt::ISODate),
                     data.value("amount").toDouble(),
                     data.value("commissionAmount").toDouble(),
@@ -167,7 +176,7 @@ void BookingRepositoryImpl::createBooking(
                     message = QStringLiteral("Could not create booking");
                 emit bookingError(message);
             }
-    }, false);
+        }, false);
 
 }
 
@@ -209,18 +218,34 @@ void BookingRepositoryImpl::getBooking()
                         clientId = jsonId(clientVal);
                     }
 
-                    // ----- roomId: string OR populated room object -----
-                    const QString roomId = jsonId(obj.value(QStringLiteral("roomId")));
+                    // ----- polymorphic bookable item -----
+                    QString itemType = obj.value("bookableItemType").toString();
+                    QString itemId;
+                    const QJsonValue itemVal = obj.value("bookableItemId");
+                    if (itemVal.isObject())
+                        itemId = jsonId(itemVal.toObject());
+                    else
+                        itemId = jsonId(itemVal);
+                    // Fallback for pre-migration responses.
+                    if (itemId.isEmpty()) {
+                        const QJsonValue roomVal = obj.value(QStringLiteral("roomId"));
+                        if (!roomVal.isUndefined()) {
+                            itemType = QStringLiteral("Room");
+                            itemId   = jsonId(roomVal);
+                        }
+                    }
 
                     qDebug() << "Parsed booking" << idFallback
                              << "clientId" << clientId
                              << "clientName" << clientName
-                             << "roomId" << roomId;
+                             << "itemType" << itemType
+                             << "itemId" << itemId;
 
                     auto *booking = new Booking(
                         idFallback,
                         clientId,
-                        roomId,
+                        itemType,
+                        itemId,
                         QDateTime::fromString(
                             obj.value(QStringLiteral("bookingDate")).toString(),
                             Qt::ISODate),
@@ -317,20 +342,28 @@ void BookingRepositoryImpl::getBookingById(const QString& id)
                 clientId = jsonId(clientVal);
             }
 
-            // 4) roomId: string OR populated object
-            QString roomId;
-            const QJsonValue roomVal = data.value(QStringLiteral("roomId"));
-            if (roomVal.isObject()) {
-                roomId = jsonId(roomVal.toObject());
-            } else {
-                roomId = jsonId(roomVal);
+            // 4) Polymorphic bookable item
+            QString itemType = data.value("bookableItemType").toString();
+            QString itemId;
+            const QJsonValue itemVal = data.value("bookableItemId");
+            if (itemVal.isObject())
+                itemId = jsonId(itemVal.toObject());
+            else
+                itemId = jsonId(itemVal);
+            if (itemId.isEmpty()) {
+                const QJsonValue roomVal = data.value(QStringLiteral("roomId"));
+                if (!roomVal.isUndefined()) {
+                    itemType = QStringLiteral("Room");
+                    itemId   = jsonId(roomVal);
+                }
             }
 
             // 5) Build Booking
             auto *booking = new Booking(
                 bookingId,
                 clientId,
-                roomId,
+                itemType,
+                itemId,
                 QDateTime::fromString(
                     data.value(QStringLiteral("bookingDate")).toString(),
                     Qt::ISODate),
@@ -352,7 +385,7 @@ void BookingRepositoryImpl::getBookingById(const QString& id)
             qDebug() << "getBookingById built"
                      << "id" << booking->getId()
                      << "clientId" << booking->getClientId()
-                     << "roomId" << booking->getRoomId()
+                     << "bookableItemId" << booking->getBookableItemId()
                      << "amount" << booking->getAmount();
 
             emit bookingLoaded(booking);
@@ -372,7 +405,7 @@ void BookingRepositoryImpl::deleteBooking(const QString& id)
             {
                 emit bookingError(response["error"].toString());
             }   
-    }, false);
+        }, false);
 }
 
 void BookingRepositoryImpl::cancelBooking(const QString &id)

@@ -14,6 +14,7 @@ public:
     virtual void getUserById(const QString& userId) = 0;
     virtual void updateUserRole(const QString& userId, const QString& role) = 0;
     virtual void setAccountActive(const QString& userId, bool active) = 0;
+    virtual void deleteUser(const QString& userId) = 0;
     virtual ~IAdminUserRepository() {}
 };
 

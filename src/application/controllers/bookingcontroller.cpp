@@ -1,7 +1,7 @@
 #include "bookingcontroller.h"
 
 BookingController::BookingController(QObject *parent)
-  : QObject{parent},
+    : QObject{parent},
     m_bookingRepository(new BookingRepositoryImpl(this))
 {
     auto stopLoading = [this](){ setLoading(false); };
@@ -74,7 +74,39 @@ void BookingController::createBooking(const QString& roomId,
     }
 
     setLoading(true);
-    m_bookingRepository->createBooking(roomId, clientId, amount, commissionAmount);
+    m_bookingRepository->createBooking(roomId,
+                                       clientId,
+                                       amount,
+                                       commissionAmount);
+}
+
+void BookingController::createPropertyBooking(const QString& propertyId,
+                                              double amount,
+                                              double commissionAmount)
+{
+    const QString clientId = AppSettings::instance().userId();
+    if (propertyId.isEmpty()) {
+        emit bookingError("Property ID is required.");
+        return;
+    }
+    if (clientId.isEmpty()) {
+        emit bookingError("Invalid client Id");
+        return;
+    }
+    if (!amount) {
+        emit bookingError("Invalid amount");
+        return;
+    }
+    if (!commissionAmount) {
+        emit bookingError("Invalid commissionAmount");
+        return;
+    }
+
+    setLoading(true);
+    m_bookingRepository->createBooking(propertyId,
+                                       clientId,
+                                       amount,
+                                       commissionAmount);
 }
 
 void BookingController::fetchBookings()

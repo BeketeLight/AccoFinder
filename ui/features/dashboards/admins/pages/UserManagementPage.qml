@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import "../../../../components/inputs"
+import "../../../../components/indicators"
 import "../../models"
 import "../../../properties/components"
 import "../delegates"
@@ -13,6 +14,8 @@ Item {
 
     signal userToggled(var userId, var name, var active)
     signal userRoleChanged(var userId, var name, var newRole)
+    signal userDeleted(var userId, var name)
+    signal requestDeleteUser(var userId, var name)
 
     implicitWidth: 400
     implicitHeight: contentColumn.implicitHeight
@@ -60,7 +63,7 @@ Item {
                 delegate: Button {
                     required property var model
                     readonly property bool isCurrent: root.usersModel.roleFilter === model.key
-                    Layout.preferredHeight: 30
+                    Layout.preferredHeight: 35
                     padding: 0
 
                     contentItem: Label {
@@ -123,6 +126,12 @@ Item {
                     confirmDialog.activate = activate
                     confirmDialog.open()
                 }
+                onDeleteRequested: (userId, name) => {
+                    confirmDialog.userId = userId
+                    confirmDialog.userName = name
+                    confirmDialog.isDelete = true
+                    confirmDialog.open()
+                }
                 onForceClearBusyRequested: (userId) => {
                     if (root.usersModel.busyUserId === userId)
                         root.usersModel.busyUserId = ""
@@ -153,17 +162,22 @@ Item {
         property string userName: ""
         property string userId: ""
         property bool activate: false
+        property bool isDelete: false
 
-        title: qsTr("%1 account").arg(userName)
+        onClosed: confirmDialog.isDelete = false
+
+        title: confirmDialog.isDelete ? qsTr("Delete user") : qsTr("%1 account").arg(userName)
 
         contentItem: ColumnLayout {
             spacing: 12
 
             Label {
                 Layout.fillWidth: true
-                text: confirmDialog.activate
-                      ? qsTr("Reactivate %1's access to AccoFinder?").arg(confirmDialog.userName)
-                      : qsTr("Suspend %1's access? They will be signed out and unable to sign in.").arg(confirmDialog.userName)
+                text: confirmDialog.isDelete
+                      ? qsTr("Delete %1 permanently? This action cannot be undone.").arg(confirmDialog.userName)
+                      : (confirmDialog.activate
+                         ? qsTr("Reactivate %1's access to AccoFinder?").arg(confirmDialog.userName)
+                         : qsTr("Suspend %1's access? They will be signed out and unable to sign in.").arg(confirmDialog.userName))
                 wrapMode: Text.WordWrap
                 font.pixelSize: 13
                 color: "#374151"
@@ -200,27 +214,54 @@ Item {
                     id: confirmButton
                     Layout.fillWidth: true
                     Layout.preferredHeight: 42
-                    text: confirmDialog.activate ? qsTr("Activate") : qsTr("Suspend")
+                    text: (typeof UserController !== "undefined" && UserController.isLoading) ? "" : (confirmDialog.isDelete ? qsTr("Delete") : (confirmDialog.activate ? qsTr("Activate") : qsTr("Suspend")))
+                    enabled: !(typeof UserController !== "undefined" && UserController.isLoading)
 
-                    contentItem: Label {
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                        text: confirmButton.text
-                        color: "#FFFFFF"
-                        font.pixelSize: 13
-                        font.bold: true
+                    contentItem: Item {
+                        anchors.fill: parent
+
+                        Label {
+                            visible: !(typeof UserController !== "undefined" && UserController.isLoading)
+                            anchors.centerIn: parent
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                            text: confirmButton.text
+                            color: "#FFFFFF"
+                            font.pixelSize: 13
+                            font.bold: true
+                        }
+
+                        AppSpinner {
+                            visible: typeof UserController !== "undefined" && UserController.isLoading
+                            anchors.centerIn: parent
+                            size: 18
+                            lineWidth: 2
+                            color: "#FFFFFF"
+                            running: visible
+                        }
                     }
 
                     background: Rectangle {
                         radius: 8
-                        color: confirmButton.down ? "#B91C1C" : (confirmDialog.activate ? "#16A34A" : "#DC2626")
+                        color: {
+                            if (confirmDialog.isDelete)
+                                return confirmButton.down ? "#991B1B" : "#DC2626"
+                            return confirmButton.down ? "#B91C1C" : (confirmDialog.activate ? "#16A34A" : "#DC2626")
+                        }
                     }
 
                     onClicked: {
-                        root.usersModel.setAccountActive(confirmDialog.userId, confirmDialog.activate)
-                        root.userToggled(confirmDialog.userId, confirmDialog.userName, confirmDialog.activate)
-                        console.log("Admin account action:", confirmDialog.userId,
-                                    confirmDialog.userName, "->", confirmDialog.activate ? "ACTIVE" : "SUSPENDED")
+                        if (confirmDialog.isDelete) {
+                            if (typeof UserController !== "undefined" && UserController.deleteUser) {
+                                UserController.deleteUser(confirmDialog.userId)
+                            }
+                            root.userDeleted(confirmDialog.userId, confirmDialog.userName)
+                        } else {
+                            root.usersModel.setAccountActive(confirmDialog.userId, confirmDialog.activate)
+                            root.userToggled(confirmDialog.userId, confirmDialog.userName, confirmDialog.activate)
+                            console.log("Admin account action:", confirmDialog.userId,
+                                        confirmDialog.userName, "->", confirmDialog.activate ? "ACTIVE" : "SUSPENDED")
+                        }
                         confirmDialog.accept()
                     }
                 }
@@ -232,4 +273,5 @@ Item {
             color: "#FFFFFF"
         }
     }
+
 }

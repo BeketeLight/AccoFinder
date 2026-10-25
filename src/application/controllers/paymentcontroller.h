@@ -49,6 +49,12 @@ public:
      * - Returns updated Payment object
      */
     Q_INVOKABLE void refundPayment(Payment* payment);
+    Q_INVOKABLE void cancelPayment(const QString& id,
+                                   const QString& bookingId = QString(),
+                                   double amount = 0.0,
+                                   const QString& method = QString(),
+                                   const QString& status = QString(),
+                                   const QString& transactionRef = QString());
 
     /**
      * Retrieves all payments for a specific user/account.
@@ -81,6 +87,7 @@ signals:
     void paymentCreated(Payment* payment);
     void paymentLoaded(Payment* payment);
     void paymentsLoaded(const QList<Payment*>& payments);
+    void paymentCancelled(Payment* payment);
     void paymentRefunded(Payment* payment);
     void paymentError(const QString& error);
     void isLoadingChanged(bool isLoading);

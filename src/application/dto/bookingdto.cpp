@@ -9,14 +9,16 @@ BookingDto::BookingDto()
 BookingDto::BookingDto(
     const QString& id,
     const QString& clientId,
-    const QString& roomId,
+    const QString& bookableItemType,
+    const QString& bookableItemId,
     const QDateTime& bookingDate,
     const QString& status,
     double amount,
     double commissionAmount)
     : id(id),
     clientId(clientId),
-    roomId(roomId),
+    bookableItemType(bookableItemType),
+    bookableItemId(bookableItemId),
     bookingDate(bookingDate),
     status(status),
     amount(amount),
@@ -34,8 +36,16 @@ BookingDto BookingDto::fromJson(
     dto.clientId =
         json["clientId"].toString();
 
-    dto.roomId =
-        json["roomId"].toString();
+    // New polymorphic pair. Fall back to the legacy `roomId` for
+    // responses from older backend versions.
+    dto.bookableItemType =
+        json["bookableItemType"].toString();
+    dto.bookableItemId =
+        json["bookableItemId"].toString();
+    if (dto.bookableItemId.isEmpty() && !json["roomId"].toString().isEmpty()) {
+        dto.bookableItemType = QStringLiteral("Room");
+        dto.bookableItemId   = json["roomId"].toString();
+    }
 
     dto.bookingDate =
         QDateTime::fromString(
@@ -75,7 +85,8 @@ QJsonObject BookingDto::toJson() const
 
     json["id"] = id;
     json["clientId"] = clientId;
-    json["roomId"] = roomId;
+    json["bookableItemType"] = bookableItemType;
+    json["bookableItemId"]   = bookableItemId;
     json["bookingDate"] =
         bookingDate.toString(Qt::ISODate);
 
@@ -97,7 +108,8 @@ Booking* BookingDto::toDomainModel() const
 
     booking->setId(id);
     booking->setClientId(clientId);
-    booking->setRoomId(roomId);
+    booking->setBookableItemType(bookableItemType);
+    booking->setBookableItemId(bookableItemId);
     booking->setBookingDate(bookingDate);
 
     // Assuming BookingStatus enum conversion exists

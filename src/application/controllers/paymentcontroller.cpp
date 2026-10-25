@@ -21,7 +21,7 @@ PaymentController::PaymentController(QObject *parent)
 
     connect(m_paymentRepo, &PaymentGatewayImpl::paymentCancelled, this, [this](Payment* payment) {
         setLoading(false);
-        emit paymentRefunded(payment);
+        emit paymentCancelled(payment);
     });
 
     connect(m_paymentRepo, &PaymentGatewayImpl::paymentError, this, [this](const QString& error) {
@@ -92,7 +92,7 @@ void PaymentController::refundPayment(Payment *payment)
         return;
     }
     setLoading(true);
-    
+
     // Mapping refund to cancelPayment in repository using existing payment data
     m_paymentRepo->cancelPayment(
         payment->getId(),
@@ -103,6 +103,41 @@ void PaymentController::refundPayment(Payment *payment)
         payment->getTransactionalRef(),
         payment->getPayoutStatus(),
         payment->getPayoutDate()
+    );
+}
+
+void PaymentController::cancelPayment(const QString& id,
+                                       const QString& bookingId,
+                                       double amount,
+                                       const QString& method,
+                                       const QString& status,
+                                       const QString& transactionRef)
+{
+    if (id.isEmpty() && bookingId.isEmpty() && transactionRef.isEmpty()) {
+        emit paymentError("Payment identifier is required.");
+        return;
+    }
+    setLoading(true);
+
+    PaymentStatus pStatus = PaymentStatus::Failed;
+    if (status.compare("Success", Qt::CaseInsensitive) == 0) {
+        pStatus = PaymentStatus::Success;
+    } else if (status.compare("Initiated", Qt::CaseInsensitive) == 0 ||
+               status.compare("Pending", Qt::CaseInsensitive) == 0) {
+        pStatus = PaymentStatus::Initiated;
+    } else if (status.compare("Failed", Qt::CaseInsensitive) == 0) {
+        pStatus = PaymentStatus::Failed;
+    }
+
+    m_paymentRepo->cancelPayment(
+        id,
+        bookingId,
+        amount,
+        method,
+        pStatus,
+        transactionRef,
+        QString(),
+        QDateTime()
     );
 }
 

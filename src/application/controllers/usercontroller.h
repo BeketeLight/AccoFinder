@@ -18,12 +18,15 @@ public:
     Q_INVOKABLE void getUsers();
     Q_INVOKABLE void getUserById(const QString& userId);
     Q_INVOKABLE void updateUserRole(const QString& userId, const QString& role);
-    Q_INVOKABLE void setAccountActive(const QString& userId, bool active);
+    Q_INVOKABLE void toggleUserStatus(const QString& userId, bool active);
+    Q_INVOKABLE void setAccountActive(const QString &userId, bool active);
+    Q_INVOKABLE void deleteUser(const QString& userId);
 
 signals:
     void usersLoaded(QList<User*>& users);
     void userLoaded(User* user);
     void userUpdated(User* user);
+    void userDeleted(const QString& userId);
     void userError(const QString& error);
     void isLoadingChanged(bool isLoading);
 

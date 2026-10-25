@@ -10,6 +10,7 @@ Item {
     id: root
 
     property string statusFilter: "ALL"   // ALL | PENDING | CONFIRMED | CANCELLED
+    property string searchQuery: ""
 
     // Booking id of the row currently waiting on a confirm/cancel call, so only
     // the affected card shows an inline spinner.
@@ -47,11 +48,32 @@ Item {
         return Utils.bookingStatusBucket(status) === root.statusFilter
     }
 
+    function searchMatches(b) {
+        var q = String(root.searchQuery || "").trim().toLowerCase()
+        if (q.length === 0)
+            return true
+        var fields = [
+            b.clientName,
+            b.clientEmail,
+            b.clientPhone,
+            b.bookingId,
+            b.roomId
+        ]
+        for (var i = 0; i < fields.length; i++) {
+            var v = String(fields[i] || "").toLowerCase()
+            if (v.indexOf(q) !== -1)
+                return true
+        }
+        return false
+    }
+
     function applyFilters() {
         viewModelId.clear()
         for (var i = 0; i < sourceModel.count; i++) {
             var b = sourceModel.get(i)
             if (!root.statusMatches(b.status))
+                continue
+            if (!root.searchMatches(b))
                 continue
             viewModelId.append(b)
         }

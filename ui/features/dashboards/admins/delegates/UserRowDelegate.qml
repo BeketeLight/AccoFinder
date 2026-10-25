@@ -16,6 +16,7 @@ Rectangle {
 
     signal roleChangeRequested(var userId, var newRole)
     signal toggleRequested(var userId, var name, var activate)
+    signal deleteRequested(var userId, var name)
     signal forceClearBusyRequested(var userId)
 
     function roleColor(role) {
@@ -255,11 +256,16 @@ Rectangle {
                 }
             }
 
+            Item {
+                Layout.fillWidth: true
+            }
+
             Rectangle {
                 id: togglePill
                 implicitHeight: 24
                 implicitWidth: toggleLabel.implicitWidth + 20
                 radius: 12
+                Layout.alignment: Qt.AlignRight
                 color: toggleArea.pressed
                        ? (root.active ? "#FEE2E2" : "#DCFCE7")
                        : (root.active ? "#FEF2F2" : "#F0FDF4")
@@ -278,7 +284,35 @@ Rectangle {
                 MouseArea {
                     id: toggleArea
                     anchors.fill: parent
+                    enabled: !root.isSelfAccount
                     onClicked: root.toggleRequested(root.userId, root.name, !root.active)
+                }
+            }
+
+            Rectangle {
+                id: deletePill
+                implicitHeight: 24
+                implicitWidth: deleteLabel.implicitWidth + 20
+                radius: 12
+                Layout.alignment: Qt.AlignRight
+                visible: !root.isSelfAccount
+                color: deleteArea.pressed ? "#FEE2E2" : "#FEF2F2"
+                border.color: "#FECACA"
+                border.width: 1
+
+                Label {
+                    id: deleteLabel
+                    anchors.centerIn: parent
+                    text: qsTr("Delete")
+                    color: "#B91C1C"
+                    font.pixelSize: 10
+                    font.bold: true
+                }
+
+                MouseArea {
+                    id: deleteArea
+                    anchors.fill: parent
+                    onClicked: root.deleteRequested(root.userId, root.name)
                 }
             }
         }

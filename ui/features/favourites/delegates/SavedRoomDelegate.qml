@@ -186,7 +186,7 @@ Item {
             anchors.fill: parent
             z: -1
             onClicked: {
-                NavUtils.push(Qt.resolvedUrl("../../../home/delegates/QuartersDetailDelegate.qml"), {
+                NavUtils.push(Qt.resolvedUrl("../../home/delegates/QuartersDetailDelegate.qml"), {
                     quarterId: root.roomId,
                     propertyId: root.propertyId,
                     quarterType: root.quarterType,

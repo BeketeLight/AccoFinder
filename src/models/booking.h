@@ -8,9 +8,12 @@
 class Booking : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(QString bookableItemType READ getBookableItemType WRITE setBookableItemType NOTIFY bookableItemTypeChanged)
+    Q_PROPERTY(QString bookableItemId   READ getBookableItemId   WRITE setBookableItemId   NOTIFY bookableItemIdChanged)
+    Q_PROPERTY(QString roomId           READ getRoomId           NOTIFY roomIdChanged)
+    Q_PROPERTY(QString propertyId       READ getPropertyId       NOTIFY propertyIdChanged)
     Q_PROPERTY(QString id READ getId WRITE setId NOTIFY idChanged)
     Q_PROPERTY(QString clientId READ getClientId WRITE setClientId NOTIFY clientIdChanged)
-    Q_PROPERTY(QString roomId READ getRoomId WRITE setRoomId NOTIFY roomIdChanged)
     Q_PROPERTY(QDateTime bookingDate READ getBookingDate WRITE setBookingDate NOTIFY bookingDateChanged)
     Q_PROPERTY(double amount READ getAmount WRITE setAmount NOTIFY amountChanged)
     Q_PROPERTY(double commissionAmount READ getCommissionAmount WRITE setCommissionAmount NOTIFY commissionAmountChanged)
@@ -33,14 +36,29 @@ public:
     explicit Booking(QObject *parent = nullptr);
     explicit Booking(const QString& id,
                      const QString& clientId,
-                     const QString& roomId,
+                     const QString& bookableItemType,
+                     const QString& bookableItemId,
                      const QDateTime& bookingDate,
                      const double& amount,
                      const double& commissionAmount,
                      QObject *parent = nullptr);
     QString getId() const;
     QString getClientId() const;
-    QString getRoomId() const;
+
+    // ---- Polymorphic bookable item ----
+    // "Room" or "Property" — the value the backend stores in `bookableItemType`.
+    QString getBookableItemType() const;
+    void    setBookableItemType(const QString &type);
+    // The id of the Room or Property this booking refers to.
+    QString getBookableItemId() const;
+    void    setBookableItemId(const QString &id);
+
+    // ---- Backwards-compatible derived accessors ----
+    // Existing QML delegates read model.roomId / model.propertyId. They keep
+    // working: each returns the id only when the type matches, otherwise "".
+    Q_INVOKABLE QString getRoomId() const;      // = type=="Room"     ? id : ""
+    Q_INVOKABLE QString getPropertyId() const;  // = type=="Property" ? id : ""
+
     QDateTime getBookingDate() const;
     BookingStatus getStatus() const;
     void setStatus(const BookingStatus& status);
@@ -65,8 +83,6 @@ public:
 
     void setClientId(const QString &newClientId);
 
-    void setRoomId(const QString &newRoomId);
-
     void setBookingDate(const QDateTime &newBookingDate);
 
     void setAmount(double newAmount);
@@ -76,7 +92,8 @@ public:
 private:
     QString m_id;
     QString m_clientId;
-    QString m_roomId;
+    QString m_bookableItemType;   // "Room" | "Property"
+    QString m_bookableItemId;
     QDateTime m_bookingDate;
     BookingStatus m_status;
     double m_amount;
@@ -96,7 +113,11 @@ signals:
     // Property change notifications (required by Q_PROPERTY NOTIFY)
     void idChanged();
     void clientIdChanged();
+    void bookableItemTypeChanged();
+    void bookableItemIdChanged();
+    // Emitted when the pair changes so a derived roomId/propertyId re-reads.
     void roomIdChanged();
+    void propertyIdChanged();
     void bookingDateChanged();
     void amountChanged();
     void commissionAmountChanged();

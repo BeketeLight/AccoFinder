@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import "../../../../components/indicators"
+import "../../../../components/inputs"
 import "../../../properties/components"
 import "../../models"
 import "../../../../utils/Utils.js" as Utils
@@ -163,6 +164,23 @@ Item {
             }
         }
 
+        AppSearchBar {
+            Layout.fillWidth: true
+            placeholder: qsTr("Search client name, email, phone, or booking/room ID")
+            backgroundColor: "#FFFFFF"
+            focusColor: "#2563EB"
+            fieldHeight: 48
+            text: root.bookingsModel.searchQuery
+            onTextEdited: {
+                root.bookingsModel.searchQuery = text
+                root.bookingsModel.applyFilters()
+            }
+            onCleared: {
+                root.bookingsModel.searchQuery = ""
+                root.bookingsModel.applyFilters()
+            }
+        }
+
         RowLayout {
             Layout.fillWidth: true
             spacing: 8
@@ -180,7 +198,7 @@ Item {
                     required property var model
                     readonly property bool isCurrent: root.bookingsModel.statusFilter === model.key
 
-                    Layout.preferredHeight: 30
+                    Layout.preferredHeight: 35
                     padding: 0
 
                     contentItem: Label {

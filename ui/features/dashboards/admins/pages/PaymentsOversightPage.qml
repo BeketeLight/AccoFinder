@@ -5,6 +5,7 @@ import "../../../properties/components"
 import "../../models"
 import "../../../../utils/Utils.js" as Utils
 import "../delegates"
+import "../../../../components/inputs"
 
 Item {
     id: root
@@ -80,7 +81,7 @@ Item {
                     required property var model
                     readonly property bool isCurrent: root.activeTab === model.key
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 32
+                    Layout.preferredHeight: 35
                     padding: 0
 
                     contentItem: Label {
@@ -105,14 +106,96 @@ Item {
 
         // ---- Payments tab ----
         ColumnLayout {
+            id: paymentsTabCol
             visible: root.activeTab === "PAYMENTS"
             Layout.fillWidth: true
             spacing: 10
+
+            property string paymentsStatusFilter: "ALL"
+            property string paymentsSearchText: ""
+
+            AppSearchBar {
+                Layout.fillWidth: true
+                placeholder: qsTr("Search name, transaction ref, or booking ID")
+                backgroundColor: "#FFFFFF"
+                focusColor: "#2563EB"
+                fieldHeight: 48
+                text: paymentsTabCol.paymentsSearchText
+                onTextEdited: {
+                    paymentsTabCol.paymentsSearchText = text
+                }
+                onCleared: {
+                    paymentsTabCol.paymentsSearchText = ""
+                }
+            }
+
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: 8
+
+                Repeater {
+                    model: [
+                        { key: "ALL", label: qsTr("All") },
+                        { key: "Initiated", label: qsTr("Initiated") },
+                        { key: "Failed", label: qsTr("Failed") },
+                        { key: "Success", label: qsTr("Succeeded") }
+                    ]
+
+                    delegate: Button {
+                        id: payFilterBtn
+                        required property var model
+                        readonly property bool isCurrent: paymentsTabCol.paymentsStatusFilter === model.key
+                        Layout.preferredHeight: 32
+                        padding: 0
+
+                        contentItem: Label {
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                            text: payFilterBtn.model.label
+                            color: payFilterBtn.isCurrent ? "#FFFFFF" : "#374151"
+                            font.pixelSize: 11
+                            font.bold: true
+                        }
+
+                        background: Rectangle {
+                            radius: 16
+                            color: payFilterBtn.isCurrent ? root.primaryColor : "#FFFFFF"
+                            border.color: payFilterBtn.isCurrent ? root.primaryColor : "#E5E7EB"
+                            border.width: 1
+                        }
+
+                        onClicked: {
+                            paymentsTabCol.paymentsStatusFilter = payFilterBtn.model.key
+                        }
+                    }
+                }
+            }
 
             Repeater {
                 model: root.paymentsModel.paymentsModel
 
                 delegate: PaymentRowDelegate {
+                    visible: {
+                        var col = paymentsTabCol
+                        if (!col || col.visible === false) return false
+                        if (col.paymentsStatusFilter && col.paymentsStatusFilter !== "ALL") {
+                            var s = String(model.status || "")
+                            if (col.paymentsStatusFilter === "Succeeded") {
+                                if (!(s === "Success" || s === "Completed" || s === "Paid" || s === "Settled")) return false
+                            } else {
+                                if (s !== col.paymentsStatusFilter) return false
+                            }
+                        }
+                        var q = String(col.paymentsSearchText || "").toLowerCase()
+                        if (q.length > 0) {
+                            var u = String(model.user || "").toLowerCase()
+                            var tr = String(model.transactionRef || "").toLowerCase()
+                            var bid = String(model.booking || model.bookingId || "").toLowerCase()
+                            var pid = String(model.paymentId || "").toLowerCase()
+                            if (u.indexOf(q) === -1 && tr.indexOf(q) === -1 && bid.indexOf(q) === -1 && pid.indexOf(q) === -1) return false
+                        }
+                        return true
+                    }
                     paymentId: model.paymentId
                     amount: model.amount
                     status: model.status
@@ -120,11 +203,16 @@ Item {
                     kind: model.kind
                     method: model.method
                     date: model.date
+                    bookingId: model.booking || model.bookingId || ""
+                    transactionRef: model.transactionRef || ""
                     onActionRequested: (paymentId, kind) => {
                         if (kind === "settled") {
                             root.paymentsModel.setPaymentStatus(paymentId, "Completed")
                             console.log("Payment settled:", paymentId)
                             root.paymentAction("settled", paymentId)
+                        } else if (kind === "cancel") {
+                            console.log("Payment cancellation requested:", paymentId)
+                            root.paymentAction("cancel", paymentId)
                         } else {
                             console.log("Payment flagged for review:", paymentId)
                             root.paymentAction("flagged", paymentId)
@@ -134,10 +222,43 @@ Item {
             }
 
             Label {
-                visible: root.paymentsModel.paymentsModel.count === 0
+                visible: {
+                    var m = root.paymentsModel.paymentsModel
+                    var total = 0
+                    if (!m) total = 0
+                    else if (typeof m.count === "function") total = m.count()
+                    else if (typeof m.rowCount === "function") total = m.rowCount()
+                    else if (typeof m.count === "number") total = m.count
+                    if (total === 0) return true
+                    var shown = 0
+                    for (var i = 0; i < total; i++) {
+                        var it = m.get ? m.get(i) : (m.at ? m.at(i) : null)
+                        if (!it) continue
+                        if (paymentsTabCol.paymentsStatusFilter && paymentsTabCol.paymentsStatusFilter !== "ALL") {
+                            var s = String(it.status || "")
+                            if (paymentsTabCol.paymentsStatusFilter === "Succeeded") {
+                                if (!(s === "Success" || s === "Completed" || s === "Paid" || s === "Settled")) continue
+                            } else {
+                                if (s !== paymentsTabCol.paymentsStatusFilter) continue
+                            }
+                        }
+                        var q = String(paymentsTabCol.paymentsSearchText || "").toLowerCase()
+                        if (q.length > 0) {
+                            var u = String(it.user || "").toLowerCase()
+                            var tr = String(it.transactionRef || "").toLowerCase()
+                            var bid = String(it.booking || it.bookingId || "").toLowerCase()
+                            var pid = String(it.paymentId || "").toLowerCase()
+                            if (u.indexOf(q) === -1 && tr.indexOf(q) === -1 && bid.indexOf(q) === -1 && pid.indexOf(q) === -1) continue
+                        }
+                        shown++
+                    }
+                    return shown === 0
+                }
                 Layout.fillWidth: true
                 horizontalAlignment: Text.AlignHCenter
-                text: qsTr("No payments recorded yet.")
+                text: (paymentsTabCol.paymentsSearchText && paymentsTabCol.paymentsSearchText.length > 0) || (paymentsTabCol.paymentsStatusFilter && paymentsTabCol.paymentsStatusFilter !== "ALL")
+                      ? qsTr("No payments match your filters.")
+                      : qsTr("No payments to show.")
                 color: root.mutedColor
                 font.pixelSize: 12
                 topPadding: 8
@@ -169,7 +290,14 @@ Item {
             }
 
             Label {
-                visible: root.paymentsModel.commissionsModel.count === 0
+                visible: (function() {
+                    var m = root.paymentsModel.commissionsModel
+                    if (!m) return true
+                    if (typeof m.count === "function") return m.count() === 0
+                    if (typeof m.rowCount === "function") return m.rowCount() === 0
+                    if (typeof m.count === "number") return m.count === 0
+                    return true
+                })()
                 Layout.fillWidth: true
                 horizontalAlignment: Text.AlignHCenter
                 text: qsTr("No commissions due yet.")
@@ -203,7 +331,14 @@ Item {
             }
 
             Label {
-                visible: root.paymentsModel.payoutsModel.count === 0
+                visible: (function() {
+                    var m = root.paymentsModel.payoutsModel
+                    if (!m) return true
+                    if (typeof m.count === "function") return m.count() === 0
+                    if (typeof m.rowCount === "function") return m.rowCount() === 0
+                    if (typeof m.count === "number") return m.count === 0
+                    return true
+                })()
                 Layout.fillWidth: true
                 horizontalAlignment: Text.AlignHCenter
                 text: qsTr("No payouts scheduled yet.")

@@ -4,6 +4,7 @@ import QtQuick.Layouts
 import QtQuick.Effects
 import "../../../components/inputs"
 import "../components/"
+import "../../properties/components"
 import "../models"
 import "../../reviews/screens"
 import "../../../utils/NavigationUtils.js" as NavUtils
@@ -334,11 +335,9 @@ Page {
                 spacing: 10
                 visible: root.amenityTokens().length > 0
 
-                Label {
-                    text: qsTr("Amenities")
-                    font.pixelSize: 16
-                    font.weight: Font.DemiBold
-                    color: "#1F2937"
+                SectionHeader {
+                    title: qsTr("Amenities")
+                    Layout.fillWidth: true
                 }
 
                 Flow {
@@ -488,12 +487,8 @@ Page {
                 RowLayout {
                     Layout.fillWidth: true
 
-                    Label {
-                        text: "Available Rooms"
-                        font.pixelSize: 16
-                        font.weight: Font.DemiBold
-                        color: "#1F2937"
-                        Layout.fillWidth: true
+                    SectionHeader {
+                        title: qsTr("Available Rooms")
                     }
 
                     Label {
