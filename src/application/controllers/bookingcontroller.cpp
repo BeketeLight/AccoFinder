@@ -74,8 +74,7 @@ void BookingController::createBooking(const QString& roomId,
     }
 
     setLoading(true);
-    m_bookingRepository->createBooking(QStringLiteral("Room"),
-                                       roomId,
+    m_bookingRepository->createBooking(roomId,
                                        clientId,
                                        amount,
                                        commissionAmount);
@@ -104,8 +103,7 @@ void BookingController::createPropertyBooking(const QString& propertyId,
     }
 
     setLoading(true);
-    m_bookingRepository->createBooking(QStringLiteral("Property"),
-                                       propertyId,
+    m_bookingRepository->createBooking(propertyId,
                                        clientId,
                                        amount,
                                        commissionAmount);

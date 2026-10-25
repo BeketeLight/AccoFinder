@@ -93,14 +93,12 @@ BookingRepositoryImpl::BookingRepositoryImpl(QObject *parent)
 }
 //===HELPER FUNCTION FOR STATUS===//
 void BookingRepositoryImpl::createBooking(
-    const QString& bookableItemType,
     const QString& bookableItemId,
     const QString& clientId,
     double amount,
     double commissionAmount)
 {
     QJsonObject payload;
-    payload["bookableItemType"] = bookableItemType;
     payload["bookableItemId"]   = bookableItemId;
     payload["clientId"] = clientId;
     payload["amount"] = amount;

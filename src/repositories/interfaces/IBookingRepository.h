@@ -11,7 +11,6 @@ public:
     explicit IBookingRepository(QObject *parent = nullptr)
         : QObject(parent) {}
     virtual void createBooking(
-        const QString& bookableItemType,   // "Room" | "Property"
         const QString& bookableItemId,
         const QString& clientId,
         double amount,
