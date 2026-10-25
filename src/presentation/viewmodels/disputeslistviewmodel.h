@@ -16,11 +16,7 @@ public:
     DisputesListModel* disputesListModel() const { return m_disputesListModel; }
     bool isLoading() const { return m_isLoading; }
 
-    Q_INVOKABLE void raiseDispute(int index,
-                                  const QString& raisedBy,
-                                  const QString& title,
-                                  const QString& status,
-                                  const QString& description);
+    Q_INVOKABLE void raiseDispute(const QString& bookingId, const QString& issue);
     Q_INVOKABLE void resolveDispute(int index, const QString& disputeId, const QString& status);
     Q_INVOKABLE void getDisputes();
 

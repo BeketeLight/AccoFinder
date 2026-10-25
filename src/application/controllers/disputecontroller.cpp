@@ -12,12 +12,9 @@ DisputeController::DisputeController(QObject *parent)
             this,&DisputeController::disputeResolved);
 }
 
-void DisputeController::raiseDispute(const QString& raisedBy,
-                                     const QString& title,
-                                     const QString& status,
-                                     const QString& description)
+void DisputeController::raiseDispute(const QString& bookingId,const QString& issue)
 {
-    m_disputeRepository->raiseDispute(raisedBy,title,status,description);
+    m_disputeRepository->raiseDispute(bookingId,issue);
 }
 
 void DisputeController::resolveDispute(const QString& disputeId, const QString& status)

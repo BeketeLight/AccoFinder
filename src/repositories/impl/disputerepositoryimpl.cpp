@@ -11,16 +11,11 @@ DisputeRepositoryImpl::DisputeRepositoryImpl(QObject *parent)
 
 }
 
-void DisputeRepositoryImpl::raiseDispute(const QString& raisedBy,
-        const QString& title,
-        const QString& status,
-        const QString& description)
+void DisputeRepositoryImpl::raiseDispute(const QString& bookingId, const QString& issue)
 {
     QJsonObject payload;
-    payload["raisedBy"] = raisedBy;
-    payload["title"] = title;
-    payload["status"] = status;
-    payload["description"] = description;
+    payload["bookingId"] = bookingId;
+    payload["issue"] = issue;
 
     APIClient::instance().post(
         "/disputes/",

@@ -7,6 +7,7 @@ import "../../../components/buttons"
 import "../../../components/dialogs"
 import "../../../utils/Utils.js" as Helper
 import "../../../utils/NavigationUtils.js" as NavUtils
+import "../../../utils/ImageUtils.js" as CatchedImage
 
 Item{
     id: detailsPage
@@ -26,6 +27,8 @@ Item{
     property string propertyImage: ""
     property string propertyLocation: ""
     property string roomType: ""
+    property string roomId: ""
+    property string propertyId: ""
     property real price: 0.0
     property string clientName: ""
     property string clientPhone: ""
@@ -40,6 +43,9 @@ Item{
     property string paymentStatus: ""
     property string paymentMethod: ""
     property string paymentDate: ""
+
+    readonly property string statusKey: String(status).trim().toUpperCase()
+    readonly property bool canRaiseDispute: statusKey === "CANCELLED" || "EXPIRED"
 
     property string createdTime: ""
     property string holdExpiresAt:  ""
@@ -108,17 +114,60 @@ Item{
                     // Top Image Banner
                     Rectangle {
                         id: imageWrapper
+
                         Layout.fillWidth: true
                         Layout.preferredHeight: 200
                         radius: 16
                         clip: true
+                        color: "#EAF0F8"
 
                         Image {
                             id: mainImg
+
                             anchors.fill: parent
-                            source: detailsPage.propertyImage
+
+                            source: CatchedImage.cachedSource(detailsPage.propertyImage)
                             fillMode: Image.PreserveAspectCrop
                             asynchronous: true
+                            cache: true
+                            visible: status === Image.Ready
+
+                            onStatusChanged: {
+                                if (status === Image.Error) {
+                                    console.warn(
+                                        "Booking image failed:",
+                                        source.toString(),
+                                        "error:",
+                                        status
+                                    )
+                                }
+                            }
+                        }
+
+                        // Placeholder while loading or if no image is available.
+                        Column {
+                            anchors.centerIn: parent
+                            spacing: 8
+
+                            visible: mainImg.status === Image.Loading ||
+                                     mainImg.status === Image.Null ||
+                                     mainImg.status === Image.Error
+
+                            Text {
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                text: "▧"
+                                font.pixelSize: 32
+                                color: "#94A3B8"
+                            }
+
+                            Text {
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                text: mainImg.status === Image.Error
+                                      ? "Image unavailable"
+                                      : "Loading property image..."
+                                color: "#64748B"
+                                font.pixelSize: 12
+                            }
                         }
                     }
 
@@ -213,6 +262,34 @@ Item{
                     buttonColor: "#FEE2E2"
                     onClicked: {
                         cancelBookingDialog.open()
+                    }
+                }
+            }
+            // --- Confirmed: raise dispute ---
+            ColumnLayout {
+                Layout.fillWidth: true
+                Layout.topMargin: 8
+                spacing: 12
+                visible: detailsPage.canRaiseDispute
+
+                CustomButton {
+                    text: qsTr("Report a problem")
+                    textColor: "#1D4ED8"
+                    Layout.fillWidth: true
+                    implicitHeight: 50
+                    cornerRadius: 12
+                    borderColor: "#93C5FD"
+                    borderWidth: 1
+                    buttonColor: "#EFF6FF"
+                    onClicked: {
+                        NavUtils.navigateToRaiseDispute({
+                            bookingId: detailsPage.bookingId,
+                            houseName: detailsPage.houseName,
+                            propertyImage: detailsPage.propertyImage,
+                            propertyLocation: detailsPage.propertyLocation,
+                           // status: detailsPage.status,
+                           // bookingDate: detailsPage.bookingDate
+                        })
                     }
                 }
             }

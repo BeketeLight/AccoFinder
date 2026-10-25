@@ -32,10 +32,15 @@ Rectangle {
         RowLayout {
             spacing: 0
             ToolButton {
+                implicitHeight: 24
+                implicitWidth: 24
                 icon.source: reservationCard.cardIcon
                 icon.height: reservationCard.customIconHeight
                 icon.width: reservationCard.custonIconWidth
-                background: null
+                background: Rectangle{
+                    radius: 12
+                    color: "#DBEAFE"//"#EFF6FF"
+                }
             }
             Text {
                 text: reservationCard.cardTitle
@@ -46,33 +51,51 @@ Rectangle {
         }
         RowLayout {
             Layout.fillWidth: true
-            Text {
-                text: reservationCard.bookingDateLabel
-                font.pixelSize: 13
-                color: "#64748B"
+            spacing: 4
+            Rectangle {
+                id: leftAccent
+                Layout.leftMargin: 8
+                Layout.preferredWidth: 5
+                Layout.fillHeight: true
+                color: "#2563EB"
+                radius: 3
             }
-            Item { Layout.fillWidth: true }
-            Text {
-                text: reservationCard.bookingDate
-                font.pixelSize: 12
-                font.bold: true
-                color: "#0F172A"
+            ColumnLayout{
+                Layout.fillWidth: true
+
+                RowLayout{
+                    Layout.fillWidth: true
+                    spacing: 0
+                    Text {
+                        text: reservationCard.bookingDateLabel
+                        font.pixelSize: 13
+                        color: "#64748B"
+                    }
+                    Item { Layout.fillWidth: true }
+                    Text {
+                        text: reservationCard.bookingDate
+                        font.pixelSize: 12
+                        font.bold: true
+                        color: "#0F172A"
+                    }
+                }
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: 0
+                    Text {
+                        text: reservationCard.roomTypeLabel
+                        font.pixelSize: 13
+                        color: "#64748B"//"#0F172A"
+                    }
+                    Item { Layout.fillWidth: true }
+                    Text {
+                        text: reservationCard.roomType
+                        font.pixelSize: 12
+                        font.bold: true
+                        color: "#0F172A"
+                    }
+                }
             }
-        }
-        RowLayout {
-            Layout.fillWidth: true
-            Text {
-                text: reservationCard.roomTypeLabel
-                font.pixelSize: 13
-                color: "#64748B"//"#0F172A"
-            }
-            Item { Layout.fillWidth: true }
-            Text {
-                text: reservationCard.roomType
-                font.pixelSize: 12
-                font.bold: true
-                color: "#0F172A"
-            }
-        }
+        } 
     }
 }

@@ -44,6 +44,9 @@ QVariant DisputesListModel::data(const QModelIndex &index, int role) const
 
             case DisputeStatus::Resolved:
                 return "resolved";
+
+            case DisputeStatus::Rejected:
+                return "rejected";
             }
         }
     }
@@ -65,6 +68,17 @@ QHash<int, QByteArray> DisputesListModel::roleNames() const
 
     return mappings;
 
+}
+//Add one dispute to the dispute list
+void DisputesListModel::addDispute(Dispute *dispute)
+{
+    if(!dispute)
+        return;
+    const int row = m_disputes.size();
+    beginInsertRows(QModelIndex(), row, row);
+    m_disputes.append(dispute);
+    endInsertRows();
+    emit countChanged(m_disputes.size());
 }
 
 void DisputesListModel::addDisputes(QList<Dispute *> &disputes)

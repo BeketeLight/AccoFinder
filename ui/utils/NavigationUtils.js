@@ -197,9 +197,10 @@ function navigateToBookingsDetailsClient(data) {
         hostInitials: data.hostInitials,
         hostName: data.hostName,
         houseName: data.houseName || "",
-        propertyImage: data.propertyImage || data.imageUrl || "",
+        propertyId: data.propertyId || "",
         propertyLocation: data.propertyLocation || data.location || "",
         roomType: data.roomType || "",
+        roomId: data.roomId || "",
         bookingDate: data.bookingDate ||  "",
         paymentStatus: data.paymentStatus || "Unpaid",
         paymentMethod: data.paymentMethod || "",
@@ -222,9 +223,10 @@ function navigateToBookingsDetailsOwneByAgent(data){
             status: data.status || "",
             houseName: data.houseName || "",
             propertyLocation: data.propertyLocation || "124 Lakeview Drive, Sector 4",
-            propertyImage: data.propertyImage || data.imageUrl || "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=500",
+            propertyId: data.propertyId || "",
+            //propertyImage: data.propertyImage || data.imageUrl || "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=500",
             roomType: data.roomType || "2 Bedrooms",
-
+            roomId: data.roomId || "",
             clientName: data.clientName || "John Doe",
             clientPhone: data.clientPhone || "+1 555-0192",
             clientEmail: data.clientEmail || "johndoe@example.com",
@@ -267,10 +269,17 @@ function navigateToBookingDetailsForAdmin(data){
         propertyId: data.propertyId || "",
         roomId: data.roomId || "",
     });
-
 }
-function navigateToDummy(){
-    push("../features/bookings/screens/DummyScreen.qml")
+
+function navigateToRaiseDispute(payload){
+    push("../features/disputes/pages/CreateDisputePage.qml", {
+        bookingId: payload.bookingId,
+        propertyImage: payload.propertyImage,
+        propertyLocation: payload.propertyLocation,
+        houseName: payload.houseName,
+        //landlord: payload.landlord,
+        //hostName: payload.hostName
+    })
 }
 
 var Navigation = {

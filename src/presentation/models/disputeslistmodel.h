@@ -32,7 +32,8 @@ public:
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
     QHash<int,QByteArray> roleNames() const override;
     void addDisputes(QList<Dispute*>& disputes);
-
+    //Add new row on dispute raised
+    void addDispute(Dispute* dispute);
     void updateDispute(int index,Dispute* newDispute);
 
     Q_INVOKABLE int size() const { return m_disputes.size(); }

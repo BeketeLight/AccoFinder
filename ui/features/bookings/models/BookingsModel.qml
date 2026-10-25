@@ -147,45 +147,26 @@ Item {
         }
         return {}
     }
-    //EXtracting booked Image
-    function coverImageFor(propertyId, roomId) {
-        if (!propertyId || typeof MediaViewModel === "undefined")
-            return ""
 
-        MediaViewModel.getMediaByProperty(propertyId)
-        var list = MediaViewModel.mediaForProperty(propertyId)
-        if (!list || list.length === 0) {
-            console.log("coverImageFor: no media yet prop", propertyId, "room", roomId)
-            return ""
-        }
+    //Function to extract initials
+    function initialsFromName(full) {
+        var s = String(full || "").trim()
+        if (!s.length)
+            return "?"
 
-        console.log("coverImageFor prop", propertyId, "want room", roomId, "count", list.length)
+        var parts = s.split(/\s+/).filter(function (p) { return p.length > 0 })
 
-        if (roomId) {
-            var want = String(roomId).trim()
-            for (var i = 0; i < list.length; i++) {
-                var mRoom = String(list[i].roomId !== null ? list[i].roomId : "").trim()
-                var url = list[i].url || list[i].path || ""
-                console.log("  media[", i, "] roomId=", mRoom, "isPrimary=", list[i].isPrimary, "url=", url)
-                if (mRoom.length && mRoom !== "-1" && mRoom === want && url)
-                    return url
-            }
-        }
+        if (parts.length === 1)
+            return parts[0].charAt(0).toUpperCase()
 
-        // fallback: primary, then first property-level, then first any
-        for (var j = 0; j < list.length; j++) {
-            if (list[j].isPrimary)
-                return list[j].url || list[j].path || ""
-        }
-        for (var k = 0; k < list.length; k++) {
-            var rid = String(list[k].roomId !== null ? list[k].roomId : "")
-            if (rid === "" || rid === "-1")
-                return list[k].url || list[k].path || ""
-        }
-        return list[0].url || list[0].path || ""
+        if (parts.length === 2)
+            return (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase()
+
+        // 3+: first name + last name (skip middle)
+        return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase()
     }
 
-    // --- 3. PAYLOAD GENERATOR FOR THE DETAIL PAGE ---
+    // // --- 3. PAYLOAD GENERATOR FOR THE DETAIL PAGE ---
     function detailPayloadFor(bookingId) {
         var it = findBooking(bookingId, "bookingId")
         if (!it)
@@ -210,6 +191,7 @@ Item {
 
             // Joined Room & Property Details
             "roomId": it.roomId,
+            "propertyId": it.propertyId,
             "roomType": it.roomType,
             "houseName": it.houseName,
             "district": it.district,
@@ -222,16 +204,32 @@ Item {
             "holdExpiresAt": it.holdExpiresAt,
             "holdSecondsRemaining": it.holdSecondsRemaining,
             "holdActive": it.holdActive
-
-
         }
 
     }
+    Timer {
+        id: reloadDebounce
+        interval: 80
+        repeat: false
+        onTriggered: root.reloadNow()
+    }
+    function reload(){
+        reloadDebounce.restart()
+    }
 
     // --- 4. RELOAD & DATA JOINING ENGINE ---
-    function reload() {
+    function reloadNow() {
         bookingsModelId.clear()
 
+        //Cach properties once per load
+        var propList = PropertyViewModel.propertiesForView
+                       ? PropertyViewModel.propertiesForView() : []
+        var propById = ({})
+        for (var p = 0; p < propList.length; p++) {
+            var row = propList[p]
+            if (row && row.id)
+                propById[String(row.id)] = row
+        }
         var m = BookingViewModel.bookingListModel
         var cppSize = m ? m.rowCount() : 0
         console.log("--> BookingsModel reload called. C++ row count:", cppSize)
@@ -246,24 +244,20 @@ Item {
             var commAmt = m.data(idx, Qt.UserRole + 5)      // commissionAmount
             var rawStat = m.data(idx, Qt.UserRole + 6)      // status
 
-            // Sanitize and align status to BookingStatus enum values
             var stat = rawStat ? rawStat : root.bookingStatus.PENDING
-            if (String(stat).toUpperCase() === "APPROVED") {
+            if (String(stat).toUpperCase() === "APPROVED")
                 stat = root.bookingStatus.CONFIRMED
-            }
 
             // --- RELATIONAL JOIN: LOOKUP ROOM & PROPERTY ---
             var roomInfo = RoomViewModel.getRoomById(rId) || {}
-            console.log("room count", RoomViewModel.roomListModel
-                ? RoomViewModel.roomListModel.rowCount()
-                : -1)
-                console.log("roomInfo", JSON.stringify(roomInfo))
-                console.log("booking", bId, "clientId", cId, "roomId", rId)
+            // console.log("room count", RoomViewModel.roomListModel
+            //     ? RoomViewModel.roomListModel.rowCount()
+            //     : -1)
             var roomTypeVal = roomInfo.type || m.data(idx, Qt.UserRole + 11) || "Private Room"
 
             //Property details extraction
             var propId = (roomInfo && roomInfo.propertyId) ? roomInfo.propertyId : ""
-            var propInfo = propId ? findProperty(propId) : {}
+            var propInfo = propId ? (propById[String(propId)] || {}) : {}
 
             var houseTitle = (propInfo && propInfo.title) ? propInfo.title : "Hostel/Apartment"
             var dist = (propInfo && propInfo.district) ? propInfo.district : ""
@@ -274,28 +268,12 @@ Item {
                 : ""
             var landlord = (propInfo && propInfo.landlord) ? propInfo.landlord : ""
             var landlordPhone = (propInfo && propInfo.landlordPhone) ? propInfo.landlordPhone : ""
-            //Function to extract initials
-            function initialsFromName(full) {
-                var s = String(full || "").trim()
-                if (!s.length)
-                    return "?"
 
-                var parts = s.split(/\s+/).filter(function (p) { return p.length > 0 })
-
-                if (parts.length === 1)
-                    return parts[0].charAt(0).toUpperCase()
-
-                if (parts.length === 2)
-                    return (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase()
-
-                // 3+: first name + last name (skip middle)
-                return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase()
-            }
             var landlordInitials = initialsFromName(landlord)
 
-            console.log("propId", propId,
-                        "propInfo", JSON.stringify(propInfo))
-            console.log("landlord", landlord, "phone", landlordPhone)
+            // console.log("propId", propId,
+            //             "propInfo", JSON.stringify(propInfo))
+            // console.log("landlord", landlord, "phone", landlordPhone)
             //Real Host
             var ownerFirstName = (propInfo && propInfo.ownerFirstName)
                 ? propInfo.ownerFirstName
@@ -313,12 +291,6 @@ Item {
             var hostPhone = (propInfo && propInfo.ownerPhone)
                 ? propInfo.ownerPhone
                 : ""
-
-            //Extracting exact image booked by the user-----
-            var imgUrl = coverImageFor(propId, rId)
-
-            console.log("booking", bId, "propId", propId, "imageUrl →", imgUrl, "=======================================")
-
             // From Booking (populated clientId parsed in repository) — NOT UserViewModel
             var cName  = m.data(idx, Qt.UserRole + 7) || "Client"
             var cPhone = m.data(idx, Qt.UserRole + 8) || "N/A"
@@ -351,7 +323,8 @@ Item {
                 "houseName": houseTitle,
                 "district": dist,
                 "village": vill,
-                "propertyImage": imgUrl,
+                //"propertyImage": imgUrl,
+                "propertyId": propId,
                 "propertyLocation": propertyLocation,
                 //"propertyLocation": l
                 "landlord": propInfo.landlord || "",
@@ -402,10 +375,4 @@ Item {
         function onRowsInserted(parent, first, last) { root.reload() }
         function onModelReset() { root.reload() }
     }
-    Connections {
-        target: MediaViewModel.mediaListModel
-        function onCountChanged() { root.reload() }
-        function onModelReset()   { root.reload() }
-    }
-
 }

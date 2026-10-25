@@ -91,14 +91,16 @@ Page {
             bookingId: model.bookingId ?? ""
             houseName: model.houseName ?? ""
             ownerFirstName: model.ownerFirstName ?? ""
-            propertyImage: model.propertyImage ?? ""
+            //propertyImage: model.propertyImage ?? ""
             status: model.status ?? ""
             clientName: model.clientName ?? ""
             clientPhone: model.clientPhone ?? ""
             bookingDate: model.bookingDate ?? ""
             price: model.amount
             propertyLocation: (model.district && model.village) ? (model.district + ", " + model.village) : "N/A"
+            propertyId: model.propertyId ?? ""
             roomType: model.roomType ?? ""
+            roomId: model.roomId ?? ""
             clientEmail: model.clientEmail ?? ""
             baseAmount: model.amount ?? 0.0
             serviceFee: model.commissionAmount ?? 0.0
@@ -117,10 +119,12 @@ Page {
                     hostInitials: model.hostInitials,
                     hostName: model.hostName,
                     propertyImage: model.propertyImage || "",
+                    propertyId: model.propertyId || "",
                     propertyLocation: (model.district && model.village)
                         ? (model.district + ", " + model.village)
                         : (model.location || ""),
                     roomType: model.roomType || "",
+                    roomId: model.roomId || "",
                     bookingDate: model.bookingDate || "",
                     landlordName: model.landlord || "",
                     landlordPhone: model.landlordPhone || "",

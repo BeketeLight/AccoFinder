@@ -12,10 +12,7 @@ class DisputeController : public QObject
 public:
     explicit DisputeController(QObject *parent = nullptr);
 
-    Q_INVOKABLE void raiseDispute(const QString& raisedBy,
-                                  const QString& title,
-                                  const QString& status,
-                                  const QString& description);
+    Q_INVOKABLE void raiseDispute(const QString& bookingId,const QString& issue);
     Q_INVOKABLE void resolveDispute(const QString& disputeId, const QString& status);
     Q_INVOKABLE void getDisputes();
 

@@ -13,13 +13,31 @@ Item {
     objectName: "HomeScreen"
     anchors.fill: parent
 
-    property string pageTitle: qsTr("Home")
+    property string pageTitle: qsTr("")
     property bool showHeader: true
     property bool showBack: false
     property bool showBottomBorder: false
     property bool isSearchBar: true
     property bool searchReadOnly: false
     property int titleFontSize: 15
+    property bool collapsible: true
+
+    property real scrollY: {
+        var page = pager.currentItem
+        return page && typeof page.contentY !== "undefined"
+               ? Math.max(0, page.contentY)
+               : 0
+    }
+
+    property Component leftComponentAction: Component{
+        Label {
+            text: qsTr("AccoFinder")
+            font.family: "sans-serif"
+            font.weight: Font.DemiBold
+            font.pixelSize: 20
+            color: "#2563EB"
+        }
+    }
 
     property Component rightComponentAction: Component {
         AppNotificationBell {

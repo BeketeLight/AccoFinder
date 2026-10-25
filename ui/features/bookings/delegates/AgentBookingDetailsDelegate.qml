@@ -4,6 +4,7 @@ import QtQuick.Layouts
 import QtQuick.Effects
 import "../components"
 import "../../../components/buttons"
+import "../../../utils/ImageUtils.js" as CachedImage
 
 Item{
     id: detailsPage
@@ -21,8 +22,10 @@ Item{
     property string hostName: ""
     property string hostInitials: ""
     property string propertyImage: ""
+    property string propertyId: ""
     property string propertyLocation: ""
     property string roomType: ""
+    property string roomId: ""
 
     property string clientName: ""
     property string clientPhone: ""
@@ -84,9 +87,35 @@ Item{
                     Image {
                         id: mainImg
                         anchors.fill: parent
-                        source: detailsPage.propertyImage
+                        source: CachedImage.cachedSource(detailsPage.propertyImage)
                         fillMode: Image.PreserveAspectCrop
+                        cache: true
                         asynchronous: true
+                    }
+                    // Placeholder while loading or if no image is available.
+                    Column {
+                        anchors.centerIn: parent
+                        spacing: 8
+
+                        visible: mainImg.status === Image.Loading ||
+                                 mainImg.status === Image.Null ||
+                                 mainImg.status === Image.Error
+
+                        Text {
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            text: "▧"
+                            font.pixelSize: 32
+                            color: "#94A3B8"
+                        }
+
+                        Text {
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            text: mainImg.status === Image.Error
+                                  ? "Image unavailable"
+                                  : "Loading property image..."
+                            color: "#64748B"
+                            font.pixelSize: 12
+                        }
                     }
                 }
 
@@ -143,6 +172,7 @@ Item{
             userName: detailsPage.clientName
             userPhone: detailsPage.clientPhone
             userInitial: detailsPage.clientInitial
+            userEmail: ""
         }
         UserInfoCard{
             cardTitle: "Landlord Info"
@@ -152,6 +182,7 @@ Item{
             userInitial: detailsPage.landlordInitials
             custIconHeight: 16
             custIconWidth: 16
+            userEmail: ""
         }
         // --- APPROVE ACTION BUTTON ---
         Rectangle {

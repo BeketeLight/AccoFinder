@@ -40,7 +40,7 @@ Page {
         delegate: AgentStatsDelegate {
             bookingId: model.bookingId ?? ""
             houseName: model.houseName ?? ""
-            imageUrl: model.propertyImage ?? ""
+            //imageUrl: model.propertyImage ?? ""
             status: model.status ?? ""
             clientName: model.clientName ?? ""
             clientPhone: model.clientPhone ?? ""
@@ -56,7 +56,6 @@ Page {
                     //Data must come from Model to avoid suprises
                     bookingId: model.bookingId ?? "",
                     houseName: model.houseName ?? "",
-                    imageUrl: model.propertyImage ?? "",
                     status: model.status ?? "",
                     clientName: model.clientName ?? "",
                     clientPhone: model.clientPhone ?? "",
@@ -66,7 +65,9 @@ Page {
                     dateRange: model.bookingDate ?? "",
                     price: model.amount ? model.amount.toString() : "0",
                     propertyLocation: (model.district && model.village) ? (model.district + ", " + model.village) : "N/A",
+                    propertyId: model.propertyId ?? "",
                     roomType: model.roomType ?? "",
+                    roomId: model.roomId ?? "",
                     clientEmail: model.clientEmail ?? "",
                     clientInitial: model.clientInitial ?? "",
                     commission: model.commissionAmount ?? 0.0,

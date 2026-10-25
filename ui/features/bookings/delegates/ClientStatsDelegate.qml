@@ -15,7 +15,8 @@ Rectangle {
     property string ownerFirstName: model.ownerFirstName ?? ""
     property string hostName: model.hostName ?? ""
     property string hostInitials: model.hostInitials ?? ""
-    property string propertyImage: model.propertyImage ?? model.imageUrl ?? ""
+    property string roomId: model.roomId ?? ""
+    property string propertyId: model.propertyId ?? ""
     property string status: model.status ?? "Pending"
     readonly property string statusKey: String(status).trim().toUpperCase()
     property string clientName: model.clientName ?? "Guest"
@@ -63,7 +64,7 @@ Rectangle {
     border.width: 1
     Timer {
         interval: 1000
-        running: delegateRoot.holdExpiresAt.length > 0
+        running: delegateRoot.visible && delegateRoot.canPay
         repeat: true
         onTriggered: delegateRoot.tick++
     }
@@ -88,7 +89,7 @@ Rectangle {
         anchors.right: parent.right
         anchors.top: parent.top
         anchors.margins: 12
-        spacing: 10
+        spacing: 6
         z:1
         RowLayout{
             //Layout.alignment: Qt.AlignHCenter
@@ -109,41 +110,19 @@ Rectangle {
             color: "#E2E8F0"
         }
         // --- 3. MAIN CONTENT: THUMBNAIL & PROPERTY INFO ---
+        // Blue accent line on the left side of the booking card
+
         RowLayout {
             Layout.fillWidth: true
-            spacing: 12
+            spacing: 6
 
             Rectangle {
-                id: imageContainer
-                Layout.preferredWidth: 80
-                Layout.preferredHeight: 80
-                radius: 8
-                color: "#F0F0F0"
-                clip: true
+                id: leftAccent
 
-                Image {
-                    id: propImage
-                    anchors.fill: parent
-                    source: delegateRoot.propertyImage !== "" ? delegateRoot.propertyImage : "qrc:/assets/placeholder.png"
-                    fillMode: Image.PreserveAspectCrop
-                    asynchronous: true
-                    visible: false
-                }
-                MultiEffect {
-                    anchors.fill: propImage
-                    source: propImage
-                    maskEnabled: true
-                    maskThresholdMin: 0.5
-
-                    maskSource: ShaderEffectSource {
-                        sourceItem: Rectangle {
-                            width: imageContainer.width
-                            height: imageContainer.height
-                            radius: imageContainer.radius
-                            color: "black"
-                        }
-                    }
-                }
+                Layout.preferredWidth: 5
+                Layout.fillHeight: true
+                color: "#2563EB"
+                radius: 3
             }
             ColumnLayout {
                 Layout.fillWidth: true
@@ -155,12 +134,24 @@ Rectangle {
                 }
                 RowLayout{
                     spacing: 0
-                    Text {
-                        text: "Room: " + delegateRoot.details
-                        font.pixelSize: 12
-                        color: "#888888"
+                    RowLayout{
+                        //spacing: 0
+                        ToolButton{
+                            icon.source: "qrc:/ui/assets/bookings/room-icon.svg"
+                            icon.width: 14
+                            icon.height: 14
+                            icon.color:"#000000"
+                            background: null
+                        }
+                        Text {
+                            text: delegateRoot.roomType
+                            font.pixelSize: 11
+                            color: "#94A3B8"
+                            //elide: Text.ElideRight
+                            Layout.fillWidth: true
+                        }
                     }
-                    Item{Layout.preferredWidth: 145}
+                    Item{Layout.preferredWidth: 200}
                     ToolButton{
                         icon.source: "qrc:/ui/assets/bookings/forward-icon.svg"
                         icon.width: 8
@@ -172,8 +163,8 @@ Rectangle {
                 RowLayout{
                     ToolButton{
                         icon.source: "qrc:/ui/assets/bookings/location-icon.svg"
-                        icon.width: 10
-                        icon.height: 10
+                        icon.width: 14
+                        icon.height: 14
                         icon.color:"#000000"//"#64748B"
                         background: null
                     }
@@ -184,46 +175,25 @@ Rectangle {
                         Layout.fillWidth: true
                     }
                 }
-
-                Text {
-                    text: "MWK " + delegateRoot.price
-                    font.bold: true
-                    font.pixelSize: 14
-                    color: "#000000"
+                RowLayout{
+                    spacing: 2
+                    Layout.leftMargin: 10
+                    Text{
+                        text:qsTr("Total: ")
+                        font.pointSize: 12
+                        color: "#94A3B8"
+                    }
+                    Text {
+                        text: Helper.formatCurrency(delegateRoot.price)
+                        font.bold: true
+                        font.pixelSize: 13
+                        color: "#000000"
+                    }
                 }
             }
 
         }
         Rectangle { Layout.fillWidth: true; implicitHeight: 1; color: "#F1F5F9"; visible:  holdCountdownText.length > 0}
-        // RowLayout{
-        //     Rectangle {
-        //         id: pay
-        //         visible: holdCountdownText.length > 0
-        //         Layout.preferredWidth: cardContent.implicitWidth - 12
-        //         implicitHeight: 40
-        //         radius: 12
-        //         color: delegateRoot.primaryColor//"#22C55E"
-        //         Text {
-        //             anchors.centerIn: parent
-        //             text: qsTr("Pay now")
-        //             color: "#FFFFFF"
-        //             font.pixelSize: 14
-        //             font.bold: true
-        //         }
-        //         z:2
-        //         MouseArea {
-        //             anchors.fill: pay
-        //             onClicked: {
-        //                 console.log("Pay now", delegateRoot.bookingId, delegateRoot.price, delegateRoot.holdExpiresAt)
-        //                 delegateRoot.payNowRequested(
-        //                     delegateRoot.bookingId,
-        //                     Number(delegateRoot.price),
-        //                     delegateRoot.holdExpiresAt
-        //                 )
-        //             }
-        //         }
-        //     }
-        // }
         CustomButton{
             id: payBtn
             text: qsTr("Pay now")
@@ -243,9 +213,33 @@ Rectangle {
             }
         }
     }
-    MouseArea{
+
+    MouseArea {
         anchors.fill: cardContent
-        onClicked: delegateRoot.viewDetailsRequested(data)
         z: 0
+
+        onClicked: {
+            delegateRoot.viewDetailsRequested({
+                bookingId: delegateRoot.bookingId,
+                roomId: delegateRoot.roomId,
+                propertyId: delegateRoot.propertyId,
+                status: delegateRoot.status,
+                houseName: delegateRoot.houseName,
+                ownerFirstName: delegateRoot.ownerFirstName,
+                hostName: delegateRoot.hostName,
+                hostInitials: delegateRoot.hostInitials,
+                propertyLocation: delegateRoot.propertyLocation,
+                roomType: delegateRoot.roomType,
+                bookingDate: delegateRoot.bookingDate,
+                price: delegateRoot.price,
+                clientName: delegateRoot.clientName,
+                clientPhone: delegateRoot.clientPhone,
+                clientEmail: delegateRoot.clientEmail,
+                paymentStatus: delegateRoot.paymentStatus,
+                paymentMethod: delegateRoot.paymentMethod,
+                paymentDate: delegateRoot.paymentDate,
+                holdExpiresAt: delegateRoot.holdExpiresAt
+            })
+        }
     }
 }

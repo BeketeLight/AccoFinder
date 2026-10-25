@@ -11,11 +11,7 @@ class DisputeRepositoryImpl : public IDisputeRepository
     Q_OBJECT
 public:
     explicit DisputeRepositoryImpl(QObject *parent = nullptr);
-    void raiseDispute(const QString& raisedBy,
-        const QString& title,
-        const QString& status,
-        const QString& description
-        ) override;
+   virtual void raiseDispute(const QString& bookingId,const QString& issue) override;
 
     //void getDisputes() override;    
 

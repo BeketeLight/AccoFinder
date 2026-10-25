@@ -59,7 +59,12 @@ QJsonObject DisputeDto::toJson() const
         case DisputeStatus::Resolved:
             json["status"] = "resolved";
             break;
+
+        case DisputeStatus::Rejected:
+            json["status"] = "rejected";
+            break;
         }
+
 
         return json;
     }

@@ -24,6 +24,7 @@ Page {
     // intentionally avoids clashing with QQuickPane's own contentData member.
     default property alias pageContent: contentColumn.data
 
+    readonly property real contentY: flick.contentY // to drive collapsible header
     property bool loading: false
     property bool pullEnabled: false
     property bool refreshing: false

@@ -21,11 +21,15 @@ void DisputesListViewModel::setLoading(bool loading)
     }
 }
 
-void DisputesListViewModel::raiseDispute(int index, const QString &raisedBy, const QString &title, const QString &status, const QString &description)
+void DisputesListViewModel::raiseDispute(const QString &bookingId, const QString &issue)
 {
-    m_index = index;
+    //m_index = index;
+    if(bookingId.isEmpty() || issue.trimmed().isEmpty()){
+        emit disputeError(QStringLiteral("Booking and issue are required"));
+        return;
+    }
     setLoading(true);
-    m_disputeController->raiseDispute(raisedBy, title, status, description);
+    m_disputeController->raiseDispute(bookingId, issue);
 }
 
 void DisputesListViewModel::resolveDispute(int index, const QString &disputeId, const QString &status)
@@ -50,7 +54,8 @@ void DisputesListViewModel::onDisputeRaised(Dispute *dispute)
 void DisputesListViewModel::onDisputeResolved(Dispute *dispute)
 {
     setLoading(false);
-    m_disputesListModel->updateDispute(m_index, dispute);
+    //New dispute append
+    m_disputesListModel->addDispute(dispute);
 }
 
 void DisputesListViewModel::onDisputesLoaded(QList<Dispute *> disputes)
