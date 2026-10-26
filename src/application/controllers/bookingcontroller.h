@@ -46,12 +46,18 @@ signals:
     void bookingReleased(Booking* booking);
     void bookingDeleted(const QString& id);
     void bookingError(const QString& error);
+    void propertyBookingError(const QString &error);
     void isLoadingChanged(bool isLoading);
 
 private:
     void setLoading(bool loading);
     BookingRepositoryImpl* m_bookingRepository;
     bool m_isLoading = false;
+    // Tracks which kind of booking the currently in-flight call is for, so the
+    // repository's generic error signal can be routed to either bookingError
+    // (room) or propertyBookingError (property) instead of both. Cleared when
+    // the request terminates (success or error).
+    QString m_pendingKind;   // "room" | "property" | ""
 };
 
 #endif 

@@ -34,10 +34,19 @@ BookingController::BookingController(QObject *parent)
         stopLoading();
         emit bookingDeleted(id);
     });
-    connect(m_bookingRepository, &BookingRepositoryImpl::bookingError, this, [this, stopLoading](const QString& err){
-        stopLoading();
-        emit bookingError(err);
+    connect(m_bookingRepository, &BookingRepositoryImpl::bookingError, this,
+            [this, stopLoading](const QString& err) {
+                stopLoading();
+                if (m_pendingKind == QStringLiteral("room"))
+                    emit bookingError(err);
+                else
+                    emit propertyBookingError(err);
+                m_pendingKind.clear();
     });
+    // connect(m_bookingRepository, &BookingRepositoryImpl::bookingError, this, [this, stopLoading](const QString& err){
+    //     stopLoading();
+    //     emit bookingError(err);
+    // });
 }
 
 void BookingController::setLoading(bool loading)
@@ -72,7 +81,7 @@ void BookingController::createBooking(const QString& roomId,
         emit bookingError("Invalid commissionAmount");
         return;
     }
-
+    m_pendingKind = QStringLiteral("room");
     setLoading(true);
     m_bookingRepository->createBooking(roomId,
                                        clientId,
@@ -86,22 +95,22 @@ void BookingController::createPropertyBooking(const QString& propertyId,
 {
     const QString clientId = AppSettings::instance().userId();
     if (propertyId.isEmpty()) {
-        emit bookingError("Property ID is required.");
+        emit propertyBookingError("Property ID is required.");
         return;
     }
     if (clientId.isEmpty()) {
-        emit bookingError("Invalid client Id");
+        emit propertyBookingError("Invalid client Id");
         return;
     }
     if (!amount) {
-        emit bookingError("Invalid amount");
+        emit propertyBookingError("Invalid amount");
         return;
     }
     if (!commissionAmount) {
-        emit bookingError("Invalid commissionAmount");
+        emit propertyBookingError("Invalid commissionAmount");
         return;
     }
-
+    m_pendingKind = QStringLiteral("property");
     setLoading(true);
     m_bookingRepository->createBooking(propertyId,
                                        clientId,

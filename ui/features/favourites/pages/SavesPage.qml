@@ -70,24 +70,36 @@ Item {
                 visible: savedRooms.count === 0
             }
 
-            Repeater {
-                model: savedRooms.model
+            Flow {
+                Layout.fillWidth: true
+                spacing: 12
 
-                delegate: SavedRoomDelegate {
-                    required property var model
-                    Layout.fillWidth: true
-                    roomId: model.roomId
-                    propertyId: model.propertyId
-                    quarterType: model.quarterType
-                    quarterTitle: model.quarterTitle
-                    quarterPrice: model.quarterPrice
-                    location: model.location
-                    imageUrl: model.imageUrl
-                    available: model.available
-                    holdActive: model.holdActive
-                    holdExpiresAt: model.holdExpiresAt
-                    onRemoveRequested: function (rid) {
-                        root.removeRoom(rid);
+                readonly property real cellWidth: (width - spacing) / 2
+
+                Repeater {
+                    model: savedRooms.model
+
+                    delegate: Item {
+                        required property var model
+                        width: parent.cellWidth
+                        height: width * 1.25
+
+                        SavedRoomDelegate {
+                            anchors.fill: parent
+                            roomId: model.roomId
+                            propertyId: model.propertyId
+                            quarterType: model.quarterType
+                            quarterTitle: model.quarterTitle
+                            quarterPrice: model.quarterPrice
+                            location: model.location
+                            imageUrl: model.imageUrl
+                            available: model.available
+                            holdActive: model.holdActive
+                            holdExpiresAt: model.holdExpiresAt
+                            onRemoveRequested: function (rid) {
+                                root.removeRoom(rid);
+                            }
+                        }
                     }
                 }
             }
