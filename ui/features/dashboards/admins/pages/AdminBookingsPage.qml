@@ -5,6 +5,7 @@ import "../../../../components/indicators"
 import "../../../../components/inputs"
 import "../../../properties/components"
 import "../../models"
+import "../../../bookings/components"
 import "../../../../utils/Utils.js" as Utils
 import "../../../../utils/NavigationUtils.js" as NavUtils
 import "../delegates"
@@ -180,7 +181,6 @@ Item {
                 root.bookingsModel.applyFilters()
             }
         }
-
         RowLayout {
             Layout.fillWidth: true
             spacing: 8
@@ -244,6 +244,12 @@ Item {
             delegate: AdminBookingDelegate {
                 required property var model
                 Layout.fillWidth: true
+                //visible: model.matches
+                       // height: visible ? implicitHeight : 0
+
+                        //bookingId: model.bookingId
+                        //status: model.status
+
 
                 bookingId: model.bookingId
                 clientId: model.clientId

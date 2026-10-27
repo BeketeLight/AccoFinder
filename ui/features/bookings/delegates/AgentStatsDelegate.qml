@@ -6,8 +6,7 @@ import "../models"
 import "../components"
 import "../../../utils/Utils.js" as Helper
 Rectangle {
-    id: delegateRoot
-    // --- REQUIRED MODEL PROPERTIES ---
+    id: root
     property string bookingId: model.bookingId ?? ""
     property string houseName: model.houseName ?? "Hostel/Apartment"
     property string landlordName: model.landlordName ?? model.hostName ?? "Landlord / Agent"
@@ -18,26 +17,24 @@ Rectangle {
     property string landlordInitials: model.landlordInitials ?? ""
     property string landlordPhone: model.landlordPhone ?? ""
     property string clientInitial: model.clientInitial ?? ""
-    //property string imageUrl: model.propertyImage ?? model.imageUrl ?? ""
     property string propertyId: model.propertyId ?? ""
     property string status: model.status ?? "Pending"
     readonly property string statusKey: String(status).trim().toUpperCase()
     property string clientName: model.clientName ?? "Guest"
     property string clientPhone: model.clientPhone ?? "N/A"
     property string dateRange: model.bookingDate ?? model.dateRange ?? "N/A"
-    // Robust numeric check for price
-    property real price: Number(model.amount ?? 0) // !== undefined && model.amount !== null ? model.amount.toString() : (model.price ?? "0")
+    property real price: Number(model.amount ?? 0)
     property real commission: Number(model.commissionAmount ?? 0)
     property string propertyLocation: model.location ?? ""
     property string roomType: model.roomType ?? "Standard Room"
     property string roomId: model.roomId ?? ""
     property string details: model.details ?? model.roomType ?? "Standard Room"
     property string clientEmail: model.clientEmail ?? ""
-    // --- INTERACTION SIGNALS ---
+    //Signals
     signal approveBooking()
     signal viewDetailsRequested(var data)
 
-    // --- VISIBILITY & LAYOUT BEHAVIOR ---
+    //match status from model
     visible: model.matches ?? true
     width: ListView.view ? ListView.view.width : parent.width
     implicitHeight: visible ? cardContent.implicitHeight + 16 : 0
@@ -54,7 +51,6 @@ Rectangle {
         anchors.margins: 12
         spacing: 10
         RowLayout{
-            //Layout.alignment: Qt.AlignHCenter
             Rectangle{
                 width: 6
                 height: 6
@@ -62,7 +58,7 @@ Rectangle {
                 color: "black"
             }
             BookingStatusBadge{
-                status: delegateRoot.status
+                status: root.status
             }
         }
         Rectangle{
@@ -90,14 +86,14 @@ Rectangle {
                 spacing: 4
 
                 Text {
-                    text:"Property: " + delegateRoot.houseName
+                    text:"Property: " + root.houseName
                     font.pixelSize: 14
                     color: "#2563EB"
                 }
                 RowLayout{
                     spacing: 0
                     Text {
-                        text: "Client: " + delegateRoot.clientName
+                        text: "Client: " + root.clientName
                         font.pixelSize: 12
                         color: "#888888"
                    }
@@ -106,7 +102,7 @@ Rectangle {
                         icon.source: "qrc:/ui/assets/bookings/forward-icon.svg"
                         icon.width: 8
                         icon.height: 8
-                        icon.color: "#616161"//"#64748B"
+                        icon.color: "#616161"
                         background: null
                     }
                 }
@@ -120,7 +116,7 @@ Rectangle {
                         background: null
                     }
                     Text {
-                        text: delegateRoot.roomType
+                        text: root.roomType
                         font.pixelSize: 11
                         color: "#94A3B8"
                         //elide: Text.ElideRight
@@ -136,7 +132,7 @@ Rectangle {
                         color: "#94A3B8"
                     }
                     Text {
-                        text: Helper.formatCurrency(delegateRoot.price)
+                        text: Helper.formatCurrency(root.price)
                         font.bold: true
                         font.pixelSize: 13
                         color: "#000000"
@@ -146,32 +142,27 @@ Rectangle {
         }
     }
     MouseArea{
-        anchors.fill: delegateRoot
+        anchors.fill: root
+
         onClicked: {
-            delegateRoot.viewDetailsRequested({
-
-                bookingId: delegateRoot.bookingId || "",
-                status: delegateRoot.status || "",
-                houseName: delegateRoot.houseName || "",
-                propertyLocation: delegateRoot.propertyLocation || "124 Lakeview Drive, Sector 4",
-                propertyId: delegateRoot.propertyId,
-                // propertyImage: data.propertyImage || data.imageUrl || "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=500",
-                roomType: delegateRoot.roomType || "2 Bedrooms",
-                roomId: delegateRoot.roomId || "",
-                clientName: delegateRoot.clientName || "John Doe",
-                clientPhone: delegateRoot.clientPhone || "+1 555-0192",
-                clientEmail: delegateRoot.clientEmail || "johndoe@example.com",
-                clientInitial: delegateRoot.clientInitial || "B" ,
-                checkIn: delegateRoot.checkIn || delegateRoot.bookingDate || delegateRoot.dateRange || "",
-                price: delegateRoot.price,
-                commission: delegateRoot.commission,
-                paymentStatus: delegateRoot.paymentStatus || "Paid",
-                paymentMethod: delegateRoot.paymentMethod ?? "Credit Card (Visa ending in 4242)",
-                paymentDate: delegateRoot.paymentDate || "Oct 10, 2026",
-                landlord: delegateRoot.landlord || "",
-                landlordInitials: delegateRoot.landlordInitials || "" ,
-                landlordPhone: delegateRoot.landlordPhone || ""
-
+            root.viewDetailsRequested({
+                bookingId: root.bookingId || "",
+                status: root.status || "",
+                houseName: root.houseName || "",
+                propertyLocation: root.propertyLocation || "124 Lakeview Drive, Sector 4",
+                propertyId: root.propertyId,
+                roomType: root.roomType || "2 Bedrooms",
+                roomId: root.roomId || "",
+                clientName: root.clientName || "John Doe",
+                clientPhone: root.clientPhone || "+1 555-0192",
+                clientEmail: root.clientEmail || "johndoe@example.com",
+                clientInitial: root.clientInitial || "B" ,
+                checkIn: root.checkIn || root.bookingDate || root.dateRange || "",
+                price: root.price,
+                commission: root.commission,
+                landlord: root.landlord || "",
+                landlordInitials: root.landlordInitials || "" ,
+                landlordPhone: root.landlordPhone || ""
             })
         }
     }

@@ -11,7 +11,7 @@ Rectangle {
     property string roomPrice: "0"
     property string   totalAmount: ""
     property string commission: ""
-    property string currencySymbol: "MK"
+
     Layout.fillWidth: true
     implicitHeight: payCol.implicitHeight + 24
     radius: 12
@@ -68,7 +68,7 @@ Rectangle {
                     Layout.fillWidth: true
                     Text { text: "Room price"; font.pixelSize: 12; color: "#64748B" }
                     Item { Layout.fillWidth: true }
-                    Text { text: paymentCard.currencySymbol + paymentCard.roomPrice; font.pixelSize: 12; font.bold: true; color: "#0F172A" }
+                    Text { text: paymentCard.roomPrice; font.pixelSize: 12; font.bold: true; color: "#0F172A" }
                 }
 
 
@@ -77,7 +77,7 @@ Rectangle {
                     Layout.fillWidth: true
                     Text { text: "Agent Commission"; font.pixelSize: 12; color: "#64748B" }
                     Item { Layout.fillWidth: true }
-                    Text { text: paymentCard.currencySymbol + paymentCard.commission; font.pixelSize: 12; font.bold: true; color: "#16A34A" } // Green accent for commission
+                    Text { text: paymentCard.commission; font.pixelSize: 12; font.bold: true; color: "#16A34A" } // Green accent for commission
                 }
 
                 Rectangle {
@@ -90,7 +90,7 @@ Rectangle {
                     Text { text: "Total"; font.pixelSize: 13; font.bold: true; color: "#0F172A" }
                     Item { Layout.fillWidth: true }
                     Text {
-                        text: paymentCard.currencySymbol + paymentCard.totalAmount
+                        text: paymentCard.totalAmount
                         font.pixelSize: 13
                         font.bold: true
                         color: "#0F172A"

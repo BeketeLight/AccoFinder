@@ -45,16 +45,13 @@ Rectangle {
     property color mutedColor: "#6B7280"
     property color borderColor: "#E5E7EB"
     property color errorColor: "#EF4444"
-    // --- ACTIVE FILTER PROP (FOR INLINE LISTVIEW FILTERING) ---
-    //property string activeFilter: "All"
 
-    // --- INTERACTION SIGNALS ---
+    //Signals
     signal removeRequested()
     signal viewDetailsRequested(var data)
     signal payNowRequested(string bookingId, real amount, var holdExpiresAt)
 
-    // --- VISIBILITY & LAYOUT BEHAVIOR ---
-    // visible: activeFilter === "All" || status === activeFilter
+    // match status of the model
     visible: model.matches ?? true
     width: ListView.view ? ListView.view.width : parent.width
     implicitHeight: visible ? cardContent.implicitHeight + 24 : 0
@@ -109,7 +106,6 @@ Rectangle {
             radius: 2
             color: "#E2E8F0"
         }
-        // --- 3. MAIN CONTENT: THUMBNAIL & PROPERTY INFO ---
         // Blue accent line on the left side of the booking card
 
         RowLayout {

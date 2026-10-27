@@ -4,8 +4,6 @@ import QtQuick.Layouts
 import "../../../utils/NavigationUtils.js" as NavUtils
 import "../../../components/pages"
 import "../../dashboards/admins/pages"
-import "../../../components/pages"
-import "../../dashboards/admins/pages"
 
 Rectangle {
     id: root
@@ -19,11 +17,10 @@ Rectangle {
     // --- USER-ROLE ROUTER ---
     Loader {
         anchors.fill: parent
-        //visible: !root.isGuest && !root.isAdmin
         source: {
             if (root.isAgent)  return "BookingOverviewAgentPage.qml"
             if (root.isClient) return "BookingOverviewClientPage.qml"
-            if(root.isAdmin) return "BookingOverviewAdminPage.qml"
+            if(root.isAdmin) return "../../dashboards/admins/screens/AdminBookingsScreen.qml" //"BookingOverviewAdminPage.qml"
             if (root.isGuest) return "../../auth/screens/SignInScreen.qml"
             return ""
         }
