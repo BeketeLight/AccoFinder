@@ -337,7 +337,6 @@ Page {
 
                 SectionHeader {
                     title: qsTr("Amenities")
-                    Layout.fillWidth: true
                 }
 
                 Flow {
@@ -484,18 +483,10 @@ Page {
                 Layout.margins: 16
                 spacing: 12
 
-                RowLayout {
+                SectionHeader {
                     Layout.fillWidth: true
-
-                    SectionHeader {
-                        title: qsTr("Available Rooms")
-                    }
-
-                    Label {
-                        text: detailsModel.roomCount + " rooms"
-                        font.pixelSize: 13
-                        color: "#6B7280"
-                    }
+                    title: qsTr("Available Rooms")
+                    actionLabel: detailsModel.roomCount + " rooms"
                 }
 
                 Label {
@@ -833,7 +824,7 @@ Page {
             NavUtils.navigateToPayments(booking.id, booking.amount, booking.holdExpiresAt !== undefined ? booking.holdExpiresAt : null);
         }
 
-        function onBookingError(error) {
+        function onPropertyBookingError(error) {
             errorDialog.errorText = error;
             errorDialog.open();
         }

@@ -7,10 +7,11 @@ Item {
 
     property string title: ""
     property string actionLabel: ""
-    signal actionTriggered()
+    signal actionTriggered
 
     implicitWidth: 300
     implicitHeight: 30
+    Layout.fillWidth: true
 
     RowLayout {
         anchors.fill: parent
