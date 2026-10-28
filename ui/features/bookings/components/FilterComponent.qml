@@ -39,7 +39,9 @@ Item {
                 implicitWidth: label.implicitWidth + 28
                 implicitHeight: 28
                 radius: 16
-                color: chip.active ? "#2563EB" : "transparent"
+                border.width: 2
+                border.color: "#EFF6FF"
+                color: chip.active ? "#2563EB" : "#FFFFFF"
 
                 Text {
                     id: label

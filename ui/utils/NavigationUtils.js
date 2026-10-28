@@ -186,32 +186,24 @@ function navigateToDashboard(role){
     }
 
 }
-function navigateToBookingsView(filter){
-    push("../features/bookings/pages/BookingView.qml",{
-        activeFilter:  filter || "All"
-    })
-}
+
 function navigateToBookingDetails(){
     push("../features/bookings/pages/BookingDetailsPage.qml")
 }
 function navigateToBookingsDetailsClient(data) {
-    push("../features/bookings/pages/ClientBookinDetailsPage.qml", {
+    push("../features/bookings/pages/ClientBookingsDetailsPage.qml", {
         bookingId: data.bookingId || "",
         status: data.status || "Pending",
-        ownerFirstName: data.ownerFirstName,
-        hostInitials: data.hostInitials,
-        hostName: data.hostName,
+        ownerFirstName: data.ownerFirstName || "",
+        hostInitials: data.hostInitials || "",
+        hostName: data.hostName || "",
         houseName: data.houseName || "",
         propertyId: data.propertyId || "",
         propertyLocation: data.propertyLocation || data.location || "",
         roomType: data.roomType || "",
         roomId: data.roomId || "",
         bookingDate: data.bookingDate ||  "",
-        paymentStatus: data.paymentStatus || "Unpaid",
-        paymentMethod: data.paymentMethod || "",
-        paymentDate: data.paymentDate || "",
         price: data.price,
-        // if you add these on the page + delegate:
         clientName: data.clientName || "",
         clientPhone: data.clientPhone || "",
         clientEmail: data.clientEmail || "",
@@ -223,13 +215,12 @@ function navigateToBookingsDetailsOwneByAgent(data){
         var price = Number(data.price !== null ? data.price
                         : (data.amount !== null ? data.amount : 0))
         var commission = Number(data.commission !== null ? data.commission : 0)
-    push("../features/bookings/pages/AgentBookingDetailsOnOwnedPropertiesPage.qml", {
+    push("../features/bookings/pages/AgentBookingsDetailsPage.qml", {
             bookingId: data.bookingId || "",
             status: data.status || "",
             houseName: data.houseName || "",
             propertyLocation: data.propertyLocation || "124 Lakeview Drive, Sector 4",
             propertyId: data.propertyId || "",
-            //propertyImage: data.propertyImage || data.imageUrl || "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=500",
             roomType: data.roomType || "2 Bedrooms",
             roomId: data.roomId || "",
             clientName: data.clientName || "John Doe",
@@ -239,16 +230,13 @@ function navigateToBookingsDetailsOwneByAgent(data){
             checkIn: data.checkIn || data.bookingDate || data.dateRange || "",
             price: price,
             commission: commission,
-            paymentStatus: data.paymentStatus || "Paid",
-            paymentMethod: data.paymentMethod ?? "Credit Card (Visa ending in 4242)",
-            paymentDate: data.paymentDate || "Oct 10, 2026",
             landlord: data.landlord || "",
             landlordInitials: data.landlordInitials || "" ,
             landlordPhone: data.landlordPhone || ""
     });
 }
 function navigateToBookingDetailsForAdmin(data){
-    push("../features/bookings/pages/AdminBookingDetailsPage.qml",{
+    push("../features/bookings/pages/AdminBookingsDetailsPage.qml",{
         bookingId: data.bookingId || "",
         houseName: data.houseName || "",
         hostName: data.hostName || "",
@@ -267,8 +255,8 @@ function navigateToBookingDetailsForAdmin(data){
         price: data.price, //? model.amount.toString() : "0",
         commission: data.commission,
         propertyLocation: data.propertyLocation || "124 Lakeview Drive, Sector 4",
-        propertyImage: data.propertyImage,
         roomType: data.roomType || "",
+        //roomId: data.roomId || ""
         // Lets the detail screen fetch the booked room's photo when the caller
         // (e.g. the admin bookings list) has no image to hand over.
         propertyId: data.propertyId || "",

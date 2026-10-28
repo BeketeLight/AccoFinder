@@ -13,7 +13,6 @@ Page {
     property string  pendingApprovedId: ""
     readonly property bool busy: agentBookingsModel.loading
             || BookingViewModel.isLoading
-    // Header Bar / Filter Selector
     background: Rectangle{
         color: "#F4F6F9"
     }
@@ -38,19 +37,6 @@ Page {
         model: agentBookingsModel.bookingsModel
 
         delegate: AgentStatsDelegate {
-            bookingId: model.bookingId ?? ""
-            houseName: model.houseName ?? ""
-            //imageUrl: model.propertyImage ?? ""
-            status: model.status ?? ""
-            clientName: model.clientName ?? ""
-            clientPhone: model.clientPhone ?? ""
-            dateRange: model.bookingDate ?? ""
-            propertyLocation: (model.district && model.village) ? (model.district + ", " + model.village) : "N/A"
-            roomType: model.roomType ?? ""
-            clientEmail: model.clientEmail ?? ""
-            clientInitial: model.clientInitial ?? ""
-            commission: model.commissionAmount ?? 0.0
-            price: model.amount
             onViewDetailsRequested: function(data){
                 NavUtils.navigateToBookingsDetailsOwneByAgent({
                     //Data must come from Model to avoid suprises
@@ -112,9 +98,11 @@ Page {
     AppSpinner{
         id: loadingSpinner
         anchors.centerIn: parent
+        Layout.preferredHeight: 16
+        Layout.preferredWidth: 16
         running: agentBookingsModel.loading
         color: "#2563EB"
-        size: 36
-        z: 100
+        size: 30
+        lineWidth: 2
     }
 }

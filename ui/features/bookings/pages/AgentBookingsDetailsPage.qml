@@ -8,37 +8,27 @@ import "../../../utils/NavigationUtils.js" as NavUtils
 
 Page{
     id: root
-    background: Rectangle{
-        color: "#F8F9FB"
-    }
-    // Forward properties to the inner delegate
     property alias bookingId: detailDelegate.bookingId
     property alias status: detailDelegate.status
     property alias houseName: detailDelegate.houseName
-    property alias ownerFirstName: detailDelegate.ownerFirstName
-    property alias hostInitials: detailDelegate.hostInitials
-    property alias hostName: detailDelegate.hostName
-    property alias hostEmail: detailDelegate.hostEmail
-    property alias hostPhone: detailDelegate.hostPhone
     property alias propertyLocation: detailDelegate.propertyLocation
     property alias propertyImage:detailDelegate.propertyImage
+    property alias propertyId: detailDelegate.propertyId
     property alias roomType: detailDelegate.roomType
-
+    property alias roomId: detailDelegate.roomId
     property alias clientName: detailDelegate.clientName
     property alias clientPhone: detailDelegate.clientPhone
     property alias clientEmail: detailDelegate.clientEmail
     property alias clientInitial: detailDelegate.clientInitial
-
     property alias landlord: detailDelegate.landlord
-    property alias landlordPhone: detailDelegate.landlordPhone
     property alias landlordInitials: detailDelegate.landlordInitials
-    property alias bookingDate: detailDelegate.bookingDate
+    property alias landlordPhone: detailDelegate.landlordPhone
     property alias price: detailDelegate.price
     property alias commission: detailDelegate.commission
+    property alias checkIn: detailDelegate.checkIn
     property alias paymentStatus: detailDelegate.paymentStatus
     property alias paymentMethod: detailDelegate.paymentMethod
     property alias paymentDate: detailDelegate.paymentDate
-
 
     property bool showHeader: true
     property bool showBack: false
@@ -47,12 +37,14 @@ Page{
     property bool collapsible: false
     property bool transparentHeader: true
     property real scrollY: scrollViewId.contentItem.contentY
+
+
     property Component leftComponentAction: Component {
         RowLayout {
-            spacing: 4
+            spacing: 12
             ToolButton {
-                implicitWidth: 48
-                implicitHeight: 48
+                implicitWidth: 28
+                implicitHeight: 28
                 icon.source: "qrc:/ui/assets/back-icons.svg"
                 icon.color: "#111111"
                 icon.width: 10
@@ -61,6 +53,10 @@ Page{
                     if (typeof NavUtils !== "undefined")
                         NavUtils.pop()
                 }
+                background: Rectangle{
+                    radius: 14
+                    color: "#FFFFFF"
+                }
             }
             BookingStatusBadge {
                 Layout.alignment: Qt.AlignVCenter
@@ -68,21 +64,67 @@ Page{
             }
         }
     }
-
     ScrollView {
         id: scrollViewId
         anchors.topMargin: 6
         anchors.fill: parent
         contentWidth: availableWidth
         clip: true
-        AdminBookingDetailsDelegate {
+
+        AgentBookingDetailsDelegate {
             id: detailDelegate
-            //anchors.topMargin: 10
+            anchors.horizontalCenter: parent.horizontalCenter
             anchors.rightMargin: 10
             anchors.leftMargin: 10
-            anchors.horizontalCenter: parent.horizontalCenter
             width: Math.min(parent.width - 32, 600)
+
+            onReleaseRequested: releaseDialog.open()
+
+            // onPayNowRequested: {
+            //     console.log("Processing payment for booking:", bookingId)
+            // }
+        }
+    }
+
+    // Refunding frees the room, so require a deliberate confirmation before the
+    // release call goes out.
+    Dialog {
+        id: releaseDialog
+        modal: true
+        anchors.centerIn: parent
+        width: Math.min(parent ? parent.width - 40 : 320, 340)
+        title: qsTr("Refund & relist room")
+
+        contentItem: ColumnLayout {
+            spacing: 12
+
+            Label {
+                Layout.fillWidth: true
+                wrapMode: Text.WordWrap
+                text: qsTr("This refunds the client and returns the room to the market so it can be booked again. This cannot be undone.")
+                color: "#64748B"
+            }
+
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: 10
+
+                Button {
+                    Layout.fillWidth: true
+                    text: qsTr("Cancel")
+                    onClicked: releaseDialog.reject()
+                }
+
+                Button {
+                    Layout.fillWidth: true
+                    text: qsTr("Refund & relist")
+                    onClicked: {
+                        if (String(root.bookingId).length > 0)
+                            BookingController.releaseBooking(root.bookingId)
+                        releaseDialog.accept()
+                    }
+                }
+            }
         }
     }
 }
-

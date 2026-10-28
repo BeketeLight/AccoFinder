@@ -5,14 +5,12 @@ import QtQuick.Effects
 import "../components"
 import "../../../components/buttons"
 import "../../../utils/ImageUtils.js" as CachedImage
+import "../../../utils/Utils.js" as Formator
 
 Item{
-    id: detailsPage
+    id: root
     anchors.fill: parent
     implicitHeight: mainContent.implicitHeight + 32
-   // color: "#F8F9FB"
-
-    // --- DATA MODEL / PASSED PARAMETERS ---
     property bool isLoading: false
 
     property string bookingId: ""
@@ -21,7 +19,7 @@ Item{
     property string ownerFirstName: ""
     property string hostName: ""
     property string hostInitials: ""
-    property string propertyImage: ""
+    readonly property string propertyImage: cachImage.propertyImage
     property string propertyId: ""
     property string propertyLocation: ""
     property string roomType: ""
@@ -44,15 +42,17 @@ Item{
 
     property string createdTime: ""
 
-    // --- SIGNALS ---
+    //Signals
     signal contactHostRequested()
     signal viewMapRequested()
     // Ask the page to refund the client and put the room back on the market.
     signal releaseRequested()
 
-        // ------------------------------------------
-        // 1. POPULATED DATA VIEW
-        // ------------------------------------------
+    BookingCachImage{
+        id: cachImage
+        propertyId: root.propertyId
+        roomId: root.roomId
+    }
     ColumnLayout {
         id: mainContent
         width: parent.width
@@ -87,7 +87,7 @@ Item{
                     Image {
                         id: mainImg
                         anchors.fill: parent
-                        source: CachedImage.cachedSource(detailsPage.propertyImage)
+                        source: CachedImage.cachedSource(root.propertyImage)
                         fillMode: Image.PreserveAspectCrop
                         cache: true
                         asynchronous: true
@@ -101,12 +101,12 @@ Item{
                                  mainImg.status === Image.Null ||
                                  mainImg.status === Image.Error
 
-                        Text {
-                            anchors.horizontalCenter: parent.horizontalCenter
-                            text: "▧"
-                            font.pixelSize: 32
-                            color: "#94A3B8"
-                        }
+                        // Text {
+                        //     anchors.horizontalCenter: parent.horizontalCenter
+                        //     text: "▧"
+                        //     font.pixelSize: 32
+                        //     color: "#94A3B8"
+                        // }
 
                         Text {
                             anchors.horizontalCenter: parent.horizontalCenter
@@ -128,7 +128,7 @@ Item{
                     spacing: 4
 
                     Text {
-                        text: detailsPage.houseName
+                        text: root.houseName
                         font.pixelSize: 16
                         font.bold: true
                         color: "#0F172A"
@@ -143,7 +143,7 @@ Item{
                             background: null
                         }
                         Text {
-                            text: detailsPage.propertyLocation
+                            text: root.propertyLocation
                             font.pixelSize: 12
                             color: "#64748B"
                         }
@@ -153,40 +153,40 @@ Item{
         }
         // --- RESERVATION DETAILS CARD ---
         BookingStatusBanner{
-            status: detailsPage.status
+            status: root.status
         }
         BookingsCard{
-            bookingDate: detailsPage.checkIn
-            roomType: detailsPage.roomType
+            bookingDate: root.checkIn
+            roomType: root.roomType
         }
         PaymentSummaryCard{
-            roomPrice: detailsPage.price
-            totalAmount: detailsPage.price
-            commission: detailsPage.commission
+            roomPrice: Formator.formatCurrency(root.price)
+            totalAmount: Formator.formatCurrency(root.price)
+            commission: Formator.formatCurrency(root.commission)
             customIconHeight: 14
             customIconWidth: 14
         }
         UserInfoCard{
             cardTitle: "Client Info"
             cardIcon: "qrc:/ui/assets/account-icon.svg"
-            userName: detailsPage.clientName
-            userPhone: detailsPage.clientPhone
-            userInitial: detailsPage.clientInitial
+            userName: root.clientName
+            userPhone: root.clientPhone
+            userInitial: root.clientInitial
             userEmail: ""
         }
         UserInfoCard{
             cardTitle: "Landlord Info"
             cardIcon: "qrc:/ui/assets/bookings/landlord-icon.svg"
-            userName: detailsPage.landlord
-            userPhone: detailsPage.landlordPhone
-            userInitial: detailsPage.landlordInitials
+            userName: root.landlord
+            userPhone: root.landlordPhone
+            userInitial: root.landlordInitials
             custIconHeight: 16
             custIconWidth: 16
             userEmail: ""
         }
         // --- APPROVE ACTION BUTTON ---
         Rectangle {
-            visible: detailsPage.status === "Pending"
+            visible: root.status === "Pending"
             Layout.fillWidth: true
             implicitHeight: 44
             radius: 22
@@ -206,7 +206,7 @@ Item{
             }
             MouseArea {
                 anchors.fill: parent
-                onClicked: detailsPage.cancelBookingRequested()
+                onClicked: root.cancelBookingRequested()
             }
         }
     }

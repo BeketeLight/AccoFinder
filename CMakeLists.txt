@@ -55,15 +55,28 @@ qt_add_qml_module(appAccoFinder
         ui/utils/Utils.js
         ui/utils/NavigationUtils.js
         #======FEATURE-BOOKINGS======
-        ui/features/bookings/delegates/BookingsDelegate.qml
         ui/features/bookings/pages/BookingPage.qml
-        ui/features/bookings/screens/CreateBookingScreen.qml
-        ui/features/bookings/screens/BookingDetailsScreen.qml
-        ui/features/bookings/screens/BookingListScreen.qml
-        ui/features/bookings/pages/BookingDetailsPage.qml
-        ui/features/bookings/pages/BookingsListPage.qml
-        ui/features/bookings/pages/CreateBookingPage.qml
         ui/features/bookings/screens/BookingsScreen.qml
+        ui/features/bookings/components/FilterComponent.qml
+        ui/features/bookings/components/BookingsCard.qml
+        ui/features/bookings/pages/AgentBookingsDetailsPage.qml
+        ui/features/bookings/delegates/AgentBookingDetailsDelegate.qml
+        ui/features/bookings/delegates/ClientBookingDetailsDelegate.qml
+        ui/features/bookings/delegates/AgentStatsDelegate.qml
+        ui/features/bookings/delegates/ClientStatsDelegate.qml
+        ui/features/bookings/pages/BookingOverviewClientPage.qml
+        ui/features/bookings/pages/ClientBookingsDetailsPage.qml
+        ui/features/bookings/pages/BookingOverviewAgentPage.qml
+        ui/features/bookings/models/BookingsModel.qml
+        ui/features/bookings/components/BookingStatusBanner.qml
+        ui/features/bookings/components/BookingStatusBadge.qml
+        ui/features/bookings/components/UserInfoCard.qml
+        ui/features/bookings/components/PaymentSummaryCard.qml
+        ui/features/bookings/components/CustomButton.qml
+        ui/features/bookings/delegates/AdminBookingDetailsDelegate.qml
+        ui/features/bookings/pages/AdminBookingsDetailsPage.qml
+        ui/features/bookings/components/BookingCachImage.qml
+
         #======FEATURE-DISPUTES======
         ui/features/disputes/screens/DisputesScreen.qml
         ui/features/disputes/pages/CreateDisputePage.qml
@@ -235,39 +248,16 @@ qt_add_qml_module(appAccoFinder
 
     RESOURCES
         Rescources.qrc
-        QML_FILES ui/features/bookings/components/FilterComponent.qml
-        QML_FILES ui/features/bookings/pages/BookingView.qml
-        QML_FILES ui/features/bookings/components/BookingsCard.qml
-        QML_FILES ui/features/bookings/pages/ClientBookingPage.qml
-        QML_FILES ui/features/bookings/pages/AgentBookingsPage.qml
-        QML_FILES ui/features/bookings/delegates/AgentBookingDetailsDelegate.qml
-        QML_FILES ui/features/bookings/delegates/ClientBookingDetailsDelegate.qml
-        QML_FILES ui/features/bookings/delegates/AgentStatsDelegate.qml
-        QML_FILES ui/features/bookings/delegates/ClientStatsDelegate.qml
-        QML_FILES ui/features/bookings/pages/BookingOverviewClientPage.qml
-        QML_FILES ui/features/bookings/pages/ClientBookinDetailsPage.qml
-        QML_FILES ui/features/bookings/pages/BookingOverviewAgentPage.qml
-        QML_FILES ui/features/bookings/pages/AgentBookingDetailsOnOwnedPropertiesPage.qml
+
         QML_FILES ui/utils/ImageUtils.js
         QML_FILES ui/features/payments/pages/PaymentsHistoryPage.qml
         QML_FILES ui/features/payments/models/PaymentsModel.qml
-        QML_FILES ui/features/bookings/models/BookingsModel.qml
-        QML_FILES ui/features/bookings/components/BookingStatusBanner.qml
-        QML_FILES ui/features/bookings/delegates/AdminStatsDelegate.qml
-        QML_FILES ui/features/bookings/pages/BookingOverviewAdminPage.qml
-        QML_FILES ui/features/bookings/components/BookingStatusBadge.qml
-        QML_FILES ui/features/bookings/components/UserInfoCard.qml
-        QML_FILES ui/features/bookings/components/PaymentSummaryCard.qml
-        QML_FILES ui/features/bookings/components/CustomButton.qml
-        QML_FILES ui/features/bookings/delegates/AdminBookingDetailsDelegate.qml
-        QML_FILES ui/features/bookings/pages/AdminBookingDetailsPage.qml
         QML_FILES ui/features/favourites/components/SavesTabStrip.qml
         QML_FILES ui/features/favourites/components/SavesEmptyState.qml
         QML_FILES ui/features/favourites/delegates/SavedPropertyDelegate.qml
         QML_FILES ui/features/favourites/delegates/SavedRoomDelegate.qml
         QML_FILES ui/features/favourites/models/SavedPropertiesModel.qml
         QML_FILES ui/features/favourites/models/SavedRoomsModel.qml
-
 
 )
 

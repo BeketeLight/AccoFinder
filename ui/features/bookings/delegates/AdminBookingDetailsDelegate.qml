@@ -2,11 +2,13 @@ import QtQuick 2.15
 import QtQuick.Controls
 import QtQuick.Layouts
 import "../components"
+import "../../../utils/ImageUtils.js" as CachedImage
+import "../../../utils/Utils.js" as Formator
 Item {
     id: root
+
     anchors.fill: parent
     implicitHeight: mainContent.implicitHeight + 32
-   // color: "#F8F9FB"
     property bool isLoading: false
 
     property string bookingId: ""
@@ -20,9 +22,11 @@ Item {
     property string hostInitials: ""
     property string hostEmail: ""
     property string hostPhone: ""
-    property string propertyImage: ""
+    readonly property string propertyImage: cachImage.propertyImage
     property string propertyLocation: ""
+    property string propertyId: ""
     property string roomType: ""
+    property string roomId: ""
     property string clientName: ""
     property string clientPhone: ""
     property string clientEmail: ""
@@ -50,6 +54,14 @@ Item {
     signal cancelBookingRequested()
     signal contactHostRequested()
     signal payNowRequested(string bookingId, real amount, var holdExpiresAt)
+
+    //Component used to get image using
+    //propertyId and roomId
+    BookingCachImage{
+        id: cachImage
+        propertyId: root.propertyId
+        roomId: root.roomId
+    }
 
     ColumnLayout {
         id: mainContent
@@ -85,7 +97,7 @@ Item {
                     Image {
                         id: mainImg
                         anchors.fill: parent
-                        source: root.propertyImage
+                        source: CachedImage.cachedSource(root.propertyImage)
                         fillMode: Image.PreserveAspectCrop
                         asynchronous: true
                     }
@@ -132,9 +144,9 @@ Item {
             roomType: root.roomType
         }
         PaymentSummaryCard{
-            roomPrice: root.price
-            totalAmount: root.price
-            commission: root.commission
+            roomPrice: Formator.formatCurrency(root.price)
+            totalAmount: Formator.formatCurrency(root.price)
+            commission: Formator.formatCurrency(root.commission)
             customIconHeight: 14
             customIconWidth: 14
         }
@@ -165,6 +177,5 @@ Item {
             custIconHeight: 16
             custIconWidth: 16
         }
-
     }
 }

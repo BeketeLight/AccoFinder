@@ -91,7 +91,6 @@ Page {
             bookingId: model.bookingId ?? ""
             houseName: model.houseName ?? ""
             ownerFirstName: model.ownerFirstName ?? ""
-            //propertyImage: model.propertyImage ?? ""
             status: model.status ?? ""
             clientName: model.clientName ?? ""
             clientPhone: model.clientPhone ?? ""
@@ -118,7 +117,6 @@ Page {
                     ownerFirstName: model.ownerFirstName,
                     hostInitials: model.hostInitials,
                     hostName: model.hostName,
-                    propertyImage: model.propertyImage || "",
                     propertyId: model.propertyId || "",
                     propertyLocation: (model.district && model.village)
                         ? (model.district + ", " + model.village)
@@ -128,19 +126,11 @@ Page {
                     bookingDate: model.bookingDate || "",
                     landlordName: model.landlord || "",
                     landlordPhone: model.landlordPhone || "",
-                    paymentStatus: model.paymentStatus || "Unpaid",
-                   // price: model.amount,
                     price: Number(model.amount ?? 0),
                     holdExpiresAt: model.holdExpiresAt ?? ""
                 });
             }
-            // onPayNowRequested:  function(bId, amt, expiresAt){
-            //     NavUtils.navigateToPayments(
-            //             bId || model.bookingId || "",
-            //             amt || model.amount || 0,
-            //             expiresAt || model.holdExpiresAt || ""
-            //     )
-            // }
+
             onPayNowRequested: function(bId, amt, expiresAt) {
                 var id = (bId && String(bId).length) ? String(bId) : String(model.bookingId || "")
                 var payAmount = (amt !== undefined && amt !== null && !isNaN(Number(amt)))
@@ -194,8 +184,10 @@ Page {
         id: loadingSpinner
         anchors.centerIn: parent
         running: clientBookingModel.loading
+        Layout.preferredWidth: 16
+        Layout.preferredHeight: 16
         color: "#2563EB"
-        size: 36
-        z: 50
+        size: 32
+        lineWidth: 2
     }
 }

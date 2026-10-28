@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import "../../../../components/indicators"
 import "../../../../utils/Utils.js" as Utils
+import "../../../bookings/components"
 
 // One row in the admin bookings oversight list. Renders the fields the
 // BookingListModel actually exposes (id, client, room, date, amount,
@@ -159,20 +160,9 @@ Rectangle {
                 }
             }
 
-            Rectangle {
-                implicitHeight: 22
-                implicitWidth: statusLabel.implicitWidth + 14
-                radius: 11
-                color: Qt.lighter(root.statusTint, 1.82)
-
-                Label {
-                    id: statusLabel
-                    anchors.centerIn: parent
-                    text: root.status.length > 0 ? root.status : qsTr("Pending")
-                    color: root.statusTint
-                    font.pixelSize: 10
-                    font.bold: true
-                }
+            BookingStatusBadge {
+                Layout.alignment: Qt.AlignTop
+                status: root.status.length > 0 ? root.status : qsTr("Pending")
             }
         }
 
