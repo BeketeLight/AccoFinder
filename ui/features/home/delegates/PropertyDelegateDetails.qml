@@ -491,7 +491,7 @@ Page {
 
                 Label {
                     visible: detailsModel.roomCount === 0
-                    text: detailsModel.loading ? "Loading rooms…" : "No rooms listed"
+                    text: detailsModel.roomsSettled ? "No rooms listed" : "Loading rooms…"
                     font.pixelSize: 13
                     color: "#9CA3AF"
                 }

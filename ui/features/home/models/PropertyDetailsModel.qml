@@ -7,6 +7,12 @@ Item {
     property string propertyId: ""
     property string imageUrl: ""
     property bool loading: false
+    // True once RoomViewModel reports "finished" for the current property.
+    // Used to distinguish "still waiting for rooms" from "genuinely zero
+    // rooms". Without it, a failed or slow room fetch leaves `loading` false
+    // (media finished) while `roomCount` is still 0, and the page says
+    // "No rooms listed" even though the property has rooms.
+    property bool roomsSettled: fals
 
     readonly property alias imageListModel: imageListModelId
     readonly property alias roomsModel: roomsModelId
@@ -412,6 +418,7 @@ Item {
         //console.log("PropertyDetailsModel [EVENT]: propertyId changed ->", propertyId);
         _roomsFetchRequested = false;
         _mediaFetchRequested = false;
+        roomsSettled = false;
         refresh();
     }
 
@@ -437,6 +444,9 @@ Item {
             root.updateLoading();
             if (!RoomViewModel.isLoading) {
                 root.rebuild();
+                // A room response has arrived — success or empty. From now on
+                // "roomCount === 0" is a fact, not a "still loading" symptom.
+                root.roomsSettled = true;
             }
         }
     }
