@@ -60,6 +60,11 @@ Item {
             ColumnLayout {
                 width: parent.width
                 spacing: 12
+                // Matches the horizontal rhythm used by HomeListPage and the
+                // filter row: the Flow's left edge is inset by 12px, matching the
+                // Flickable's own x:12 for the filter chips.
+                Layout.leftMargin: 12
+                Layout.rightMargin: 12
 
                 Item {
                     Layout.preferredHeight: 8
