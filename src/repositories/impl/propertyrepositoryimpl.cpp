@@ -35,7 +35,11 @@ PropertyRepositoryImpl::PropertyRepositoryImpl(QObject *parent)
 
 }
 
-void PropertyRepositoryImpl::getProperties(const PropertyQuery& query)
+// void PropertyRepositoryImpl::getHouseListings(const PropertyQuery &query)
+// {
+
+// }
+void PropertyRepositoryImpl::getHouseListings(const PropertyQuery& query)
 {
     // Build the query string once, from the struct. Empty fields are skipped,
     // so a default PropertyQuery{ .owner = ... } produces exactly the URL the
@@ -68,7 +72,7 @@ void PropertyRepositoryImpl::getProperties(const PropertyQuery& query)
     if (!query.sortOrder.isEmpty())
         params.addQueryItem("sortOrder", query.sortOrder);
 
-    QString url = QStringLiteral("/house-listing/");
+    QString url = QStringLiteral("/properties/");
     const QString qs = params.toString(QUrl::FullyEncoded);
     if (!qs.isEmpty())
         url += QStringLiteral("?") + qs;
@@ -99,7 +103,75 @@ void PropertyRepositoryImpl::getProperties(const PropertyQuery& query)
                 return;
             }
             QList<Property*> properties = parseListingResponse(response);
-            emit propertiesLoaded(properties);
+            propertiesLoaded(properties);
+        }
+        );
+}
+
+void PropertyRepositoryImpl::searchProperties(const PropertyQuery& query)
+{
+    // Build the query string once, from the struct. Empty fields are skipped,
+    // so a default PropertyQuery{ .owner = ... } produces exactly the URL the
+    // old overload produced, and the admin view keeps working unchanged.
+    QUrlQuery params;
+    if (!query.owner.isEmpty())
+        params.addQueryItem("owner", query.owner);
+    if (!query.search.isEmpty())
+        params.addQueryItem("search", query.search);
+    if (!query.propertyType.isEmpty())
+        params.addQueryItem("propertyType", query.propertyType);
+    if (!query.district.isEmpty())
+        params.addQueryItem("district", query.district);
+    if (!query.village.isEmpty())
+        params.addQueryItem("village", query.village);
+    if (!query.amenities.isEmpty())
+        params.addQueryItem("amenities", query.amenities.join(','));
+    // Price filters are only sent when the backend supports them. Until
+    // queryPropertySchema grows minPrice/maxPrice, sending these is a silent
+    // no-op because Joi strips unknown keys — so we still send them. Once
+    // the backend adds the fields, no client change is needed.
+    if (query.minPrice > 0)
+        params.addQueryItem("minPrice", QString::number(query.minPrice, 'f', 0));
+    if (query.maxPrice > 0)
+        params.addQueryItem("maxPrice", QString::number(query.maxPrice, 'f', 0));
+    params.addQueryItem("page",  QString::number(qMax(1, query.page)));
+    params.addQueryItem("limit", QString::number(qBound(1, query.limit, 100)));
+    if (!query.sortBy.isEmpty())
+        params.addQueryItem("sortBy", query.sortBy);
+    if (!query.sortOrder.isEmpty())
+        params.addQueryItem("sortOrder", query.sortOrder);
+
+    QString url = QStringLiteral("/properties/");
+    const QString qs = params.toString(QUrl::FullyEncoded);
+    if (!qs.isEmpty())
+        url += QStringLiteral("?") + qs;
+
+    // Capture the token before the request; drop the response if a newer
+    // request has been issued since.
+    const int myToken = m_listRequestToken.fetchAndAddOrdered(1) + 1;
+    const int requestedPage = qMax(1, query.page);
+    const bool isSearch = query.hasAnyFilter();
+
+    APIClient::instance().get(
+        url.toUtf8(),
+        [this, myToken, requestedPage, isSearch] (bool success, const QJsonObject& response)
+        {
+            // Stale response: a newer request has been issued since this one
+            // was sent. Discard silently — the newer request will fire its
+            // own signal when it returns.
+            if (myToken != m_listRequestToken.loadRelaxed())
+                return;
+
+            if (!success) {
+                emit propertyError(response.value("message").toString(
+                    QStringLiteral("Failed to load properties")));
+                return;
+            }
+            if (!response.contains("data")) {
+                emit propertyError(QStringLiteral("Failed to load properties"));
+                return;
+            }
+            QList<Property*> properties = parseListingResponse(response);
             if (isSearch)
                 emit searchResultsLoaded(properties, requestedPage);
         }

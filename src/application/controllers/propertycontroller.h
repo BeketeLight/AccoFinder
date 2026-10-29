@@ -18,6 +18,7 @@ public:
     bool isLoading() const { return m_isLoading; }
 
     Q_INVOKABLE void getProperties(const PropertyQuery& query);
+    Q_INVOKABLE void searchProperties(const PropertyQuery& query);
     Q_INVOKABLE void getAdminProperties();
     Q_INVOKABLE void getPropertiesOwnedBy(const QString& ownerId);
     Q_INVOKABLE void getPendingProperties();

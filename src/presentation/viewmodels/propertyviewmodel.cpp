@@ -91,7 +91,7 @@ void PropertyViewModel::searchProperties(const QString& search,
     query.limit        = limit;
 
     setSearching(true);
-    m_propertyController->getProperties(query);
+    m_propertyController->searchProperties(query);
 }
 
 void PropertyViewModel::clearSearch()
@@ -116,7 +116,6 @@ void PropertyViewModel::getProperties(const QString &owner)
     query.owner = owner;
     m_propertyController->getProperties(query);
 }
-
 void PropertyViewModel::getAdminProperties()
 {
     setLoading(true);

@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Effects
 import "../../../utils/NavigationUtils.js" as NavUtils
+import "../../../utils/ImageUtils.js" as ImageUtils
 
 Rectangle {
     id: roomCard
@@ -48,7 +49,7 @@ Rectangle {
             Image {
                 id: roomImg
                 anchors.fill: parent
-                source: roomCard.imageUrl
+                source: ImageUtils.cachedSource(roomCard.imageUrl)
                 fillMode: Image.PreserveAspectCrop
                 asynchronous: true
 
@@ -144,7 +145,6 @@ Rectangle {
         anchors.fill: parent
         cursorShape: Qt.PointingHandCursor
         onClicked: {
-
             roomCard.clicked();
         }
     }
