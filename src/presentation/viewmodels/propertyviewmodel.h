@@ -17,14 +17,24 @@ class PropertyViewModel : public QObject
     // property list because the listing endpoint only returns unverified
     // listings when the request is scoped to a single owner.
     Q_PROPERTY(PropertyListModel* pendingListModel READ pendingListModel CONSTANT)
+
+    // Search results live in their own model so a search never overwrites
+    // the home feed, the admin listing, or the agent's own listings.
+    Q_PROPERTY(PropertyListModel* searchResultModel READ searchResultModel CONSTANT)
+
     Q_PROPERTY(bool isLoading READ isLoading NOTIFY isLoadingChanged)
+
+    // True between a search request start and the response. Drives the
+    // spinner in SearchPropertiesScreen. Does not affect the home feed.
+    Q_PROPERTY(bool isSearching READ isSearching NOTIFY isSearchingChanged)
 public:
     explicit PropertyViewModel(QObject *parent = nullptr);
 
     PropertyListModel* propertyListModel() const { return m_propertyListModel; }
     PropertyListModel* pendingListModel() const { return m_pendingListModel; }
+    PropertyListModel* searchResultModel() const { return m_searchResultModel; }
     bool isLoading() const { return m_isLoading; }
-
+    bool isSearching() const { return m_isSearching; }
     Q_INVOKABLE QVariantList propertiesForView() const;
     // Payload for the single-property review detail, built from the shared list
     // model. Empty map when the id is not loaded. Lets callers (e.g. a dashboard
@@ -33,6 +43,21 @@ public:
     Q_INVOKABLE int pendingPropertiesCount() const;
     Q_INVOKABLE int verifiedPropertiesCount() const;
     Q_INVOKABLE void getProperties(const QString& owner = QString());
+    // Fire a search. Debouncing happens in QML (the 300ms Timer), not here —
+    // by the time this is called, the user has actually stopped typing.
+    // Cancellation of stale responses happens in the repository via a token.
+    Q_INVOKABLE void searchProperties(const QString& search,
+                                      const QString& propertyType,
+                                      const QString& district,
+                                      const QString& village,
+                                      const QStringList& amenities,
+                                      double minPrice,
+                                      double maxPrice,
+                                      int page = 1,
+                                      int limit = 20);
+    // Clear search results and reset state. Called by the clear button and by
+    // SearchPropertiesScreen.onDestruction.
+    Q_INVOKABLE void clearSearch();
     // Admin-only shared listing: fetches every verification status (not just
     // VERIFIED) into propertyListModel, for the admin's all-properties view.
     Q_INVOKABLE void getAdminProperties();
@@ -94,6 +119,10 @@ public:
 private:
     int m_index = -1;
     bool m_isLoading = false;
+    bool m_isSearching = false;
+
+    PropertyListModel* m_searchResultModel = nullptr;
+    void setSearching(bool searching);
     PropertyListModel* m_propertyListModel = nullptr;
     PropertyListModel* m_pendingListModel = nullptr;
     PropertyController* m_propertyController = nullptr;
@@ -105,6 +134,7 @@ private:
 
 private slots:
     void onPropertiesLoaded(QList<Property*>& properties);
+    void onSearchResultsLoaded(QList<Property*>& properties, int page);
     void onOwnedPropertiesLoaded(QList<Property*>& properties);
     void onPendingPropertiesLoaded(QList<Property*>& properties);
     void onGetPropertyById(Property* property);
@@ -115,6 +145,7 @@ private slots:
 
 signals:
     void isLoadingChanged(bool isLoading);
+    void isSearchingChanged();
     void propertyError(const QString& error);
     // Emitted once every requested owner has been walked (immediately when
     // there was no owner to walk), so callers can stop showing a loading state.

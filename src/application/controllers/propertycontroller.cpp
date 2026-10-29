@@ -2,7 +2,7 @@
 
 PropertyController::PropertyController(QObject *parent)
     : QObject(parent),
-      m_propertyRepositoryImpl(new PropertyRepositoryImpl(this))
+    m_propertyRepositoryImpl(new PropertyRepositoryImpl(this))
 {
     connect(m_propertyRepositoryImpl, &PropertyRepositoryImpl::propertiesLoaded,
             this, &PropertyController::propertiesLoaded);
@@ -22,6 +22,8 @@ PropertyController::PropertyController(QObject *parent)
             this, &PropertyController::propertyError);
     connect(m_propertyRepositoryImpl, &PropertyRepositoryImpl::propertyDeleteBlocked,
             this, &PropertyController::propertyDeleteBlocked);
+    connect(m_propertyRepositoryImpl, &PropertyRepositoryImpl::searchResultsLoaded,
+            this, &PropertyController::searchResultsLoaded);
 }
 
 void PropertyController::setLoading(bool loading)
@@ -32,10 +34,9 @@ void PropertyController::setLoading(bool loading)
     }
 }
 
-void PropertyController::getProperties(const QString &owner)
+void PropertyController::getProperties(const PropertyQuery& query)
 {
-    setLoading(true);
-    m_propertyRepositoryImpl->getProperties(owner);
+    m_propertyRepositoryImpl->getProperties(query);
 }
 
 void PropertyController::getAdminProperties()
