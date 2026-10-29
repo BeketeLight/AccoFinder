@@ -2,12 +2,15 @@
 
 PropertyViewModel::PropertyViewModel(QObject *parent)
     : QObject{parent},
-      m_propertyListModel(new PropertyListModel(this)),
-      m_pendingListModel(new PropertyListModel(this)),
-      m_propertyController(new PropertyController(this))
+    m_propertyListModel(new PropertyListModel(this)),
+    m_pendingListModel(new PropertyListModel(this)),
+    m_searchResultModel(new PropertyListModel(this)),
+    m_propertyController(new PropertyController(this))
 {
     connect(m_propertyController, &PropertyController::propertiesLoaded,
             this, &PropertyViewModel::onPropertiesLoaded);
+    connect(m_propertyController, &PropertyController::searchResultsLoaded,
+            this, &PropertyViewModel::onSearchResultsLoaded);
     connect(m_propertyController, &PropertyController::ownedPropertiesLoaded,
             this, &PropertyViewModel::onOwnedPropertiesLoaded);
     connect(m_propertyController, &PropertyController::pendingPropertiesLoaded,
@@ -31,6 +34,13 @@ void PropertyViewModel::setLoading(bool loading)
     if (m_isLoading != loading) {
         m_isLoading = loading;
         emit isLoadingChanged(loading);
+    }
+}
+void PropertyViewModel::setSearching(bool searching)
+{
+    if (m_isSearching != searching) {
+        m_isSearching = searching;
+        emit isSearchingChanged();
     }
 }
 
@@ -59,10 +69,52 @@ int PropertyViewModel::verifiedPropertiesCount() const
     return count;
 }
 
+void PropertyViewModel::searchProperties(const QString& search,
+                                         const QString& propertyType,
+                                         const QString& district,
+                                         const QString& village,
+                                         const QStringList& amenities,
+                                         double minPrice,
+                                         double maxPrice,
+                                         int page,
+                                         int limit)
+{
+    PropertyQuery query;
+    query.search       = search;
+    query.propertyType = propertyType;
+    query.district     = district;
+    query.village      = village;
+    query.amenities    = amenities;
+    query.minPrice     = minPrice;
+    query.maxPrice     = maxPrice;
+    query.page         = page;
+    query.limit        = limit;
+
+    setSearching(true);
+    m_propertyController->getProperties(query);
+}
+
+void PropertyViewModel::clearSearch()
+{
+    m_searchResultModel->clear();
+    setSearching(false);
+}
+
+// void PropertyViewModel::onSearchResultsLoaded(QList<Property*>& properties, int page)
+// {
+//     setSearching(false);
+//     if (page <= 1)
+//         m_searchResultModel->setProperties(properties);
+//     else
+//         m_searchResultModel->appendProperties(properties);
+// }
+
 void PropertyViewModel::getProperties(const QString &owner)
 {
     setLoading(true);
-    m_propertyController->getProperties(owner);
+    PropertyQuery query;
+    query.owner = owner;
+    m_propertyController->getProperties(query);
 }
 
 void PropertyViewModel::getAdminProperties()
@@ -249,7 +301,7 @@ void PropertyViewModel::updateProperty(int index, const QString &houseId, const 
 }
 
 void PropertyViewModel::updatePropertyStatus(const QString &houseId, const QString &status, const QString &reason,
-                                              const QString &approvedById, const QString &approvedByName)
+                                             const QString &approvedById, const QString &approvedByName)
 {
     m_index = indexOfProperty(houseId);
     setLoading(true);
@@ -316,4 +368,17 @@ void PropertyViewModel::onPropertyError(const QString &error)
 {
     setLoading(false);
     emit propertyError(error);
+}
+
+void PropertyViewModel::onSearchResultsLoaded(QList<Property*>& properties, int page)
+{
+    qDebug() << "[PropertyViewModel] onSearchResultsLoaded page:" << page
+             << "| count:" << properties.size()
+             << "| searchResultModel->size before:" << m_searchResultModel->size();
+    setSearching(false);
+    if (page <= 1)
+        m_searchResultModel->setProperties(properties);
+    else
+        m_searchResultModel->appendProperties(properties);
+    qDebug() << "[PropertyViewModel] searchResultModel->size after:" << m_searchResultModel->size();
 }

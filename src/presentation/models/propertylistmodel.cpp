@@ -29,92 +29,92 @@ QVariant PropertyListModel::data(const QModelIndex &index, int role) const
 
     switch(role)
     {
-        case IdRole:
-            return property->getId();
-        case FirstNameRole:
-            return property->firstName();
-        case SecondNameRole:
-            return property->secondName();
-        case TitleRole:
-            return property->getTitle();
-        case LocationRole:
-            return property->getLocation();
-        case PriceRole:
-            return property->getPrice();
-        case AgentIdRole:
-            return property->getAgentId();
-        case AgentPhoneRole:
-            return property->agentPhone();
-        case LandlordIdRole:
-            return property->getLandlordId();
-        case CreatedAtRole:
-            return property->getCreatedAt();
-        case DescriptionRole:
-            return property->getDescription();
-        case StatusRole:
+    case IdRole:
+        return property->getId();
+    case FirstNameRole:
+        return property->firstName();
+    case SecondNameRole:
+        return property->secondName();
+    case TitleRole:
+        return property->getTitle();
+    case LocationRole:
+        return property->getLocation();
+    case PriceRole:
+        return property->getPrice();
+    case AgentIdRole:
+        return property->getAgentId();
+    case AgentPhoneRole:
+        return property->agentPhone();
+    case LandlordIdRole:
+        return property->getLandlordId();
+    case CreatedAtRole:
+        return property->getCreatedAt();
+    case DescriptionRole:
+        return property->getDescription();
+    case StatusRole:
+    {
+        QString status = property->getVerificationStatus();
+        if (!status.isEmpty())
+            return status;
+        switch(property->getStatus())
         {
-            QString status = property->getVerificationStatus();
-            if (!status.isEmpty())
-                return status;
-            switch(property->getStatus())
-            {
-            case PropertyStatus::NotVerified:
-                return "Not Verified";
+        case PropertyStatus::NotVerified:
+            return "Not Verified";
 
-            case PropertyStatus::Verified:
-                return "Verified";
+        case PropertyStatus::Verified:
+            return "Verified";
 
-            case PropertyStatus::Booked:
-                return "Booked";
-            }
-
-            return "Unknown";
+        case PropertyStatus::Booked:
+            return "Booked";
         }
-        case DistrictRole:
-            return property->getDistrict();
-        case VillageRole:
-            return property->getVillage();
-        case AmenitiesRole:
-            return property->getAmenities();
-        case LandlordRole:
-            return property->getLandlord();
-        case LandlordPhoneRole:
-            return property->getLandlordPhone();
-        case VerificationStatusRole:
-            return property->getVerificationStatus();
-        case IsActiveRole:
-            return property->isActive();
-        case PropertyTypeRole:
-            return property->getPropertyType();
 
-        case RoomCountRole:
-            return property->getRoomCount();
+        return "Unknown";
+    }
+    case DistrictRole:
+        return property->getDistrict();
+    case VillageRole:
+        return property->getVillage();
+    case AmenitiesRole:
+        return property->getAmenities();
+    case LandlordRole:
+        return property->getLandlord();
+    case LandlordPhoneRole:
+        return property->getLandlordPhone();
+    case VerificationStatusRole:
+        return property->getVerificationStatus();
+    case IsActiveRole:
+        return property->isActive();
+    case PropertyTypeRole:
+        return property->getPropertyType();
 
-        case RejectionReasonRole:
-            return property->getVerificationReason();
+    case RoomCountRole:
+        return property->getRoomCount();
 
-        case ApprovedByIdRole:
-            return property->getApprovedById();
+    case RejectionReasonRole:
+        return property->getVerificationReason();
 
-        case ApprovedByNameRole:
-            return property->getApprovedByName();
+    case ApprovedByIdRole:
+        return property->getApprovedById();
 
-        //property Owner
-        case OwnerIdRole:
-            // The listing payload identifies the account that created the
-            // listing through `owner`, not `agentId` (which the API does not
-            // send). Returning the agent id here left every row ownerless, so
-            // "whose listings are these?" could never be answered.
-            return property->getOwnerId();
-        case OwnerFirstNameRole: return property->getOwnerFirstName();
-        case OwnerSurnameRole: return property->getOwnerSurname();
-        case OwnerEmailRole: return property->getOwnerEmail();
-        case OwnerPhoneRole: return property->getOwnerPhone();
+    case ApprovedByNameRole:
+        return property->getApprovedByName();
+
+    //property Owner
+    case OwnerIdRole:
+        // The listing payload identifies the account that created the
+        // listing through `owner`, not `agentId` (which the API does not
+        // send). Returning the agent id here left every row ownerless, so
+        // "whose listings are these?" could never be answered.
+        return property->getOwnerId();
+    case OwnerFirstNameRole: return property->getOwnerFirstName();
+    case OwnerSurnameRole: return property->getOwnerSurname();
+    case OwnerEmailRole: return property->getOwnerEmail();
+    case OwnerPhoneRole: return property->getOwnerPhone();
 
     }
 
     // FIXME: Implement me!
-     return QVariant();
+    return QVariant();
 }
 
 QHash<int, QByteArray> PropertyListModel::roleNames() const
@@ -166,6 +166,21 @@ void PropertyListModel::appendProperty(Property* property)
 {
     beginInsertRows(QModelIndex(), m_properties.size(), m_properties.size());
     m_properties.append(property);
+    endInsertRows();
+    emit countChanged(m_properties.size());
+}
+
+void PropertyListModel::appendProperties(QList<Property*>& newProperties)
+{
+    if (newProperties.isEmpty())
+        return;
+    const int first = m_properties.size();
+    const int last  = first + newProperties.size() - 1;
+    beginInsertRows(QModelIndex(), first, last);
+    for (Property* p : newProperties) {
+        if (p)
+            m_properties.append(p);
+    }
     endInsertRows();
     emit countChanged(m_properties.size());
 }
@@ -292,7 +307,7 @@ int PropertyListModel::indexOfPropertyId(const QString &propertyId) const
 }
 
 void PropertyListModel::setVerificationStatus(const QString &propertyId, const QString &status,
-                                             const QString &reason)
+                                              const QString &reason)
 {
     const int index = indexOfPropertyId(propertyId);
     if (index < 0)

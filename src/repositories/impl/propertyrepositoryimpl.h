@@ -6,13 +6,14 @@
 #include "models/property.h"
 #include <QStringList>
 #include <QJsonArray>
+#include <QAtomicInt>
 
 class PropertyRepositoryImpl : public IPropertyRepository
 {
     Q_OBJECT
 public:
     explicit PropertyRepositoryImpl(QObject *parent = nullptr);
-    void getProperties(const QString& owner = QString()) override;
+    void getProperties(const PropertyQuery& query) override;
     void getAdminProperties() override;
     void getPropertiesOwnedBy(const QString& ownerId) override;
     void getPendingProperties() override;
@@ -37,6 +38,11 @@ public:
     void attachMedia(const QString& houseId, const QStringList& mediaIds) override;
 
 private:
+    // Incremented before every list/search request. The response lambda
+    // captures this value and drops itself if a newer request has been
+    // issued in the meantime. Prevents an older response (from "Bla")
+    // overwriting a newer one (from "Blan").
+    QAtomicInt m_listRequestToken{0};
 
 signals:
     void propertyLoaded(Property* property);
@@ -57,6 +63,11 @@ signals:
     // bookings. Carries the count so the UI can offer an explicit override
     // instead of surfacing a generic failure.
     void propertyDeleteBlocked(int activeBookings);
+
+    // Search-specific completion signal. Fires alongside propertiesLoaded
+    // but carries the page number, so the ViewModel knows whether to replace
+    // (page 1) or append (page > 1).
+    void searchResultsLoaded(QList<Property*>& properties, int page);
 
 };
 
