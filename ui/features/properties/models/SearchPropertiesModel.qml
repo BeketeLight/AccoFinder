@@ -26,17 +26,19 @@ Item {
             const row = src.at(i);
             if (!row)
                 continue;
+
+            // Safely extract and guard against null/undefined pointer dereferences
             searchModel.append({
-                propertyId: row.id || "",
-                title: row.title || "",
-                district: row.district || "",
-                village: row.village || "",
-                price: Number(row.price || 0),
-                propertyType: row.propertyType || "",
-                status: row.status || "",
-                verificationStatus: row.verificationStatus || "",
-                amenities: row.amenities || [],
-                imageUrls: row.imageUrls || ""
+                propertyId: row.id ? String(row.id) : "",
+                title: row.title ? String(row.title) : "",
+                district: row.district ? String(row.district) : "",
+                village: row.village ? String(row.village) : "",
+                price: Number(row.price || row.rentalFee || 0),
+                propertyType: row.propertyType ? String(row.propertyType) : "",
+                status: row.status ? String(row.status) : "",
+                verificationStatus: row.verificationStatus ? String(row.verificationStatus) : "",
+                amenities: Array.isArray(row.amenities) ? row.amenities : [],
+                imageUrls: row.imageUrls ? String(row.imageUrls) : ""
             });
         }
         console.log("[SearchModel] reload complete. mirrored count:", searchModel.count);

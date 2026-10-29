@@ -55,7 +55,9 @@ public:
     // `owner` was rolled into PropertyQuery so the admin's owner-scoped view
     // and the client's search both travel through one method. Existing call
     // sites construct PropertyQuery{ .owner = ... }.
-    virtual void getProperties(const PropertyQuery& query) = 0;
+    virtual void searchProperties(const PropertyQuery& query) = 0;
+
+    virtual void getHouseListings(const PropertyQuery& query)=0;
 
     // Admin-only listing (GET /house-listing/admin): every status, not just
     // VERIFIED. The public listing endpoint is unauthenticated, so it can never

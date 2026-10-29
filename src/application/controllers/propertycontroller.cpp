@@ -36,7 +36,12 @@ void PropertyController::setLoading(bool loading)
 
 void PropertyController::getProperties(const PropertyQuery& query)
 {
-    m_propertyRepositoryImpl->getProperties(query);
+    m_propertyRepositoryImpl->getHouseListings(query);
+}
+
+void PropertyController::searchProperties(const PropertyQuery& query)
+{
+    m_propertyRepositoryImpl->searchProperties(query);
 }
 
 void PropertyController::getAdminProperties()

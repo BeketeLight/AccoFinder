@@ -24,7 +24,7 @@ Page {
     property real maxPrice: 0
     property int page: 1
     readonly property int pageSize: 20
-    readonly property bool priceFilterEnabled: false
+    readonly property bool priceFilterEnabled: true
 
     readonly property bool hasQuery: searchText.trim().length > 0 || propertyType.length > 0 || district.length > 0 || village.length > 0 || amenities.length > 0 || (priceFilterEnabled && (minPrice > 0 || maxPrice > 0))
 
@@ -37,7 +37,7 @@ Page {
 
     function runSearch(targetPage) {
         root.page = targetPage || 1;
-        PropertyViewModel.searchProperties(root.searchText.trim(), root.propertyType, root.district, root.village, root.amenities, root.minPrice, root.maxPrice, root.page, root.pageSize);
+        PropertyViewModel.searchProperties(root.searchText.trim(), root.propertyType.trim(), root.district.trim(), root.village.trim(), root.amenities, root.minPrice, root.maxPrice, root.page, root.pageSize);
     }
 
     function resetFilters() {
@@ -61,7 +61,7 @@ Page {
         anchors.fill: parent
         spacing: 0
 
-        // ---- header ----
+        // ---- Header & Search Bar ----
         Rectangle {
             Layout.fillWidth: true
             Layout.preferredHeight: 56
@@ -109,7 +109,7 @@ Page {
             }
         }
 
-        // ---- filters ----
+        // ---- Filter Chips Row ----
         SearchFiltersRow {
             Layout.fillWidth: true
             Layout.preferredHeight: 44
@@ -129,7 +129,7 @@ Page {
             color: "#F5F5F5"
         }
 
-        // ---- results ----
+        // ---- Results View, Loading & Empty States ----
         SearchPropertiesPage {
             Layout.fillWidth: true
             Layout.fillHeight: true
