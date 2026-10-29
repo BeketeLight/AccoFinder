@@ -72,7 +72,7 @@ void PropertyRepositoryImpl::getHouseListings(const PropertyQuery& query)
     if (!query.sortOrder.isEmpty())
         params.addQueryItem("sortOrder", query.sortOrder);
 
-    QString url = QStringLiteral("/properties/");
+    QString url = QStringLiteral("/house-listing/");
     const QString qs = params.toString(QUrl::FullyEncoded);
     if (!qs.isEmpty())
         url += QStringLiteral("?") + qs;

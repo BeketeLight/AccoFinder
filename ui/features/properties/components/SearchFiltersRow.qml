@@ -89,6 +89,7 @@ Item {
 
     Dialog {
         id: typeDialog
+        parent: Overlay.overlay
         anchors.centerIn: parent
         title: qsTr("Property type")
         modal: true
@@ -135,6 +136,7 @@ Item {
 
     Dialog {
         id: locationDialog
+        parent: Overlay.overlay
         anchors.centerIn: parent
         title: qsTr("Location")
         modal: true
@@ -177,6 +179,7 @@ Item {
 
     Dialog {
         id: amenitiesDialog
+        parent: Overlay.overlay
         anchors.centerIn: parent
         title: qsTr("Amenities")
         modal: true
@@ -267,6 +270,7 @@ Item {
 
     Dialog {
         id: priceDialog
+        parent: Overlay.overlay
         anchors.centerIn: parent
         title: qsTr("Price range")
         modal: true
