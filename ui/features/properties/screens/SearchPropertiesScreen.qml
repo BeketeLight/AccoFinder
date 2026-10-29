@@ -36,6 +36,7 @@ Page {
     }
 
     function runSearch(targetPage) {
+        console.log("[Search] runSearch. search:", searchText, "type:", propertyType, "district:", district, "village:", village, "amenities:", amenities, "price:", minPrice, "–", maxPrice);
         root.page = targetPage || 1;
         PropertyViewModel.searchProperties(root.searchText.trim(), root.propertyType.trim(), root.district.trim(), root.village.trim(), root.amenities, root.minPrice, root.maxPrice, root.page, root.pageSize);
     }
@@ -60,6 +61,7 @@ Page {
     ColumnLayout {
         anchors.fill: parent
         spacing: 0
+        Layout.margins: 10
 
         // ---- Header & Search Bar ----
         Rectangle {
@@ -111,16 +113,20 @@ Page {
 
         // ---- Filter Chips Row ----
         SearchFiltersRow {
+            id: filtersRow
             Layout.fillWidth: true
             Layout.preferredHeight: 44
-            selectedType: root.propertyType
-            selectedDistrict: root.district
-            selectedVillage: root.village
-            selectedAmenities: root.amenities
-            selectedMinPrice: root.minPrice
-            selectedMaxPrice: root.maxPrice
             priceEnabled: root.priceFilterEnabled
-            onFiltersChanged: root.runSearch(1)
+            onFiltersChanged: {
+                // Copy the values the user just set, then re-run.
+                root.propertyType = filtersRow.selectedType;
+                root.district = filtersRow.selectedDistrict;
+                root.village = filtersRow.selectedVillage;
+                root.amenities = filtersRow.selectedAmenities;
+                root.minPrice = filtersRow.selectedMinPrice;
+                root.maxPrice = filtersRow.selectedMaxPrice;
+                root.runSearch(1);
+            }
         }
 
         Rectangle {
