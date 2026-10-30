@@ -241,28 +241,28 @@ Item {
                         }   // spacer
 
                         // Rating badge
-                        RowLayout {
-                            visible: root.reviewCount > 0
-                            spacing: 3
-                            Layout.alignment: Qt.AlignVCenter
+                        // RowLayout {
+                        //     visible: root.reviewCount > 0
+                        //     spacing: 3
+                        //     Layout.alignment: Qt.AlignVCenter
 
-                            Label {
-                                text: "\u2605"      // ★
-                                color: "#F59E0B"
-                                font.pixelSize: 13
-                            }
-                            Label {
-                                text: root.rating.toFixed(1)
-                                color: "#FFFFFF"
-                                font.pixelSize: 12
-                                font.weight: Font.Medium
-                            }
-                            Label {
-                                text: "(" + root.reviewCount + ")"
-                                color: "#D1D5DB"
-                                font.pixelSize: 11
-                            }
-                        }
+                        //     Label {
+                        //         text: "\u2605"      // ★
+                        //         color: "#F59E0B"
+                        //         font.pixelSize: 13
+                        //     }
+                        //     Label {
+                        //         text: root.rating.toFixed(1)
+                        //         color: "#FFFFFF"
+                        //         font.pixelSize: 12
+                        //         font.weight: Font.Medium
+                        //     }
+                        //     Label {
+                        //         text: "(" + root.reviewCount + ")"
+                        //         color: "#D1D5DB"
+                        //         font.pixelSize: 11
+                        //     }
+                        // }
                     }
                 }
             }
