@@ -262,7 +262,7 @@ qt_add_qml_module(appAccoFinder
         QML_FILES ui/features/properties/models/SearchPropertiesModel.qml
         QML_FILES ui/features/properties/components/SearchFilterChip.qml
         QML_FILES ui/features/properties/components/SearchFiltersRow.qml
-        QML_FILES ui/features/properties/components/SearchPropertyCardDelegate.qml
+        QML_FILES ui/features/properties/delegates/SearchPropertyCardDelegate.qml
         QML_FILES ui/features/properties/pages/SearchPropertiesPage.qml
 
 
