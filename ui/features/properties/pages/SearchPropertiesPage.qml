@@ -1,18 +1,17 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import "../components"
 import "../models"
+import "../delegates"
 import "../../../components/indicators"
 
-// The scrollable results area. Reads from SearchPropertiesModel (reactive),
-// shows one of three states based on the model + query, and renders cards via
-// SearchPropertyCardDelegate.
+// Search results area. Owns the SearchPropertiesModel mirror, renders its
+// three states based on query/searching/count, and hosts the results grid.
 Item {
     id: root
 
     property bool isSearching: false
-    property bool hasQuery: false        // any text/filter set
+    property bool hasQuery: false
     property int pageSize: 20
 
     signal loadMoreRequested
@@ -24,6 +23,7 @@ Item {
     Item {
         anchors.fill: parent
 
+        // ---- Loading (no prior results) ----
         AppSpinner {
             anchors.centerIn: parent
             size: 32
@@ -33,24 +33,29 @@ Item {
             visible: root.isSearching && searchResults.count === 0
         }
 
+        // ---- Empty with query ----
         AppEmptyState {
             anchors.centerIn: parent
             width: Math.min(parent.width - 48, 320)
+            height: implicitHeight
             visible: !root.isSearching && searchResults.count === 0 && root.hasQuery
             iconSource: "qrc:/ui/assets/search-icon.svg"
             title: qsTr("No results")
             subtitle: qsTr("Try a different location, or clear a filter.")
         }
 
+        // ---- Empty without query ----
         AppEmptyState {
             anchors.centerIn: parent
             width: Math.min(parent.width - 48, 320)
+            height: implicitHeight
             visible: !root.isSearching && searchResults.count === 0 && !root.hasQuery
             iconSource: "qrc:/ui/assets/search-icon.svg"
             title: qsTr("Search properties")
             subtitle: qsTr("Type a location, or pick a filter.")
         }
 
+        // ---- Results ----
         ScrollView {
             anchors.fill: parent
             visible: searchResults.count > 0
@@ -60,9 +65,6 @@ Item {
             ColumnLayout {
                 width: parent.width
                 spacing: 12
-                // Matches the horizontal rhythm used by HomeListPage and the
-                // filter row: the Flow's left edge is inset by 12px, matching the
-                // Flickable's own x:12 for the filter chips.
                 Layout.leftMargin: 12
                 Layout.rightMargin: 12
 
@@ -85,14 +87,32 @@ Item {
 
                             SearchPropertyCardDelegate {
                                 anchors.fill: parent
-                                propertyId: model.propertyId
-                                propertyType: model.propertyType
-                                title: model.title
-                                district: model.district
-                                price: model.price
-                                amenities: model.amenities
-                                status: model.status
-                                isVerified: model.verificationStatus === "VERIFIED"
+
+                                propertyId: String(model.propertyId || "")
+                                propertyType: String(model.propertyType || "")
+                                title: String(model.title || "")
+                                description: String(model.description || "")
+                                location: String(model.location || "")
+                                district: String(model.district || "")
+                                village: String(model.village || "")
+                                price: Number(model.price || 0)
+
+                                imageUrl: String(model.imageUrl || "")
+                                imageUrls: String(model.imageUrls || "")
+
+                                status: String(model.status || "")
+                                isVerified: model.isVerified === true
+                                isActive: model.isActive === true
+                                amenities: model.amenities || ""
+                                roomCount: Number(model.roomCount || 0)
+
+                                landlord: String(model.landlord || "")
+                                landlordPhone: String(model.landlordPhone || "")
+                                ownerName: String(model.ownerName || "")
+                                ownerPhone: String(model.ownerPhone || "")
+
+                                rejectionReason: String(model.rejectionReason || "")
+                                createdAt: String(model.createdAt || "")
                             }
                         }
                     }

@@ -15,6 +15,7 @@ Page {
     property bool showBack: true
     property bool isSearchBar: false
 
+    // ---- Query state ----
     property string searchText: ""
     property string propertyType: ""
     property string district: ""
@@ -36,20 +37,8 @@ Page {
     }
 
     function runSearch(targetPage) {
-        console.log("[Search] runSearch. search:", searchText, "type:", propertyType, "district:", district, "village:", village, "amenities:", amenities, "price:", minPrice, "–", maxPrice);
         root.page = targetPage || 1;
         PropertyViewModel.searchProperties(root.searchText.trim(), root.propertyType.trim(), root.district.trim(), root.village.trim(), root.amenities, root.minPrice, root.maxPrice, root.page, root.pageSize);
-    }
-
-    function resetFilters() {
-        searchText = "";
-        propertyType = "";
-        district = "";
-        village = "";
-        amenities = [];
-        minPrice = 0;
-        maxPrice = 0;
-        PropertyViewModel.clearSearch();
     }
 
     Component.onDestruction: PropertyViewModel.clearSearch()
@@ -61,9 +50,8 @@ Page {
     ColumnLayout {
         anchors.fill: parent
         spacing: 0
-        Layout.margins: 10
 
-        // ---- Header & Search Bar ----
+        // ---- Header + search field ----
         Rectangle {
             Layout.fillWidth: true
             Layout.preferredHeight: 56
@@ -89,13 +77,16 @@ Page {
                 }
 
                 AppSearchBar {
+                    id: searchBar
                     Layout.fillWidth: true
                     Layout.alignment: Qt.AlignVCenter
                     placeholder: qsTr("Search by location or title")
                     text: root.searchText
                     readOnly: false
+
+                    // Read from the id — textEdited carries no parameter.
                     onTextEdited: {
-                        root.searchText = text;
+                        root.searchText = searchBar.text;
                         debounce.restart();
                     }
                     onCleared: {
@@ -111,14 +102,16 @@ Page {
             }
         }
 
-        // ---- Filter Chips Row ----
+        // ---- Filter chips ----
         SearchFiltersRow {
             id: filtersRow
             Layout.fillWidth: true
             Layout.preferredHeight: 44
             priceEnabled: root.priceFilterEnabled
             onFiltersChanged: {
-                // Copy the values the user just set, then re-run.
+                // SearchFiltersRow holds its own state after the user commits
+                // a filter (assigning to its `selected*` properties detaches
+                // its bindings). Copy the values back here, then fire.
                 root.propertyType = filtersRow.selectedType;
                 root.district = filtersRow.selectedDistrict;
                 root.village = filtersRow.selectedVillage;
@@ -135,10 +128,11 @@ Page {
             color: "#F5F5F5"
         }
 
-        // ---- Results View, Loading & Empty States ----
+        // ---- Results ----
         SearchPropertiesPage {
             Layout.fillWidth: true
             Layout.fillHeight: true
+            Layout.margins: 7
             isSearching: PropertyViewModel.isSearching
             hasQuery: root.hasQuery
             pageSize: root.pageSize
