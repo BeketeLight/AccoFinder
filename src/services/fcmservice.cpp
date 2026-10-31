@@ -56,6 +56,16 @@ QString FcmService::getFcmToken()
 
 void FcmService::registerToken()
 {
+    // The master switch is authoritative: when notifications are off no token
+    // is registered with the backend, so no push can be delivered.
+    if (!AppSettings::instance().notificationsEnabled())
+    {
+        unregisterToken();
+        return;
+    }
+
+    syncNotificationPreferences();
+
 #if defined(Q_OS_ANDROID)
     QJniEnvironment env;
 
@@ -88,6 +98,31 @@ void FcmService::unregisterToken()
 {
     sendTokenToBackend(QString());
     m_currentToken.clear();
+}
+
+void FcmService::syncNotificationPreferences()
+{
+#if defined(Q_OS_ANDROID)
+    const AppSettings &settings = AppSettings::instance();
+    QJniEnvironment env;
+    if (env->ExceptionCheck())
+        env->ExceptionClear();
+
+    QJniObject::callStaticMethod<void>(
+        "com/accofinder/FcmBridge",
+        "setNotificationPreferences",
+        "(ZZZZ)V",
+        settings.notificationsEnabled(),
+        settings.bookingNotifications(),
+        settings.promotionNotifications(),
+        settings.systemNotifications());
+
+    if (env->ExceptionCheck())
+    {
+        env->ExceptionClear();
+        qWarning() << "[FCM] Could not mirror notification preferences";
+    }
+#endif
 }
 
 void FcmService::pollPendingData()
@@ -141,6 +176,10 @@ void FcmService::pollPendingData()
 void FcmService::sendTokenToBackend(const QString &token)
 {
     const AppSettings &settings = AppSettings::instance();
+    // An empty token is the unregister path; a real token must never be sent
+    // while the user has notifications switched off.
+    if (!token.isEmpty() && !settings.notificationsEnabled())
+        return;
     if (settings.token().isEmpty()) {
         qWarning() << "[FCM] No auth token, cannot register FCM token";
         return;

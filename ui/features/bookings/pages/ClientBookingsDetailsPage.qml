@@ -84,11 +84,7 @@ Page {
             width: Math.min(parent.width - 32, 600)
 
             onPayNowRequested: function(bId, amt, expiresAt) {
-                        popUpPayment.bookingId = bId
-                        popUpPayment.amount = amt
-                        popUpPayment.holdExpiresAt = expiresAt
-                        popUpPayment.selectedMethod = "" // Reset previous selection
-                       popUpPayment.open() // Pops up the bottom sheet
+                NavUtils.navigateToPayments(bId, amt, expiresAt)
             }
         }
     }

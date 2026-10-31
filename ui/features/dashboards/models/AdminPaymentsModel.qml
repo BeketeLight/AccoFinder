@@ -35,28 +35,22 @@ Item {
         refresh()
     }
 
-    function setCommissionStatus(agentName, status) {
-        for (var j = 0; j < commissionsModelId.count; j++) {
-            var c = commissionsModelId.get(j)
-            if (c.agent === agentName) {
-                c.status = status
-                commissionsModelId.set(j, c)
-                break
-            }
-        }
-        refresh()
+    // ---- Backend-backed admin actions ----
+    // The view model posts to the API, refreshes the overview on success and
+    // emits commissionSettled/payoutReleased/actionFailed. No local-only
+    // mutation is performed here.
+    function settleCommission(agentName, paymentId, bookingId, agentId) {
+        PaymentsOverviewViewModel.settleCommission(agentName || "",
+                                                   paymentId || "",
+                                                   bookingId || "",
+                                                   agentId || "")
     }
 
-    function setPayoutStatus(landlord, status) {
-        for (var k = 0; k < payoutsModelId.count; k++) {
-            var o = payoutsModelId.get(k)
-            if (o.landlord === landlord) {
-                o.status = status
-                payoutsModelId.set(k, o)
-                break
-            }
-        }
-        refresh()
+    function releasePayout(landlord, paymentId, bookingId, landlordId) {
+        PaymentsOverviewViewModel.releasePayout(landlord || "",
+                                                paymentId || "",
+                                                bookingId || "",
+                                                landlordId || "")
     }
 
     ListModel {

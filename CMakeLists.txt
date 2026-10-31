@@ -157,6 +157,7 @@ qt_add_qml_module(appAccoFinder
         ui/features/auth/pages/SignInPage.qml
         ui/features/auth/pages/OtpPage.qml
         ui/features/auth/pages/ForgotPasswordPage.qml
+        ui/features/auth/pages/ResetPasswordPage.qml
         ui/features/auth/pages/CreateAccountPage.qml
         ui/features/auth/pages/SignUpPage.qml
         ui/features/auth/pages/NamePage.qml

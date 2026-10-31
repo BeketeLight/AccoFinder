@@ -25,6 +25,23 @@ ApplicationWindow {
     }
     Material.primary: "#2563EB"
     Material.accent: Material.Blue
+
+    // Theme is persisted by AppSettings and re-applied from themeChanged,
+    // because the C++ getter itself is not a bindable property.
+    property string themeSetting: AppSettings.theme()
+    Material.theme: root.themeSetting === "Dark"
+                    ? Material.Dark
+                    : (root.themeSetting === "Light" ? Material.Light : Material.System)
+    Material.background: root.themeSetting === "Dark" ? "#0F172A" : "#F8FAFC"
+    Material.foreground: root.themeSetting === "Dark" ? "#E5E7EB" : "#111827"
+
+    Connections {
+        target: AppSettings
+        function onThemeChanged() {
+            root.themeSetting = AppSettings.theme()
+        }
+    }
+
     Component.onCompleted: {
         AppSettings.setStatusBarAppearance(Qt.rgba(0, 0, 0, 0), true);
         // Also covers a sign-in that completed before this QML existed - the
@@ -32,6 +49,8 @@ ApplicationWindow {
         // it persisted must still route to the right page rather than the
         // public home screen.
         root.applySessionLanding();
+        if (AppSettings.isLoggedIn())
+            NotificationViewModel.refreshCurrent();
     }
 
     function isRootLandingPage(url) {
@@ -289,6 +308,7 @@ ApplicationWindow {
                 // Covers password sign-in and the Google OAuth redirect alike,
                 // since both land here through AuthController.
                 root.applySessionLanding();
+                NotificationViewModel.refreshCurrent();
             }
         }
 

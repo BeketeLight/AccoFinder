@@ -22,7 +22,9 @@ public:
     QString m_id;
     QString m_propertyId;
     QString m_type;
+    // QML still calls this "price"; it maps to the backend's `rentalFee`.
     double m_price = 0;
+    double m_bookingFee = 0;
     bool m_available;
     bool m_holdActive = false;
     QDateTime m_holdExpiresAt;

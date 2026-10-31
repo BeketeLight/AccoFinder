@@ -63,18 +63,6 @@ function pop() {
 function navigateToBookings(){
     push("../features/bookings/screens/BookingsScreen.qml")
 }
-function navigateToPendingBookings(){
-    push("../features/bookings/pages/PendingBookingsPage.qml")
-}
-function navigateToCancelleddBookings(){
-    push("../features/bookings/pages/CancelledBookingsPage.qml")
-}
-function navigateToBookingView(){
-    push("../features/bookings/pages/BookingView.qml")
-}
-function  navigateToConfirmedBookings(){
-    push("../features/bookings/pages/ConfirmedBokingsPage.qml")
-}
 function navigateToDisputes(){
     push("../features/disputes/screens/DisputesScreen.qml")
 }
@@ -219,13 +207,13 @@ function navigateToBookingsDetailsOwneByAgent(data){
             bookingId: data.bookingId || "",
             status: data.status || "",
             houseName: data.houseName || "",
-            propertyLocation: data.propertyLocation || "124 Lakeview Drive, Sector 4",
+            propertyLocation: data.propertyLocation || "",
             propertyId: data.propertyId || "",
-            roomType: data.roomType || "2 Bedrooms",
+            roomType: data.roomType || "",
             roomId: data.roomId || "",
-            clientName: data.clientName || "John Doe",
-            clientPhone: data.clientPhone || "+1 555-0192",
-            clientEmail: data.clientEmail || "johndoe@example.com",
+            clientName: data.clientName || "",
+            clientPhone: data.clientPhone || "",
+            clientEmail: data.clientEmail || "",
             clientInitial: data.clientInitial || "B" ,
             checkIn: data.checkIn || data.bookingDate || data.dateRange || "",
             price: price,
@@ -254,7 +242,7 @@ function navigateToBookingDetailsForAdmin(data){
         bookingDate: data.bookingDate ?? "",
         price: data.price, //? model.amount.toString() : "0",
         commission: data.commission,
-        propertyLocation: data.propertyLocation || "124 Lakeview Drive, Sector 4",
+        propertyLocation: data.propertyLocation || "",
         roomType: data.roomType || "",
         //roomId: data.roomId || ""
         // Lets the detail screen fetch the booked room's photo when the caller
@@ -296,11 +284,6 @@ var Navigation = {
     navigateToPropertyDetails: navigateToPropertyDetails,
     navigateToPayments: navigateToPayments,
     navigateToPaymentStatus:  navigateToPaymentStatus,
-    navigateToPendingBookings: navigateToPendingBookings,
-    navigateToCancelleddBookings: navigateToCancelleddBookings,
-    navigateToConfirmedBookings: navigateToConfirmedBookings,
-    navigateToBookingView: navigateToBookingView,
-    navigateToBookingsView: navigateToBookingsView,
     navigateToBookingDetails: navigateToBookingDetails,
    // navigateToBookingsDetails: navigateToBookingsDetails,
     navigateToBookingsDetailsOwneByAgent: navigateToBookingsDetailsOwneByAgent

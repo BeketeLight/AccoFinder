@@ -61,7 +61,7 @@ Page {
     property string agentLastName: ""
     property string agentPhone: "+265 999 123 456"
     property string agentEmail: "john.banda@realtor.mw"
-    property real agentRating: 4.6
+    property real agentRating: 0
     property int agentReviewCount: 0
     // property var reviewsModel
 
@@ -396,7 +396,7 @@ Page {
                 AppEmptyState {
                     title: "No Reviews"
                     subtitle: "there are no reviews availabe at the time"
-                    visible: reviewsRepeater.count === 0 ? true : falses
+                    visible: reviewsRepeater.count === 0
                 }
 
                 Repeater {

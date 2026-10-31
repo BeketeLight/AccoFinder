@@ -591,7 +591,10 @@ Page {
                     Layout.fillWidth: true
                     visible: ReviewViewModel.canReview
                     text: qsTr("Write a review")
-                    onClicked: writeReviewSheet.open()
+                    onClicked: NavUtils.push(Qt.resolvedUrl("../../reviews/screens/WriteReviewScreen.qml"), {
+                        propertyId: root.propertyId,
+                        agentId: root.agentId || ""
+                    })
                 }
 
                 // Why can't they review?
@@ -709,7 +712,7 @@ Page {
                     visible: ReviewViewModel.reviewCount > 3
                     text: qsTr("See all " + ReviewViewModel.reviewCount + " reviews")
                     flat: true
-                    onClicked: NavUtils.push("qrc:/ui/features/reviews/screens/ReviewListScreen.qml", {
+                    onClicked: NavUtils.push(Qt.resolvedUrl("../../reviews/screens/ReviewListScreen.qml"), {
                         propertyId: root.propertyId
                     })
                 }

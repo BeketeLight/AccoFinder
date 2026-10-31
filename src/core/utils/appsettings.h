@@ -273,6 +273,16 @@ signals:
 
     void favoritePropertyIdsChanged();
 
+    // Emitted when the appearance or language preference changes so QML can
+    // re-apply the theme/translations immediately instead of waiting for a
+    // restart.
+    void themeChanged();
+    void languageChanged();
+
+    // Emitted whenever any notification preference changes. FCM registration
+    // listens to this so a disabled master switch also unregisters the token.
+    void notificationPreferencesChanged();
+
 private:
     // A registration draft is only offered back to the user for this long,
     // so an abandoned sign-up never leaves stale personal details sitting in

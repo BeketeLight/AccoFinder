@@ -45,6 +45,18 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         String title = data.get("title");
         String body = data.get("body");
 
+        // Respect the user's notification preferences before showing anything.
+        // The category may arrive as `type`, `category` or `kind`; anything
+        // unrecognised is treated as a system notification.
+        String category = data.get("type");
+        if (category == null || category.isEmpty()) category = data.get("category");
+        if (category == null || category.isEmpty()) category = data.get("kind");
+        if (!FcmBridge.areNotificationsEnabled(this)
+                || !FcmBridge.isCategoryEnabled(this, category)) {
+            Log.d(TAG, "Notification suppressed by user preferences (category=" + category + ")");
+            return;
+        }
+
         // Fallback to notification payload if data payload doesn't carry title/body
         if (title == null || title.isEmpty()) {
             RemoteMessage.Notification n = remoteMessage.getNotification();

@@ -605,6 +605,53 @@ Page {
                 }
             }
 
+            ProfileSection {
+                title: "Preferences"
+
+                Rectangle {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 46
+                    radius: 8
+                    color: settingsRow.down ? "#DBEAFE" : "#FFFFFF"
+                    border.color: "#E5E7EB"
+
+                    RowLayout {
+                        id: settingsRowLayout
+                        anchors.fill: parent
+                        anchors.leftMargin: 12
+                        anchors.rightMargin: 12
+                        spacing: 10
+
+                        Label {
+                            Layout.fillWidth: true
+                            text: qsTr("Settings")
+                            color: "#111827"
+                            font.pixelSize: 14
+                            font.bold: true
+                        }
+
+                        Label {
+                            text: qsTr("Theme, language, notifications")
+                            color: root.mutedColor
+                            font.pixelSize: 12
+                        }
+
+                        Label {
+                            text: "\u203A"
+                            color: "#9CA3AF"
+                            font.pixelSize: 18
+                        }
+                    }
+
+                    MouseArea {
+                        id: settingsRow
+                        anchors.fill: parent
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: NavUtils.navigateToSettings()
+                    }
+                }
+            }
+
             Button {
                 id: logoutButton
                 Layout.fillWidth: true
@@ -845,10 +892,13 @@ Page {
         AppSettings.setBankAccountNumber(root.profileAccount.trim());
         AppSettings.setPaymentMethod(root.profilePaymentMethod);
 
-        // Persist the banking / payment details to the backend so they are saved
-        // for this user and restored on any device. This does NOT touch the
-        // user-creation wizard — it only updates the profile record.
+        // Persist all editable profile fields to the backend so they survive a
+        // restart/refresh, not just the banking details.
         AuthController.saveProfile(
+            root.profileName.trim(),
+            "",
+            root.profilePhone.trim(),
+            root.profileLocation.trim(),
             root.profileBank.trim(),
             root.profileAccount.trim(),
             root.profilePaymentMethod

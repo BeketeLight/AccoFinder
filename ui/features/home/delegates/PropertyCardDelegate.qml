@@ -21,8 +21,8 @@ Item {
     property bool insideInfoSection: false
     property var amenities: []
 
-    property real rating: 4.5          // e.g. 4.5
-    property int reviewCount: 12       // e.g. 12 reviews
+    property real rating: 0          // 0 means "no reviews yet"
+    property int reviewCount: 0
 
     signal clicked
     signal favoriteClicked

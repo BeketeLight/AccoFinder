@@ -12,9 +12,12 @@ Rectangle {
     property string status: ""
     property string propertyName: ""
     property string period: ""
+    property string paymentId: ""
+    property string bookingId: ""
+    property string landlordId: ""
     property color mutedColor: "#6B7280"
 
-    signal releaseRequested(var landlord)
+    signal releaseRequested(var landlord, var paymentId, var bookingId, var landlordId)
 
     function statusVariant(status) {
         if (status === "Completed" || status === "Paid" || status === "Settled") return "success"
@@ -89,7 +92,7 @@ Rectangle {
                     border.width: 1
                 }
 
-                onClicked: root.releaseRequested(root.landlord)
+                onClicked: root.releaseRequested(root.landlord, root.paymentId, root.bookingId, root.landlordId)
             }
         }
     }

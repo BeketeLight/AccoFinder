@@ -35,6 +35,10 @@ public:
     // Profile (bank/payment) persistence
     void fetchProfile() override;
     void saveProfile(
+        const QString& firstName,
+        const QString& surname,
+        const QString& phone,
+        const QString& residentialAddress,
         const QString& bankName,
         const QString& bankAccountNumber,
         const QString& paymentMethod) override;

@@ -13,9 +13,12 @@ Rectangle {
     property string bookings: ""
     property string area: ""
     property string rate: ""
+    property string paymentId: ""
+    property string bookingId: ""
+    property string agentId: ""
     property color mutedColor: "#6B7280"
 
-    signal settleRequested(var agent)
+    signal settleRequested(var agent, var paymentId, var bookingId, var agentId)
 
     function statusVariant(status) {
         if (status === "Completed" || status === "Paid" || status === "Settled") return "success"
@@ -87,7 +90,7 @@ Rectangle {
                 border.width: 1
             }
 
-            onClicked: root.settleRequested(root.agent)
+            onClicked: root.settleRequested(root.agent, root.paymentId, root.bookingId, root.agentId)
         }
     }
 }

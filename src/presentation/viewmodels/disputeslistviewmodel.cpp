@@ -11,6 +11,8 @@ DisputesListViewModel::DisputesListViewModel(QObject *parent)
             this, &DisputesListViewModel::onDisputeRaised);
     connect(m_disputeController, &DisputeController::disputeResolved,
             this, &DisputesListViewModel::onDisputeResolved);
+    connect(m_disputeController, &DisputeController::disputeError,
+            this, [this](const QString& e){ setLoading(false); emit disputeError(e); });
 }
 
 void DisputesListViewModel::setLoading(bool loading)
@@ -48,14 +50,16 @@ void DisputesListViewModel::getDisputes()
 void DisputesListViewModel::onDisputeRaised(Dispute *dispute)
 {
     setLoading(false);
-    m_disputesListModel->updateDispute(m_index, dispute);
+    // A newly raised dispute is appended, not used to overwrite an existing row.
+    m_disputesListModel->addDispute(dispute);
 }
 
 void DisputesListViewModel::onDisputeResolved(Dispute *dispute)
 {
     setLoading(false);
-    //New dispute append
-    m_disputesListModel->addDispute(dispute);
+    // Refresh the affected row in place.
+    if (m_index >= 0 && m_index < m_disputesListModel->rowCount())
+        m_disputesListModel->updateDispute(m_index, dispute);
 }
 
 void DisputesListViewModel::onDisputesLoaded(QList<Dispute *> disputes)
