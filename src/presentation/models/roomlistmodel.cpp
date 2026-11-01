@@ -13,8 +13,6 @@ int RoomListModel::rowCount(const QModelIndex &parent) const
         return 0;
 
     return m_rooms.size();
-
-    // FIXME: Implement me!
 }
 
 QVariant RoomListModel::data(const QModelIndex &index, int role) const
@@ -50,7 +48,6 @@ QVariant RoomListModel::data(const QModelIndex &index, int role) const
 
     }
 
-    // FIXME: Implement me!
     return QVariant();
 }
 
@@ -94,6 +91,23 @@ QVariantMap RoomListModel::getRoomById(const QString& roomId) const
 
     return map;
 }///b---added
+
+QVariantMap RoomListModel::at(int index) const
+{
+    if (index < 0 || index >= m_rooms.size())
+        return QVariantMap();
+    const QModelIndex idx = this->index(index, 0);
+    QVariantMap row;
+    row["id"] = data(idx, IdRole);
+    row["propertyId"] = data(idx, PropertyIdRole);
+    row["type"] = data(idx, TypeRole);
+    row["price"] = data(idx, PriceRole);
+    row["available"] = data(idx, AvailableRole);
+    row["holdActive"] = data(idx, HoldActiveRole);
+    row["holdExpiresAt"] = data(idx, HoldExpiresAtRole);
+    row["statusLabel"] = data(idx, StatusLabelRole);
+    return row;
+}
 
 void RoomListModel::setRooms(QList<QSharedPointer<Room>> newRooms)
 {

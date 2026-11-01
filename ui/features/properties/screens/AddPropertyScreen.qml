@@ -188,9 +188,13 @@ Item {
                 if (payload.rooms) {
                     for (var k = 0; k < payload.rooms.length; k++) {
                         var r = payload.rooms[k];
+                        // The API names the rent `rentalFee` and the platform
+                        // fee `bookingFee`; the wizard payload still uses the
+                        // local `price` name.
                         roomsArr.push({
                             type: r.roomType !== undefined ? r.roomType : "Room",
-                            price: r.price !== undefined ? r.price : 0,
+                            rentalFee: r.price !== undefined ? r.price : 0,
+                            bookingFee: r.bookingFee !== undefined ? r.bookingFee : 0,
                             available: r.available !== undefined ? r.available : true
                         });
                     }

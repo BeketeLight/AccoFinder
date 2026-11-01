@@ -35,6 +35,24 @@ public:
                        const QString& payoutStatus, 
                        const QDateTime& payoutDate) =0;
 
+    // Admin oversight actions. The backend resolves the payment by
+    // paymentId first, then by bookingId, so either identifier is enough.
+    virtual void settleCommission(const QString& paymentId,
+                                  const QString& bookingId,
+                                  const QString& agentId,
+                                  const QString& agentName) = 0;
+
+    virtual void releasePayout(const QString& paymentId,
+                               const QString& bookingId,
+                               const QString& landlordId,
+                               const QString& landlord) = 0;
+
+    // Refund a successful payment (admin).
+    virtual void refundPayment(const QString& paymentId,
+                               const QString& bookingId,
+                               const QString& transactionRef,
+                               const QString& reason) = 0;
+
     virtual ~IPaymentGateway() {}
 signals:
     void operatorsLoaded(const QVariantList& operators);

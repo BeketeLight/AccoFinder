@@ -25,6 +25,7 @@ Item {
     readonly property color mutedColor: "#6B7280"
 
     property string activeTab: "PAYMENTS"   // PAYMENTS | COMMISSIONS | PAYOUTS
+    property string actionError: ""
 
     ColumnLayout {
         id: contentColumn
@@ -66,6 +67,25 @@ Item {
             }
         }
 
+        Rectangle {
+            Layout.fillWidth: true
+            visible: root.actionError.length > 0
+            implicitHeight: actionErrorLabel.implicitHeight + 16
+            radius: 8
+            color: "#FEF2F2"
+            border.color: "#FECACA"
+
+            Label {
+                id: actionErrorLabel
+                anchors.fill: parent
+                anchors.margins: 8
+                text: root.actionError
+                color: root.dangerColor
+                font.pixelSize: 11
+                wrapMode: Text.WordWrap
+            }
+        }
+
         RowLayout {
             Layout.fillWidth: true
             spacing: 8
@@ -76,7 +96,6 @@ Item {
                     { key: "COMMISSIONS", label: qsTr("Commissions") },
                     { key: "PAYOUTS", label: qsTr("Payouts") }
                 ]
-
                 delegate: Button {
                     required property var model
                     readonly property bool isCurrent: root.activeTab === model.key
@@ -281,10 +300,12 @@ Item {
                     bookings: model.bookings
                     area: model.area
                     rate: model.rate
-                    onSettleRequested: (agent) => {
-                        root.paymentsModel.setCommissionStatus(agent, "Settled")
-                        console.log("Commission settled:", agent)
-                        root.paymentAction("commission-settled", agent)
+                    paymentId: model.paymentId || ""
+                    bookingId: model.bookingId || ""
+                    agentId: model.agentId || ""
+                    onSettleRequested: (agent, paymentId, bookingId, agentId) => {
+                        root.actionError = ""
+                        root.paymentsModel.settleCommission(agent, paymentId, bookingId, agentId)
                     }
                 }
             }
@@ -322,10 +343,12 @@ Item {
                     status: model.status
                     propertyName: model.property
                     period: model.period
-                    onReleaseRequested: (landlord) => {
-                        root.paymentsModel.setPayoutStatus(landlord, "Paid")
-                        console.log("Payout released:", landlord)
-                        root.paymentAction("payout-released", landlord)
+                    paymentId: model.paymentId || ""
+                    bookingId: model.bookingId || ""
+                    landlordId: model.landlordId || ""
+                    onReleaseRequested: (landlord, paymentId, bookingId, landlordId) => {
+                        root.actionError = ""
+                        root.paymentsModel.releasePayout(landlord, paymentId, bookingId, landlordId)
                     }
                 }
             }
@@ -346,6 +369,24 @@ Item {
                 font.pixelSize: 12
                 topPadding: 8
             }
+        }
+    }
+
+    Connections {
+        target: PaymentsOverviewViewModel
+
+        function onCommissionSettled(data) {
+            root.paymentAction("commission-settled",
+                               data && data.agentName ? data.agentName : "")
+        }
+
+        function onPayoutReleased(data) {
+            root.paymentAction("payout-released",
+                               data && data.landlord ? data.landlord : "")
+        }
+
+        function onActionFailed(error) {
+            root.actionError = String(error || qsTr("The payment action failed."))
         }
     }
 }

@@ -95,10 +95,12 @@ Page {
         ColumnLayout {
             width: root.width
             spacing: 20
-            topPadding: 32
-            leftPadding: 24
-            rightPadding: 24
-            bottomPadding: 32
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.top: parent.top
+            anchors.leftMargin: 24
+            anchors.rightMargin: 24
+            anchors.topMargin: 32
 
             // ---- Status circle ----
             Rectangle {

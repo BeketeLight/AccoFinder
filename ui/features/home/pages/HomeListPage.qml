@@ -63,7 +63,7 @@ Item {
 
                 // Component {
                 //     id: quarterCard
-                //     QuartersComponent {
+                //     ReadOnlyRoomCard {
                 //         anchors.fill: parent
                 //         quartersId: model.propertyId
                 //         quartersType: model.propertyType

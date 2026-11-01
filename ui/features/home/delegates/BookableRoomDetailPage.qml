@@ -1,0 +1,662 @@
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
+import QtQuick.Effects
+import "../../../utils/ImageUtils.js" as ImageUtils
+import "../../../utils/NavigationUtils.js" as NavUtils
+import "../../../utils/Utils.js" as Utils
+import "../../../components/indicators/"
+import "../../properties/components"
+
+Page {
+    id: root
+    // ========== HEADER CONTROL ==========
+    property string pageTitle: ""
+    property bool isSearchBar: true
+    property bool showBack: true
+    property bool showHeader: true
+    property bool searchReadOnly: false
+
+    // ========== PROPERTY DATA ==========
+    property string quarterId: ""
+    property string quarterTitle: ""
+    property string quarterType: ""
+    property string location: ""
+    property real quarterPrice: 0
+    property bool isquarterAvailable: true
+    property string propertyId: ""
+
+    property bool quarterFavourite: AppSettings.isRoomFavorite(root.quarterId)
+
+    Connections {
+        target: AppSettings
+        function onRoomFavoritesChanged() {
+            root.quarterFavourite = AppSettings.isRoomFavorite(root.quarterId);
+        }
+    }
+
+    // Provisional hold state, surfaced by GET /rooms/:id (holdActive /
+    // holdExpiresAt). The backend only sets available=false once a booking is
+    // CONFIRMED, so a room that is temporarily spoken for still arrives with
+    // isquarterAvailable === true. Without these the app would offer "Book Now"
+    // on a held room and only discover the conflict after the user committed.
+    property bool isOnHold: false
+    property var holdExpiresAt: null
+
+    // True when this client can still act on the room. A hold that belongs to
+    // this user's own booking is still actionable - they need to reach the
+    // payment screen to use it - so this only blocks when the room is held by
+    // someone else or permanently booked.
+    readonly property bool canBookRoom: isquarterAvailable && !isOnHold
+
+    // The platform is a booking service: rent is never collected here. To book
+    // a room the client pays a single flat booking fee, set by an admin for all
+    // listings and cached in AppSettings so checkout needs no network call.
+    // The agent separately earns a commission on the booking.
+    readonly property real bookingFee: AppSettings.bookingFee()
+    property string description: "Spacious quarter with en-suite bathroom and walk-in closet. Features large windows with natural light and a beautiful view of the garden."
+
+    // Agent information
+    property string agentFirstName: ""
+    property string agentLastName: ""
+
+    property string agentPhone: ""
+    property string agentEmail: ""
+
+    property real agentRating: 0
+    property int agentReviewCount: 0
+    // property var reviewsModel
+
+    // Media - images and videos
+    property string roomImage: ""
+    property var mediaList: []
+
+    // Helper function to handle JS arrays, strings, or ListModels
+    function getMediaArray() {
+        if (Array.isArray(mediaList) && mediaList.length > 0) {
+            return mediaList;
+        } else if (typeof mediaList === "string" && mediaList.length > 0) {
+            return [mediaList];
+        } else if (roomImage.length > 0) {
+            return [roomImage];
+        }
+        return [];
+    }
+
+    // ========== SIGNALS ==========
+    signal backRequested
+    signal bookRequested
+    signal contactRequested
+
+    function goBack() {
+        root.backRequested();
+        NavUtils.pop();
+    }
+
+    background: Rectangle {
+        color: "#FFFFFF"
+    }
+
+    // ========== CONTENT ==========
+    Flickable {
+        id: flickable
+        anchors.fill: parent
+        contentWidth: width
+        contentHeight: contentColumn.height
+        clip: true
+        boundsBehavior: Flickable.StopAtBounds
+
+        ColumnLayout {
+            id: contentColumn
+            width: flickable.width
+            spacing: 0
+
+            // ===== MEDIA CAROUSEL =====
+            Item {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 300
+
+                SwipeView {
+                    id: mediaSwipe
+                    anchors.fill: parent
+                    clip: true
+
+                    Repeater {
+                        id: mediaModel
+                        model: root.getMediaArray()
+
+                        Item {
+                            required property var modelData
+
+                            property bool isVideo: typeof modelData === "string" && modelData.match(/\.(mp4|mov|avi|mkv|webm)$/i) !== null
+                            Image {
+                                id: pageImage
+                                anchors.fill: parent
+                                source: isVideo ? "" : ImageUtils.cachedSource(modelData)
+                                fillMode: Image.PreserveAspectCrop
+                                asynchronous: true
+                                visible: !isVideo
+
+                                Rectangle {
+                                    anchors.fill: parent
+                                    color: "#F5F5F5"
+                                    visible: parent.status !== Image.Ready
+                                    Label {
+                                        anchors.centerIn: parent
+                                        text: "🖼️"
+                                        font.pixelSize: 40
+                                        opacity: 0.3
+                                    }
+                                }
+                            }
+                            // Shimmer while photo loads
+                            Rectangle {
+                                id: skeleton
+                                anchors.fill: parent
+                                visible: !isVideo && pageImage.status !== Image.Ready
+                                color: "#E5E7EB"
+                                clip: true
+
+                                Rectangle {
+                                    id: shimmer
+                                    width: parent.width * 0.45
+                                    height: parent.height
+                                    color: "#F9FAFB"
+                                    opacity: 0.7
+                                    x: -width
+
+                                    SequentialAnimation on x {
+                                        loops: Animation.Infinite
+                                        running: skeleton.visible
+                                        NumberAnimation {
+                                            from: -shimmer.width
+                                            to: skeleton.width
+                                            duration: 1000
+                                            easing.type: Easing.InOutQuad
+                                        }
+                                        PauseAnimation {
+                                            duration: 200
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Video placeholder
+                            Rectangle {
+                                anchors.fill: parent
+                                color: "#1A1A1A"
+                                visible: isVideo
+
+                                Label {
+                                    anchors.centerIn: parent
+                                    text: "▶️"
+                                    font.pixelSize: 60
+                                    color: "white"
+                                }
+
+                                Label {
+                                    anchors.bottom: parent.bottom
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    anchors.margins: 20
+                                    text: "Video"
+                                    color: "white"
+                                    font.pixelSize: 14
+                                    opacity: 0.7
+                                }
+                            }
+                        }
+                    }
+                }
+                Rectangle {
+                    id: favouriteButton
+                    width: 40
+                    height: 40
+                    radius: 20
+                    anchors.top: parent.top
+                    anchors.right: parent.right
+                    anchors.margins: 12
+                    color: "#CCFFFFFF"
+                    border.color: "#E5E7EB"
+                    border.width: 1
+
+                    Image {
+                        anchors.centerIn: parent
+                        source: root.quarterFavourite ? "qrc:/ui/assets/favorite-filled.svg" : "qrc:/ui/assets/favorite-outline.svg"
+                        sourceSize.width: 22
+                        sourceSize.height: 22
+                        width: 22
+                        height: 22
+                        fillMode: Image.PreserveAspectFit
+                        antialiasing: true
+                        smooth: true
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: {
+                            if (!AppSettings.isLoggedIn()) {
+                                NavUtils.navigateToAccount();
+                                return;
+                            }
+                            const wasFav = AppSettings.isRoomFavorite(root.quarterId);
+                            AppSettings.toggleFavoriteRoom(root.quarterId);
+                            if (!wasFav) {
+                                AppSettings.saveRoomSnapshot(root.quarterId, {
+                                    quarterId: root.quarterId,
+                                    propertyId: root.propertyId,
+                                    title: root.quarterTitle,
+                                    type: root.quarterType,
+                                    price: root.quarterPrice,
+                                    location: root.location,
+                                    imageUrl: root.roomImage,
+                                    available: root.isquarterAvailable === true,
+                                    holdActive: root.isOnHold === true,
+                                    savedAt: Date.now()
+                                });
+                            }
+                        }
+                    }
+                }
+                // Media counter
+                Rectangle {
+                    anchors.left: parent.left
+                    anchors.bottom: parent.bottom
+                    anchors.margins: 12
+                    height: 24
+                    radius: 12
+                    color: "#80000000"
+                    width: counterText.width + 16
+
+                    Label {
+                        id: counterText
+                        anchors.centerIn: parent
+                        text: (mediaSwipe.currentIndex + 1) + " / " + Math.max(mediaSwipe.count, 1)
+                        color: "white"
+                        font.pixelSize: 12
+                    }
+                }
+
+                // Media type indicator
+                Rectangle {
+                    anchors.right: parent.right
+                    anchors.bottom: parent.bottom
+                    anchors.rightMargin: 20
+                    anchors.bottomMargin: 12
+                    height: 24
+                    radius: 12
+                    color: "#80000000"
+                    width: mediaTypeText.width + 16
+
+                    Label {
+                        id: mediaTypeText
+                        anchors.centerIn: parent
+                        text: mediaSwipe.currentItem ? (mediaSwipe.currentItem.isVideo ? "🎥 Video" : "📷 Photo") : "📷 Photo"
+                        color: "white"
+                        font.pixelSize: 12
+                    }
+                }
+            }
+
+            // ===== MAIN INFO =====
+            ColumnLayout {
+                Layout.fillWidth: true
+                Layout.margins: 16
+                spacing: 8
+
+                SectionHeader {
+                    Layout.fillWidth: true
+                    title: root.quarterType
+                }
+
+                Label {
+                    text: root.quarterTitle
+                    font.pixelSize: 15
+                    color: "#6B7280"
+                    wrapMode: Text.WordWrap
+                    Layout.fillWidth: true
+                }
+
+                RowLayout {
+                    spacing: 4
+                    Image {
+                        height: 19
+                        width: 19
+                        source: "qrc:/ui/assets/location-2955.svg"
+                        sourceSize.width: 19
+                        sourceSize.height: 19
+                        fillMode: Image.PreserveAspectFit
+                        smooth: true
+                    }
+                    Label {
+                        text: root.location
+                        font.pixelSize: 14
+                        color: "#6B7280"
+                        Layout.fillWidth: true
+                    }
+                }
+
+                Label {
+                    text: "Rental Fee: " + Utils.formatCurrency(root.quarterPrice)
+                    font.pixelSize: 26
+                    font.bold: true
+                    color: "#2563EB"
+                }
+
+                // The client does not pay rent in the app; the booking fee is
+                // the whole amount due at checkout.
+                Label {
+                    visible: root.bookingFee > 0
+                    text: "Booking Fee: " + Utils.formatCurrency(root.bookingFee)
+                    font.pixelSize: 14
+                    font.bold: true
+                    color: "#111827"
+                }
+
+                // Availability badge
+                Rectangle {
+                    height: 28
+                    radius: 14
+                    width: availabilityText.width + 24
+                    // Amber for a hold, so "temporarily spoken for" is
+                    // visually distinct from "permanently booked".
+                    color: !root.isquarterAvailable ? "#EF4444" : root.isOnHold ? "#F59E0B" : "#22C55E"
+
+                    Label {
+                        id: availabilityText
+                        anchors.centerIn: parent
+                        text: !root.isquarterAvailable ? "✗ Currently Booked" : root.isOnHold ? "⏳ On Hold" : "✓ Available Now"
+                        color: "white"
+                        font.pixelSize: 13
+                        font.bold: true
+                    }
+                }
+            }
+            Rectangle {
+                Layout.fillWidth: true
+                height: 8
+                color: "#F5F5F5"
+            }
+            // ===== REVIEWS =====
+            ColumnLayout {
+                Layout.fillWidth: true
+                Layout.margins: 16
+                spacing: 12
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    SectionHeader {
+                        title: "Reviews"
+                        Layout.fillWidth: true
+                    }
+                    Label {
+                        text: root.agentReviewCount + " reviews"
+                        font.pixelSize: 13
+                        color: "#6B7280"
+                    }
+                }
+                AppEmptyState {
+                    Layout.fillWidth: true
+                    title: "No Reviews"
+                    subtitle: "there are no reviews availabe at the time"
+                    visible: reviewsRepeater.count === 0 ? true : false
+                }
+
+                Repeater {
+                    id: reviewsRepeater
+                    model: ReviewViewModel.model
+
+                    Rectangle {
+                        Layout.fillWidth: true
+                        radius: 12
+                        color: "#F9FAFB"
+                        border.color: "#E5E7EB"
+                        border.width: 1
+                        height: reviewCol.height + 24
+
+                        ColumnLayout {
+                            id: reviewCol
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            anchors.top: parent.top
+                            anchors.margins: 12
+                            spacing: 6
+
+                            RowLayout {
+                                spacing: 8
+
+                                Rectangle {
+                                    width: 36
+                                    height: 36
+                                    radius: 18
+                                    color: "#E0E7FF"
+                                    Label {
+                                        anchors.centerIn: parent
+                                        text: modelData.name.charAt(0)
+                                        font.pixelSize: 14
+                                        font.bold: true
+                                        color: "#4338CA"
+                                    }
+                                }
+
+                                ColumnLayout {
+                                    spacing: 1
+                                    Label {
+                                        text: modelData.name
+                                        font.pixelSize: 14
+                                        font.weight: Font.Medium
+                                        color: "#1F2937"
+                                    }
+                                    Label {
+                                        text: modelData.date
+                                        font.pixelSize: 11
+                                        color: "#9CA3AF"
+                                    }
+                                }
+
+                                Item {
+                                    Layout.fillWidth: true
+                                }
+
+                                Label {
+                                    text: "★".repeat(modelData.rating)
+                                    font.pixelSize: 12
+                                    color: "#F59E0B"
+                                }
+                            }
+
+                            Label {
+                                text: modelData.comment
+                                font.pixelSize: 13
+                                color: "#4B5563"
+                                wrapMode: Text.WordWrap
+                                Layout.fillWidth: true
+                                lineHeight: 1.3
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Bottom spacer
+            Item {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 100
+            }
+        }
+    }
+    // ========== FOOTER ==========
+    footer: ToolBar {
+        height: 72
+        background: Rectangle {
+            color: "#FFFFFF"
+            Rectangle {
+                anchors.top: parent.top
+                width: parent.width
+                height: 1
+                color: "#E5E7EB"
+            }
+        }
+
+        RowLayout {
+            anchors.fill: parent
+            anchors.margins: 12
+            spacing: 12
+            Button {
+                id: bookButton
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                enabled: !BookingController.isLoading && root.canBookRoom
+                text: {
+                    if (BookingController.isLoading)
+                        return "Booking…";
+                    if (!root.isquarterAvailable)
+                        return "Currently Booked";
+                    if (root.isOnHold)
+                        return "On Hold";
+                    return "Book Now";
+                }
+
+                background: Rectangle {
+                    radius: 12
+                    color: !bookButton.enabled ? "#9CA3AF" : "#2563EB"
+                }
+
+                contentItem: Label {
+                    text: bookButton.text
+                    color: "#FFFFFF"
+                    font.pixelSize: 16
+                    font.bold: true
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                }
+
+                onClicked: {
+                    // Not signed in → route to auth instead of details.
+                    if (!AppSettings.isLoggedIn()) {
+                        NavUtils.navigateToAccount();
+                        return;
+                    }
+                    if (!root.quarterId) {
+                        console.warn("Missing quarterId");
+                        return;
+                    }
+
+                    // Guard in the handler as well as in `enabled`, because the
+                    // hold flag arrives from the server after the button may
+                    // already be live.
+                    if (root.isOnHold || !root.isquarterAvailable) {
+                        console.warn("[Booking] Blocked: room is " + (root.isOnHold ? "on hold" : "booked"));
+                        errorDialog.errorText = root.isOnHold ? "This room is currently on hold by another user." : "This room is no longer available.";
+                        errorDialog.open();
+                        return;
+                    }
+
+                    // The booking fee is the whole amount due; without it there
+                    // is nothing to charge, so refuse rather than create a
+                    // zero-amount booking the backend would reject.
+                    if (root.bookingFee <= 0) {
+                        console.warn("[Booking] Blocked: platform booking fee is not set");
+                        errorDialog.errorText = "Booking is not available right now. Please try again later.";
+                        errorDialog.open();
+                        return;
+                    }
+
+                    // The client pays the platform booking fee; the owning agent
+                    // earns a commission on that booking (a % of what is paid,
+                    // set by the admin and cached in AppSettings).
+                    var commission = root.bookingFee * (AppSettings.platformCommissionRate() / 100);
+
+                    BookingController.createBooking(root.quarterId      // roomId
+                    , root.bookingFee   // amount (platform booking fee, admin-set)
+                    , commission         // commissionAmount (agent's earning)
+                    );
+                }
+            }
+        }
+    }
+
+    // Connections
+    Connections {
+        target: BookingController
+
+        function onBookingCreated(booking) {
+            console.log("Booking OK:", booking.id, booking.roomId, booking.amount);
+            successDialog.bookingId = booking.id;
+            //successDialog.open();
+
+            // Option B: navigate immediately and skip the dialog
+            // NavUtils.push(Qt.resolvedUrl("../../payments/screens/PaymentStatusScreen.qml"), {
+            //     bookingId: booking.id,
+            //     amount: booking.amount,
+            //     roomId: booking.roomId
+            // });
+            // Carry the hold deadline into the payment screen so it can count
+            // down. The booking is a hold, not a confirmation, so the user needs
+            // to see how long the room is theirs for.
+            NavUtils.navigateToPayments(booking.id, booking.amount, booking.holdExpiresAt !== undefined ? booking.holdExpiresAt : null);
+        }
+
+        function onBookingError(error) {
+            console.warn("Booking error:", error);
+            errorDialog.errorText = error;
+            errorDialog.open();
+            bookButton.enabled = true;
+        }
+    }
+
+    Dialog {
+        id: successDialog
+        property string bookingId: ""
+        anchors.centerIn: parent
+        title: "Booking Confirmed"
+        modal: true
+        standardButtons: Dialog.Ok
+        Label {
+            text: "Your booking was created"
+            wrapMode: Text.WordWrap
+        }
+    }
+
+    Dialog {
+        id: errorDialog
+        property string errorText: ""      // ← plain property, not an alias
+        anchors.centerIn: parent
+        title: "Booking Failed"
+        modal: true
+        standardButtons: Dialog.Ok
+
+        // Constrain the Dialog itself, not the inner label.
+        width: Math.min(parent ? parent.width - 48 : 320, 360)
+
+        contentItem: Label {
+            text: errorDialog.errorText
+            wrapMode: Text.WordWrap
+            // Let the Dialog manage width; don't hard-code 260 here.
+        }
+    }
+    Component.onCompleted: {
+        if (root.propertyId.length > 0) {
+            ReviewViewModel.loadForProperty(root.propertyId);
+            ReviewViewModel.loadSummary(root.propertyId);
+            if (AppSettings.isLoggedIn()) {
+                ReviewViewModel.checkCanReview(root.propertyId);
+            }
+        }
+    }
+    // ========== HELPER ==========
+    component SpecItem: RowLayout {
+        property string icon
+        property string label
+        spacing: 4
+        Label {
+            text: icon
+            font.pixelSize: 14
+        }
+        Label {
+            text: label
+            font.pixelSize: 13
+            color: "#4B5563"
+        }
+    }
+}

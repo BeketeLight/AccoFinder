@@ -4,11 +4,6 @@ PropertyListModel::PropertyListModel(QObject *parent)
     : QAbstractListModel(parent)
 {}
 
-// QVariant PropertyListModel::headerData(int section, Qt::Orientation orientation, int role) const
-// {
-//     // FIXME: Implement me!
-// }
-
 int PropertyListModel::rowCount(const QModelIndex &parent) const
 {
     // For list models only the root node (an invalid parent) should return the list's size. For all
@@ -17,8 +12,6 @@ int PropertyListModel::rowCount(const QModelIndex &parent) const
         return 0;
 
     return m_properties.size();
-
-    // FIXME: Implement me!
 }
 
 QVariant PropertyListModel::data(const QModelIndex &index, int role) const
@@ -113,7 +106,6 @@ QVariant PropertyListModel::data(const QModelIndex &index, int role) const
 
     }
 
-    // FIXME: Implement me!
     return QVariant();
 }
 

@@ -3,7 +3,7 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
 import "../../../utils" as UtilsModule
-import "../pages/PaymentStatusPage.qml" as Pages
+import "../pages"
 
 Item {
     id: root
@@ -33,7 +33,7 @@ Item {
         onTriggered: PaymentController.verifyPayment(root.chargeId)
     }
 
-    Pages.PaymentStatusPage {
+    PaymentStatusPage {
         anchors.fill: parent
         bookingId: root.bookingId
         paymentId: root.paymentId

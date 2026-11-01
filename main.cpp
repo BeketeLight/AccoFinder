@@ -33,10 +33,13 @@
 #include "src/services/cachedimageprovider.h"
 #include "src/services/socketioclient.h"
 #include "src/services/fcmservice.h"
+#include "src/services/apiclient.h"
 #include <QQmlContext>
 #include <QTimer>
 #include <QUrl>
 #include <QFileOpenEvent>
+#include <QTranslator>
+#include <QLocale>
 #include <functional>
 
 #if defined(Q_OS_ANDROID)
@@ -113,6 +116,44 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("ImageCache", cachedImageProvider);
     // Appsettings
     AppSettings &appSettings = AppSettings::instance();
+
+    // ---- Language / translations -------------------------------------
+    // Translations are optional: a matching catalog is installed when present
+    // (embedded under :/i18n or shipped in a translations/ folder next to the
+    // binary). QLocale is always updated so number and date formatting follow
+    // the chosen language even before a catalog exists.
+    auto *translator = new QTranslator(&app);
+    auto applyLanguage = [&engine, &app, translator]()
+    {
+        const QString code = AppSettings::instance().language();
+        QLocale locale = QLocale(code);
+        if (locale.language() == QLocale::C)
+            locale = QLocale(QLocale::English, QLocale::Malawi);
+        QLocale::setDefault(locale);
+
+        app.removeTranslator(translator);
+        if (!code.isEmpty() && code != QLatin1String("en"))
+        {
+            const QStringList candidates = {
+                QStringLiteral(":/i18n/accofinder_%1.qm").arg(code),
+                QCoreApplication::applicationDirPath()
+                    + QStringLiteral("/translations/accofinder_%1.qm").arg(code),
+                QStringLiteral("translations/accofinder_%1.qm").arg(code)
+            };
+            for (const QString &path : candidates)
+            {
+                if (translator->load(path))
+                {
+                    app.installTranslator(translator);
+                    break;
+                }
+            }
+        }
+        engine.retranslate();
+    };
+    applyLanguage();
+    QObject::connect(&appSettings, &AppSettings::languageChanged,
+                     &app, applyLanguage);
     // AppPermission
     AppPermission &appPermission = AppPermission::instance();
     // Controllers
@@ -197,6 +238,17 @@ int main(int argc, char *argv[])
                      &notificationViewModel, &NotificationViewModel::refreshCurrent);
     QObject::connect(&appSettings, &AppSettings::userSessionChanged,
                      &app, startSocketForCurrentUser);
+    // Session expiry: a 401 that cannot be refreshed logs the user out once.
+    bool sessionExpiredHandled = false;
+    QObject::connect(&APIClient::instance(), &APIClient::authenticationRequired, &app,
+                     [&authController, &sessionExpiredHandled]()
+                     {
+                         if (sessionExpiredHandled || !AppSettings::instance().isLoggedIn())
+                             return;
+                         sessionExpiredHandled = true;
+                         authController.logOut();
+                         QTimer::singleShot(5000, [&]() { sessionExpiredHandled = false; });
+                     });
     QObject::connect(&socketIOClient, &SocketIOClient::errorOccurred,
                      &app, [](const QString &msg)
                      { qWarning() << "[Main] SocketIO error:" << msg; });
@@ -219,6 +271,22 @@ int main(int argc, char *argv[])
     // Forward FCM foreground notifications to refresh the notification list
     QObject::connect(&fcmService, &FcmService::notificationReceived,
                      &notificationViewModel, &NotificationViewModel::refreshCurrent);
+
+    // Notification preferences: mirror them to the Android service immediately
+    // and register/unregister the push token when the master switch flips.
+    QObject::connect(&appSettings, &AppSettings::notificationPreferencesChanged, &fcmService,
+                     [&fcmService]()
+                     {
+                         AppSettings &settings = AppSettings::instance();
+                         fcmService.syncNotificationPreferences();
+                         if (!settings.isLoggedIn())
+                             return;
+                         if (settings.notificationsEnabled())
+                             fcmService.registerToken();
+                         else
+                             fcmService.unregisterToken();
+                     });
+    fcmService.syncNotificationPreferences();
 
     // Shared, session-scoped lists must never leak from one user into the
     // next (or into the logged-out state). Reset them whenever the active

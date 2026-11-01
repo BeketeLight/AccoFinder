@@ -39,7 +39,11 @@ public:
     // clears the stuck loading state, emitting signInFailed.
     Q_INVOKABLE void cancelGoogleAuth();
     Q_INVOKABLE void fetchProfile();
-    Q_INVOKABLE void saveProfile(const QString& bankName,
+    Q_INVOKABLE void saveProfile(const QString& firstName,
+                                 const QString& surname,
+                                 const QString& phone,
+                                 const QString& residentialAddress,
+                                 const QString& bankName,
                                  const QString& bankAccountNumber,
                                  const QString& paymentMethod);
     Q_INVOKABLE QString googleAuthUrl() const;

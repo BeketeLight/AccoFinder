@@ -20,9 +20,11 @@ ToolBar {
     property bool transparentHeader: false
     property bool collapsible: false
     property real scrollY: 0
+    // Status bar inset for Android with expanded client area
+    property int statusBarInset: Qt.platform.os === "android" ? 24 : 0
     // Collapsible header
-    readonly property real expandedHeight: 110
-    readonly property real collapsedHeight: 56
+    readonly property real expandedHeight: 110 + statusBarInset
+    readonly property real collapsedHeight: 56 + statusBarInset
     // Solid bar: normal pages always; overlay pages after scroll
     readonly property bool solidHeader:{
         if(!transparentHeader) return true
@@ -44,7 +46,7 @@ ToolBar {
             return expandedHeight - (expandedHeight - collapsedHeight) * collapseProgress
         }
         // single toolbar row
-        return 56
+        return 56 + statusBarInset
     }
     clip: true
     Behavior on implicitHeight {
@@ -55,6 +57,17 @@ ToolBar {
         color: root.transparentHeader && !root.solidHeader
              ? "transparent"
              : "#FFFFFF"
+
+        Rectangle {
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.right: parent.right
+            height: root.statusBarInset
+            color: root.transparentHeader && !root.solidHeader
+                 ? "transparent"
+                 : "#FFFFFF"
+            visible: Qt.platform.os === "android"
+        }
 
         Rectangle {
             anchors.left: parent.left
@@ -72,7 +85,7 @@ ToolBar {
         anchors.fill: parent
         anchors.leftMargin: 8
         anchors.rightMargin: 12
-        anchors.topMargin: 4
+        anchors.topMargin: 4 + root.statusBarInset
         anchors.bottomMargin: 4
         spacing: 0
 

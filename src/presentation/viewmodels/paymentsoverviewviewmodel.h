@@ -7,6 +7,7 @@
 #include <QVariantMap>
 #include <QVector>
 #include "repositories/impl/paymentsoverviewrepositoryimpl.h"
+#include "services/paymentgatewayimpl.h"
 #include "presentation/models/paymentslistmodel.h"
 
 class PaymentsOverviewViewModel : public QObject
@@ -36,8 +37,21 @@ public:
 
     Q_INVOKABLE void refresh();
 
+    // Admin oversight actions. Called by AdminPaymentsModel so the settle/
+    // release buttons hit POST /payments/commissions/settle and
+    // POST /payments/payouts/release, then refresh the dashboard from the API.
+    Q_INVOKABLE void settleCommission(const QString& agentName,
+                                      const QString& paymentId = QString(),
+                                      const QString& bookingId = QString(),
+                                      const QString& agentId = QString());
+    Q_INVOKABLE void releasePayout(const QString& landlord,
+                                   const QString& paymentId = QString(),
+                                   const QString& bookingId = QString(),
+                                   const QString& landlordId = QString());
+
 private:
     PaymentsOverviewRepositoryImpl* m_repository = nullptr;
+    PaymentGatewayImpl* m_gateway = nullptr;
     PaymentsListModel* m_payments = nullptr;
     PaymentsListModel* m_commissions = nullptr;
     PaymentsListModel* m_payouts = nullptr;
@@ -56,6 +70,9 @@ signals:
     void isLoadingChanged(bool isLoading);
     void overviewChanged();
     void errorOccurred(const QString& error);
+    void commissionSettled(const QVariantMap& data);
+    void payoutReleased(const QVariantMap& data);
+    void actionFailed(const QString& error);
 };
 
 #endif // PAYMENTSOVERVIEWVIEWMODEL_H

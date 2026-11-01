@@ -11,21 +11,19 @@ DisputesListModel::DisputesListModel(QObject *parent)
 
 int DisputesListModel::rowCount(const QModelIndex &parent) const
 {
-    // For list models only the root node (an invalid parent) should return the list's size. For all
-    // other (valid) parents, rowCount() should return 0 so that it does not become a tree model.
     if (parent.isValid())
         return 0;
 
     return m_disputes.size();
-
-    // FIXME: Implement me!
 }
 
 QVariant DisputesListModel::data(const QModelIndex &index, int role) const
 {
-    if (!index.isValid())
+    if (!index.isValid() || index.row() < 0 || index.row() >= m_disputes.size())
         return QVariant();
     Dispute* dispute = m_disputes.at(index.row());
+    if (!dispute)
+        return QVariant();
 
     switch (role)
     {
@@ -51,7 +49,6 @@ QVariant DisputesListModel::data(const QModelIndex &index, int role) const
         }
     }
 
-    // FIXME: Implement me!
     return QVariant();
 }
 

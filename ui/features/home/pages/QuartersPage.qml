@@ -57,7 +57,7 @@ Item {
 
                 Repeater {
                     model: root.propertiesModelRef ? root.propertiesModelRef.propertiesModel : null
-                    QuartersComponent {
+                    BookableRoomCard {
                         width: (flow.width - 24 - 16) / 3
                         height: width * 1.25
                         quartersId: model.propertyId

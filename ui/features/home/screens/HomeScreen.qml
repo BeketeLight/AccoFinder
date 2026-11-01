@@ -194,7 +194,7 @@ Item {
                     propertiesModelRef: sharedProperties
                     showSuperDeals: false
                     headingText: qsTr("Quarters")
-                    // renderAs: "quarter"
+                    renderAs: "quarter"
                 }
             }
 

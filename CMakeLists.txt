@@ -99,8 +99,8 @@ qt_add_qml_module(appAccoFinder
         ui/features/home/components/PropertyLoadingSkeleton.qml
         ui/features/home/pages/HomeListPage.qml
         ui/features/home/pages/QuartersPage.qml
-        ui/features/home/delegates/QuartersDetailDelegate.qml
-        ui/features/home/components/QuartersComponent.qml
+        ui/features/home/delegates/BookableRoomDetailDelegate.qml
+        ui/features/home/components/BookableRoomCard.qml
         ui/features/home/models/PropertiesModel.qml
         ui/features/home/delegates/RemoteImage.qml
         ui/features/home/models/RoomsModel.qml
@@ -157,6 +157,7 @@ qt_add_qml_module(appAccoFinder
         ui/features/auth/pages/SignInPage.qml
         ui/features/auth/pages/OtpPage.qml
         ui/features/auth/pages/ForgotPasswordPage.qml
+        ui/features/auth/pages/ResetPasswordPage.qml
         ui/features/auth/pages/CreateAccountPage.qml
         ui/features/auth/pages/SignUpPage.qml
         ui/features/auth/pages/NamePage.qml
@@ -264,6 +265,8 @@ qt_add_qml_module(appAccoFinder
         QML_FILES ui/features/properties/components/SearchFiltersRow.qml
         QML_FILES ui/features/properties/delegates/SearchPropertyCardDelegate.qml
         QML_FILES ui/features/properties/pages/SearchPropertiesPage.qml
+        QML_FILES ui/features/home/components/ReadOnlyRoomCard.qml
+        QML_FILES ui/features/home/delegates/ReadOnlyRoomDetailDelegate.qml
 
 
 

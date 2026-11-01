@@ -8,8 +8,8 @@ DisputeController::DisputeController(QObject *parent)
             this,&DisputeController::disputesLoaded);
     connect(m_disputeRepository,&DisputeRepositoryImpl::disputeRaised,
             this,&DisputeController::disputeRaised);
-    connect(m_disputeRepository,&DisputeRepositoryImpl::disputeResolved,
-            this,&DisputeController::disputeResolved);
+    connect(m_disputeRepository, &DisputeRepositoryImpl::disputeError,
+            this, &DisputeController::disputeError);
 }
 
 void DisputeController::raiseDispute(const QString& bookingId,const QString& issue)

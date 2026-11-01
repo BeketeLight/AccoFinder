@@ -44,7 +44,7 @@ Page {
     property bool isPropertyOnHold: false
     property var propertyHoldExpiresAt: null
 
-    readonly property bool canBookProperty: root.propertyType === "WHOLE" && root.isPropertyAvailable && !root.isPropertyOnHold
+    readonly property bool canBookProperty: root.propertyType === "WHOLE" || "QUARTER" && root.isPropertyAvailable && !root.isPropertyOnHold
 
     // The booking fee is the entire amount due for a whole-property booking.
     // Same admin-set value the room page uses.
@@ -129,7 +129,7 @@ Page {
         NavUtils.pop();
     }
 
-    function navigateToQuarters(roomData) {
+    function navigateToBookableRoom(roomData) {
         root.roomClicked(roomData.roomId, roomData);
 
         // Extract images list from model, falling back to single imageUrl
@@ -145,7 +145,44 @@ Page {
             mediaArray = [roomData.imageUrl];
         }
 
-        NavUtils.push(Qt.resolvedUrl("./QuartersDetailDelegate.qml"), {
+        NavUtils.push(Qt.resolvedUrl("./BookableRoomDetailDelegate.qml"), {
+            quarterId: roomData.roomId,
+            quarterType: roomData.type,
+            propertyId: root.propertyId,
+            quarterPrice: roomData.price,
+            isquarterAvailable: roomData.available,
+            // Provisional hold state from GET /rooms. A held room still comes
+            // back with available === true (only a CONFIRMED booking sets it
+            // false), so these have to travel with the payload or the detail
+            // page would show "Book Now" on a room that is already spoken for.
+            isOnHold: roomData.holdActive === true,
+            holdExpiresAt: roomData.holdExpiresAt ?? null,
+            roomImage: roomData.imageUrl || "",
+            mediaList: mediaArray // <--- Forward room images array
+            ,
+            quarterTitle: root.propertyTitle,
+            location: root.location,
+            description: root.description
+        });
+    }
+
+    function navigateToreadOnlyRoom(roomData) {
+        root.roomClicked(roomData.roomId, roomData);
+
+        // Extract images list from model, falling back to single imageUrl
+        var mediaArray = [];
+        if (roomData.images && roomData.images.count !== undefined) {
+            // If passed as QML ListModel/ListElement
+            for (var i = 0; i < roomData.images.count; i++) {
+                mediaArray.push(roomData.images.get(i).modelData || roomData.images.get(i));
+            }
+        } else if (Array.isArray(roomData.images) && roomData.images.length > 0) {
+            mediaArray = roomData.images;
+        } else if (roomData.imageUrl) {
+            mediaArray = [roomData.imageUrl];
+        }
+
+        NavUtils.push(Qt.resolvedUrl("./ReadOnlyRoomDetailDelegate.qml"), {
             quarterId: roomData.roomId,
             quarterType: roomData.type,
             propertyId: root.propertyId,
@@ -508,28 +545,60 @@ Page {
 
                     // ListModel roles via model.* — avoids required-property clash
                     // with QuartersComponent's own imageUrl property
-                    delegate: QuartersComponent {
-                        width: roomsGridView.cellWidth - 4
-                        height: roomsGridView.cellHeight - 4
+                    delegate: root.propertyType === "HOSTEL" ? bookableRoomCard : readOnlyRoomCard
+                    Component {
+                        id: bookableRoomCard
+                        BookableRoomCard {
+                            width: roomsGridView.cellWidth - 4
+                            height: roomsGridView.cellHeight - 4
 
-                        quartersId: model.roomId
-                        quartersType: model.type
-                        quartersPrice: model.price
-                        isQuartersAvailable: model.available
-                        imageUrl: ImageUtils.cachedSource(model.imageUrl)
-                        quartersTitle: root.propertyTitle
-                        location: root.location
+                            quartersId: model.roomId
+                            quartersType: model.type
+                            quartersPrice: model.price
+                            isQuartersAvailable: model.available
+                            imageUrl: ImageUtils.cachedSource(model.imageUrl)
+                            quartersTitle: root.propertyTitle
+                            location: root.location
 
-                        onClicked: {
-                            root.navigateToQuarters({
-                                roomId: model.roomId,
-                                propertyId: root.propertyId,
-                                type: model.type,
-                                price: model.price,
-                                available: model.available,
-                                imageUrl: model.imageUrl,
-                                mediaList: imageUrl
-                            });
+                            onClicked: {
+                                root.navigateToBookableRoom({
+                                    roomId: model.roomId,
+                                    propertyId: root.propertyId,
+                                    type: model.type,
+                                    price: model.price,
+                                    available: model.available,
+                                    imageUrl: model.imageUrl,
+                                    mediaList: imageUrl
+                                });
+                            }
+                        }
+                    }
+
+                    Component {
+                        id: readOnlyRoomCard
+                        ReadOnlyRoomCard {
+                            width: roomsGridView.cellWidth - 4
+                            height: roomsGridView.cellHeight - 4
+
+                            quartersId: model.roomId
+                            quartersType: model.type
+                            quartersPrice: model.price
+                            isQuartersAvailable: model.available
+                            imageUrl: ImageUtils.cachedSource(model.imageUrl)
+                            quartersTitle: root.propertyTitle
+                            location: root.location
+
+                            onClicked: {
+                                root.navigateToreadOnlyRoom({
+                                    roomId: model.roomId,
+                                    propertyId: root.propertyId,
+                                    type: model.type,
+                                    price: model.price,
+                                    available: model.available,
+                                    imageUrl: model.imageUrl,
+                                    mediaList: imageUrl
+                                });
+                            }
                         }
                     }
                 }
@@ -591,7 +660,10 @@ Page {
                     Layout.fillWidth: true
                     visible: ReviewViewModel.canReview
                     text: qsTr("Write a review")
-                    onClicked: writeReviewSheet.open()
+                    onClicked: NavUtils.push(Qt.resolvedUrl("../../reviews/screens/WriteReviewScreen.qml"), {
+                        propertyId: root.propertyId,
+                        agentId: root.agentId || ""
+                    })
                 }
 
                 // Why can't they review?
@@ -709,7 +781,7 @@ Page {
                     visible: ReviewViewModel.reviewCount > 3
                     text: qsTr("See all " + ReviewViewModel.reviewCount + " reviews")
                     flat: true
-                    onClicked: NavUtils.push("qrc:/ui/features/reviews/screens/ReviewListScreen.qml", {
+                    onClicked: NavUtils.push(Qt.resolvedUrl("../../reviews/screens/ReviewListScreen.qml"), {
                         propertyId: root.propertyId
                     })
                 }
@@ -725,8 +797,8 @@ Page {
     // ========== FOOTER (whole-house booking only) ==========
     footer: ToolBar {
         id: bookingBar
-        height: root.propertyType === "WHOLE" ? 72 : 0
-        visible: root.propertyType === "WHOLE"
+        height: root.propertyType === "WHOLE" || "QUARTER" ? 72 : 0
+        visible: root.propertyType === "WHOLE" || "QUARTER"
 
         background: Rectangle {
             color: "#FFFFFF"
@@ -835,42 +907,9 @@ Page {
     // only fills in fields the caller did not carry.
     Connections {
         target: PropertyViewModel
-
-        function onPropertyLoaded(property) {
-            if (!property)
-                return;
-            const fetchedId = property.getId ? property.getId() : "";
-            if (fetchedId !== root.propertyId)
-                return;
-
-            // Only overwrite fields the page does not already have. Payload
-            // values (title, price, location) are the ones the caller saw on
-            // the card; keep them. Everything else is filled from the fetch.
-            if (!root.description)
-                root.description = property.getDescription();
-            if (!root.location)
-                root.location = property.getLocation();
-            if (root.price <= 0)
-                root.price = property.getPrice();
-            if (!root.propertyTitle)
-                root.propertyTitle = property.getTitle();
-            if (!root.propertyType)
-                root.propertyType = String(property.getPropertyType() || "").toUpperCase();
-            if (!root.status)
-                root.status = property.getVerificationStatus();
-            if (!root.amenities || root.amenities.length === 0)
-                root.amenities = property.getAmenities();
-
-            // Owner / agent fields — the payload almost never carries these.
-            root.agentFirstName = property.getOwnerFirstName();
-            root.agentPhone = property.getOwnerPhone();
-        }
     }
 
     Component.onCompleted: {
-        if (root.propertyId.length > 0) {
-            PropertyViewModel.getPropertyById(root.propertyId);
-        }
         if (root.propertyId.length > 0) {
             ReviewViewModel.loadForProperty(root.propertyId);
             ReviewViewModel.loadSummary(root.propertyId);

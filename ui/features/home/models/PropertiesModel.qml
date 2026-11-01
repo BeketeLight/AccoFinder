@@ -239,9 +239,9 @@ Item {
                 // Put the cover first in the list, keep the rest order-stable.
                 if (cover.length > 0) {
                     var reordered = [cover];
-                    for (var u = 0; u < urls.length; u++)
-                        if (urls[u] !== cover)
-                            reordered.push(urls[u]);
+                    for (var idx = 0; idx < urls.length; idx++)
+                        if (urls[t] !== cover)
+                            reordered.push(urls[idx]);
                     urls = reordered;
                 }
             }
