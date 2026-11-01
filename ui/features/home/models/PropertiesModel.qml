@@ -240,7 +240,7 @@ Item {
                 if (cover.length > 0) {
                     var reordered = [cover];
                     for (var idx = 0; idx < urls.length; idx++)
-                        if (urls[t] !== cover)
+                        if (urls[idx] !== cover)
                             reordered.push(urls[idx]);
                     urls = reordered;
                 }

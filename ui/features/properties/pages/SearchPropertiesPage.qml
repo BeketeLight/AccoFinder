@@ -20,20 +20,29 @@ Item {
         id: searchResults
     }
 
+    // Watch the C++ model directly to force the UI to update when data arrives
+    Connections {
+        target: PropertyViewModel
+        function onIsSearchingChanged() {
+            // Just sync the local isSearching state.
+            // We don't need to guess if it loaded.
+        }
+    }
+
     Item {
         anchors.fill: parent
-
         // ---- Loading (no prior results) ----
         AppSpinner {
             anchors.centerIn: parent
             size: 32
             lineWidth: 3
             color: "#2563EB"
-            running: root.isSearching
-            visible: root.isSearching && searchResults.count === 0
+            // Show ONLY if actively searching AND we have no results yet
+            running: root.isSearching && searchResults.count === 0
+            visible: running
         }
 
-        // ---- Empty with query ----
+        // ---- Empty with query (or if database is empty) ----
         AppEmptyState {
             anchors.centerIn: parent
             width: Math.min(parent.width - 48, 320)
@@ -41,18 +50,7 @@ Item {
             visible: !root.isSearching && searchResults.count === 0 && root.hasQuery
             iconSource: "qrc:/ui/assets/search-icon.svg"
             title: qsTr("No results")
-            subtitle: qsTr("Try a different location, or clear a filter.")
-        }
-
-        // ---- Empty without query ----
-        AppEmptyState {
-            anchors.centerIn: parent
-            width: Math.min(parent.width - 48, 320)
-            height: implicitHeight
-            visible: !root.isSearching && searchResults.count === 0 && !root.hasQuery
-            iconSource: "qrc:/ui/assets/search-icon.svg"
-            title: qsTr("Search properties")
-            subtitle: qsTr("Type a location, or pick a filter.")
+            subtitle: qsTr("There are no properties available at the moment.")
         }
 
         // ---- Results ----

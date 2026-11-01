@@ -374,10 +374,12 @@ void PropertyViewModel::onSearchResultsLoaded(QList<Property*>& properties, int 
     qDebug() << "[PropertyViewModel] onSearchResultsLoaded page:" << page
              << "| count:" << properties.size()
              << "| searchResultModel->size before:" << m_searchResultModel->size();
-    setSearching(false);
+
     if (page <= 1)
         m_searchResultModel->setProperties(properties);
     else
         m_searchResultModel->appendProperties(properties);
+
+    setSearching(false);
     qDebug() << "[PropertyViewModel] searchResultModel->size after:" << m_searchResultModel->size();
 }

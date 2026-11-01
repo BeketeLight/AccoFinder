@@ -172,8 +172,8 @@ void PropertyRepositoryImpl::searchProperties(const PropertyQuery& query)
                 return;
             }
             QList<Property*> properties = parseListingResponse(response);
-            if (isSearch)
-                emit searchResultsLoaded(properties, requestedPage);
+            //if (isSearch)
+            emit searchResultsLoaded(properties, requestedPage);
         }
         );
 }

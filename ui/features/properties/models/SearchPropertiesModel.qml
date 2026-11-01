@@ -52,10 +52,13 @@ Item {
     // Mirror the C++ rows into the QML model.
     // ------------------------------------------------------------
     function reload() {
+        console.log("=== [SearchModel] reload() CALLED ===");
         searchModel.clear();
 
         const src = PropertyViewModel.searchResultModel;
         const n = src ? src.size() : 0;
+
+        console.log("=== [SearchModel] C++ model size is:", n, "===");
 
         for (let i = 0; i < n; i++) {
             const row = src.at(i);
@@ -104,12 +107,15 @@ Item {
                 // ---- meta ----
                 createdAt: row.createdAt || ""
             });
+
+            console.log("=== [SearchModel] Appended property:", pid, "===");
         }
+
+        console.log("=== [SearchModel] Finished reload. QML model count is:", searchModel.count, "===");
 
         scheduleMediaFetches();
         refreshCovers();
     }
-
     // ------------------------------------------------------------
     // Media pipeline (same shape as PropertiesModel's).
     // ------------------------------------------------------------
@@ -197,14 +203,19 @@ Item {
         function onRowsRemoved() {
             root.reload();
         }
+        function onLayoutChanged() {
+            root.reload();
+        }
     }
 
     // Search finishing is the signal that result rows have arrived.
     Connections {
         target: PropertyViewModel
         function onIsSearchingChanged() {
-            if (!PropertyViewModel.isSearching)
+            if (!PropertyViewModel.isSearching) {
+                console.log("=== [SearchModel] isSearching finished, forcing reload ===");
                 root.reload();
+            }
         }
     }
 

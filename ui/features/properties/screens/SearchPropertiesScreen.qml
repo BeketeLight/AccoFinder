@@ -27,7 +27,7 @@ Page {
     readonly property int pageSize: 20
     readonly property bool priceFilterEnabled: true
 
-    readonly property bool hasQuery: searchText.trim().length > 0 || propertyType.length > 0 || district.length > 0 || village.length > 0 || amenities.length > 0 || (priceFilterEnabled && (minPrice > 0 || maxPrice > 0))
+    readonly property bool hasQuery: true // searchText.trim().length > 0 || propertyType.length > 0 || district.length > 0 || village.length > 0 || amenities.length > 0 || (priceFilterEnabled && (minPrice > 0 || maxPrice > 0))
 
     Timer {
         id: debounce
@@ -138,5 +138,10 @@ Page {
             pageSize: root.pageSize
             onLoadMoreRequested: root.runSearch(root.page + 1)
         }
+    }
+
+    Component.onCompleted: {
+        // Load all properties by default when the search screen opens
+        root.runSearch(1);
     }
 }
