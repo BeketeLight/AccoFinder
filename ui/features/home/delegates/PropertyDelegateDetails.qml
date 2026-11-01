@@ -829,7 +829,48 @@ Page {
             errorDialog.open();
         }
     }
+    // Fetch the property record by id so the page renders completely even
+    // when the navigation payload is thin (cold start, deep link, saved row).
+    // The navigation payload remains the initial optimistic value; the fetch
+    // only fills in fields the caller did not carry.
+    Connections {
+        target: PropertyViewModel
+
+        function onPropertyLoaded(property) {
+            if (!property)
+                return;
+            const fetchedId = property.getId ? property.getId() : "";
+            if (fetchedId !== root.propertyId)
+                return;
+
+            // Only overwrite fields the page does not already have. Payload
+            // values (title, price, location) are the ones the caller saw on
+            // the card; keep them. Everything else is filled from the fetch.
+            if (!root.description)
+                root.description = property.getDescription();
+            if (!root.location)
+                root.location = property.getLocation();
+            if (root.price <= 0)
+                root.price = property.getPrice();
+            if (!root.propertyTitle)
+                root.propertyTitle = property.getTitle();
+            if (!root.propertyType)
+                root.propertyType = String(property.getPropertyType() || "").toUpperCase();
+            if (!root.status)
+                root.status = property.getVerificationStatus();
+            if (!root.amenities || root.amenities.length === 0)
+                root.amenities = property.getAmenities();
+
+            // Owner / agent fields — the payload almost never carries these.
+            root.agentFirstName = property.getOwnerFirstName();
+            root.agentPhone = property.getOwnerPhone();
+        }
+    }
+
     Component.onCompleted: {
+        if (root.propertyId.length > 0) {
+            PropertyViewModel.getPropertyById(root.propertyId);
+        }
         if (root.propertyId.length > 0) {
             ReviewViewModel.loadForProperty(root.propertyId);
             ReviewViewModel.loadSummary(root.propertyId);

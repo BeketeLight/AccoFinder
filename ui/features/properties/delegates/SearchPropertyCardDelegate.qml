@@ -52,11 +52,9 @@ Item {
     property string rejectionReason: ""
     property string createdAt: ""
 
-    readonly property bool isQuarter: String(root.propertyType).toUpperCase() === "QUARTER"
-
     Loader {
         anchors.fill: parent
-        sourceComponent: root.isQuarter ? quarterCard : propertyCard
+        sourceComponent: propertyCard
 
         Component {
             id: propertyCard
@@ -74,35 +72,6 @@ Item {
                 isVerified: root.isVerified
                 insideInfoSection: false
                 isInfoSectionVisible: true
-            }
-        }
-
-        Component {
-            id: quarterCard
-            QuartersComponent {
-                anchors.fill: parent
-                quartersId: root.propertyId
-                quartersType: root.propertyType
-                quartersTitle: root.title
-                location: root.location
-                quartersPrice: root.price
-                isQuartersAvailable: root.isActive
-                imageUrl: root.imageUrl
-
-                onClicked: {
-                    if (!AppSettings.isLoggedIn()) {
-                        NavUtils.navigateToAccount();
-                        return;
-                    }
-                    NavUtils.push("qrc:/qt/qml/AccoFinder/ui/features/home/delegates/QuartersDetailDelegate.qml", {
-                        quarterId: root.propertyId,
-                        quarterTitle: root.title,
-                        quarterType: root.propertyType,
-                        location: root.location,
-                        quarterPrice: root.price,
-                        isquarterAvailable: root.isActive
-                    });
-                }
             }
         }
     }

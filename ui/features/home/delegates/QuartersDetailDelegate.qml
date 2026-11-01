@@ -19,10 +19,10 @@ Page {
 
     // ========== PROPERTY DATA ==========
     property string quarterId: ""
-    property string quarterTitle: "Modern quarter"
-    property string quarterType: "Master Bedroom"
-    property string location: "Area 47, Lilongwe"
-    property real quarterPrice: 250000
+    property string quarterTitle: ""
+    property string quarterType: ""
+    property string location: ""
+    property real quarterPrice: 0
     property bool isquarterAvailable: true
     property string propertyId: ""
 
@@ -57,11 +57,11 @@ Page {
     property string description: "Spacious quarter with en-suite bathroom and walk-in closet. Features large windows with natural light and a beautiful view of the garden."
 
     // Agent information
-    property string agentFirstName: "Banda"
+    property string agentFirstName: ""
     property string agentLastName: ""
-    property string agentPhone: "+265 999 123 456"
-    property string agentEmail: "john.banda@realtor.mw"
-    property real agentRating: 4.6
+    property string agentPhone: ""
+    property string agentEmail: ""
+    property real agentRating: 0
     property int agentReviewCount: 0
     // property var reviewsModel
 
@@ -394,14 +394,15 @@ Page {
                     }
                 }
                 AppEmptyState {
+                    Layout.fillWidth: true
                     title: "No Reviews"
                     subtitle: "there are no reviews availabe at the time"
-                    visible: reviewsRepeater.count === 0 ? true : falses
+                    visible: reviewsRepeater.count === 0 ? true : false
                 }
 
                 Repeater {
                     id: reviewsRepeater
-                    model: root.reviewsModel
+                    model: ReviewViewModel.model
 
                     Rectangle {
                         Layout.fillWidth: true

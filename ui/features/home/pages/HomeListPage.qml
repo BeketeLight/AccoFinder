@@ -41,56 +41,56 @@ Item {
                 width: flow.cellWidth
                 height: width * 1.73
 
-                sourceComponent: root.renderAs === "quarter" ? quarterCard : propertyCard
+                //sourceComponent: root.renderAs === "quarter" ? quarterCard : propertyCard
 
-                Component {
-                    id: propertyCard
-                    PropertyCardDelegate {
-                        anchors.fill: parent
-                        propertyId: model.propertyId
-                        propertyType: model.propertyType
-                        title: model.title
-                        location: model.location
-                        price: model.price
-                        imageUrl: model.imageUrl
-                        imageUrls: model.imageUrls
-                        amenities: model.amenities
-                        status: model.status
-                        insideInfoSection: false
-                        isVerified: model.isVerified
-                    }
+                // Component {
+                //     id: propertyCard
+                PropertyCardDelegate {
+                    anchors.fill: parent
+                    propertyId: model.propertyId
+                    propertyType: model.propertyType
+                    title: model.title
+                    location: model.location
+                    price: model.price
+                    imageUrl: model.imageUrl
+                    imageUrls: model.imageUrls
+                    amenities: model.amenities
+                    status: model.status
+                    insideInfoSection: false
+                    isVerified: model.isVerified
                 }
+                // }
 
-                Component {
-                    id: quarterCard
-                    QuartersComponent {
-                        anchors.fill: parent
-                        quartersId: model.propertyId
-                        quartersType: model.propertyType
-                        quartersTitle: model.title
-                        location: model.location
-                        quartersPrice: model.price
-                        imageUrl: model.imageUrl
-                        imageUrls: model.imageUrls
-                        isQuartersAvailable: model.isActive
-                        onClicked: {
-                            if (!AppSettings.isLoggedIn()) {
-                                NavUtils.navigateToAccount();
-                                return;
-                            }
-                            NavUtils.push(Qt.resolvedUrl("../delegates/QuartersDetailDelegate.qml"), {
-                                quarterId: model.propertyId,
-                                quarterTitle: model.title,
-                                quarterType: model.propertyType,
-                                location: model.location,
-                                quarterPrice: model.price,
-                                isquarterAvailable: model.isActive,
-                                description: model.description,
-                                roomImage: model.imageUrl
-                            });
-                        }
-                    }
-                }
+                // Component {
+                //     id: quarterCard
+                //     QuartersComponent {
+                //         anchors.fill: parent
+                //         quartersId: model.propertyId
+                //         quartersType: model.propertyType
+                //         quartersTitle: model.title
+                //         location: model.location
+                //         quartersPrice: model.price
+                //         imageUrl: model.imageUrl
+                //         imageUrls: model.imageUrls
+                //         isQuartersAvailable: model.isActive
+                //         onClicked: {
+                //             if (!AppSettings.isLoggedIn()) {
+                //                 NavUtils.navigateToAccount();
+                //                 return;
+                //             }
+                //             NavUtils.push(Qt.resolvedUrl("../delegates/QuartersDetailDelegate.qml"), {
+                //                 quarterId: model.propertyId,
+                //                 quarterTitle: model.title,
+                //                 quarterType: model.propertyType,
+                //                 location: model.location,
+                //                 quarterPrice: model.price,
+                //                 isquarterAvailable: model.isActive,
+                //                 description: model.description,
+                //                 roomImage: model.imageUrl
+                //             });
+                //         }
+                //     }
+                // }
             }
         }
     }
