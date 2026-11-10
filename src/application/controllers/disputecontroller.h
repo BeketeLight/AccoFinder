@@ -23,6 +23,7 @@ signals:
     void disputeRaised(Dispute* dispute);
     void disputeResolved(Dispute* dispute);
     void disputesLoaded(QList<Dispute*> disputes);
+    void disputeError(const QString& error);
 };
 
 #endif // DISPUTECONTROLLER_H

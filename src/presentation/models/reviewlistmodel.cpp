@@ -15,7 +15,6 @@ int ReviewListModel::rowCount(const QModelIndex& parent) const
 }
 QVariant ReviewListModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-    // FIXME: Implement me!
     Q_UNUSED(section);
     Q_UNUSED(orientation);
     Q_UNUSED(role);

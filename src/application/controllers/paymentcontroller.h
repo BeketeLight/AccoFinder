@@ -78,6 +78,23 @@ public:
     Q_INVOKABLE void fetchOperators();
     Q_INVOKABLE void verifyPayment(const QString& chargeId);
 
+    // Admin oversight actions (POST /payments/commissions/settle and
+    // POST /payments/payouts/release). Identifiers are optional; the backend
+    // resolves the payment by paymentId first, then bookingId.
+    Q_INVOKABLE void settleCommission(const QString& paymentId,
+                                      const QString& bookingId = QString(),
+                                      const QString& agentId = QString(),
+                                      const QString& agentName = QString());
+    Q_INVOKABLE void releasePayout(const QString& paymentId,
+                                   const QString& bookingId = QString(),
+                                   const QString& landlordId = QString(),
+                                   const QString& landlord = QString());
+
+    Q_INVOKABLE void refundPayment(const QString& paymentId = QString(),
+                                  const QString& bookingId = QString(),
+                                  const QString& transactionRef = QString(),
+                                  const QString& reason = QString());
+
     // ---- C++-only helper for the gateway to append a payment ----
     void appendPaymentToList(Payment* payment);
     void clearList();
@@ -96,6 +113,10 @@ signals:
     void operatorsError(const QString& error);
     void paymentVerified(Payment* payment);
     void paymentVerificationPending(Payment* payment);
+    void commissionSettled(const QVariantMap& data);
+    void payoutReleased(const QVariantMap& data);
+    void paymentRefunded(const QVariantMap& data);
+    void paymentActionFailed(const QString& error);
 
 private:
     void setLoading(bool loading);

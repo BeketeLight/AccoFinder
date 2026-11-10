@@ -137,7 +137,9 @@ bool DraftViewModel::resendDraft(const QString &key)
         amens.append(v.toString());
 
     // Normalize stored room objects ({ roomId, roomType, price, available })
-    // into the backend shape used at creation ({ type, price, available }).
+    // into the backend shape used at creation
+    // ({ type, rentalFee, bookingFee, available }). Drafts written by older
+    // builds only carry `price`, so accept that as a fallback.
     QJsonArray rooms;
     for (const QJsonValue &v : rawRooms) {
         const QJsonObject r = v.toObject();
@@ -145,8 +147,11 @@ bool DraftViewModel::resendDraft(const QString &key)
         room["type"] = r.value(QLatin1String("roomType")).toString(
                            r.value(QLatin1String("type")).toString(
                                QStringLiteral("Room")));
-        room["price"] = r.value("price").toDouble();
-        room["available"] = r.value("available").toBool(true);
+        room["rentalFee"] = r.contains(QLatin1String("rentalFee"))
+                                ? r.value(QLatin1String("rentalFee")).toDouble()
+                                : r.value(QLatin1String("price")).toDouble();
+        room["bookingFee"] = r.value(QLatin1String("bookingFee")).toDouble();
+        room["available"] = r.value(QLatin1String("available")).toBool(true);
         rooms.append(room);
     }
 
@@ -164,7 +169,9 @@ bool DraftViewModel::resendDraft(const QString &key)
     m_propertyViewModel->createProperty(
         draft.value("title").toString(),
         draft.value("description").toString(),
-        draft.value("price").toDouble(),
+        draft.contains("rentalFee")
+            ? draft.value("rentalFee").toDouble()
+            : draft.value("price").toDouble(),
         draft.value("propertyType").toString(),
         addr.value("district").toString(),
         addr.value("village").toString(),

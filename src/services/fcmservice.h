@@ -18,6 +18,10 @@ public:
     Q_INVOKABLE void registerToken();
     Q_INVOKABLE void unregisterToken();
 
+    // Mirrors AppSettings notification toggles into the Android FCM service so
+    // it can drop suppressed notifications even when Qt is not running.
+    Q_INVOKABLE void syncNotificationPreferences();
+
 signals:
     void notificationReceived(const QString &title, const QString &body);
     void fcmTokenReceived(const QString &token);

@@ -34,7 +34,9 @@ Item {
         var seen = ({})
         for (var s = 0; s < server.length; s++) {
             var sp = server[s] || {}
-            var ownerId = String(sp.agentId || "")
+            // The API stores the listing owner in `owner`; PropertyDto exposes
+            // that as ownerId. Fall back to agentId for older payloads.
+            var ownerId = String(sp.ownerId || sp.agentId || "")
             if (ownerId.length > 0 && ownerId !== myId)
                 continue
             var pid = String(sp.id || "")
@@ -106,7 +108,7 @@ Item {
         var server = PropertyViewModel.propertiesForView() || []
         for (var s = 0; s < server.length; s++) {
             var sp = server[s] || {}
-            var ownerId = String(sp.agentId || "")
+            var ownerId = String(sp.ownerId || sp.agentId || "")
             if (ownerId.length > 0 && ownerId !== myId)
                 continue
             ids.push(String(sp.id || ""))
@@ -121,7 +123,7 @@ Item {
         if (!rm)
             return false
         for (var i = 0; i < rm.count; i++) {
-            var row = rm.get(i)
+            var row = rm.at(i)
             if (String(row.id) === String(roomId) && owned.indexOf(String(row.propertyId)) !== -1)
                 return true
         }
@@ -133,17 +135,19 @@ Item {
         if (!bm)
             return out
         for (var i = 0; i < bm.count; i++) {
-            var b = bm.get(i)
+            var b = bm.at(i)
             if (root.roomBelongsToMe(b.roomId))
                 out.push(b)
         }
         return out
     }
-    function countBookingStatus(list, statuses) {
+    function countBookingStatus(list, bucket) {
         var n = 0
         for (var i = 0; i < list.length; i++) {
-            var st = String(list[i].status || "").toLowerCase()
-            if (statuses.indexOf(st) !== -1)
+            // One shared mapping for every status card, so the C++ display
+            // labels ("Pending payment", "Payment processing", ...) all land
+            // in the same buckets as the rest of the app.
+            if (Utils.bookingStatusBucket(list[i].status) === bucket)
                 n++
         }
         return n
@@ -154,15 +158,15 @@ Item {
         var list = root.myBookings()
         var total = 0
         for (var i = 0; i < list.length; i++) {
-            var st = String(list[i].status || "").toLowerCase()
-            if (st === "confirmed" || st === "paid")
+            if (Utils.bookingStatusBucket(list[i].status) === "CONFIRMED")
                 total += Number(list[i][field] || 0)
         }
         return total
     }
-    property int pendingBookings: root.countBookingStatus(root.myBookings(), ["pending"]) + refreshTick - refreshTick
-    property int confirmedBookings: root.countBookingStatus(root.myBookings(), ["confirmed", "paid"]) + refreshTick - refreshTick
-    property int cancelledBookings: root.countBookingStatus(root.myBookings(), ["cancelled"]) + refreshTick - refreshTick
+    property int pendingBookings: root.countBookingStatus(root.myBookings(), "PENDING") + refreshTick - refreshTick
+    property int confirmedBookings: root.countBookingStatus(root.myBookings(), "CONFIRMED") + refreshTick - refreshTick
+    property int cancelledBookings: root.countBookingStatus(root.myBookings(), "CANCELLED") + refreshTick - refreshTick
+    property int expiredBookings: root.countBookingStatus(root.myBookings(), "EXPIRED") + refreshTick - refreshTick
     property real totalBookingValue: root.sumRealisedField("amount") + refreshTick - refreshTick
     property real commissionEarned: root.sumRealisedField("commissionAmount") + refreshTick - refreshTick
 
@@ -213,7 +217,7 @@ Item {
         if (!bm)
             return false
         for (var i = 0; i < bm.count; i++) {
-            var b = bm.get(i)
+            var b = bm.at(i)
             if (String(b.bookingId) === String(bookingId))
                 return root.roomBelongsToMe(b.roomId)
         }
@@ -226,7 +230,7 @@ Item {
         if (!dm)
             return
         for (var i = 0; i < dm.count; i++) {
-            var d = dm.get(i)
+            var d = dm.at(i)
             if (!root.bookingBelongsToMe(d.bookingId))
                 continue
             myDisputesModelId.append({
@@ -255,7 +259,7 @@ Item {
         var seenServer = ({})
         for (var s = 0; s < server.length; s++) {
             var sp = server[s] || {}
-            var ownerId = String(sp.agentId || "")
+            var ownerId = String(sp.ownerId || sp.agentId || "")
             if (ownerId.length > 0 && ownerId !== String(myId))
                 continue
             var pid = String(sp.id || "")

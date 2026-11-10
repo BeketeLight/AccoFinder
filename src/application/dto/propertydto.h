@@ -66,7 +66,13 @@ public:
     QString district;
     QString village;
     QStringList amenities;
-    double price;
+    // QML keeps calling this "price"; at the API boundary it maps to the
+    // backend's `rentalFee` (see toCreateJson/toUpdateJson/fromJson).
+    double price = 0;
+    double bookingFee = 0;
+    // True when bookingFee came from an API payload, so an update can send it
+    // without clobbering a server value this client never loaded.
+    bool hasBookingFee = false;
     QString description;
     QString status;
     QString agentId;

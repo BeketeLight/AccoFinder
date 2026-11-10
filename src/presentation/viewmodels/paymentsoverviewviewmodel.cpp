@@ -4,6 +4,7 @@
 PaymentsOverviewViewModel::PaymentsOverviewViewModel(QObject *parent)
     : QObject(parent),
       m_repository(new PaymentsOverviewRepositoryImpl(this)),
+      m_gateway(new PaymentGatewayImpl(this)),
       m_payments(new PaymentsListModel(this)),
       m_commissions(new PaymentsListModel(this)),
       m_payouts(new PaymentsListModel(this))
@@ -19,6 +20,24 @@ PaymentsOverviewViewModel::PaymentsOverviewViewModel(QObject *parent)
             this, [this](const QString& error) {
         setLoading(false);
         emit errorOccurred(error);
+    });
+
+    connect(m_gateway, &PaymentGatewayImpl::commissionSettled,
+            this, [this](const QJsonObject& data) {
+        setLoading(false);
+        emit commissionSettled(data.toVariantMap());
+        refresh();
+    });
+    connect(m_gateway, &PaymentGatewayImpl::payoutReleased,
+            this, [this](const QJsonObject& data) {
+        setLoading(false);
+        emit payoutReleased(data.toVariantMap());
+        refresh();
+    });
+    connect(m_gateway, &PaymentGatewayImpl::paymentError,
+            this, [this](const QString& error) {
+        setLoading(false);
+        emit actionFailed(error);
     });
 }
 
@@ -57,4 +76,32 @@ void PaymentsOverviewViewModel::refresh()
 {
     setLoading(true);
     m_repository->fetchOverview();
+}
+
+void PaymentsOverviewViewModel::settleCommission(const QString& agentName,
+                                                 const QString& paymentId,
+                                                 const QString& bookingId,
+                                                 const QString& agentId)
+{
+    if (agentName.isEmpty() && agentId.isEmpty()
+        && paymentId.isEmpty() && bookingId.isEmpty()) {
+        emit actionFailed("A commission row needs an agent or payment identifier.");
+        return;
+    }
+    setLoading(true);
+    m_gateway->settleCommission(paymentId, bookingId, agentId, agentName);
+}
+
+void PaymentsOverviewViewModel::releasePayout(const QString& landlord,
+                                              const QString& paymentId,
+                                              const QString& bookingId,
+                                              const QString& landlordId)
+{
+    if (landlord.isEmpty() && landlordId.isEmpty()
+        && paymentId.isEmpty() && bookingId.isEmpty()) {
+        emit actionFailed("A payout row needs a landlord, booking, or payment identifier.");
+        return;
+    }
+    setLoading(true);
+    m_gateway->releasePayout(paymentId, bookingId, landlordId, landlord);
 }

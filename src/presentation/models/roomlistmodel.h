@@ -12,6 +12,7 @@
 class RoomListModel : public QAbstractListModel
 {
     Q_OBJECT
+    Q_PROPERTY(int count READ count NOTIFY countChanged)
 
 public:
     enum {
@@ -33,6 +34,7 @@ public:
 
     // Basic functionality:
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
+    int count() const { return m_rooms.size(); }
 
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
 
@@ -53,6 +55,9 @@ public:
     // both paths produce identical maps for the detail pages.
     static QVariantList toVariantList(const QList<QSharedPointer<Room>>& rooms);
     QVariantMap getRoomById(const QString& roomId) const; //b----added
+    // Row snapshot as a plain map, mirroring BookingListModel/DisputesListModel
+    // so QML can read `roomListModel.at(i)` instead of a non-existent get().
+    Q_INVOKABLE QVariantMap at(int index) const;
 
 signals:
     void countChanged(int newCount);

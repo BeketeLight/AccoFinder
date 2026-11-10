@@ -336,7 +336,10 @@ QString AppSettings::landlordPhone() const
 
 void AppSettings::setTheme(const QString &value)
 {
+    if (theme() == value)
+        return;
     m_settings.setValue("app/theme", value);
+    emit themeChanged();
 }
 QString AppSettings::theme() const
 {
@@ -345,7 +348,10 @@ QString AppSettings::theme() const
 
 void AppSettings::setLanguage(const QString &value)
 {
+    if (language() == value)
+        return;
     m_settings.setValue("app/language", value);
+    emit languageChanged();
 }
 QString AppSettings::language() const
 {
@@ -574,7 +580,10 @@ QVariantMap AppSettings::favoriteRoomSnapshot(const QString &quarterId) const
 
 void AppSettings::setNotificationsEnabled(bool value)
 {
+    if (notificationsEnabled() == value)
+        return;
     m_settings.setValue("notifications/enabled", value);
+    emit notificationPreferencesChanged();
 }
 bool AppSettings::notificationsEnabled() const
 {
@@ -583,7 +592,10 @@ bool AppSettings::notificationsEnabled() const
 
 void AppSettings::setBookingNotifications(bool value)
 {
+    if (bookingNotifications() == value)
+        return;
     m_settings.setValue("notifications/bookings", value);
+    emit notificationPreferencesChanged();
 }
 bool AppSettings::bookingNotifications() const
 {
@@ -592,7 +604,10 @@ bool AppSettings::bookingNotifications() const
 
 void AppSettings::setPromotionNotifications(bool value)
 {
+    if (promotionNotifications() == value)
+        return;
     m_settings.setValue("notifications/promotions", value);
+    emit notificationPreferencesChanged();
 }
 bool AppSettings::promotionNotifications() const
 {
@@ -601,7 +616,10 @@ bool AppSettings::promotionNotifications() const
 
 void AppSettings::setSystemNotifications(bool value)
 {
+    if (systemNotifications() == value)
+        return;
     m_settings.setValue("notifications/system", value);
+    emit notificationPreferencesChanged();
 }
 bool AppSettings::systemNotifications() const
 {

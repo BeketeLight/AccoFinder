@@ -2,7 +2,8 @@
 #include <QJsonObject>
 #include <QJsonArray>
 
-PaymentGatewayImpl::PaymentGatewayImpl()
+PaymentGatewayImpl::PaymentGatewayImpl(QObject* parent)
+    : IPaymentGateway(parent)
      
 {
 
@@ -31,12 +32,16 @@ void  PaymentGatewayImpl::createPayment(const QString& bookingId,
                     response.value("message").toString("Payment failed to start"));
                 return;
             }
-            // The backend returns the canonical payment record inside
-            // resp.payment, plus tx_ref at the top level as a fallback.
-            const QJsonObject p = response.value("payment").toObject();
+            // The backend wraps payloads as { success, message, data }.
+            const QJsonObject data = response.value("data").toObject();
+            const QJsonObject p = data.value("payment").toObject();
             QJsonObject withRef = p;
             if (!withRef.contains("transactionRef"))
-                withRef["transactionRef"] = response.value("tx_ref").toString();
+                withRef["transactionRef"] = data.value("tx_ref").toString();
+            if (withRef.isEmpty()) {
+                emit paymentError(response.value("message").toString("Payment failed to start"));
+                return;
+            }
             auto* payment = PaymentDto::fromJson(withRef).toDomainModel();
             emit paymentCreated(payment);
         }
@@ -57,7 +62,8 @@ void PaymentGatewayImpl::verifyPayment(const QString& chargeId)
                 return;
             }
 
-            const QJsonObject p = response.value("payment").toObject();
+            const QJsonObject data = response.value("data").toObject();
+            const QJsonObject p = data.value("payment").toObject();
 
             // Backend returns payment: null while PayChangu is still settling.
             // Treat that as pending, not as an error.
@@ -67,7 +73,7 @@ void PaymentGatewayImpl::verifyPayment(const QString& chargeId)
             }
             // Merge bookingOutcome into the payment JSON so fromJson can read it.
             QJsonObject merged = p;
-            const QJsonObject outcome = response.value("bookingOutcome").toObject();
+            const QJsonObject outcome = data.value("bookingOutcome").toObject();
             merged["bookingConfirmed"]     = outcome.value("confirmed").toBool();
             merged["bookingOutcomeReason"] = outcome.value("reason").toString();
 
@@ -96,7 +102,7 @@ void PaymentGatewayImpl::getPaymentById(const QString& id)
                 Payment* payment = updateDto.toDomainModel();
                 emit paymentLoaded(payment);
             }else{
-                emit paymentError(response["error"].toString());
+                emit paymentError(response.value("message").toString());
             }
         }
     );
@@ -128,6 +134,84 @@ void PaymentGatewayImpl::getPaymentById(const QString& id)
              }
         }
     );    
+}
+
+void PaymentGatewayImpl::settleCommission(const QString& paymentId,
+                                          const QString& bookingId,
+                                          const QString& agentId,
+                                          const QString& agentName)
+{
+    QJsonObject body;
+    if (!paymentId.isEmpty()) body["paymentId"] = paymentId;
+    if (!bookingId.isEmpty()) body["bookingId"] = bookingId;
+    if (!agentId.isEmpty())   body["agentId"]   = agentId;
+    if (!agentName.isEmpty()) body["agentName"] = agentName;
+
+    APIClient::instance().post(
+        "/payments/commissions/settle",
+        body,
+        [this](bool success, const QJsonObject& response)
+        {
+            if (!success) {
+                emit paymentError(
+                    response.value("message").toString("Could not settle commission"));
+                return;
+            }
+            emit commissionSettled(response.value("data").toObject());
+        }
+    );
+}
+
+void PaymentGatewayImpl::releasePayout(const QString& paymentId,
+                                       const QString& bookingId,
+                                       const QString& landlordId,
+                                       const QString& landlord)
+{
+    QJsonObject body;
+    if (!paymentId.isEmpty())  body["paymentId"]  = paymentId;
+    if (!bookingId.isEmpty())  body["bookingId"]  = bookingId;
+    if (!landlordId.isEmpty()) body["landlordId"] = landlordId;
+    if (!landlord.isEmpty())   body["landlord"]   = landlord;
+
+    APIClient::instance().post(
+        "/payments/payouts/release",
+        body,
+        [this](bool success, const QJsonObject& response)
+        {
+            if (!success) {
+                emit paymentError(
+                    response.value("message").toString("Could not release payout"));
+                return;
+            }
+            emit payoutReleased(response.value("data").toObject());
+        }
+    );
+}
+
+void PaymentGatewayImpl::refundPayment(const QString& paymentId,
+                                       const QString& bookingId,
+                                       const QString& transactionRef,
+                                       const QString& reason)
+{
+    QJsonObject body;
+    if (!paymentId.isEmpty())      body["paymentId"]      = paymentId;
+    if (!bookingId.isEmpty())      body["bookingId"]      = bookingId;
+    if (!transactionRef.isEmpty()) body["transactionRef"] = transactionRef;
+    if (!reason.isEmpty())         body["reason"]         = reason;
+
+    APIClient::instance().post(
+        "/payments/refund",
+        body,
+        [this](bool success, const QJsonObject& response)
+        {
+            if (!success) {
+                emit paymentError(
+                    response.value("message").toString("Could not refund payment"));
+                return;
+            }
+            emit paymentRefunded(response.value("data").toObject());
+        }
+    );
 }
 
 void PaymentGatewayImpl::fetchOperators()

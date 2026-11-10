@@ -234,7 +234,7 @@ Item {
     // The same QuartersComponent the home grid renders. Its own `clicked`
     // signal is unused here because the whole-card MouseArea below handles
     // the tap (and has to sit under the remove button anyway).
-    QuartersComponent {
+    BookableRoomCard {
         anchors.fill: parent
         quartersId: root.roomId
         quartersType: root.quarterType

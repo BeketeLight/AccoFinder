@@ -96,8 +96,15 @@ PropertyDto PropertyDto::fromJson(
     dto.location =
         json["location"].toString();
 
+    // The backend stores the monthly rent as `rentalFee` and the platform fee
+    // as `bookingFee`. Fall back to the legacy `price` key so older payloads
+    // (and locally persisted drafts) still load.
     dto.price =
-        json["price"].toDouble();
+        json.contains("rentalFee")
+            ? json["rentalFee"].toDouble()
+            : json["price"].toDouble();
+    dto.bookingFee = json["bookingFee"].toDouble();
+    dto.hasBookingFee = json.contains("bookingFee");
 
     dto.description =
         json["description"].toString();
@@ -234,7 +241,8 @@ QJsonObject PropertyDto::toJson() const
     json["secondName"] = secondName;
     json["title"] = title;
     json["location"] = location;
-    json["price"] = price;
+    json["rentalFee"] = price;
+    json["bookingFee"] = bookingFee;
     json["description"] = description;
     json["status"] = status;
     json["agentId"] = agentId;
@@ -333,7 +341,12 @@ QJsonObject PropertyDto::toUpdateJson() const
         json["costCategory"] = costCategory;
 
     if(price)
-        json["price"] = price;
+        json["rentalFee"] = price;
+
+    // Only send bookingFee when it was loaded from the server; otherwise a
+    // plain price edit would reset the server-side booking fee to zero.
+    if(hasBookingFee)
+        json["bookingFee"] = bookingFee;
 
     if(!district.isEmpty() || !village.isEmpty()) {
         QJsonObject address;
@@ -371,7 +384,8 @@ QJsonObject PropertyDto::toCreateJson() const
     QJsonObject json;
     json["title"] = title;
     json["description"] = description;
-    json["price"] = price;
+    json["rentalFee"] = price;
+    json["bookingFee"] = bookingFee;
 
     if (!propertyType.isEmpty())
         json["propertyType"] = propertyType;

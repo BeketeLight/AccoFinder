@@ -47,7 +47,12 @@ RoomDto RoomDto::fromJson(const QJsonObject &json)
 
     dto.m_type = json["type"].toString();
 
-    dto.m_price = static_cast<double>(json["price"].toDouble());
+    // The backend exposes the rent as `rentalFee` and the platform fee as
+    // `bookingFee`; keep `price` as a fallback for older payloads.
+    dto.m_price = json.contains("rentalFee")
+                      ? json["rentalFee"].toDouble()
+                      : json["price"].toDouble();
+    dto.m_bookingFee = json["bookingFee"].toDouble();
 
     return dto;
 }
@@ -65,7 +70,9 @@ QJsonObject RoomDto::toJson() const
     json["type"] =
         m_type;
 
-    json["price"] = m_price;
+    json["rentalFee"] = m_price;
+
+    json["bookingFee"] = m_bookingFee;
 
     json["available"] =
         m_available;

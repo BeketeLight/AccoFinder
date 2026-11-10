@@ -18,11 +18,60 @@ import com.google.firebase.messaging.FirebaseMessaging;
  */
 public class FcmBridge {
     private static final String TAG = "FcmBridge";
+    private static final String PREFS = "accofinder_notifications";
+    private static final String KEY_ENABLED = "enabled";
+    private static final String KEY_BOOKINGS = "bookings";
+    private static final String KEY_PROMOTIONS = "promotions";
+    private static final String KEY_SYSTEM = "system";
     private static String sPendingToken = null;
     private static String sPendingTitle = null;
     private static String sPendingBody = null;
     private static volatile Context sAppContext = null;
     private static volatile boolean sFirebaseReady = false;
+
+    /**
+     * Mirrors the user's notification preferences into SharedPreferences so the
+     * FCM service (which may run without Qt) can honour them before showing a
+     * system notification. Called from C++ whenever a toggle changes.
+     */
+    public static synchronized void setNotificationPreferences(
+            boolean enabled, boolean bookings, boolean promotions, boolean system) {
+        Context context = sAppContext;
+        if (context == null) return;
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+                .edit()
+                .putBoolean(KEY_ENABLED, enabled)
+                .putBoolean(KEY_BOOKINGS, bookings)
+                .putBoolean(KEY_PROMOTIONS, promotions)
+                .putBoolean(KEY_SYSTEM, system)
+                .apply();
+    }
+
+    private static boolean readPref(Context context, String key, boolean fallback) {
+        if (context == null) return fallback;
+        return context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+                .getBoolean(key, fallback);
+    }
+
+    /** True when the master notification switch is on. */
+    public static boolean areNotificationsEnabled(Context context) {
+        return readPref(context, KEY_ENABLED, true);
+    }
+
+    /**
+     * True when the category carried by the message is enabled. Unknown or
+     * missing categories are treated as "system" so they follow the system
+     * toggle rather than being silently dropped.
+     */
+    public static boolean isCategoryEnabled(Context context, String category) {
+        if (!areNotificationsEnabled(context)) return false;
+        String c = (category == null) ? "" : category.trim().toLowerCase();
+        if (c.contains("booking") || c.contains("payment") || c.contains("reservation"))
+            return readPref(context, KEY_BOOKINGS, true);
+        if (c.contains("promo") || c.contains("marketing") || c.contains("deal"))
+            return readPref(context, KEY_PROMOTIONS, true);
+        return readPref(context, KEY_SYSTEM, true);
+    }
 
     /**
      * Captures the application context and initializes FirebaseApp once.

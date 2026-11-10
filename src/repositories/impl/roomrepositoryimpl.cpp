@@ -138,7 +138,7 @@ void RoomRepositoryImpl::updateRoom(const QString &roomId,
     // response row replaces the cached row in RoomListModel::upsertRoom).
     QJsonObject payload;
     payload["type"] = type;
-    payload["price"] = price;
+    payload["rentalFee"] = price;
     payload["available"] = available;
 
     APIClient::instance().put(

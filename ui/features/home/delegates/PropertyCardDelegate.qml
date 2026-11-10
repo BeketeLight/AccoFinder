@@ -21,8 +21,8 @@ Item {
     property bool insideInfoSection: false
     property var amenities: []
 
-    property real rating: 4.5          // e.g. 4.5
-    property int reviewCount: 12       // e.g. 12 reviews
+    property real rating: 0          // e.g. 4.5
+    property int reviewCount: 0       // e.g. 12 reviews
 
     signal clicked
     signal favoriteClicked
@@ -241,28 +241,28 @@ Item {
                         }   // spacer
 
                         // Rating badge
-                        RowLayout {
-                            visible: root.reviewCount > 0
-                            spacing: 3
-                            Layout.alignment: Qt.AlignVCenter
+                        // RowLayout {
+                        //     visible: root.reviewCount > 0
+                        //     spacing: 3
+                        //     Layout.alignment: Qt.AlignVCenter
 
-                            Label {
-                                text: "\u2605"      // ★
-                                color: "#F59E0B"
-                                font.pixelSize: 13
-                            }
-                            Label {
-                                text: root.rating.toFixed(1)
-                                color: "#FFFFFF"
-                                font.pixelSize: 12
-                                font.weight: Font.Medium
-                            }
-                            Label {
-                                text: "(" + root.reviewCount + ")"
-                                color: "#D1D5DB"
-                                font.pixelSize: 11
-                            }
-                        }
+                        //     Label {
+                        //         text: "\u2605"      // ★
+                        //         color: "#F59E0B"
+                        //         font.pixelSize: 13
+                        //     }
+                        //     Label {
+                        //         text: root.rating.toFixed(1)
+                        //         color: "#FFFFFF"
+                        //         font.pixelSize: 12
+                        //         font.weight: Font.Medium
+                        //     }
+                        //     Label {
+                        //         text: "(" + root.reviewCount + ")"
+                        //         color: "#D1D5DB"
+                        //         font.pixelSize: 11
+                        //     }
+                        // }
                     }
                 }
             }

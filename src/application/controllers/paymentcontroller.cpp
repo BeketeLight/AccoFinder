@@ -27,6 +27,7 @@ PaymentController::PaymentController(QObject *parent)
     connect(m_paymentRepo, &PaymentGatewayImpl::paymentError, this, [this](const QString& error) {
         setLoading(false);
         emit paymentError(error);
+        emit paymentActionFailed(error);
     });
 
     connect(m_paymentRepo, &PaymentGatewayImpl::operatorsLoaded,
@@ -49,6 +50,22 @@ PaymentController::PaymentController(QObject *parent)
             this, [this](Payment* payment) {
                 if (payment) appendPaymentToList(payment);
                 emit paymentVerificationPending(payment);
+            });
+
+    connect(m_paymentRepo, &PaymentGatewayImpl::commissionSettled,
+            this, [this](const QJsonObject& data) {
+                setLoading(false);
+                emit commissionSettled(data.toVariantMap());
+            });
+    connect(m_paymentRepo, &PaymentGatewayImpl::payoutReleased,
+            this, [this](const QJsonObject& data) {
+                setLoading(false);
+                emit payoutReleased(data.toVariantMap());
+            });
+    connect(m_paymentRepo, &PaymentGatewayImpl::paymentRefunded,
+            this, [this](const QJsonObject& data) {
+                setLoading(false);
+                emit paymentRefunded(data.toVariantMap());
             });
 }
 
@@ -245,4 +262,45 @@ void PaymentController::verifyPayment(const QString& chargeId)
     }
     // No setLoading here — this runs every 4s and would flash the spinner.
     m_paymentRepo->verifyPayment(chargeId);
+}
+
+void PaymentController::settleCommission(const QString& paymentId,
+                                         const QString& bookingId,
+                                         const QString& agentId,
+                                         const QString& agentName)
+{
+    if (paymentId.isEmpty() && bookingId.isEmpty()
+        && agentId.isEmpty() && agentName.isEmpty()) {
+        emit paymentActionFailed("A payment, booking, agent id, or agent name is required.");
+        return;
+    }
+    setLoading(true);
+    m_paymentRepo->settleCommission(paymentId, bookingId, agentId, agentName);
+}
+
+void PaymentController::releasePayout(const QString& paymentId,
+                                      const QString& bookingId,
+                                      const QString& landlordId,
+                                      const QString& landlord)
+{
+    if (paymentId.isEmpty() && bookingId.isEmpty()
+        && landlordId.isEmpty() && landlord.isEmpty()) {
+        emit paymentActionFailed("A payment, booking, landlord id, or landlord name is required.");
+        return;
+    }
+    setLoading(true);
+    m_paymentRepo->releasePayout(paymentId, bookingId, landlordId, landlord);
+}
+
+void PaymentController::refundPayment(const QString& paymentId,
+                                      const QString& bookingId,
+                                      const QString& transactionRef,
+                                      const QString& reason)
+{
+    if (paymentId.isEmpty() && bookingId.isEmpty() && transactionRef.isEmpty()) {
+        emit paymentActionFailed("A payment, booking, or transaction reference is required.");
+        return;
+    }
+    setLoading(true);
+    m_paymentRepo->refundPayment(paymentId, bookingId, transactionRef, reason);
 }

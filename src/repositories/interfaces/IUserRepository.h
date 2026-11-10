@@ -36,6 +36,10 @@ public:
     // Profile (bank/payment) persistence
     virtual void fetchProfile() = 0;
     virtual void saveProfile(
+        const QString& firstName,
+        const QString& surname,
+        const QString& phone,
+        const QString& residentialAddress,
         const QString& bankName,
         const QString& bankAccountNumber,
         const QString& paymentMethod) = 0;

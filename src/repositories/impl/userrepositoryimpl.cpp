@@ -439,11 +439,23 @@ void UserRepositoryImpl::fetchProfile()
 }
 
 void UserRepositoryImpl::saveProfile(
+    const QString& firstName,
+    const QString& surname,
+    const QString& phone,
+    const QString& residentialAddress,
     const QString& bankName,
     const QString& bankAccountNumber,
     const QString& paymentMethod)
 {
     QJsonObject payload;
+    if (!firstName.isEmpty())
+        payload["firstName"] = firstName;
+    if (!surname.isEmpty())
+        payload["surname"] = surname;
+    if (!phone.isEmpty())
+        payload["phone"] = phone;
+    if (!residentialAddress.isEmpty())
+        payload["residentialAddress"] = residentialAddress;
     if (!bankName.isEmpty())
         payload["bankName"] = bankName;
     if (!bankAccountNumber.isEmpty())

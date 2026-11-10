@@ -18,18 +18,16 @@ Item {
     property bool showBack: false
     property bool showBottomBorder: false
     property bool isSearchBar: true
-    property bool searchReadOnly: false
+    property bool searchReadOnly: true
     property int titleFontSize: 15
     property bool collapsible: true
 
     property real scrollY: {
-        var page = pager.currentItem
-        return page && typeof page.contentY !== "undefined"
-               ? Math.max(0, page.contentY)
-               : 0
+        var page = pager.currentItem;
+        return page && typeof page.contentY !== "undefined" ? Math.max(0, page.contentY) : 0;
     }
 
-    property Component leftComponentAction: Component{
+    property Component leftComponentAction: Component {
         Label {
             text: qsTr("AccoFinder")
             font.family: "sans-serif"
@@ -64,6 +62,12 @@ Item {
 
     property bool refreshing: false
     readonly property bool loading: sharedProperties.loading
+
+    // The header forwarder in Main.qml only calls this when it exists, so
+    // without this one function the search bar is inert on Home.
+    function onSearchBarTapped() {
+        NavUtils.navigateToSearchScreen();
+    }
 
     function refresh() {
         if (root.refreshing)

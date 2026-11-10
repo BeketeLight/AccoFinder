@@ -270,10 +270,15 @@ void AuthController::fetchProfile()
     m_userRepository->fetchProfile();
 }
 
-void AuthController::saveProfile(const QString &bankName,
+void AuthController::saveProfile(const QString &firstName,
+                                 const QString &surname,
+                                 const QString &phone,
+                                 const QString &residentialAddress,
+                                 const QString &bankName,
                                  const QString &bankAccountNumber,
                                  const QString &paymentMethod)
 {
     setLoading(true);
-    m_userRepository->saveProfile(bankName, bankAccountNumber, paymentMethod);
+    m_userRepository->saveProfile(firstName, surname, phone, residentialAddress,
+                                 bankName, bankAccountNumber, paymentMethod);
 }

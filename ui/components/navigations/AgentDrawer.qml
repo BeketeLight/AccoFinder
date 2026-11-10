@@ -111,6 +111,61 @@ Drawer {
             }
         }
 
+        Rectangle {
+            Layout.fillWidth: true
+            implicitHeight: agentSettingsRow.implicitHeight + 18
+            radius: 10
+            color: agentSettingsMouse.pressed ? "#F0F4FF" : "transparent"
+
+            RowLayout {
+                id: agentSettingsRow
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.top: parent.top
+                anchors.margins: 8
+                spacing: 8
+
+                Rectangle {
+                    Layout.preferredWidth: 4
+                    Layout.preferredHeight: 32
+                    radius: 2
+                    color: "#2563EB"
+                }
+
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 2
+
+                    Label {
+                        Layout.fillWidth: true
+                        text: qsTr("Settings")
+                        color: "#1F2937"
+                        font.pixelSize: 12
+                        font.bold: true
+                        elide: Text.ElideRight
+                    }
+
+                    Label {
+                        Layout.fillWidth: true
+                        text: qsTr("Theme, language, notifications")
+                        color: "#6B7280"
+                        font.pixelSize: 10
+                        elide: Text.ElideRight
+                    }
+                }
+            }
+
+            MouseArea {
+                id: agentSettingsMouse
+                anchors.fill: parent
+                cursorShape: Qt.PointingHandCursor
+                onClicked: {
+                    root.close()
+                    NavUtils.navigateToSettings()
+                }
+            }
+        }
+
         Item { Layout.fillHeight: true }
 
         // Sign out sits below the spacer so it is pinned to the bottom of the

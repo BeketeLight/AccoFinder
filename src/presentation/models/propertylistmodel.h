@@ -62,6 +62,12 @@ public:
 
     void setProperties( QList<Property*>& newProperty);
     void appendProperty(Property* property);
+
+    // Append a whole page at once. Used by paginated search — one
+    // rowsInserted covering the whole range, so QML bindings re-run once
+    // per page instead of once per row.
+    void appendProperties(QList<Property*>& newProperties);
+
     void updateProperty(int index,Property* property);
     void removeProperty(const QString& propertyId);
     void getPropertyById(Property* property);

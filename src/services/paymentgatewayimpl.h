@@ -10,7 +10,7 @@ class PaymentGatewayImpl : public IPaymentGateway
 {
     Q_OBJECT
 public:
-    PaymentGatewayImpl();
+    PaymentGatewayImpl(QObject* parent = nullptr);
     void verifyPayment(const QString& chargeId) override;
 
     void createPayment(const QString& bookingId,
@@ -32,7 +32,22 @@ public:
     //void getAllPayments() override;
     //virtual void callWebHook() = 0;
     void fetchOperators() override;
-    
+
+    void settleCommission(const QString& paymentId,
+                          const QString& bookingId,
+                          const QString& agentId,
+                          const QString& agentName) override;
+
+    void releasePayout(const QString& paymentId,
+                       const QString& bookingId,
+                       const QString& landlordId,
+                       const QString& landlord) override;
+
+    void refundPayment(const QString& paymentId,
+                      const QString& bookingId,
+                      const QString& transactionRef,
+                      const QString& reason) override;
+
 signals:
     void paymentCreated(Payment* payment);
     void paymentVerified(Payment* payment);
@@ -40,6 +55,9 @@ signals:
     void paymentCancelled(Payment* payment);
     void paymentError(const QString& error);
     void paymentVerificationPending(Payment* payment);
+    void commissionSettled(const QJsonObject& data);
+    void payoutReleased(const QJsonObject& data);
+    void paymentRefunded(const QJsonObject& data);
 
 };
 

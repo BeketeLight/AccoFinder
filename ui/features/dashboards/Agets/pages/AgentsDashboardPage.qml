@@ -227,7 +227,7 @@ Item {
             Layout.fillWidth: true
             margin: 13
             model: [
-                { value: String(root.dashboardModel.pendingBookings + root.dashboardModel.confirmedBookings + root.dashboardModel.cancelledBookings), label: qsTr("Bookings"), color: root.textColor },
+                { value: String(root.dashboardModel.pendingBookings + root.dashboardModel.confirmedBookings + root.dashboardModel.cancelledBookings + root.dashboardModel.expiredBookings), label: qsTr("Bookings"), color: root.textColor },
                 { value: String(root.dashboardModel.pendingBookings), label: qsTr("Pending"), color: root.warningColor },
                 { value: String(root.dashboardModel.confirmedBookings), label: qsTr("Confirmed"), color: root.successColor },
                 { value: String(root.dashboardModel.cancelledBookings), label: qsTr("Cancelled"), color: root.dangerColor }

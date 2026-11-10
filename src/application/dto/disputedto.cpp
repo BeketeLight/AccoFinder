@@ -19,10 +19,14 @@ DisputeDto DisputeDto::fromJson(const QJsonObject &json)
     DisputeDto dto;
 
     dto.m_id =
-        json["id"].toString();
+        json.contains("_id")
+            ? json["_id"].toString()
+            : json["id"].toString();
 
     dto.m_bookingId =
-        json["bokingId"].toString();
+        json.contains("bookingId")
+            ? json["bookingId"].toString()
+            : json["bokingId"].toString();
 
     dto.m_issue =
         json["issue"].toString();
@@ -30,13 +34,17 @@ DisputeDto DisputeDto::fromJson(const QJsonObject &json)
     QString statusStr =
         json["status"].toString();
 
-    if(statusStr == "open")
+    if(statusStr == "open" || statusStr == "Open")
     {
         dto.m_status = DisputeStatus::Open;
     }
-    else if(statusStr == "resolved")
+    else if(statusStr == "resolved" || statusStr == "Resolved")
     {
         dto.m_status = DisputeStatus::Resolved;
+    }
+    else if(statusStr == "rejected" || statusStr == "Rejected")
+    {
+        dto.m_status = DisputeStatus::Rejected;
     }
     return dto;
     
@@ -48,7 +56,7 @@ QJsonObject DisputeDto::toJson() const
         QJsonObject json;
 
         json["id"] = m_id;
-        json["bokingId"] = m_bookingId;
+        json["bookingId"] = m_bookingId;
         json["issue"] = m_issue;
         switch(m_status)
         {

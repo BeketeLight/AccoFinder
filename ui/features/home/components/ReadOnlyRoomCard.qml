@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Effects
 import "../../../utils/NavigationUtils.js" as NavUtils
+import "../../../utils/ImageUtils.js" as ImageUtils
 
 Rectangle {
     id: roomCard
@@ -48,7 +49,7 @@ Rectangle {
             Image {
                 id: roomImg
                 anchors.fill: parent
-                source: roomCard.imageUrl
+                source: ImageUtils.cachedSource(roomCard.imageUrl)
                 fillMode: Image.PreserveAspectCrop
                 asynchronous: true
 
@@ -62,26 +63,6 @@ Rectangle {
                         font.pixelSize: 28
                         opacity: 0.3
                     }
-                }
-            }
-
-            // Availability badge
-            Rectangle {
-                anchors.top: parent.top
-                anchors.right: parent.right
-                anchors.margins: 4
-                height: 18
-                radius: 9
-                width: availText.width + 10
-                color: roomCard.isQuartersAvailable ? "#22C55E" : "#EF4444"
-
-                Label {
-                    id: availText
-                    anchors.centerIn: parent
-                    text: roomCard.isQuartersAvailable ? "Open" : "Booked"
-                    color: "white"
-                    font.pixelSize: 9
-                    font.bold: true
                 }
             }
             // ===== SKELETON LOADER (shown while loading) =====
@@ -130,21 +111,12 @@ Rectangle {
             Layout.fillWidth: true
             maximumLineCount: 1
         }
-
-        // Price
-        Label {
-            text: "MWK " + Number(roomCard.quartersPrice).toLocaleString(Qt.locale(), "f", 0)
-            font.pixelSize: 14
-            font.bold: true
-            color: "#2563EB"
-        }
     }
 
     MouseArea {
         anchors.fill: parent
         cursorShape: Qt.PointingHandCursor
         onClicked: {
-
             roomCard.clicked();
         }
     }
