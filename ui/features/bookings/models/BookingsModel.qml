@@ -2,8 +2,10 @@ import QtQuick 2.15
 
 Item {
     id: root
+    property bool joining: false
+    property bool initialLoadDone: false
     property string bookingId: ""
-    readonly property bool loading: BookingViewModel.isLoading
+    readonly property bool loading: BookingViewModel.isLoading || root.joining
     // Backend Enum Constants
     readonly property var bookingStatus: Object.freeze({
         PENDING_PAYMENT: 'Pending payment',
@@ -219,6 +221,7 @@ Item {
 
     // --- 4. RELOAD & DATA JOINING ENGINE ---
     function reloadNow() {
+        root.joining = true
         bookingsModelId.clear()
 
         //Cach properties once per load
@@ -344,6 +347,9 @@ Item {
         }
         root.updateStatusCount()
         root.applyFilters()
+        root.joining = false
+        if(!BookingViewModel.isLoading)
+            root.initialLoadDone = true
     }
 
     // --- 5. SIGNAL LISTENERS & RE-INDEXING ---
@@ -354,7 +360,7 @@ Item {
         RoomViewModel.loadRooms()
         PropertyViewModel.getProperties("")
         BookingViewModel.fetchBookings()
-        reload()
+       // reload()
     }
 
     Connections {
@@ -362,6 +368,14 @@ Item {
         function onRowsInserted(parent, first, last) { root.reload() }
         function onRowsRemoved(parent, first, last) { root.reload() }
         function onModelReset() { root.reload() }
+    }
+
+    Connections {
+        target: BookingViewModel
+        function onIsLoadingChanged() {
+            if (BookingViewModel.isLoading)
+                root.initialLoadDone = false
+        }
     }
 
     Connections {

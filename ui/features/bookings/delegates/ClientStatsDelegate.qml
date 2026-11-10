@@ -52,9 +52,12 @@ Rectangle {
     signal payNowRequested(string bookingId, real amount, var holdExpiresAt)
 
     // match status of the model
-    visible: model.matches ?? true
-    width: ListView.view ? ListView.view.width : parent.width
-    implicitHeight: visible ? cardContent.implicitHeight + 24 : 0
+    readonly property bool isMatch: model.matches !== false
+
+    width: ListView.view ? ListView.view.width : (parent ? parent.width : 0)
+    height: isMatch ? (cardContent.implicitHeight + 24) : 0
+    // no implicitHeight: height
+    visible: isMatch
     color: "#FFFFFF"
     radius: 8
     border.color: "#E2E8F0"
@@ -116,7 +119,7 @@ Rectangle {
                 id: leftAccent
 
                 Layout.preferredWidth: 5
-                Layout.fillHeight: true
+                Layout.preferredHeight: 56
                 color: "#2563EB"
                 radius: 3
             }
@@ -196,7 +199,8 @@ Rectangle {
             textColor: "#FFFFFF"
             cornerRadius: 12
             visible: holdCountdownText.length > 0
-            Layout.preferredWidth: cardContent.implicitWidth - 8
+            //Layout.preferredWidth: cardContent.implicitWidth - 8
+            Layout.fillWidth: true
             implicitHeight: 50
             buttonColor: delegateRoot.primaryColor
             onClicked: {

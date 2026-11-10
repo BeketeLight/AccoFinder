@@ -85,7 +85,20 @@ Page{
                text: footerPageId.isAdminUser ? qsTr("Dashboard") : qsTr("Home")
                Layout.alignment: Qt.AlignHCenter
                font.pixelSize: footerPageId.tabFontSize
-               //font.bold: currentIndex === 0
+               //Even if icon is missed
+               //Text should be resposible
+               MouseArea{
+                  anchors.fill: parent
+                  onClicked: {
+                     if(currentIndex === 0) return
+                     currentIndex = 0
+                     if (footerPageId.isAdminUser)
+                        footerPageId.dashboardTapped()
+                     else
+                        footerPageId.homeTapped()
+                     tabSelected(0)
+                  }
+               }
             }
          }
          ColumnLayout{
@@ -115,7 +128,15 @@ Page{
                text: qsTr("Properties")
                Layout.alignment: Qt.AlignHCenter
                font.pixelSize: footerPageId.tabFontSize
-               //font.bold: currentIndex === 1
+               MouseArea{
+                  anchors.fill: parent
+                  onClicked: {
+                     if(currentIndex === 1) return
+                     footerPageId.propertiesTapped()
+                     currentIndex = 1
+                     tabSelected(1)
+                  }
+               }
             }
          }
          ColumnLayout{
@@ -128,7 +149,7 @@ Page{
             visible: footerPageId.showSavedTab
             ToolButton{
                icon.name: "Save-icon"
-               icon.source:"qrc:/ui/assets/save-icon.svg"
+               icon.source:"qrc:/ui/assets/footer/save-icon.svg"
                icon.height: 24
                icon.width: 24
                background: null
@@ -142,10 +163,19 @@ Page{
                }
             }
             Text{
-               text: qsTr("Saved")
+               text: qsTr("Saves")
                Layout.alignment: Qt.AlignHCenter
                font.pixelSize: footerPageId.tabFontSize
                //font.bold: currentIndex === 2
+               MouseArea{
+                  anchors.fill: parent
+                  onClicked: {
+                     if(currentIndex === 2) return
+                     currentIndex = 2
+                     footerPageId.saveTapped()
+                     tabSelected(2)
+                  }
+               }
             }
          }
 
@@ -242,7 +272,15 @@ Page{
                text: qsTr("Bookings")
                Layout.alignment: Qt.AlignHCenter
                font.pixelSize: footerPageId.tabFontSize
-               //font.bold: currentIndex === 2
+               MouseArea{
+                  anchors.fill: parent
+                  onClicked: {
+                     if(currentIndex === 3) return
+                     footerPageId.bookingsTapped()
+                     currentIndex = 3
+                     tabSelected(3)
+                  }
+               }
             }
          }
          ColumnLayout{
@@ -269,13 +307,19 @@ Page{
                text: qsTr("Account")
                Layout.alignment: Qt.AlignHCenter
                font.pixelSize: footerPageId.tabFontSize
-               //font.bold: currentIndex === 3
+               MouseArea{
+                  anchors.fill: parent
+                  onClicked: {
+                     if(currentIndex === 4) return
+                     currentIndex = 4
+                     footerPageId.accountTapped()
+                     tabSelected(4)
+                  }
+               }
             }
-
          }
       }
    }
-
 }
 
 

@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import "../../../features/properties/components"
 
 Rectangle {
     id: userCard
@@ -28,23 +29,10 @@ Rectangle {
         anchors.top: parent.top
         anchors.margins: 12
         spacing: 8
-        RowLayout {
-            spacing: 8
-            RowLayout {
-                spacing: 0
-                ToolButton {
-                    icon.source: userCard.cardIcon
-                    icon.height: userCard.custIconHeight
-                    icon.width: userCard.custIconWidth
-                    background: null
-                }
-                Text {
-                    text: userCard.cardTitle
-                    font.pixelSize: 14
-                    font.bold: true
-                    color: "#0F172A"
-                }
-            }
+
+        SectionHeader{
+            Layout.fillWidth: true
+            title: userCard.cardTitle
         }
 
         // Body Content Row

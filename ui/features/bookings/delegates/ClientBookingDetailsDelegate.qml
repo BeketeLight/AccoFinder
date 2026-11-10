@@ -42,7 +42,7 @@ Item{
     property string paymentDate: ""
 
     readonly property string statusKey: String(status).trim().toUpperCase()
-    readonly property bool canRaiseDispute: statusKey === "CANCELLED" || "EXPIRED"
+    readonly property bool canRaiseDispute: statusKey === "CANCELLED" || statusKey === "EXPIRED"
 
     property string createdTime: ""
     property string holdExpiresAt:  ""
@@ -160,13 +160,6 @@ Item{
 
                         Text {
                             anchors.horizontalCenter: parent.horizontalCenter
-                            text: "▧"
-                            font.pixelSize: 32
-                            color: "#94A3B8"
-                        }
-
-                        Text {
-                            anchors.horizontalCenter: parent.horizontalCenter
                             text: mainImg.status === Image.Error
                                   ? "Image unavailable"
                                   : "Loading property image..."
@@ -272,34 +265,6 @@ Item{
                 }
             }
         }
-        // --- Confirmed: raise dispute ---
-        ColumnLayout {
-            Layout.fillWidth: true
-            Layout.topMargin: 8
-            spacing: 12
-            visible: root.canRaiseDispute
-
-            CustomButton {
-                text: qsTr("Report a problem")
-                textColor: "#1D4ED8"
-                Layout.fillWidth: true
-                implicitHeight: 50
-                cornerRadius: 12
-                borderColor: "#93C5FD"
-                borderWidth: 1
-                buttonColor: "#EFF6FF"
-                onClicked: {
-                    NavUtils.navigateToRaiseDispute({
-                        bookingId: root.bookingId,
-                        houseName: root.houseName,
-                        propertyImage: root.propertyImage,
-                        propertyLocation: root.propertyLocation,
-                       // status: detailsPage.status,
-                       // bookingDate: detailsPage.bookingDate
-                    })
-                }
-            }
-        }
     }
 
     AppAlertDialog {
@@ -312,5 +277,5 @@ Item{
         onAccepted: {
             BookingViewModel.cancelBooking(root.bookingId)
         }
-    }
+    } 
 }
