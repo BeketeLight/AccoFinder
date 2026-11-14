@@ -67,7 +67,6 @@
         <file>ui/assets/bookings/email-icon.svg</file>
         <file>ui/assets/save-instagram-black-outline.svg</file>
         <file>ui/assets/tiktok-save-bookmark-symbol-blue.svg</file>
-        <file>ui/features/home/components/QuartersComponent.qml</file>
         <file>ui/assets/footer/save-icon.svg</file>
         <file>ui/assets/global-icons/information-icon.svg</file>
     </qresource>
