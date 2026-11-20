@@ -8,6 +8,7 @@ import "./ui/features/home/screens"
 import "./ui/features/home/components"
 import "./ui/features/home/models"
 import "./ui/utils/NavigationUtils.js" as NavUtils
+import "./ui/components/indicators"
 
 ApplicationWindow {
     id: root
@@ -207,6 +208,10 @@ ApplicationWindow {
                                 if ("propertiesModelRef" in item)
                                     item.propertiesModelRef = sharedProperties;
                             }
+                            //Give loaded page access to ApplicationWindow
+                            //As far as detecting network availability concerned
+                            if("accessToOfflineCach" in item)
+                                item.accessToOfflineCach = root;
                         }
                     }
                     MainStackview {

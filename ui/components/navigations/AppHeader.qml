@@ -85,7 +85,7 @@ ToolBar {
         anchors.fill: parent
         anchors.leftMargin: 8
         anchors.rightMargin: 12
-        anchors.topMargin: 4 + root.statusBarInset
+        anchors.topMargin: 0 //+ root.statusBarInset
         anchors.bottomMargin: 4
         spacing: 0
 

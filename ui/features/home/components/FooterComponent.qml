@@ -65,9 +65,9 @@ Page{
             spacing: 0
             ToolButton{
                icon.name: footerPageId.isAdminUser ? "dashboard-icon" : "Home-icon"
-               icon.source: footerPageId.isAdminUser ? "qrc:/ui/assets/dashboard-icon.svg" : "qrc:/ui/assets/home-icon.svg"
-               icon.height: 24
-               icon.width: 24
+               icon.source: footerPageId.isAdminUser ? "qrc:/ui/assets/dashboard-icon.svg" : "qrc:/ui/assets/footer/home-icon.svg"
+               icon.height: 22
+               icon.width: 22
                background: null
                icon.color: currentIndex === 0 ? "#2563EB" : "gray"
                Layout.alignment: Qt.AlignHCenter
@@ -112,8 +112,8 @@ Page{
             ToolButton{
                icon.name: "Properties-icon"
                icon.source:"qrc:/ui/assets/properties-icon.svg"
-               icon.height: 24
-               icon.width: 24
+               icon.height: 22
+               icon.width: 22
                icon.color: currentIndex === 1 ? "#2563EB" : "gray"
                Layout.alignment: Qt.AlignHCenter
                background: null
@@ -150,8 +150,8 @@ Page{
             ToolButton{
                icon.name: "Save-icon"
                icon.source:"qrc:/ui/assets/footer/save-icon.svg"
-               icon.height: 24
-               icon.width: 24
+               icon.height: 22
+               icon.width: 22
                background: null
                icon.color: currentIndex === 2 ? "#2563EB" : "gray"
                Layout.alignment: Qt.AlignHCenter
@@ -256,8 +256,8 @@ Page{
             ToolButton{
                icon.name: "Bookings-icon"
                icon.source:"qrc:/ui/assets/bookings-icon.svg"
-               icon.height: 24
-               icon.width: 24
+               icon.height: 22
+               icon.width: 22
                icon.color: currentIndex === 3 ? "#2563EB" : "gray"
                Layout.alignment: Qt.AlignHCenter
                background: null
@@ -291,8 +291,8 @@ Page{
             ToolButton{
                icon.name: "Account-icon"
                icon.source:"qrc:/ui/assets/account-icon.svg"
-               icon.height: 24
-               icon.width: 24
+               icon.height: 22
+               icon.width: 22
                icon.color: currentIndex === 4 ? "#2563EB" : "gray"
                Layout.alignment: Qt.AlignHCenter
                background: null

@@ -13,6 +13,7 @@ Page {
     background: Rectangle{
         color: "#F8F9FB"
     }
+    property var accessToOfflineCach: null
     property bool refreshing: false
     property bool loading: false
     property double _refreshStart: 0
@@ -22,19 +23,19 @@ Page {
             || BookingViewModel.isLoading
 
     function refresh() {
-            if (overviewPage.refreshing || overviewPage.loading)
-                return
+        if (overviewPage.refreshing || overviewPage.loading)
+            return
 
-            overviewPage._refreshStart = Date.now()
-            overviewPage.refreshing = true
-            overviewPage.loading = true
+        overviewPage._refreshStart = Date.now()
+        overviewPage.refreshing = true
+        overviewPage.loading = true
 
-            // Same data the model needs for joins
-            RoomViewModel.loadRooms()
-            PropertyViewModel.getProperties("")
-            BookingViewModel.fetchBookings()
-            // BookingsModel Connections will call reload() when models update
-        }
+        // Same data the model needs for joins
+        RoomViewModel.loadRooms()
+        PropertyViewModel.getProperties("")
+        BookingViewModel.fetchBookings()
+        // BookingsModel Connections will call reload() when models update
+    }
 
         function onRequestsSettled() {
             if (overviewPage.busy)
@@ -196,5 +197,36 @@ Page {
         size: 32
         lineWidth: 2
         z:10
+    }
+
+    // AppOfflineState {
+    //     anchors.fill: parent
+    //     z: 20
+    //     visible: typeof NetworkMonitor !== "undefined" && !NetworkMonitor.online
+    //     onRetryRequested: {
+    //         NetworkMonitor.refresh()
+    //         if (NetworkMonitor.online)
+    //             overviewPage.refresh()
+    //     }
+    // }
+    // function refresh(){
+    //     if(typeof NetworkMonitor !== "undefined" && !NetworkMonitor.online){
+    //         console.log("offline skip--- refresh")
+    //         return
+    //     }
+    //     RoomViewModel.loadRooms()
+    //     PropertyViewModel.getProperties("")
+    //     BookingViewModel.fetchBookings()
+    // }
+    Connections {
+        target: clientBookingModel
+
+        function onInitialLoadDoneChanged() {
+            if (clientBookingModel.initialLoadDone
+                    && clientBookingModel.bookingsModel.count > 0) {
+                //.hasCachedContent = true
+                overviewPage.accessToOfflineCach.hasCachedContent = true
+            }
+        }
     }
 }

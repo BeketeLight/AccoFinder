@@ -270,6 +270,7 @@ qt_add_qml_module(appAccoFinder
 
 
 
+
 )
 
 # ─────────────────────────────────────────────────────────────
@@ -389,7 +390,8 @@ add_library(AccoFinderLogic STATIC ${ACCOFINDER_LOGIC_SOURCES}
     src/repositories/interfaces/IReviewRepository.h
     src/repositories/impl/reviewrepositoryimpl.h src/repositories/impl/reviewrepositoryimpl.cpp
     src/application/controllers/reviewcontroller.h src/application/controllers/reviewcontroller.cpp
-    src/application/dto/reviewdto.h src/application/dto/reviewdto.cpp)
+    src/application/dto/reviewdto.h src/application/dto/reviewdto.cpp
+)
 
 target_include_directories(AccoFinderLogic
     PUBLIC

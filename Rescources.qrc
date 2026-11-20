@@ -69,5 +69,6 @@
         <file>ui/assets/tiktok-save-bookmark-symbol-blue.svg</file>
         <file>ui/assets/footer/save-icon.svg</file>
         <file>ui/assets/global-icons/information-icon.svg</file>
+        <file>ui/assets/footer/home-icon.svg</file>
     </qresource>
 </RCC>
