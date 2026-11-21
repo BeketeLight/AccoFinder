@@ -252,16 +252,17 @@ function navigateToBookingDetailsForAdmin(data){
     });
 }
 
-function navigateToRaiseDispute(payload){
-    push("../features/disputes/pages/CreateDisputePage.qml", {
-        bookingId: payload.bookingId,
-        propertyImage: payload.propertyImage,
-        propertyLocation: payload.propertyLocation,
-        houseName: payload.houseName,
-        //landlord: payload.landlord,
-        //hostName: payload.hostName
-    })
-}
+// function navigateToRaiseDispute(payload){
+//     push("../features/disputes/pages/CreateDisputePage.qml", {
+//         bookingId: payload.bookingId,
+//         bookingDate: payload.bookingDate,
+//         propertyImage: payload.propertyImage,
+//         propertyLocation: payload.propertyLocation,
+//         houseName: payload.houseName,
+//         price: payload.price,
+//         hostName: payload.hostName
+//     })
+// }
 
 var Navigation = {
     init: init,

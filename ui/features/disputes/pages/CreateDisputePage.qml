@@ -9,27 +9,27 @@ Page {
     id: root
 
     // Assigned by NavUtils.navigateToRaiseDispute
-    property string bookingId: ""
-    property string propertyImage: ""
-    property string propertyLocation: ""
-    property string houseName: ""
-    property string landlord: ""
-    property string hostName: ""
-    property string status: ""
-    property string bookingDate: ""
+    // property string bookingId: ""
+    // property string propertyImage: ""
+    // property string propertyLocation: ""
+    // property string houseName: ""
+    // property string landlord: ""
+    // property string hostName: ""
+    // property string status: ""
+    // property string bookingDate: ""
 
-    property string pageTitle: qsTr("Report a problem")
-    property bool showHeader: true
-    property bool showBack: true
-    property bool isSearchBar: false
-    property bool collapsible: false
-    property bool transparentHeader: false
+    // property string pageTitle: qsTr("Report a problem")
+    // property bool showHeader: true
+    // property bool showBack: true
+    // property bool isSearchBar: false
+    // property bool collapsible: false
+    // property bool transparentHeader: false
 
     property string issueText: ""
     property string actionError: ""
     property bool submitting: false
 
-    function goBack() { NavUtils.pop() }
+//     function goBack() { NavUtils.pop() }
 
     readonly property color primaryColor: "#2563EB"
     readonly property color dangerColor: "#DC2626"

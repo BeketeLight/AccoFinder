@@ -13,6 +13,7 @@ Page {
     background: Rectangle{
         color: "#F8F9FB"
     }
+    property var accessToOfflineCach: null
     property bool refreshing: false
     property bool loading: false
     property double _refreshStart: 0
@@ -22,19 +23,19 @@ Page {
             || BookingViewModel.isLoading
 
     function refresh() {
-            if (overviewPage.refreshing || overviewPage.loading)
-                return
+        if (overviewPage.refreshing || overviewPage.loading)
+            return
 
-            overviewPage._refreshStart = Date.now()
-            overviewPage.refreshing = true
-            overviewPage.loading = true
+        overviewPage._refreshStart = Date.now()
+        overviewPage.refreshing = true
+        overviewPage.loading = true
 
-            // Same data the model needs for joins
-            RoomViewModel.loadRooms()
-            PropertyViewModel.getProperties("")
-            BookingViewModel.fetchBookings()
-            // BookingsModel Connections will call reload() when models update
-        }
+        // Same data the model needs for joins
+        RoomViewModel.loadRooms()
+        PropertyViewModel.getProperties("")
+        BookingViewModel.fetchBookings()
+        // BookingsModel Connections will call reload() when models update
+    }
 
         function onRequestsSettled() {
             if (overviewPage.busy)
@@ -84,7 +85,8 @@ Page {
         anchors.margins: 12
         spacing: 12
         clip: true
-        visible: !clientBookingModel.loading
+        visible: clientBookingModel.initialLoadDone
+                     && (!clientBookingModel.loading || clientBookingModel.bookingsModel.count > 0)
         model: clientBookingModel.bookingsModel
 
         delegate: ClientStatsDelegate {
@@ -153,7 +155,12 @@ Page {
         anchors.topMargin: 80
         anchors.leftMargin: 16
         anchors.rightMargin: 16
-        visible: !clientBookingModel.loading && clientBookingModel.resultCount === 0
+        visible: clientBookingModel.initialLoadDone
+                 && !clientBookingModel.loading
+                 && !overviewPage.loading
+                 && clientBookingModel.resultCount === 0
+        z: 1
+        //visible: !clientBookingModel.loading && clientBookingModel.resultCount === 0
         iconSource: "qrc:/ui/assets/bookings-icon.svg"
         title: {
             switch (String(filterBar.currentText || "All")) {
@@ -183,11 +190,43 @@ Page {
     AppSpinner{
         id: loadingSpinner
         anchors.centerIn: parent
-        running: clientBookingModel.loading
+        running: clientBookingModel.loading || overviewPage.loading
         Layout.preferredWidth: 16
         Layout.preferredHeight: 16
         color: "#2563EB"
         size: 32
         lineWidth: 2
+        z:10
+    }
+
+    // AppOfflineState {
+    //     anchors.fill: parent
+    //     z: 20
+    //     visible: typeof NetworkMonitor !== "undefined" && !NetworkMonitor.online
+    //     onRetryRequested: {
+    //         NetworkMonitor.refresh()
+    //         if (NetworkMonitor.online)
+    //             overviewPage.refresh()
+    //     }
+    // }
+    // function refresh(){
+    //     if(typeof NetworkMonitor !== "undefined" && !NetworkMonitor.online){
+    //         console.log("offline skip--- refresh")
+    //         return
+    //     }
+    //     RoomViewModel.loadRooms()
+    //     PropertyViewModel.getProperties("")
+    //     BookingViewModel.fetchBookings()
+    // }
+    Connections {
+        target: clientBookingModel
+
+        function onInitialLoadDoneChanged() {
+            if (clientBookingModel.initialLoadDone
+                    && clientBookingModel.bookingsModel.count > 0) {
+                //.hasCachedContent = true
+                overviewPage.accessToOfflineCach.hasCachedContent = true
+            }
+        }
     }
 }

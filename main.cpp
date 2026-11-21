@@ -184,6 +184,7 @@ int main(int argc, char *argv[])
     SocketIOClient socketIOClient;
     PropertyListModel propertyListModel;
     FcmService fcmService;
+
     // ContextProperty
     engine.rootContext()->setContextProperty("AppSettings", &appSettings);
     engine.rootContext()->setContextProperty("AppPermission", &appPermission);
@@ -214,7 +215,6 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("SocketIO", &socketIOClient);
     engine.rootContext()->setContextProperty("PropertyListModel", &propertyListModel);
     engine.rootContext()->setContextProperty("FcmService", &fcmService);
-
     // Realtime notifications: start the Socket.IO stream once signed in, stop it
     // on logout, and refresh the notification model immediately when a
     // "notification" event arrives (instead of waiting for the 30s poll).

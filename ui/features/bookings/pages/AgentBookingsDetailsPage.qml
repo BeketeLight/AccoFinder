@@ -43,6 +43,7 @@ Page{
         RowLayout {
             spacing: 12
             ToolButton {
+                Layout.leftMargin: 10
                 implicitWidth: 28
                 implicitHeight: 28
                 icon.source: "qrc:/ui/assets/back-icons.svg"

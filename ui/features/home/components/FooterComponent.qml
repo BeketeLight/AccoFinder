@@ -65,9 +65,9 @@ Page{
             spacing: 0
             ToolButton{
                icon.name: footerPageId.isAdminUser ? "dashboard-icon" : "Home-icon"
-               icon.source: footerPageId.isAdminUser ? "qrc:/ui/assets/dashboard-icon.svg" : "qrc:/ui/assets/home-icon.svg"
-               icon.height: 24
-               icon.width: 24
+               icon.source: footerPageId.isAdminUser ? "qrc:/ui/assets/dashboard-icon.svg" : "qrc:/ui/assets/footer/home-icon.svg"
+               icon.height: 22
+               icon.width: 22
                background: null
                icon.color: currentIndex === 0 ? "#2563EB" : "gray"
                Layout.alignment: Qt.AlignHCenter
@@ -85,7 +85,20 @@ Page{
                text: footerPageId.isAdminUser ? qsTr("Dashboard") : qsTr("Home")
                Layout.alignment: Qt.AlignHCenter
                font.pixelSize: footerPageId.tabFontSize
-               //font.bold: currentIndex === 0
+               //Even if icon is missed
+               //Text should be resposible
+               MouseArea{
+                  anchors.fill: parent
+                  onClicked: {
+                     if(currentIndex === 0) return
+                     currentIndex = 0
+                     if (footerPageId.isAdminUser)
+                        footerPageId.dashboardTapped()
+                     else
+                        footerPageId.homeTapped()
+                     tabSelected(0)
+                  }
+               }
             }
          }
          ColumnLayout{
@@ -99,8 +112,8 @@ Page{
             ToolButton{
                icon.name: "Properties-icon"
                icon.source:"qrc:/ui/assets/properties-icon.svg"
-               icon.height: 24
-               icon.width: 24
+               icon.height: 22
+               icon.width: 22
                icon.color: currentIndex === 1 ? "#2563EB" : "gray"
                Layout.alignment: Qt.AlignHCenter
                background: null
@@ -115,7 +128,15 @@ Page{
                text: qsTr("Properties")
                Layout.alignment: Qt.AlignHCenter
                font.pixelSize: footerPageId.tabFontSize
-               //font.bold: currentIndex === 1
+               MouseArea{
+                  anchors.fill: parent
+                  onClicked: {
+                     if(currentIndex === 1) return
+                     footerPageId.propertiesTapped()
+                     currentIndex = 1
+                     tabSelected(1)
+                  }
+               }
             }
          }
          ColumnLayout{
@@ -128,9 +149,9 @@ Page{
             visible: footerPageId.showSavedTab
             ToolButton{
                icon.name: "Save-icon"
-               icon.source:"qrc:/ui/assets/save-icon.svg"
-               icon.height: 24
-               icon.width: 24
+               icon.source:"qrc:/ui/assets/footer/save-icon.svg"
+               icon.height: 22
+               icon.width: 22
                background: null
                icon.color: currentIndex === 2 ? "#2563EB" : "gray"
                Layout.alignment: Qt.AlignHCenter
@@ -142,10 +163,19 @@ Page{
                }
             }
             Text{
-               text: qsTr("Saved")
+               text: qsTr("Saves")
                Layout.alignment: Qt.AlignHCenter
                font.pixelSize: footerPageId.tabFontSize
                //font.bold: currentIndex === 2
+               MouseArea{
+                  anchors.fill: parent
+                  onClicked: {
+                     if(currentIndex === 2) return
+                     currentIndex = 2
+                     footerPageId.saveTapped()
+                     tabSelected(2)
+                  }
+               }
             }
          }
 
@@ -210,8 +240,8 @@ Page{
             ToolButton{
                icon.name: "Bookings-icon"
                icon.source:"qrc:/ui/assets/bookings-icon.svg"
-               icon.height: 24
-               icon.width: 24
+               icon.height: 22
+               icon.width: 22
                icon.color: currentIndex === 3 ? "#2563EB" : "gray"
                Layout.alignment: Qt.AlignHCenter
                background: null
@@ -226,7 +256,15 @@ Page{
                text: qsTr("Bookings")
                Layout.alignment: Qt.AlignHCenter
                font.pixelSize: footerPageId.tabFontSize
-               //font.bold: currentIndex === 2
+               MouseArea{
+                  anchors.fill: parent
+                  onClicked: {
+                     if(currentIndex === 3) return
+                     footerPageId.bookingsTapped()
+                     currentIndex = 3
+                     tabSelected(3)
+                  }
+               }
             }
          }
          ColumnLayout{
@@ -237,8 +275,8 @@ Page{
             ToolButton{
                icon.name: "Account-icon"
                icon.source:"qrc:/ui/assets/account-icon.svg"
-               icon.height: 24
-               icon.width: 24
+               icon.height: 22
+               icon.width: 22
                icon.color: currentIndex === 4 ? "#2563EB" : "gray"
                Layout.alignment: Qt.AlignHCenter
                background: null
@@ -253,13 +291,19 @@ Page{
                text: qsTr("Account")
                Layout.alignment: Qt.AlignHCenter
                font.pixelSize: footerPageId.tabFontSize
-               //font.bold: currentIndex === 3
+               MouseArea{
+                  anchors.fill: parent
+                  onClicked: {
+                     if(currentIndex === 4) return
+                     currentIndex = 4
+                     footerPageId.accountTapped()
+                     tabSelected(4)
+                  }
+               }
             }
-
          }
       }
    }
-
 }
 
 

@@ -32,7 +32,7 @@ Item {
             text: qsTr("AccoFinder")
             font.family: "sans-serif"
             font.weight: Font.DemiBold
-            font.pixelSize: 20
+            font.pixelSize: 24
             color: "#2563EB"
         }
     }

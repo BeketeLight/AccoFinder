@@ -7,7 +7,7 @@ import "../components"
 import "../../../utils/NavigationUtils.js" as NavUtils
 
 Page {
-    id: detailPage
+    id: root
     background: Rectangle{
         color: "#F8F9FB"
     }
@@ -25,6 +25,7 @@ Page {
     property alias clientName: detailDelegate.clientName
     property alias clientPhone: detailDelegate.clientPhone
     property alias clientEmail: detailDelegate.clientEmail
+    readonly property alias canRaiseDispute: detailDelegate.canRaiseDispute
 
     property alias bookingDate: detailDelegate.bookingDate
     property alias price: detailDelegate.price
@@ -46,7 +47,7 @@ Page {
         RowLayout {
             spacing: 12
             ToolButton {
-                Layout.leftMargin: 4
+                Layout.leftMargin: 10
                 implicitWidth: 28
                 implicitHeight: 28
                 icon.source: "qrc:/ui/assets/back-icons.svg"
@@ -64,7 +65,7 @@ Page {
             }
             BookingStatusBadge {
                 Layout.alignment: Qt.AlignVCenter
-                status: detailPage.status
+                status: root.status
             }
         }
     }

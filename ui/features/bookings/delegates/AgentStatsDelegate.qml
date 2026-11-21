@@ -35,9 +35,12 @@ Rectangle {
     signal viewDetailsRequested(var data)
 
     //match status from model
-    visible: model.matches ?? true
-    width: ListView.view ? ListView.view.width : parent.width
-    implicitHeight: visible ? cardContent.implicitHeight + 16 : 0
+    readonly property bool isMatch: model.matches !== false
+
+    width: ListView.view ? ListView.view.width : (parent ? parent.width : 0)
+    height: isMatch ? (cardContent.implicitHeight + 24) : 0
+    // no implicitHeight: height
+    visible: isMatch
     color: "#FFFFFF"
     radius: 8
     border.color: "#E2E8F0"

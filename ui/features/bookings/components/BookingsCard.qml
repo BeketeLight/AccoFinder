@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import "../../../features/properties/components"
 
 Rectangle {
     id: reservationCard
@@ -28,38 +29,14 @@ Rectangle {
         anchors.margins: 12
         spacing: 4
 
-        // Card Header
-        RowLayout {
-            spacing: 0
-            ToolButton {
-                implicitHeight: 24
-                implicitWidth: 24
-                icon.source: reservationCard.cardIcon
-                icon.height: reservationCard.customIconHeight
-                icon.width: reservationCard.custonIconWidth
-                background: Rectangle{
-                    radius: 12
-                    color: "#DBEAFE"//"#EFF6FF"
-                }
-            }
-            Text {
-                text: reservationCard.cardTitle
-                font.pixelSize: 14
-                font.bold: true
-                color: "#0F172A"
-            }
+        SectionHeader{
+            Layout.fillWidth: true
+            title: reservationCard.cardTitle
         }
+
         RowLayout {
             Layout.fillWidth: true
             spacing: 4
-            Rectangle {
-                id: leftAccent
-                Layout.leftMargin: 8
-                Layout.preferredWidth: 5
-                Layout.fillHeight: true
-                color: "#2563EB"
-                radius: 3
-            }
             ColumnLayout{
                 Layout.fillWidth: true
 

@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import "../../../features/properties/components"
 
 Rectangle {
     id: paymentCard
@@ -27,40 +28,23 @@ Rectangle {
         anchors.margins: 12
         spacing: 4
 
-        // Card Header
-        RowLayout {
-            spacing: 0
-            ToolButton {
-                implicitHeight: 24
-                implicitWidth: 24
-                icon.source: paymentCard.cardIcon
-                icon.height: paymentCard.customIconHeight
-                icon.width: paymentCard.customIconWidth
-                background: Rectangle{
-                    color: "#DBEAFE"
-                    radius: 12
-                }
-            }
-            Text {
-                text: paymentCard.cardTitle
-                font.pixelSize: 14
-                font.bold: true
-                color: "#0F172A"
-            }
+        SectionHeader{
+            Layout.fillWidth: true
+            title: paymentCard.cardTitle
         }
 
         RowLayout {
             Layout.fillWidth: true
             spacing: 6
 
-            Rectangle {
-                id: leftAccent
-                Layout.leftMargin: 8
-                Layout.preferredWidth: 5
-                Layout.fillHeight: true
-                color: "#2563EB"
-                radius: 3
-            }
+            // Rectangle {
+            //     id: leftAccent
+            //     Layout.leftMargin: 8
+            //     Layout.preferredWidth: 5
+            //     Layout.fillHeight: true
+            //     color: "#2563EB"
+            //     radius: 3
+            // }
             ColumnLayout {
                 Layout.fillWidth: true
                 spacing: 4
