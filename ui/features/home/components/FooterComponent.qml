@@ -170,16 +170,6 @@ Page{
                border.color: "#BFDBFE"
                border.width: 1.5
                opacity: 0.6
-
-               SequentialAnimation {
-                  running: parent.parent.visible
-                  loops: Animation.Infinite
-                  ParallelAnimation {
-                     NumberAnimation { target: safetyRing; property: "scale"; from: 1.0; to: 1.45; duration: 1000 }
-                     NumberAnimation { target: safetyRing; property: "opacity"; from: 0.6; to: 0.0; duration: 1000 }
-                  }
-                  PauseAnimation { duration: 300 }
-               }
             }
 
             Shape {
@@ -203,13 +193,7 @@ Page{
 
             // Scales in place around its center — a pure "resize" animation,
             // so the layout footprint (and hence the margins) never change.
-            SequentialAnimation {
-               running: parent.visible
-               loops: Animation.Infinite
-               NumberAnimation { target: safetyBadge; property: "scale"; from: 1.0; to: 0.87; duration: 900; easing.type: Easing.InOutSine }
-               NumberAnimation { target: safetyBadge; property: "scale"; from: 0.87; to: 1.0; duration: 900; easing.type: Easing.InOutSine }
-               PauseAnimation { duration: 300 }
-            }
+            // (Animation removed to reduce CPU load during page transitions.)
          }
          //a speacner for admin
          Item {

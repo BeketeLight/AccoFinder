@@ -17,7 +17,9 @@ Item {
     function refresh() {
         var open = 0, review = 0, resolved = 0
         for (var i = 0; i < disputesModelId.count; i++) {
-            var s = disputesModelId.get(i).status
+            var d = disputesModelId.get(i)
+            if (!d) continue
+            var s = d.status
             if (s === "Open") open++
             else if (s === "In review") review++
             else if (s === "Resolved") resolved++
@@ -32,12 +34,13 @@ Item {
         viewModelId.clear()
         for (var i = 0; i < disputesModelId.count; i++) {
             var d = disputesModelId.get(i)
+            if (!d) continue
             if (root.statusFilter !== "ALL" && d.status !== root.statusFilter)
                 continue
             viewModelId.append({
-                disputeId: d.disputeId, subject: d.subject, property: d.property,
-                client: d.client, opened: d.opened, status: d.status,
-                detail: d.detail
+                disputeId: d.disputeId || "", subject: d.subject || "", property: d.property || "",
+                client: d.client || "", opened: d.opened || "", status: d.status || "Open",
+                detail: d.detail || ""
             })
         }
     }
@@ -45,9 +48,9 @@ Item {
     function findDispute(disputeId) {
         for (var i = 0; i < disputesModelId.count; i++) {
             var d = disputesModelId.get(i)
-            if (d.disputeId === disputeId)
-                return { disputeId: d.disputeId, subject: d.subject, property: d.property,
-                         client: d.client, opened: d.opened, status: d.status, detail: d.detail }
+            if (!d || d.disputeId !== disputeId) continue
+            return { disputeId: d.disputeId, subject: d.subject, property: d.property,
+                     client: d.client, opened: d.opened, status: d.status, detail: d.detail }
         }
         return null
     }
@@ -57,16 +60,15 @@ Item {
         // real API when the server confirms the change.
         for (var r = 0; r < disputesModelId.count; r++) {
             var d = disputesModelId.get(r)
-            if (d.disputeId === disputeId) {
-                d.status = status
-                disputesModelId.set(r, d)
-                break
-            }
+            if (!d || d.disputeId !== disputeId) continue
+            d.status = status
+            disputesModelId.set(r, d)
+            break
         }
         var cppModel = DisputesListViewModel.disputesListModel
         var idx = -1
         if (cppModel) {
-            var n = cppModel.size()
+            var n = cppModel.count
             for (var i = 0; i < n; i++) {
                 if (cppModel.at(i).id === disputeId) {
                     idx = i
@@ -98,9 +100,10 @@ Item {
     function reload() {
         disputesModelId.clear()
         var m = DisputesListViewModel.disputesListModel
-        var cppSize = m ? m.size() : 0
+        var cppSize = m ? m.count : 0
         for (var i = 0; i < cppSize; i++) {
             var item = m.at(i)
+            if (!item) continue
             disputesModelId.append({
                 disputeId: item.id, subject: item.issue,
                 property: item.bookingId.length > 0 ? "Booking " + item.bookingId : "",

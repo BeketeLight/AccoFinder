@@ -17,8 +17,5 @@ ScrollBar {
         radius: 3
         color: root.pressed ? "#1D4ED8" : "#2563EB"
         opacity: root.pressed ? 1.0 : (root.hovered ? 0.9 : (root.active ? 0.55 : 0.0))
-
-        Behavior on opacity { NumberAnimation { duration: 200 } }
-        Behavior on color { ColorAnimation { duration: 120 } }
     }
 }

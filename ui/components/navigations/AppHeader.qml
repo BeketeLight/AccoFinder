@@ -49,9 +49,6 @@ ToolBar {
         return 56 + statusBarInset
     }
     clip: true
-    Behavior on implicitHeight {
-        NumberAnimation { duration: 40; easing.type: Easing.OutCubic }
-    }
 
     background: Rectangle {
         color: root.transparentHeader && !root.solidHeader

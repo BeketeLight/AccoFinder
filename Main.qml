@@ -394,15 +394,12 @@ ApplicationWindow {
             Layout.preferredHeight: 65
             visible: mainStack.depth === 0
             //signals
-            onHomeTapped: loader.source = "./ui/features/home/screens/HomeScreen.qml"
-            onPropertiesTapped: loader.source = "./ui/features/properties/screens/PropertiesScreen.qml"
-            onAccountTapped: loader.source = AppSettings.isLoggedIn() ? "./ui/features/auth/pages/Profile.qml" : "./ui/features/auth/pages/CreateAccountPage.qml"
-            onBookingsTapped: loader.source = "./ui/features/bookings/screens/BookingsScreen.qml"
-            // loader.source swap keeps the footer visible (mainStack.depth stays
-            // 0). The shared PropertiesModel is injected by loader.onLoaded
-            // above, so the property tab is populated on first paint.
-            onSaveTapped: loader.source = "./ui/features/favourites/screen/SavesScreen.qml"
-            onDashboardTapped: {
+            onHomeTapped: Qt.callLater(function() { loader.source = "./ui/features/home/screens/HomeScreen.qml" })
+            onPropertiesTapped: Qt.callLater(function() { loader.source = "./ui/features/properties/screens/PropertiesScreen.qml" })
+            onAccountTapped: Qt.callLater(function() { loader.source = AppSettings.isLoggedIn() ? "./ui/features/auth/pages/Profile.qml" : "./ui/features/auth/pages/CreateAccountPage.qml" })
+            onBookingsTapped: Qt.callLater(function() { loader.source = "./ui/features/bookings/screens/BookingsScreen.qml" })
+            onSaveTapped: Qt.callLater(function() { loader.source = "./ui/features/favourites/screen/SavesScreen.qml" })
+            onDashboardTapped: Qt.callLater(function() {
                 if (AppSettings.isLoggedIn()) {
                     var r = AppSettings.userType();
                     if (r === "ADMIN" || r === "SUPER_ADMIN")
@@ -414,7 +411,7 @@ ApplicationWindow {
                 } else {
                     loader.source = "./ui/features/home/screens/HomeScreen.qml";
                 }
-            }
+            })
         }
     }
 
