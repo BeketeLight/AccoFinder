@@ -140,21 +140,21 @@ Page {
             anchors.fill: parent
             anchors.leftMargin: 8
             anchors.rightMargin: 16
-            ToolButton {
-                implicitWidth: 40
-                implicitHeight: 40
-                Image {
-                    width: 24
-                    height: 24
-                    source: "qrc:/ui/assets/back-icon.svg"
-                    fillMode: Image.PreserveAspectFit
-                    anchors.centerIn: parent
-                }
-                onClicked: UtilsModule.NavigationUtils.pop({
-                    bookingId: root.bookingId,
-                    returnToBooking: true
-                })
-            }
+            // ToolButton {
+            //     implicitWidth: 40
+            //     implicitHeight: 40
+            //     Image {
+            //         width: 24
+            //         height: 24
+            //         source: "qrc:/ui/assets/back-icon.svg"
+            //         fillMode: Image.PreserveAspectFit
+            //         anchors.centerIn: parent
+            //     }
+            //     onClicked: UtilsModule.NavigationUtils.pop({
+            //         bookingId: root.bookingId,
+            //         returnToBooking: true
+            //     })
+            // }
             Label {
                 Layout.fillWidth: true
                 text: qsTr("Make a payment")
