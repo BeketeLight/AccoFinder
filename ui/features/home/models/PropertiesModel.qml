@@ -7,11 +7,22 @@ Item {
     readonly property alias recentsPropertiesModel: recentsPropertiesModel
     readonly property int count: propertiesModelId.count
     readonly property int visibleCount: _visibleCount
-    readonly property bool loading: PropertyViewModel.isLoading
+    readonly property bool loading: PropertyViewModel !== null && PropertyViewModel.isLoading
 
     // "ALL" | "HOSTEL" | "QUARTER" | "WHOLE"
     property string typeFilter: "ALL"
     property int _visibleCount: 0
+
+    // A screen that receives the window-owned shared model disables the
+    // fallback instance's startup fetch, so one property feed is not loaded
+    // (and mirrored into a second ListModel) for every footer tab.
+    property bool autoFetch: true
+
+    // Main.qml binds this to the active tab's scroll-idle flag. The shared feed
+    // is mirrored by both Home and Saves, so it must not clear/rebuild its
+    // ListModel while the user is flicking a different tab.
+    property bool refreshAllowed: true
+    property bool _reloadPending: false
 
     // How far back "recent" goes, in hours. Exposed so a screen can
     // temporarily widen or narrow the window without touching this file.
@@ -20,6 +31,13 @@ Item {
     // Guards getMediaByProperty(pid) so it fires at most once per property
     // per Home session.
     property var _mediaRequested: ({})
+    property var _mediaQueued: ({})
+
+    // Media is fetched through a paced queue instead of firing one request per
+    // row in a single tick. Twenty-plus simultaneous calls were saturating the
+    // network and forcing repeated cover-model rebuilds during navigation.
+    property var _mediaQueue: []
+    property int _mediaBatchIntervalMs: 120
 
     property int _coverTicksWithoutChange: 0
 
@@ -37,6 +55,24 @@ Item {
         repeat: true
         running: false
         onTriggered: root.refreshCovers()
+    }
+
+    Timer {
+        id: mediaQueueTimer
+        interval: root._mediaBatchIntervalMs
+        repeat: true
+        running: false
+        onTriggered: {
+            if (!root._mediaQueue.length) {
+                stop();
+                return;
+            }
+            var pid = String(root._mediaQueue.shift());
+            if (pid.length > 0 && !root._mediaRequested[pid]) {
+                root._mediaRequested[pid] = true;
+                MediaViewModel.getMediaByProperty(pid);
+            }
+        }
     }
 
     // ------------------------------------------------------------
@@ -166,6 +202,37 @@ Item {
         refreshRecents();
     }
 
+    // PropertyViewModel emits one signal per inserted row. Mirroring the
+    // shared C++ model into this ListModel on every signal rebuilt all cover
+    // cards repeatedly and could interrupt a flick. Collapse bursts into a
+    // single reload on the next event-loop turn.
+    function requestReload() {
+        root._reloadPending = true;
+        if (root.refreshAllowed && !reloadCoalesceTimer.running)
+            reloadCoalesceTimer.start();
+    }
+
+    onRefreshAllowedChanged: {
+        if (root.refreshAllowed && root._reloadPending && !reloadCoalesceTimer.running)
+            reloadCoalesceTimer.start();
+    }
+
+    Timer {
+        id: reloadCoalesceTimer
+        interval: 80
+        repeat: true
+        running: false
+        onTriggered: {
+            // Keep waiting while the visible tab is moving. The timer stays
+            // active and fires again once that tab settles.
+            if (!root.refreshAllowed)
+                return;
+            stop();
+            root._reloadPending = false;
+            root.reload();
+        }
+    }
+
     function setFilter(type) {
         typeFilter = String(type || "ALL").toUpperCase();
         applyFilter();
@@ -194,21 +261,23 @@ Item {
         refreshRecents();
     }
 
-    // Fire getMediaByProperty(pid) once per property, ever.
+    // Queue getMediaByProperty(pid) once per property, then let the timer
+    // drain it a request at a time. Keeps the GUI thread responsive while the
+    // covers are still being filled in.
     function scheduleMediaFetches() {
-        var fired = 0;
+        var queued = 0;
         for (var i = 0; i < propertiesModelId.count; i++) {
             var pid = String(propertiesModelId.get(i).propertyId || "");
-            if (pid.length === 0)
+            if (pid.length === 0 || _mediaRequested[pid] || _mediaQueued[pid])
                 continue;
-            if (_mediaRequested[pid])
-                continue;
-            _mediaRequested[pid] = true;
-            MediaViewModel.getMediaByProperty(pid);
-            fired++;
+            _mediaQueued[pid] = true;
+            _mediaQueue.push(pid);
+            queued++;
         }
-        if (fired > 0)
+        if (queued > 0) {
             coverRefreshTimer.restart();
+            mediaQueueTimer.restart();
+        }
     }
 
     // Read whatever media the shared MediaListModel already has for each
@@ -258,12 +327,15 @@ Item {
     }
 
     Component.onCompleted: {
-        reload();
-        PropertyViewModel.getProperties();
+        if (autoFetch) {
+            reload();
+            PropertyViewModel.getProperties();
+        }
     }
 
     // Media batch settled → refresh covers.
     Connections {
+        enabled: root.autoFetch
         target: MediaViewModel
         function onIsLoadingChanged(loading) {
             if (!loading)
@@ -272,21 +344,22 @@ Item {
     }
 
     Connections {
-        target: PropertyViewModel.propertyListModel
+        enabled: root.autoFetch
+        target: PropertyViewModel !== null ? PropertyViewModel.propertyListModel : null
         function onCountChanged() {
-            root.reload();
+            root.requestReload();
         }
         function onDataChanged() {
-            root.reload();
+            root.requestReload();
         }
         function onModelReset() {
-            root.reload();
+            root.requestReload();
         }
         function onRowsInserted() {
-            root.reload();
+            root.requestReload();
         }
         function onRowsRemoved() {
-            root.reload();
+            root.requestReload();
         }
     }
 
@@ -305,6 +378,13 @@ Item {
             for (var j = 0; j < propertiesModelId.count; j++)
                 if (String(propertiesModelId.get(j).imageUrl).length > 0)
                     after++;
+
+            // Keep polling while the paced media queue is still draining;
+            // otherwise late covers would never reach the ListModel.
+            if (root._mediaQueue.length > 0 || MediaViewModel.isLoading) {
+                root._coverTicksWithoutChange = 0;
+                return;
+            }
 
             if (after === before) {
                 root._coverTicksWithoutChange++;

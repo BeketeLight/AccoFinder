@@ -24,7 +24,14 @@ Item {
     readonly property color mutedColor: "#6B7280"
     readonly property color borderColor: "#E5E7EB"
 
-    property AdminDashboardModel dashboardModel: AdminDashboardModel {}
+    // Injected by AdminsDashboardScreen so the activity list waits for an idle
+    // Flickable. Property-assigned Items need an explicit visual parent for the
+    // model's hidden-page check to work.
+    property bool refreshAllowed: true
+    property AdminDashboardModel dashboardModel: AdminDashboardModel {
+        parent: root
+        refreshAllowed: root.refreshAllowed
+    }
 
     signal addPropertyRequested()
     signal attentionClicked(var propertyTitle)

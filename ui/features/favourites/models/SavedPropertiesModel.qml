@@ -1,4 +1,5 @@
 import QtQuick
+import "../../../utils/Utils.js" as Utils
 
 // Read-only mirror of the saved property rows. Populated by scanning the shared
 // home PropertiesModel for ids that appear in AppSettings.favoritePropertyIds.
@@ -13,8 +14,39 @@ Item {
     readonly property alias model: savedModel
     readonly property int count: savedModel.count
 
+    // The Saves tab is cached. Rebuild only while it is visible and its
+    // Flickable is idle; otherwise the Repeater is torn down mid-flick.
+    property bool refreshAllowed: true
+    readonly property bool canRebuild: root.refreshAllowed && Utils.isPageActive(root)
+    property bool _reloadPending: false
+
     ListModel {
         id: savedModel
+    }
+
+    function requestReload() {
+        root._reloadPending = true;
+        if (root.canRebuild && !reloadTimer.running)
+            reloadTimer.start();
+    }
+
+    onCanRebuildChanged: {
+        if (root.canRebuild && root._reloadPending && !reloadTimer.running)
+            reloadTimer.start();
+    }
+
+    Timer {
+        id: reloadTimer
+        interval: 80
+        repeat: true
+        running: false
+        onTriggered: {
+            if (!root.canRebuild)
+                return;
+            stop();
+            root._reloadPending = false;
+            root.reload();
+        }
     }
 
     // Rebuild by scanning sourceModel once and picking the rows whose
@@ -60,26 +92,26 @@ Item {
 
     // Watch the source model for count/data changes, and the AppSettings
     // favourites for id-list changes.
-    onSourceModelChanged: reload()
+    onSourceModelChanged: root.requestReload()
 
     Connections {
         target: root.sourceModel ? root.sourceModel.propertiesModel : null
         enabled: root.sourceModel !== null
         function onCountChanged() {
-            root.reload();
+            root.requestReload();
         }
         function onDataChanged() {
-            root.reload();
+            root.requestReload();
         }
         function onModelReset() {
-            root.reload();
+            root.requestReload();
         }
     }
 
     Connections {
         target: AppSettings
         function onFavoritePropertyIdsChanged() {
-            root.reload();
+            root.requestReload();
         }
     }
 

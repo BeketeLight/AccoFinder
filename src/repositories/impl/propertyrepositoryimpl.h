@@ -7,6 +7,7 @@
 #include <QStringList>
 #include <QJsonArray>
 #include <QAtomicInt>
+#include <QSet>
 
 class PropertyRepositoryImpl : public IPropertyRepository
 {
@@ -44,6 +45,12 @@ private:
     // issued in the meantime. Prevents an older response (from "Bla")
     // overwriting a newer one (from "Blan").
     QAtomicInt m_listRequestToken{0};
+
+    // Identical listing/detail GET URLs requested at the same time share one
+    // network request (e.g. HomeScreen and the shared PropertiesModel at
+    // startup, or an admin dashboard and a pushed admin page). Entries are
+    // removed when that request finishes, so pull-to-refresh still fetches.
+    QSet<QString> m_inFlightListUrls;
 
 signals:
     void propertyLoaded(Property* property);

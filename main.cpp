@@ -4,6 +4,7 @@
 #include <QQuickStyle>
 #include "src/core/utils/appsettings.h"
 #include "src/core/utils/apppermission.h"
+#include "src/core/utils/applifecycle.h"
 #include "src/core/utils/credentialstore.h"
 #include "src/application/controllers/authcontroller.h"
 #include "src/application/controllers/propertycontroller.h"
@@ -89,8 +90,6 @@ int main(int argc, char *argv[])
     // Set the Material style (must be before loading QML)
     QQuickStyle::setStyle("Material");
 
-    qputenv("QT_ANDROID_NO_EXIT_CALL", "true");
-
     // Settings
     QCoreApplication::setOrganizationName("accofinder");
     QCoreApplication::setOrganizationDomain("accofinder.com");
@@ -156,6 +155,7 @@ int main(int argc, char *argv[])
                      &app, applyLanguage);
     // AppPermission
     AppPermission &appPermission = AppPermission::instance();
+    AppLifecycle appLifecycle;
     // Controllers
     AuthController authController;
     PropertyController propertyController;
@@ -188,6 +188,7 @@ int main(int argc, char *argv[])
     // ContextProperty
     engine.rootContext()->setContextProperty("AppSettings", &appSettings);
     engine.rootContext()->setContextProperty("AppPermission", &appPermission);
+    engine.rootContext()->setContextProperty("AppLifecycle", &appLifecycle);
     engine.rootContext()->setContextProperty("AuthController", &authController);
     engine.rootContext()->setContextProperty("PropertyController", &propertyController);
     engine.rootContext()->setContextProperty("BookingController", &bookingController);

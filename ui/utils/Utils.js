@@ -6,6 +6,21 @@ function formatCurrency(value) {
     return "MK " + parts[0]
 }
 
+// Root pages are cached hidden instead of destroyed. A child loaded inside a
+// hidden root page still has visible === true, so checking one item is not
+// enough: walk the whole parent chain and require every ancestor to be both
+// visible and enabled. Signal handlers use this before pushing or opening an
+// overlay; otherwise a hidden auth page could navigate over the current tab.
+function isPageActive(item) {
+    var current = item
+    while (current) {
+        if (!current.visible || !current.enabled)
+            return false
+        current = current.parent
+    }
+    return true
+}
+
 // Wrap a remote img URL so it loads through the CachedImageProvider. Local
 // (file:// or qrc://) and empty sources pass through unchanged.
 function cachedImage(src) {

@@ -77,6 +77,12 @@ void PropertyRepositoryImpl::getHouseListings(const PropertyQuery& query)
     if (!qs.isEmpty())
         url += QStringLiteral("?") + qs;
 
+    // Several screens ask for the same feed at startup. Reuse the in-flight
+    // request instead of firing duplicate network calls.
+    if (m_inFlightListUrls.contains(url))
+        return;
+    m_inFlightListUrls.insert(url);
+
     // Capture the token before the request; drop the response if a newer
     // request has been issued since.
     const int myToken = m_listRequestToken.fetchAndAddOrdered(1) + 1;
@@ -85,8 +91,10 @@ void PropertyRepositoryImpl::getHouseListings(const PropertyQuery& query)
 
     APIClient::instance().get(
         url.toUtf8(),
-        [this, myToken, requestedPage, isSearch] (bool success, const QJsonObject& response)
+        [this, url, myToken, requestedPage, isSearch] (bool success, const QJsonObject& response)
         {
+            m_inFlightListUrls.remove(url);
+
             // Stale response: a newer request has been issued since this one
             // was sent. Discard silently — the newer request will fire its
             // own signal when it returns.
@@ -146,6 +154,10 @@ void PropertyRepositoryImpl::searchProperties(const PropertyQuery& query)
     if (!qs.isEmpty())
         url += QStringLiteral("?") + qs;
 
+    if (m_inFlightListUrls.contains(url))
+        return;
+    m_inFlightListUrls.insert(url);
+
     // Capture the token before the request; drop the response if a newer
     // request has been issued since.
     const int myToken = m_listRequestToken.fetchAndAddOrdered(1) + 1;
@@ -154,8 +166,10 @@ void PropertyRepositoryImpl::searchProperties(const PropertyQuery& query)
 
     APIClient::instance().get(
         url.toUtf8(),
-        [this, myToken, requestedPage, isSearch] (bool success, const QJsonObject& response)
+        [this, url, myToken, requestedPage, isSearch] (bool success, const QJsonObject& response)
         {
+            m_inFlightListUrls.remove(url);
+
             // Stale response: a newer request has been issued since this one
             // was sent. Discard silently — the newer request will fire its
             // own signal when it returns.
@@ -182,10 +196,17 @@ void PropertyRepositoryImpl::getAdminProperties()
 {
     // Authenticated admin listing: returns every status. Uses a high limit so
     // the admin pages are not silently truncated by the default pagination.
+    const QString url = QStringLiteral("/house-listing/admin?limit=100");
+    if (m_inFlightListUrls.contains(url))
+        return;
+    m_inFlightListUrls.insert(url);
+
     APIClient::instance().get(
-        "/house-listing/admin?limit=100",
-        [this] (bool success, const QJsonObject& response)
+        url.toUtf8(),
+        [this, url] (bool success, const QJsonObject& response)
         {
+            m_inFlightListUrls.remove(url);
+
             if (!success) {
                 emit propertyError(response.value("message").toString(
                     QStringLiteral("Failed to load properties")));
@@ -206,10 +227,18 @@ void PropertyRepositoryImpl::getPropertiesOwnedBy(const QString &ownerId)
     if (ownerId.isEmpty())
         return;
 
+    const QString url = QStringLiteral("/house-listing/?owner=")
+                        + QString::fromUtf8(QUrl::toPercentEncoding(ownerId));
+    if (m_inFlightListUrls.contains(url))
+        return;
+    m_inFlightListUrls.insert(url);
+
     APIClient::instance().get(
-        ("/house-listing/?owner=" + QUrl::toPercentEncoding(ownerId)),
-        [this] (bool success, const QJsonObject& response)
+        url.toUtf8(),
+        [this, url] (bool success, const QJsonObject& response)
         {
+            m_inFlightListUrls.remove(url);
+
             QList<Property*> properties;
             if (success && response.contains("data"))
                 properties = parseListingResponse(response);
@@ -225,10 +254,18 @@ void PropertyRepositoryImpl::getPendingProperties()
     // Authenticated admin listing filtered to PENDING. The unauthenticated
     // public endpoint cannot see the caller's role and would return VERIFIED
     // listings instead.
+    const QString url = QStringLiteral(
+        "/house-listing/admin?verificationStatus=PENDING&limit=100");
+    if (m_inFlightListUrls.contains(url))
+        return;
+    m_inFlightListUrls.insert(url);
+
     APIClient::instance().get(
-        "/house-listing/admin?verificationStatus=PENDING&limit=100",
-        [this] (bool success, const QJsonObject& response)
+        url.toUtf8(),
+        [this, url] (bool success, const QJsonObject& response)
         {
+            m_inFlightListUrls.remove(url);
+
             QList<Property*> properties;
             if (success && response.contains("data"))
                 properties = parseListingResponse(response);
@@ -240,10 +277,17 @@ void PropertyRepositoryImpl::getPendingProperties()
 
 void PropertyRepositoryImpl::getPropertyById(const QString& houseId)
 {
+    const QString url = QStringLiteral("/house-listing/") + houseId;
+    if (m_inFlightListUrls.contains(url))
+        return;
+    m_inFlightListUrls.insert(url);
+
     APIClient::instance().get(
-        "/house-listing/" + houseId,
-        [this] (bool success, const QJsonObject& response)
+        url.toUtf8(),
+        [this, url] (bool success, const QJsonObject& response)
         {
+            m_inFlightListUrls.remove(url);
+
             if (!success) {
                 emit propertyError(response.value("message").toString(
                     QStringLiteral("Failed to load property")));
@@ -337,10 +381,17 @@ void PropertyRepositoryImpl::updatePropertyStatus(const QString &houseId, const 
 
 void PropertyRepositoryImpl::getPropertiesByStatus(const QString &status)
 {
+    const QString url = QStringLiteral("/house-listing/?verificationStatus=") + status;
+    if (m_inFlightListUrls.contains(url))
+        return;
+    m_inFlightListUrls.insert(url);
+
     APIClient::instance().get(
-        "/house-listing/?verificationStatus=" + status,
-        [this] (bool success, const QJsonObject& response)
+        url.toUtf8(),
+        [this, url] (bool success, const QJsonObject& response)
         {
+            m_inFlightListUrls.remove(url);
+
             QList<Property*> properties;
             if(success && response.contains("data"))
                 properties = parseListingResponse(response);

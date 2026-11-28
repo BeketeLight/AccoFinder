@@ -45,17 +45,23 @@ void NotificationServiceImpl::getNotification(const QString& id)
 
 void NotificationServiceImpl::getUserNotifications(const QString &role)
 {
-    QByteArray url = "/notifications";
+    QString url = QStringLiteral("/notifications");
     // Optional role scope: /notifications?role=AGENT keeps the agent dashboard
     // feed agent-scoped, hiding admin-targeted notifications from it.
     if (!role.isEmpty())
-        url += "?role=" + role.toUtf8();
+        url += QStringLiteral("?role=") + role;
+
+    if (m_inFlightUrls.contains(url))
+        return;
+    m_inFlightUrls.insert(url);
 
     APIClient::instance().get(
-        url,
-        [this](bool success,
-               const QJsonObject& response)
+        url.toUtf8(),
+        [this, url](bool success,
+                    const QJsonObject& response)
         {
+            m_inFlightUrls.remove(url);
+
             QList<Notification*> notifications;
             if (success && response.contains("data")) {
                 const QJsonArray data = response["data"].toArray();

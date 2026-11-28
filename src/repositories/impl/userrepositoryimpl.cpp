@@ -108,17 +108,14 @@ void UserRepositoryImpl::signIn(
                 if (error.isEmpty())
                     error = "Login failed. Please check your credentials.";
 
-                // Debug logging to see what's actually being returned
-                qDebug() << "Login error received:" << error;
-                qDebug() << "Full response:" << response;
+                // Log only the backend message. The raw response can contain
+                // tokens and personal data.
+                qDebug() << "Login error:" << error;
 
                 // Check for email not verified - case insensitive and handles trimmed spaces
                 QString errorLower = error.trimmed().toLower();
                 if (errorLower.contains("email not verified") ||
                     errorLower.contains("not verified")) {
-                    qDebug() << "=== EMAIL NOT VERIFIED DETECTED ===";
-                    qDebug() << "Email:" << email;
-                    qDebug() << "Emitting emailVerificationRequired signal";
                     emit emailVerificationRequired(email);
                     return;
                 }

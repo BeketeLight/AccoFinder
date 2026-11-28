@@ -183,9 +183,16 @@ void BookingRepositoryImpl::createBooking(
 
 void BookingRepositoryImpl::getBooking()
 {
+    const QString url = QStringLiteral("/bookings/");
+    if (m_inFlightUrls.contains(url))
+        return;
+    m_inFlightUrls.insert(url);
+
     APIClient::instance().get(
-        QStringLiteral("/bookings/"),
-        [this](bool success, const QJsonObject &response) {
+        url.toUtf8(),
+        [this, url](bool success, const QJsonObject &response) {
+            m_inFlightUrls.remove(url);
+
             QList<Booking *> bookings;
 
             if (success && response.contains(QStringLiteral("data"))) {
@@ -235,12 +242,6 @@ void BookingRepositoryImpl::getBooking()
                         }
                     }
 
-                    qDebug() << "Parsed booking" << idFallback
-                             << "clientId" << clientId
-                             << "clientName" << clientName
-                             << "itemType" << itemType
-                             << "itemId" << itemId;
-
                     auto *booking = new Booking(
                         idFallback,
                         clientId,
@@ -263,18 +264,11 @@ void BookingRepositoryImpl::getBooking()
                     booking->setStatus(bookingStatusFromString(statusStr));
                     booking->setHoldExpiresAt(holdExpiryFromJson(obj));
 
-                    qDebug() << "status from API:" << statusStr
-                             << "holdExpiresAt:" << booking->getHoldExpiresAt();
-
-                    qDebug() << "Booking object"
-                             << "id" << booking->getId()
-                             << "clientName" << booking->getClientName()
-                             << "clientPhone" << booking->getClientPhone();
-
                     bookings.append(booking);
                 }
             }
 
+            qDebug() << "Parsed" << bookings.size() << "bookings";
             emit bookingsLoaded(bookings);
         },
         false);
@@ -282,14 +276,15 @@ void BookingRepositoryImpl::getBooking()
 
 void BookingRepositoryImpl::getBookingById(const QString& id)
 {
-    APIClient::instance().get(
-        QStringLiteral("/bookings/") + id,
-        [this](bool success, const QJsonObject& response) {
+    const QString url = QStringLiteral("/bookings/") + id;
+    if (m_inFlightUrls.contains(url))
+        return;
+    m_inFlightUrls.insert(url);
 
-            qDebug() << "getBookingById success?" << success;
-            qDebug().noquote()
-                << "getBookingById raw:"
-                << QJsonDocument(response).toJson(QJsonDocument::Compact);
+    APIClient::instance().get(
+        url.toUtf8(),
+        [this, url](bool success, const QJsonObject& response) {
+            m_inFlightUrls.remove(url);
 
             if (!success) {
                 QString message = response.value(QStringLiteral("message")).toString();
@@ -381,12 +376,6 @@ void BookingRepositoryImpl::getBookingById(const QString& id)
 
             booking->setStatus(bookingStatusFromString(statusStr));
             booking->setHoldExpiresAt(holdExpiryFromJson(data));
-
-            qDebug() << "getBookingById built"
-                     << "id" << booking->getId()
-                     << "clientId" << booking->getClientId()
-                     << "bookableItemId" << booking->getBookableItemId()
-                     << "amount" << booking->getAmount();
 
             emit bookingLoaded(booking);
         },

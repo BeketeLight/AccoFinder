@@ -3,7 +3,8 @@
 
 #include <QList>
 #include <QObject>
-#include "models/dispute.h"
+
+#include "application/dto/disputedto.h"
 #include "repositories/impl/disputerepositoryimpl.h"
 
 class DisputeController : public QObject
@@ -12,18 +13,18 @@ class DisputeController : public QObject
 public:
     explicit DisputeController(QObject *parent = nullptr);
 
-    Q_INVOKABLE void raiseDispute(const QString& bookingId,const QString& issue);
-    Q_INVOKABLE void resolveDispute(const QString& disputeId, const QString& status);
+    Q_INVOKABLE void raiseDispute(const QString &bookingId, const QString &issue);
+    Q_INVOKABLE void resolveDispute(const QString &disputeId, const QString &status);
     Q_INVOKABLE void getDisputes();
 
 private:
-    DisputeRepositoryImpl* m_disputeRepository = nullptr;
+    DisputeRepositoryImpl *m_disputeRepository = nullptr;
 
 signals:
-    void disputeRaised(Dispute* dispute);
-    void disputeResolved(Dispute* dispute);
-    void disputesLoaded(QList<Dispute*> disputes);
-    void disputeError(const QString& error);
+    void disputeRaised(const DisputeDto &dispute);
+    void disputeResolved(const DisputeDto &dispute);
+    void disputesLoaded(const QList<DisputeDto> &disputes);
+    void disputeError(const QString &error, const QString &operation);
 };
 
 #endif // DISPUTECONTROLLER_H

@@ -17,7 +17,10 @@ Item {
     // means the account-level feed (all notifications).
     property string notificationRole: ""
     // Unread count; defaults to the shared NotificationViewModel's model.
-    property int unreadCount: NotificationViewModel.notificationListModel.unreadCount
+    property int unreadCount: (NotificationViewModel !== null
+                               && NotificationViewModel.notificationListModel !== null)
+                              ? NotificationViewModel.notificationListModel.unreadCount
+                              : 0
     property color badgeColor: "#DC2626"
     property color iconColor: "#1F2937"
     signal activated()

@@ -13,8 +13,17 @@ import "../delegates"
 Item {
     id: root
 
-    property AdminBookingsModel bookingsModel: AdminBookingsModel {}
+    property AdminBookingsModel bookingsModel: AdminBookingsModel {
+        // Property-assigned Items have no visual parent by default; set one so
+        // the model can walk the page chain and see when the tab is hidden.
+        parent: root
+        refreshAllowed: root.refreshAllowed
+    }
     property string pageTitle: qsTr("Bookings")
+
+    // Injected by AdminBookingsScreen (and by BookingPage when it hosts the
+    // admin list as a root tab) so row copies wait for an idle Flickable.
+    property bool refreshAllowed: true
 
     // Raised so the screen (and Main.qml) can react to an admin settling a
     // booking; the dashboard's own counters come from DashboardController.
@@ -160,7 +169,7 @@ Item {
                 lableFontSize: 18
                 Layout.fillWidth: true
                 label: qsTr("Booking value")
-                valueText: Utils.formatCurrency(BookingViewModel.totalBookingValue())
+                valueText: Utils.formatCurrency(BookingViewModel ? BookingViewModel.totalBookingValue() : 0)
                 accentColor: root.primaryColor
             }
         }

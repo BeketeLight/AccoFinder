@@ -13,17 +13,28 @@ Item {
     property var propertiesModelRef: null   // shared home PropertiesModel
     property var roomLookupFn: null         // fn(roomId) → row, provided by SavesScreen
 
+    // SavesScreen binds this to its visible, idle Flickable. Both mirrors wait
+    // for it so a save/unsave or a background property update cannot destroy
+    // the cards under the user's finger.
+    property bool refreshAllowed: true
+    readonly property bool scrollIdle: {
+        var page = currentTab === 0 ? propertiesScroll : roomsScroll;
+        return page && typeof page.scrollIdle !== "undefined" ? page.scrollIdle : true;
+    }
+
     signal removeProperty(string propertyId)
     signal removeRoom(string roomId)
 
     SavedPropertiesModel {
         id: savedProps
         sourceModel: root.propertiesModelRef
+        refreshAllowed: root.refreshAllowed
     }
 
     SavedRoomsModel {
         id: savedRooms
         lookupRoom: root.roomLookupFn
+        refreshAllowed: root.refreshAllowed
     }
 
     StackLayout {
@@ -32,6 +43,7 @@ Item {
 
         // ================= TAB 0 — PROPERTIES =================
         AppScrollablePage {
+            id: propertiesScroll
             contentTopMargin: 12
 
             SavesEmptyState {
@@ -63,6 +75,7 @@ Item {
 
         // ================= TAB 1 — ROOMS =================
         AppScrollablePage {
+            id: roomsScroll
             contentTopMargin: 12
 
             SavesEmptyState {

@@ -44,6 +44,9 @@ ApplicationWindow {
     }
 
     Component.onCompleted: {
+        // NavUtils also receives the stack from MainStackview; passing the
+        // window lets it route root tabs through the cached page host.
+        NavUtils.init(mainStack.stackView, root);
         AppSettings.setStatusBarAppearance(Qt.rgba(0, 0, 0, 0), true);
         // Also covers a sign-in that completed before this QML existed - the
         // Google OAuth redirect can land on a cold-started app, and the session
@@ -86,10 +89,20 @@ ApplicationWindow {
         return 0;
     }
 
+    // Entry point used by NavUtils and the footer. Root tabs are cached, so
+    // switching back to a tab reuses the existing page instead of replaying
+    // Component.onCompleted (and its network requests) on every tap.
+    function showRootScreen(source) {
+        rootPageArea.show(source);
+    }
+
     // Clears any pushed pages and shows the page this session belongs on.
     function applySessionLanding() {
         mainStack.stackView.clear();
-        loader.source = root.sessionLandingSource();
+        // A new session must not inherit a cached dashboard/profile page from
+        // the previous role or user.
+        rootPageArea.clearCache();
+        root.showRootScreen(root.sessionLandingSource());
         if (typeof bottomNavBar.currentIndex !== "undefined")
             bottomNavBar.currentIndex = root.sessionLandingNavIndex();
     }
@@ -101,11 +114,30 @@ ApplicationWindow {
     // filter against the exact same rows. One fetch, one cache; a property
     // bookmarked on Home shows up in Saves with the same title/price/image.
     // -------------------------------------------------------------------
+    // Never fall back to the hidden root page while a stack page is active;
+    // that would let its header actions and drawer handlers act off-screen.
+    readonly property var currentPage: (mainStack.depth > 0)
+                                       ? mainStack.currentItem
+                                       : rootPageArea.currentItem
+
+    // The shared feed is also mirrored by the Saves tab, so its ListModel must
+    // only be rebuilt while the page the user is actually looking at is idle.
+    // Each root screen exposes `scrollIdle`; pushed pages without a scrollable
+    // list are treated as idle so a refresh is never lost.
+    // While a pushed page is on top, the cached root tabs are hidden and must
+    // not rebuild their models at all; their pending reload runs after popping.
+    readonly property bool activeScrollIdle: mainStack.depth > 0
+                                             ? false
+                                             : (!currentPage
+                                                || (currentPage.visible
+                                                    && currentPage.enabled
+                                                    && (typeof currentPage.scrollIdle === "undefined"
+                                                        || currentPage.scrollIdle)))
+
     PropertiesModel {
         id: sharedProperties
+        refreshAllowed: root.activeScrollIdle
     }
-
-    readonly property var currentPage: (mainStack.depth > 0 && mainStack.currentItem) ? mainStack.currentItem : (loader.item ? loader.item : null)
     readonly property bool isAdminDashboard: currentPage && typeof currentPage.pageTitle !== "undefined" && currentPage.pageTitle === qsTr("Admin Dashboard")
     readonly property bool isAgentDashboard: currentPage && typeof currentPage.pageTitle !== "undefined" && currentPage.pageTitle === qsTr("Agent Dashboard")
     readonly property bool isAgentDashboardHost: currentPage && typeof currentPage.isAgentDashboardHost !== "undefined" && currentPage.isAgentDashboardHost
@@ -124,14 +156,8 @@ ApplicationWindow {
                 return;
             }
             // Root landing pages (Home for clients, Admin Dashboard for admins, Agent Properties) exit the app
-            if (!isRootLandingPage(loader.source)) {
-                var roleBack = AppSettings.userType();
-                if (AppSettings.isLoggedIn() && (roleBack === "ADMIN" || roleBack === "SUPER_ADMIN"))
-                    loader.source = "./ui/features/dashboards/admins/screens/AdminsDashboardScreen.qml";
-                else if (AppSettings.isLoggedIn() && roleBack === "AGENT")
-                    loader.source = "./ui/features/properties/screens/PropertiesScreen.qml";
-                else
-                    loader.source = "./ui/features/home/screens/HomeScreen.qml";
+            if (!isRootLandingPage(rootPageArea.currentSource)) {
+                root.showRootScreen(root.sessionLandingSource());
 
                 if (typeof bottomNavBar.currentIndex !== "undefined") {
                     bottomNavBar.currentIndex = 0;
@@ -140,7 +166,7 @@ ApplicationWindow {
             }
 
             // if already on Home quit
-            Qt.quit();
+            AppLifecycle.quit();
         }
     }
 
@@ -187,31 +213,92 @@ ApplicationWindow {
                     Layout.fillHeight: true
                     Layout.fillWidth: true
 
-                    Loader {
-                        id: loader
+                    // Root-level pages are created once and kept alive here.
+                    // A Loader with a changing `source` destroyed each page on
+                    // every footer tap, replaying all of its startup requests.
+                    Item {
+                        id: rootPageArea
                         anchors.fill: parent
-                        visible: mainStack.depth === 0
-                        source: "./ui/features/home/screens/HomeScreen.qml"
+                        // Stay rendered under a pushed page. If a StackView
+                        // item ever fails to appear, the active root page is
+                        // still on screen instead of a blank white rectangle.
+                        visible: true
 
-                        // Single injection point for every root-level page the
-                        // footer opens via loader.source. Dispatches by
-                        // objectName so we never overwrite this handler from a
-                        // tap-specific callback (onLoaded is a single slot on
-                        // the Loader, not a per-load signal).
-                        onLoaded: {
-                            if (!item)
-                                return;
-                            if (item.objectName === "SavesScreen") {
-                                if ("sharedPropertiesModelRef" in item)
-                                    item.sharedPropertiesModelRef = sharedProperties;
-                            } else if (item.objectName === "HomeScreen") {
-                                if ("propertiesModelRef" in item)
-                                    item.propertiesModelRef = sharedProperties;
+                        property var _pages: ({})
+                        property var currentItem: null
+                        property string currentSource: ""
+
+                        function configurePage(page) {
+                            if (page.objectName === "SavesScreen" && "sharedPropertiesModelRef" in page)
+                                page.sharedPropertiesModelRef = sharedProperties;
+                            else if (page.objectName === "HomeScreen" && "propertiesModelRef" in page)
+                                page.propertiesModelRef = sharedProperties;
+
+                            // Give loaded pages access to the ApplicationWindow
+                            // for network-availability checks.
+                            if ("accessToOfflineCach" in page)
+                                page.accessToOfflineCach = root;
+
+                            // A cached root page stays rendered as the underlay
+                            // while a pushed page is shown, but it must not
+                            // answer signals or accept input during that time.
+                            // Qt.binding keeps this in step with push/pop,
+                            // which do not call show() and so cannot be handled
+                            // by assigning a one-off value here.
+                            page.enabled = Qt.binding(function() {
+                                return page.visible && mainStack.depth === 0;
+                            });
+                        }
+
+                        function show(source) {
+                            var key = Qt.resolvedUrl(source).toString();
+                            if (mainStack.depth > 0)
+                                mainStack.stackView.clear();
+
+                            var page = _pages[key];
+                            if (!page) {
+                                var component = Qt.createComponent(key);
+                                if (component.status === Component.Error) {
+                                    console.log("Cannot load root page:", key,
+                                                component.errorString());
+                                    return;
+                                }
+                                // Inject shared models at creation time. Doing
+                                // it in configurePage() afterwards was too late:
+                                // Component.onCompleted had already created and
+                                // fetched the private fallback model.
+                                var initialProperties = { "visible": false };
+                                if (key.endsWith("HomeScreen.qml"))
+                                    initialProperties.propertiesModelRef = sharedProperties;
+                                else if (key.endsWith("SavesScreen.qml"))
+                                    initialProperties.sharedPropertiesModelRef = sharedProperties;
+
+                                page = component.createObject(rootPageArea, initialProperties);
+                                if (!page) {
+                                    console.log("Could not create root page:", key);
+                                    return;
+                                }
+                                configurePage(page);
+                                page.anchors.fill = rootPageArea;
+                                _pages[key] = page;
                             }
-                            //Give loaded page access to ApplicationWindow
-                            //As far as detecting network availability concerned
-                            if("accessToOfflineCach" in item)
-                                item.accessToOfflineCach = root;
+
+                            for (var cachedKey in _pages) {
+                                if (_pages.hasOwnProperty(cachedKey))
+                                    _pages[cachedKey].visible = (cachedKey === key);
+                            }
+                            currentItem = page;
+                            currentSource = key;
+                        }
+
+                        function clearCache() {
+                            for (var key in _pages) {
+                                if (_pages.hasOwnProperty(key))
+                                    _pages[key].destroy();
+                            }
+                            _pages = ({});
+                            currentItem = null;
+                            currentSource = "";
                         }
                     }
                     MainStackview {
@@ -296,7 +383,8 @@ ApplicationWindow {
             target: AuthController
             function onUserLoggedOut() {
                 mainStack.stackView.clear();
-                loader.source = "./ui/features/auth/pages/CreateAccountPage.qml";
+                rootPageArea.clearCache();
+                root.showRootScreen("./ui/features/auth/pages/CreateAccountPage.qml");
                 bottomNavBar.currentIndex = 4;
             }
             function onAccountSuspended() {
@@ -319,7 +407,11 @@ ApplicationWindow {
 
         // Admin dashboard routing: stat cards, quick actions and activity rows.
         Connections {
-            target: (loader.item && loader.item.quickActionTriggered !== undefined) ? loader.item : null
+            // Ignore dashboard signals while a pushed page is active; the
+            // cached dashboard stays alive as an underlay but is not interactive.
+            target: (mainStack.depth === 0 && rootPageArea.currentItem
+                     && rootPageArea.currentItem.quickActionTriggered !== undefined)
+                    ? rootPageArea.currentItem : null
 
             function onQuickActionTriggered(actionTitle) {
                 if (actionTitle === qsTr("Verification queue") || actionTitle === qsTr("Property approvals"))
@@ -348,9 +440,9 @@ ApplicationWindow {
                 NavUtils.push(Qt.resolvedUrl("./ui/features/dashboards/admins/screens/PropertyApprovalScreen.qml"));
             }
             function onBookingsRequested() {
-                // Pushed, not swapped into the root loader: every other card
-                // uses NavUtils.push, and replacing the loader source here
-                // destroyed the dashboard the user was standing on.
+                // Pushed, not swapped into the cached root page: every other
+                // card uses NavUtils.push, and hiding the root page here would
+                // destroy the dashboard the user was standing on.
                 NavUtils.push(Qt.resolvedUrl("./ui/features/dashboards/admins/screens/AdminBookingsScreen.qml"));
             }
             function onPaymentsRequested() {
@@ -399,23 +491,25 @@ ApplicationWindow {
             Layout.preferredHeight: 65
             visible: mainStack.depth === 0
             //signals
-            onHomeTapped: Qt.callLater(function() { loader.source = "./ui/features/home/screens/HomeScreen.qml" })
-            onPropertiesTapped: Qt.callLater(function() { loader.source = "./ui/features/properties/screens/PropertiesScreen.qml" })
-            onAccountTapped: Qt.callLater(function() { loader.source = AppSettings.isLoggedIn() ? "./ui/features/auth/pages/Profile.qml" : "./ui/features/auth/pages/CreateAccountPage.qml" })
-            onBookingsTapped: Qt.callLater(function() { loader.source = "./ui/features/bookings/screens/BookingsScreen.qml" })
-            onSaveTapped: Qt.callLater(function() { loader.source = "./ui/features/favourites/screen/SavesScreen.qml" })
+            onHomeTapped: Qt.callLater(function() {
+                NavUtils.showRootScreen("./ui/features/home/screens/HomeScreen.qml")
+            })
+            onPropertiesTapped: Qt.callLater(function() {
+                NavUtils.showRootScreen("./ui/features/properties/screens/PropertiesScreen.qml")
+            })
+            onAccountTapped: Qt.callLater(function() {
+                NavUtils.showRootScreen(AppSettings.isLoggedIn()
+                    ? "./ui/features/auth/pages/Profile.qml"
+                    : "./ui/features/auth/pages/CreateAccountPage.qml")
+            })
+            onBookingsTapped: Qt.callLater(function() {
+                NavUtils.showRootScreen("./ui/features/bookings/screens/BookingsScreen.qml")
+            })
+            onSaveTapped: Qt.callLater(function() {
+                NavUtils.showRootScreen("./ui/features/favourites/screen/SavesScreen.qml")
+            })
             onDashboardTapped: Qt.callLater(function() {
-                if (AppSettings.isLoggedIn()) {
-                    var r = AppSettings.userType();
-                    if (r === "ADMIN" || r === "SUPER_ADMIN")
-                        loader.source = "./ui/features/dashboards/admins/screens/AdminsDashboardScreen.qml";
-                    else if (r === "AGENT")
-                        loader.source = "./ui/features/properties/screens/PropertiesScreen.qml";
-                    else
-                        loader.source = "./ui/features/home/screens/HomeScreen.qml";
-                } else {
-                    loader.source = "./ui/features/home/screens/HomeScreen.qml";
-                }
+                NavUtils.showRootScreen(root.sessionLandingSource())
             })
         }
     }

@@ -184,11 +184,9 @@ void APIClient::postMultipart(
     filePart.setBodyDevice(file);
     multiPart->append(filePart);
 
-    qDebug() << "=== Sending Multipart Request ===";
-    qDebug() << "Method: POST (multipart/form-data)";
-    qDebug() << "URL:" << url.toString();
-    qDebug() << "File:" << filePath;
-    qDebug() << "Metadata:" << QJsonDocument(metadata).toJson();
+    // Log only the endpoint. Response bodies, headers and bearer tokens must
+    // never be written to the logcat (and large logs slow the GUI thread).
+    qDebug() << "API multipart POST" << url.path();
 
     QNetworkReply *reply = m_networkManager->post(request, multiPart);
     multiPart->setParent(reply);
@@ -222,18 +220,9 @@ void APIClient::sendRequest(
 
     setupHeaders(request, skipAuth);
 
-    // Debug output
-    qDebug() << "=== Sending Request ===";
-    qDebug() << "Method:" << method;
-    qDebug() << "URL:" << url.toString();
-    qDebug() << "Skip Auth:" << skipAuth;
-    qDebug() << "Headers:";
-    for (const auto& header : request.rawHeaderList()) {
-        qDebug() << "  " << header << ":" << request.rawHeader(header);
-    }
-    if (method == "POST" || method == "PUT" || method == "PATCH") {
-        qDebug() << "Body:" << QJsonDocument(data).toJson();
-    }
+    // Concise request log: no headers (they carry the bearer token) and no
+    // request/response bodies, which were both slow and a security leak.
+    qDebug() << "API" << method << url.path();
 
     QNetworkReply* reply = nullptr;
 
@@ -386,14 +375,8 @@ void APIClient::onReplyFinished(
     // {"success": false, "message": "Invalid email or password."}
     const QByteArray data = reply->readAll();
 
-    qDebug() << "=== Response Received ===";
-    qDebug() << "Status Code:" << statusCode;
-    qDebug() << "Error:" << reply->errorString();
-    qDebug() << "Headers:";
-    for (const auto& header : reply->rawHeaderList()) {
-        qDebug() << "  " << header << ":" << reply->rawHeader(header);
-    }
-    qDebug() << "Response Data:" << data;
+    qDebug() << "API response" << pending.endpoint << statusCode
+             << "bytes" << data.size();
 
     QJsonParseError parseError;
     const QJsonDocument doc =
@@ -408,13 +391,12 @@ void APIClient::onReplyFinished(
 
     if(!httpOk)
     {
-        qDebug() << "Actual backend error:" << data;
-
         const QString backendMessage = errorMessageFromBody(body);
         const QString message = !backendMessage.isEmpty()
             ? backendMessage
             : reply->errorString();
 
+        qWarning() << "API error" << pending.endpoint << statusCode << message;
         emit networkError(message);
 
         // A failed login/register also returns 401. That is not a

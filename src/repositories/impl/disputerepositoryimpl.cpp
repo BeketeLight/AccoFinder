@@ -1,118 +1,111 @@
 #include "disputerepositoryimpl.h"
+
 #include "services/apiclient.h"
+
+#include <QDebug>
 #include <QJsonObject>
-#include <QJsonValue>
-#include <QList>
-#include <QJsonArray>
+
+namespace {
+QString errorFrom(const QJsonObject &response, const QString &fallback)
+{
+    const QString message = response.value(QStringLiteral("message")).toString().trimmed();
+    if (!message.isEmpty())
+        return message;
+    const QString error = response.value(QStringLiteral("error")).toString().trimmed();
+    return error.isEmpty() ? fallback : error;
+}
+} // namespace
 
 DisputeRepositoryImpl::DisputeRepositoryImpl(QObject *parent)
-    :IDisputeRepository(parent)
+    : IDisputeRepository(parent)
 {
-
 }
 
-void DisputeRepositoryImpl::raiseDispute(const QString& bookingId, const QString& issue)
+void DisputeRepositoryImpl::raiseDispute(const QString &bookingId, const QString &issue)
 {
     QJsonObject payload;
-    payload["bookingId"] = bookingId;
-    payload["issue"] = issue;
+    payload[QStringLiteral("bookingId")] = bookingId;
+    payload[QStringLiteral("issue")] = issue;
 
     APIClient::instance().post(
-        "/disputes/",
+        QStringLiteral("/disputes/"),
         payload,
-        [this](bool success, 
-        const QJsonObject& response)
-        {
-            if(success){
-                Dispute* dispute = new Dispute(
-                    response.value("id").toString(),
-                    response.value("bookingId").toString(),
-                    response.value("issue").toString(),
-                    static_cast<DisputeStatus>(response.value("status").toInt()),
-                    this
-                );
-                emit disputeRaised(dispute);
-            }else{
-                emit disputeError(response.value("error").toString());
+        [this](bool success, const QJsonObject &response) {
+            if (!success) {
+                emit disputeError(errorFrom(response, QStringLiteral("Could not raise dispute.")),
+                                  QStringLiteral("raise"));
+                return;
             }
-        }, false);
+
+            const DisputeDto dispute = DisputeDto::fromApiResponse(response);
+            if (dispute.m_id.isEmpty()) {
+                emit disputeError(QStringLiteral("Dispute response was empty."),
+                                  QStringLiteral("raise"));
+                return;
+            }
+            emit disputeRaised(dispute);
+        },
+        false);
 }
 
-// void DisputeRepositoryImpl::getDisputes()
-// {
-//     APIClient::instance().get(
-//         "/disputes/",
-//         [this](bool success,
-//         const QJsonObject& response)
-//         {
-//             QList<Dispute*> disputes;
-//             if(success && response.contains("data")){
-//                 QJsonArray dataArray = response["data"].toArray();
-//                 for(const QJsonValue& value : dataArray){
-//                     QJsonObject obj = value.toObject();
-//                     Dispute* dispute = new Dispute(
-//                         obj.value("id").toString(),
-//                         obj.value("bookingId").toString(),
-//                         obj.value("issue").toString(),
-//                         static_cast<DisputeStatus>(obj.value("status").toInt()),
-//                         this
-//                     );
-//                     disputes.append(dispute);
-//                 }
-            
-//             }
-            
-//     });
-//}
-
-void DisputeRepositoryImpl::resolveDispute(const QString& disputeId, const QString& status)
+void DisputeRepositoryImpl::resolveDispute(const QString &disputeId, const QString &status)
 {
     QJsonObject payload;
-    payload["status"] = status.isEmpty() ? "Resolved" : status;
+    payload[QStringLiteral("status")] = status.isEmpty()
+                                           ? QStringLiteral("Resolved")
+                                           : status;
 
     APIClient::instance().patch(
-        "/disputes/" + disputeId + "/resolve",
+        QStringLiteral("/disputes/") + disputeId + QStringLiteral("/resolve"),
         payload,
-        [this](bool success,
-        const QJsonObject& response)
-        {
-            if(success){
-                Dispute* dispute = new Dispute(
-                    response.value("id").toString(),
-                    response.value("bookingId").toString(),
-                    response.value("issue").toString(),
-                    static_cast<DisputeStatus>(response.value("status").toInt()),
-                    this
-                );
-                emit disputeResolved(dispute);
-            }else{
-                emit disputeError(response.value("error").toString());
+        [this](bool success, const QJsonObject &response) {
+            if (!success) {
+                emit disputeError(errorFrom(response, QStringLiteral("Could not update dispute.")),
+                                  QStringLiteral("resolve"));
+                return;
             }
-        }, false);
+
+            const DisputeDto dispute = DisputeDto::fromApiResponse(response);
+            if (dispute.m_id.isEmpty()) {
+                emit disputeError(QStringLiteral("Dispute response was empty."),
+                                  QStringLiteral("resolve"));
+                return;
+            }
+            emit disputeResolved(dispute);
+        },
+        false);
 }
 
 void DisputeRepositoryImpl::getDisputes()
 {
+    // Rapid footer taps used to fire several loads at once. Coalesce them into
+    // one in-flight request; the generation guards against a late reply ever
+    // being applied after the list has been invalidated by a newer request.
+    if (m_getInFlight)
+        return;
+
+    const quint64 generation = ++m_getGeneration;
+    m_getInFlight = true;
+
     APIClient::instance().get(
-        "/disputes/",
-        [this](bool success,
-              const QJsonObject& response)
-        {
-            if(success && response.contains("data"))
-            {
-                QJsonArray dataArray = response["data"].toArray();
-                for(const QJsonValue& value: std::as_const(dataArray)){
-                    DisputeDto dto = DisputeDto::fromJson(value.toObject());
-                    m_disputes.append(dto.toDomainModel());
-                }
-
-                emit disputesLoaded(m_disputes);
-
-
+        QStringLiteral("/disputes/"),
+        [this, generation](bool success, const QJsonObject &response) {
+            if (generation != m_getGeneration) {
+                qWarning() << "Ignoring stale disputes response, generation"
+                           << generation << "current" << m_getGeneration;
+                return;
             }
-        }, false
-        );
 
+            m_getInFlight = false;
+
+            if (!success) {
+                emit disputeError(errorFrom(response, QStringLiteral("Could not load disputes.")),
+                                  QStringLiteral("list"));
+                return;
+            }
+
+            const QList<DisputeDto> disputes = DisputeDto::listFromApiResponse(response);
+            emit disputesLoaded(disputes);
+        },
+        false);
 }
-
-

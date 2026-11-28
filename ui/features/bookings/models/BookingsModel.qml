@@ -1,11 +1,19 @@
 import QtQuick 2.15
+import "../../../utils/Utils.js" as Utils
 
 Item {
     id: root
     property bool joining: false
     property bool initialLoadDone: false
     property string bookingId: ""
-    readonly property bool loading: BookingViewModel.isLoading || root.joining
+    readonly property bool loading: (BookingViewModel && BookingViewModel.isLoading)
+                                    || root.joining
+
+    // Bookings is a cached root tab. Do not clear/re-append the QML mirror
+    // while another tab is visible or while the current list is being flicked.
+    property bool refreshAllowed: true
+    readonly property bool canRebuild: root.refreshAllowed && Utils.isPageActive(root)
+    property bool _reloadPending: false
     // Backend Enum Constants
     readonly property var bookingStatus: Object.freeze({
         PENDING_PAYMENT: 'Pending payment',
@@ -209,14 +217,28 @@ Item {
         }
 
     }
+    onCanRebuildChanged: {
+        if (root.canRebuild && root._reloadPending && !reloadDebounce.running)
+            reloadDebounce.start()
+    }
+
     Timer {
         id: reloadDebounce
         interval: 80
-        repeat: false
-        onTriggered: root.reloadNow()
+        repeat: true
+        running: false
+        onTriggered: {
+            if (!root.canRebuild)
+                return
+            stop()
+            root._reloadPending = false
+            root.reloadNow()
+        }
     }
     function reload(){
-        reloadDebounce.restart()
+        root._reloadPending = true
+        if (root.canRebuild && !reloadDebounce.running)
+            reloadDebounce.start()
     }
 
     // --- 4. RELOAD & DATA JOINING ENGINE ---
@@ -225,7 +247,7 @@ Item {
         bookingsModelId.clear()
 
         //Cach properties once per load
-        var propList = PropertyViewModel.propertiesForView
+        var propList = (PropertyViewModel && PropertyViewModel.propertiesForView)
                        ? PropertyViewModel.propertiesForView() : []
         var propById = ({})
         for (var p = 0; p < propList.length; p++) {
@@ -233,7 +255,7 @@ Item {
             if (row && row.id)
                 propById[String(row.id)] = row
         }
-        var m = BookingViewModel.bookingListModel
+        var m = BookingViewModel ? BookingViewModel.bookingListModel : null
         var cppSize = m ? m.rowCount() : 0
         console.log("--> BookingsModel reload called. C++ row count:", cppSize)
         for (var i = 0; i < cppSize; i++) {
@@ -252,7 +274,8 @@ Item {
                 stat = root.bookingStatus.CONFIRMED
 
             // --- RELATIONAL JOIN: LOOKUP ROOM & PROPERTY ---
-            var roomInfo = RoomViewModel.getRoomById(rId) || {}
+            var roomInfo = (RoomViewModel && RoomViewModel.getRoomById)
+                           ? (RoomViewModel.getRoomById(rId) || {}) : {}
             // console.log("room count", RoomViewModel.roomListModel
             //     ? RoomViewModel.roomListModel.rowCount()
             //     : -1)
@@ -348,7 +371,7 @@ Item {
         root.updateStatusCount()
         root.applyFilters()
         root.joining = false
-        if(!BookingViewModel.isLoading)
+        if (!BookingViewModel || !BookingViewModel.isLoading)
             root.initialLoadDone = true
     }
 
@@ -357,36 +380,36 @@ Item {
     onSearchTextChanged: root.applyFilters()
 
     Component.onCompleted: {
-        RoomViewModel.loadRooms()
-        PropertyViewModel.getProperties("")
-        BookingViewModel.fetchBookings()
+        if (RoomViewModel) RoomViewModel.loadRooms()
+        if (PropertyViewModel) PropertyViewModel.getProperties("")
+        if (BookingViewModel) BookingViewModel.fetchBookings()
        // reload()
     }
 
     Connections {
-        target: BookingViewModel.bookingListModel
-        function onRowsInserted(parent, first, last) { root.reload() }
-        function onRowsRemoved(parent, first, last) { root.reload() }
-        function onModelReset() { root.reload() }
+        target: BookingViewModel ? BookingViewModel.bookingListModel : null
+        function onRowsInserted(parent, first, last) { root.requestReload() }
+        function onRowsRemoved(parent, first, last) { root.requestReload() }
+        function onModelReset() { root.requestReload() }
     }
 
     Connections {
         target: BookingViewModel
         function onIsLoadingChanged() {
-            if (BookingViewModel.isLoading)
+            if (BookingViewModel && BookingViewModel.isLoading)
                 root.initialLoadDone = false
         }
     }
 
     Connections {
-        target: RoomViewModel.roomListModel
-        function onRowsInserted(parent, first, last) { root.reload() }
-        function onModelReset() { root.reload() }
+        target: RoomViewModel ? RoomViewModel.roomListModel : null
+        function onRowsInserted(parent, first, last) { root.requestReload() }
+        function onModelReset() { root.requestReload() }
     }
 
     Connections {
-        target: PropertyViewModel.propertyListModel
-        function onRowsInserted(parent, first, last) { root.reload() }
-        function onModelReset() { root.reload() }
+        target: PropertyViewModel ? PropertyViewModel.propertyListModel : null
+        function onRowsInserted(parent, first, last) { root.requestReload() }
+        function onModelReset() { root.requestReload() }
     }
 }

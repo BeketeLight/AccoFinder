@@ -13,6 +13,12 @@ Page {
     property string  pendingApprovedId: ""
     readonly property bool busy: agentBookingsModel.loading
             || BookingViewModel.isLoading
+
+    // Cached root tab: rebuild the bookings mirror only while visible and idle.
+    property bool refreshAllowed: true
+    readonly property bool scrollIdle: !statsListView.moving
+                                       && !statsListView.dragging
+                                       && !statsListView.flicking
     background: Rectangle{
         color: "#F4F6F9"
     }
@@ -25,6 +31,7 @@ Page {
     }
     BookingsModel {
         id: agentBookingsModel
+        refreshAllowed: root.refreshAllowed
     }
 
     ListView {

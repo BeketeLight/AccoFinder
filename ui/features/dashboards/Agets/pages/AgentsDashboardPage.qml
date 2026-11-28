@@ -24,7 +24,14 @@ Item {
     readonly property color mutedColor: "#6B7280"
     readonly property color borderColor: "#E5E7EB"
 
-    property AgentDashboardModel dashboardModel: AgentDashboardModel {}
+    // Injected by the dashboard screen or by the Properties tab that embeds
+    // this page. Property-assigned Items need an explicit visual parent so the
+    // model's hidden-page check sees the real page chain.
+    property bool refreshAllowed: true
+    property AgentDashboardModel dashboardModel: AgentDashboardModel {
+        parent: root
+        refreshAllowed: root.refreshAllowed
+    }
 
     signal addPropertyRequested()
     signal attentionClicked(var kind, var targetId)

@@ -1,33 +1,26 @@
 #ifndef DISPUTEREPOSITORYIMPL_H
 #define DISPUTEREPOSITORYIMPL_H
 
-#include <QList>
+#include <QtGlobal>
+
 #include "repositories/interfaces/IDisputeRepository.h"
-#include "models/dispute.h"
-#include "application/dto/disputedto.h"
 
 class DisputeRepositoryImpl : public IDisputeRepository
 {
     Q_OBJECT
 public:
     explicit DisputeRepositoryImpl(QObject *parent = nullptr);
-   virtual void raiseDispute(const QString& bookingId,const QString& issue) override;
 
-    //void getDisputes() override;    
-
-    void resolveDispute(const QString& disputeId, const QString& status) override;
+    void raiseDispute(const QString &bookingId, const QString &issue) override;
+    void resolveDispute(const QString &disputeId, const QString &status) override;
     void getDisputes() override;
 
 private:
-    QList<Dispute*> m_disputes;
-
-signals:
-    void disputeRaised(Dispute* dispute);
-    void disputesLoaded(QList<Dispute*>& disputes);
-    void disputeResolved(Dispute* dispute);
-    void disputeError(const QString& error);
-
-
+    // Rapid footer taps used to fire several identical loads at once. One
+    // in-flight request is enough; the generation rejects a late reply from a
+    // request that has since been superseded.
+    quint64 m_getGeneration = 0;
+    bool m_getInFlight = false;
 };
 
 #endif // DISPUTEREPOSITORYIMPL_H

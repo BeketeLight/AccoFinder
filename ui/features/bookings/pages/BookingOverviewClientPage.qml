@@ -22,6 +22,13 @@ Page {
     readonly property bool busy: clientBookingModel.loading
             || BookingViewModel.isLoading
 
+    // Main.qml's Bookings tab passes the visible/idle state down so bookings
+    // are not rebuilt into the ListView while the user is flicking it.
+    property bool refreshAllowed: true
+    readonly property bool scrollIdle: !statsListView.moving
+                                       && !statsListView.dragging
+                                       && !statsListView.flicking
+
     function refresh() {
         if (overviewPage.refreshing || overviewPage.loading)
             return
@@ -77,6 +84,7 @@ Page {
     // ---real Model
     BookingsModel {
         id: clientBookingModel
+        refreshAllowed: overviewPage.refreshAllowed
     }
     // Main Listview
     ListView {
@@ -223,8 +231,8 @@ Page {
 
         function onInitialLoadDoneChanged() {
             if (clientBookingModel.initialLoadDone
-                    && clientBookingModel.bookingsModel.count > 0) {
-                //.hasCachedContent = true
+                    && clientBookingModel.bookingsModel.count > 0
+                    && overviewPage.accessToOfflineCach) {
                 overviewPage.accessToOfflineCach.hasCachedContent = true
             }
         }

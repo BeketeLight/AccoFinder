@@ -18,6 +18,7 @@ Page {
     property color errorColor: "#EF4444"
     property bool busy: AuthController.isLoading
     property string pendingAction: ""
+    readonly property bool pageActive: UtilsModule.Utils.isPageActive(root)
     property string pendingOtpEmail: ""
     readonly property string otpPurpose: "registration"
 
@@ -337,6 +338,16 @@ Page {
         }
     }
 
+    // SignInPage can live inside a cached guest Bookings tab. If that tab is
+    // hidden while an auth request is in flight, drop the pending response so
+    // it cannot open an overlay or push OTP over the current page.
+    onPageActiveChanged: {
+        if (!pageActive) {
+            pendingAction = "";
+            loadingDialog.close();
+        }
+    }
+
     function submitSignIn() {
         if (root.busy)
             return;
@@ -362,6 +373,7 @@ Page {
 
     Connections {
         target: AuthController
+        enabled: root.pageActive
 
         function onIsLoadingChanged(isLoading) {
             if (isLoading && root.pendingAction.length > 0)

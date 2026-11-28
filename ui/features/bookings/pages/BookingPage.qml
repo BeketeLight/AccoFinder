@@ -14,8 +14,18 @@ Rectangle {
     readonly property bool isClient: AppSettings.isLoggedIn() && AppSettings.userType() === "CLIENT"
     readonly property bool isAgent: AppSettings.isLoggedIn() && AppSettings.userType() === "AGENT"
     readonly property bool isAdmin: AppSettings.isLoggedIn() && AppSettings.userType() === "ADMIN"
+
+    // BookingsScreen injects the root tab's visible/idle state; role-specific
+    // pages use it to defer their ListModel mirrors.
+    property bool refreshAllowed: true
+    readonly property bool scrollIdle: bookingLoader.item
+                                       && typeof bookingLoader.item.scrollIdle !== "undefined"
+                                       ? bookingLoader.item.scrollIdle
+                                       : true
+
     // --- USER-ROLE ROUTER ---
     Loader {
+        id: bookingLoader
         anchors.fill: parent
         source: {
             if (root.isAgent)  return "BookingOverviewAgentPage.qml"
@@ -24,6 +34,15 @@ Rectangle {
             if (root.isGuest) return "../../auth/screens/SignInScreen.qml"
             return ""
         }
+    }
+
+    // The role page may be a client/agent list or the admin oversight screen;
+    // only pages that opt in to the refresh gate receive this binding.
+    Binding {
+        target: bookingLoader.item
+        property: "refreshAllowed"
+        value: root.refreshAllowed
+        when: bookingLoader.item !== null && "refreshAllowed" in bookingLoader.item
     }
 
     // Admins get the platform-wide oversight list rather than a blank page.

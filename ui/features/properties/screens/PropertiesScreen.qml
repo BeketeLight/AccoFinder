@@ -26,6 +26,9 @@ Item {
     readonly property bool isAgentDashboardHost: AppSettings.userType() === "AGENT"
                                                  || AppSettings.userType() === "ADMIN"
 
+    // Main.qml gates the shared property feed on the active tab's scroll state.
+    readonly property bool scrollIdle: propertiesPage.scrollIdle
+
     function onSearchBarTapped() {
         NavUtils.navigateToSearchScreen()
     }

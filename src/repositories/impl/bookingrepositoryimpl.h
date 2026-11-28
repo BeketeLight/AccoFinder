@@ -1,6 +1,8 @@
 #ifndef BOOKINGREPOSITORYIMPL_H
 #define BOOKINGREPOSITORYIMPL_H
 
+#include <QSet>
+
 #include "repositories/interfaces/IBookingRepository.h"
 #include "models/booking.h"
 
@@ -23,6 +25,11 @@ public:
     void releaseBooking(const QString& id) override;
     void deleteBooking(const QString& id) override;
     void getBookingById(const QString& id) override;
+
+private:
+    // Several screens load the same booking feed on first use. Only one GET per
+    // URL should be in flight; pull-to-refresh still works once it completes.
+    QSet<QString> m_inFlightUrls;
 
 signals:
     void bookingCreated(Booking* booking);

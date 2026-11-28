@@ -1,8 +1,9 @@
 #include "dispute.h"
 
 Dispute::Dispute()
+    : QObject(nullptr)
+    , m_status(DisputeStatus::Open)
 {
-
 }
 
 Dispute::Dispute(const QString &id,
@@ -10,14 +11,12 @@ Dispute::Dispute(const QString &id,
                  const QString &issue,
                  const DisputeStatus &status,
                  QObject *parent)
-    :m_id(id)
-    ,m_bookingId(bookingId)
-    ,m_issue(issue)
-    ,m_status(status)
-    ,QObject(parent)
+    : QObject(parent)
+    , m_id(id)
+    , m_bookingId(bookingId)
+    , m_issue(issue)
+    , m_status(status)
 {
-    emit disputeRaised();
-
 }
 
 QString Dispute::getId() const

@@ -8,11 +8,9 @@ Item{
     property alias stackView: mainStackview
     property alias currentItem: mainStackview.currentItem
     property string initialPage: "../features/auth/pages/CreateAccountPage.qml"
-    Rectangle{ //opaque background for stakview footer wont be visible on push/pop
-        anchors.fill: parent
-        color: "#FFFFFF"
-        visible: root.depth > 0
-    }
+    // No opaque backing rectangle here: the active root page remains rendered
+    // underneath. If a pushed item is missing, that page is visible instead of
+    // a blank white panel with no footer.
     StackView {
         id: mainStackview
         anchors.fill: parent

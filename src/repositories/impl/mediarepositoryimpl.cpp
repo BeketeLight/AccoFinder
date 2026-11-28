@@ -42,10 +42,16 @@ void MediaRepositoryImpl::createMedia(const QString &propertyId,
 
 void MediaRepositoryImpl::getMediaByProperty(const QString &propertyId)
 {
+    if (propertyId.isEmpty() || m_inFlightProperties.contains(propertyId))
+        return;
+    m_inFlightProperties.insert(propertyId);
+
     APIClient::instance().get(
         "https://accofinder-trsm.onrender.com/media/property/" + propertyId,
-        [this](bool success, const QJsonObject& response)
+        [this, propertyId](bool success, const QJsonObject& response)
         {
+            m_inFlightProperties.remove(propertyId);
+
             if (success && response.contains("data")) {
                 QJsonArray mediaArray = response["data"].toArray();
                 QList<QSharedPointer<Media>> mediaList;

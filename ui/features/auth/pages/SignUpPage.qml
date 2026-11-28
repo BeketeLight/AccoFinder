@@ -8,6 +8,7 @@ Page {
     id: root
 
     property int currentStep: 0
+    readonly property bool pageActive: UtilsModule.Utils.isPageActive(root)
     property color primaryColor: "#2563EB"
     property color secondaryColor: "#22C55E"
     property color pageColor: "#FFFFFF"
@@ -527,8 +528,18 @@ Page {
                                                    : "Please wait a moment…"
     }
 
+    // A request that completes after the wizard was cached/hidden must not
+    // push OTP/reset navigation over whatever page the user is looking at.
+    onPageActiveChanged: {
+        if (!pageActive) {
+            pendingAction = ""
+            loadingDialog.close()
+        }
+    }
+
     Connections {
         target: AuthController
+        enabled: root.pageActive
 
         function onIsLoadingChanged(isLoading) {
             if (isLoading && root.pendingAction.length > 0)

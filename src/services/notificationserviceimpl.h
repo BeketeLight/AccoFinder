@@ -2,6 +2,7 @@
 #define NOTIFICATIONSERVICEIMPL_H
 
 #include <QList>
+#include <QSet>
 #include "repositories/interfaces/INotification.h"
 #include "models/landlord.h"
 #include "application/dto/notificationdto.h"
@@ -19,6 +20,9 @@ public:
     void markReadNotification(const QString& id, QString& status) override;
     void markAllReadNotification() override;
 private:
+    // Startup, the badge timer, push callbacks and landing pages can all ask
+    // for the same notification feed at once. One GET per URL is enough.
+    QSet<QString> m_inFlightUrls;
 signals:
     void notificationCreated(Notification* notification);
     void notificationRetrieved(Notification* notification);

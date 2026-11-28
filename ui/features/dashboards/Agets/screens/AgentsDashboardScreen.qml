@@ -40,6 +40,10 @@ Item {
     property double _refreshStart: 0
     property int _minVisible: 600
 
+    // Main.qml uses this to hold the shared property feed while the dashboard
+    // is flicking. The embedded dashboard model uses the same idle state.
+    readonly property bool scrollIdle: scrollPage.scrollIdle
+
     // Request activity: true while the dashboard's backing requests are in
     // flight. Used to know when everything has completed.
     readonly property bool busy: PropertyViewModel.isLoading
@@ -82,6 +86,7 @@ Item {
     }
 
     AppScrollablePage {
+        id: scrollPage
         anchors.fill: parent
         pullEnabled: true
         refreshing: root.refreshing
@@ -117,6 +122,7 @@ Item {
         AgentsDashboardPage {
             id: dashPage
             Layout.fillWidth: true
+            refreshAllowed: scrollPage.refreshAllowed
 
             onAddPropertyRequested: root.addPropertyRequested()
             onAttentionClicked: (kind, targetId) => root.attentionClicked(kind, targetId)

@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QJsonObject>
 #include <QJsonArray>
+#include <QSet>
 #include "models/room.h"
 #include "services/apiclient.h"
 #include <QSharedPointer>
@@ -34,6 +35,10 @@ public:
     void deleteRoom(const QString& id) override;
 private:
     QList<QSharedPointer<Room>> m_rooms;
+
+    // Bookings, properties and detail pages each request the same room lists on
+    // first use. Coalesce identical GETs while one is already in flight.
+    QSet<QString> m_inFlightUrls;
 signals:
     void roomsLoaded(const QList<QSharedPointer<Room>>& rooms);
     void roomsForPropertyLoaded(const QString& propertyId, const QList<QSharedPointer<Room>>& rooms);

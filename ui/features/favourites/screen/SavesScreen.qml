@@ -21,12 +21,23 @@ Item {
 
     property int currentTab: 0
 
-    // Injected by main.qml's loader.onLoaded when the footer opens this
-    // screen. Falls back to a private instance so a deep-link / debug path
-    // still renders something instead of silently showing an empty tab.
-    property var sharedPropertiesModelRef: privateProperties
+    // Main.qml gates the shared property feed on the active tab's scroll state.
+    readonly property bool scrollIdle: savesPage ? savesPage.scrollIdle : true
+
+    // Injected by Main.qml when it creates the cached root page. Falls back
+    // to a private instance so a deep-link / debug path still renders
+    // something instead of silently showing an empty tab.
+    // Null means no host injection; the private fallback is used only when
+    // this screen is opened outside Main.qml.
+    property var sharedPropertiesModelRef: null
+    readonly property var effectivePropertiesModel: root.sharedPropertiesModelRef !== null
+                                                    ? root.sharedPropertiesModelRef
+                                                    : privateProperties
     PropertiesModel {
         id: privateProperties
+        // Main.qml injects the window-owned model when this page is created;
+        // don't fetch the same public feed into an unused fallback instance.
+        autoFetch: root.sharedPropertiesModelRef === null
     }
 
     // Rebuilt on every save/unsave so the tab counters stay live.
@@ -90,6 +101,9 @@ Item {
     }
 
     Connections {
+        // Cached root pages stay alive; ignore settings signals fired while a
+        // different footer tab is visible.
+        enabled: root.enabled && root.visible
         target: AppSettings
         function onUserSessionChanged() {
             root.refreshCounts();
@@ -125,10 +139,12 @@ Item {
         }
 
         SavesPage {
+            id: savesPage
             Layout.fillWidth: true
             Layout.fillHeight: true
             currentTab: root.currentTab
-            propertiesModelRef: root.sharedPropertiesModelRef
+            refreshAllowed: root.enabled && root.visible && root.scrollIdle
+            propertiesModelRef: root.effectivePropertiesModel
             roomLookupFn: root.lookupRoom
             onRemoveProperty: function (pid) {
                 root.removeProperty(pid);

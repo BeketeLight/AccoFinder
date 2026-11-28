@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import "../indicators"
 import "../scrollbars"
+import "../../utils/Utils.js" as Utils
 
 // Shared scrollable page shell used by the dashboard screens (and reusable by
 // any feature). Wraps a Page with the standard canvas color, a Flickable with a
@@ -25,6 +26,15 @@ Page {
     default property alias pageContent: contentColumn.data
 
     readonly property real contentY: flick.contentY // to drive collapsible header
+
+    // Root tabs are cached rather than destroyed. A model rebuild from a
+    // hidden tab must not run, and a visible tab must not rebuild its Repeater
+    // while the user is in the middle of a flick. Screens pass this flag to
+    // their QML-side models so every scrollable tab shares the same guard.
+    readonly property bool pageActive: Utils.isPageActive(root)
+    readonly property bool scrollIdle: !flick.moving && !flick.dragging && !flick.flicking
+    readonly property bool refreshAllowed: root.pageActive && root.scrollIdle
+
     property bool loading: false
     property bool pullEnabled: false
     property bool refreshing: false

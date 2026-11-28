@@ -29,7 +29,7 @@ Item {
         id: logoutButton
         anchors.fill: parent
         text: root.busy ? qsTr("Signing out...") : qsTr("Sign out")
-        enabled: !AuthController.isLoading && !root.busy
+        enabled: (AuthController === null || !AuthController.isLoading) && !root.busy
 
         // Spinner sits inside the button instead of in a modal dialog. The dialog
         // was re-parented into the window overlay, so inside a Drawer it opened

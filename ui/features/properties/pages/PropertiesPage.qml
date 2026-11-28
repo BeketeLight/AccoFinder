@@ -49,6 +49,87 @@ Page {
     property bool refreshing: false
     property bool pullArmed: false
 
+    // Root pages are cached, so a hidden Properties tab must not rebuild its
+    // QML models in response to C++ signals fired by another tab. The parent
+    // page's enabled binding already tracks visible + stack depth; walking the
+    // chain also covers this embedded page.
+    readonly property bool pageActive: Utils.isPageActive(root)
+    // Main.qml uses this to defer the shared property feed while this tab is
+    // being flicked. The local rebuild path already checks the same state.
+    readonly property bool scrollIdle: !flick.moving && !flick.dragging && !flick.flicking
+
+    // C++ view models emit rowsInserted/countChanged once per row. Rebuilding
+    // allPropertiesModel on every signal made the Repeater destroy and recreate
+    // every card while the user was flicking, which stopped the flick and made
+    // the page look frozen on first navigation. Coalesce the signals and wait
+    // until the Flickable is idle before applying them.
+    property bool _refreshPending: false
+    property real _savedScrollY: 0
+
+    function requestRefreshAll() {
+        root._refreshPending = true
+        // Keep the changes for later if a pushed page or another tab is active;
+        // onPageActiveChanged applies them when this tab comes back.
+        if (!root.pageActive)
+            return
+        refreshCoalesceTimer.restart()
+    }
+
+    function applyPendingRefresh() {
+        if (!root._refreshPending || !root.pageActive)
+            return
+        root._refreshPending = false
+        root.refreshAll()
+    }
+
+    Timer {
+        id: refreshCoalesceTimer
+        interval: 80
+        repeat: false
+        running: false
+        onTriggered: {
+            if (flick.moving || flick.dragging || flick.flicking) {
+                if (!waitForFlickEndTimer.running)
+                    waitForFlickEndTimer.start()
+                return
+            }
+            root.applyPendingRefresh()
+        }
+    }
+
+    Timer {
+        id: waitForFlickEndTimer
+        interval: 50
+        repeat: true
+        running: false
+        onTriggered: {
+            if (!flick.moving && !flick.dragging && !flick.flicking) {
+                stop()
+                root.applyPendingRefresh()
+            }
+        }
+    }
+
+    Timer {
+        // contentHeight is only final after the Repeater has laid out; restore
+        // the scroll offset on the next event-loop turn, before the next frame.
+        id: restoreScrollTimer
+        interval: 0
+        repeat: false
+        running: false
+        onTriggered: {
+            if (flick.moving || flick.dragging || flick.flicking)
+                return
+            var maxY = Math.max(0, flick.contentHeight - flick.height)
+            flick.contentY = Math.min(root._savedScrollY, maxY)
+        }
+    }
+
+    onPageActiveChanged: {
+        if (root.pageActive && root._refreshPending)
+            refreshCoalesceTimer.restart()
+    }
+
     // Server-backed properties (VERIFIED/PENDING/REJECTED) merged with local
     // DRAFT rows in a single QML model, so the same filtering code serves both.
     ListModel { id: filterChipsModel }
@@ -104,7 +185,7 @@ Page {
         // the shared C++ model row so the detail page renders real database data
         // instead of its placeholders.
         var full = null
-        var m = PropertyViewModel.propertyListModel
+        var m = PropertyViewModel ? PropertyViewModel.propertyListModel : null
         for (var k = 0; m && k < m.size(); k++) {
             var cand = m.at(k)
             if (String(cand.propertyId) === String(propertyId)) {
@@ -131,12 +212,17 @@ Page {
             landlordPhone: full ? (full.landlordPhone || "") : "",
             ownerName: full ? (full.ownerName || "") : "",
             ownerPhone: full ? (full.ownerPhone || "") : "",
-            rooms: full && full.propertyId ? RoomViewModel.roomsForProperty(full.propertyId) : [],
+            rooms: (full && full.propertyId && RoomViewModel && RoomViewModel.roomsForProperty)
+                   ? RoomViewModel.roomsForProperty(full.propertyId) : [],
             photos: []
         }
     }
 
     function refreshAll() {
+        // Remember where the user was before clear() temporarily collapses the
+        // content height. Pull-to-refresh starts at the top, so never restore a
+        // negative contentY.
+        root._savedScrollY = Math.max(0, flick.contentY)
         allPropertiesModel.clear()
 
         // The agent dashboard is the "My properties" view, so we only ever show
@@ -147,7 +233,8 @@ Page {
         // Properties, admin, etc.) and must not leak another user's listings
         // into this view. Drafts are local and always belong to this device.
         var myId = AppSettings.userId()
-        var server = PropertyViewModel.propertiesForView() || []
+        var server = (PropertyViewModel && PropertyViewModel.propertiesForView)
+                     ? PropertyViewModel.propertiesForView() : []
         root.serverCount = 0
         for (var s = 0; s < server.length; s++) {
             var sp = server[s]
@@ -187,6 +274,7 @@ Page {
         }
 
         root.applyFilters()
+        restoreScrollTimer.restart()
     }
 
     // Triggered by pull-to-refresh (and guarded against overlap): re-fetch the
@@ -196,12 +284,13 @@ Page {
             return
         root.refreshing = true
         // Fetch only the current user's listings on the agent dashboard.
-        PropertyViewModel.getProperties(AppSettings.userId())
-        RoomViewModel.loadRooms()
+        if (PropertyViewModel) PropertyViewModel.getProperties(AppSettings.userId())
+        if (RoomViewModel) RoomViewModel.loadRooms()
         // Also refresh the dashboard sections' data from their C++ view models.
-        BookingViewModel.fetchBookings()
-        NotificationViewModel.getNotificationsByRole(Utils.notificationRoleForViewer())
-        DisputesListViewModel.getDisputes()
+        if (BookingViewModel) BookingViewModel.fetchBookings()
+        if (NotificationViewModel)
+            NotificationViewModel.getNotificationsByRole(Utils.notificationRoleForViewer())
+        if (DisputesListViewModel) DisputesListViewModel.getDisputes()
     }
 
     function armIfPulled() {
@@ -229,34 +318,38 @@ Page {
         // the dashboard sections' data (bookings, agent-scoped notifications,
         // disputes). Without this the bell badge keeps the previous screen's
         // count until the user manually pulls to refresh.
-        PropertyViewModel.getProperties(AppSettings.userId())
-        RoomViewModel.loadRooms()
-        BookingViewModel.fetchBookings()
-        NotificationViewModel.getNotificationsByRole(Utils.notificationRoleForViewer())
-        DisputesListViewModel.getDisputes()
+        if (PropertyViewModel) PropertyViewModel.getProperties(AppSettings.userId())
+        if (RoomViewModel) RoomViewModel.loadRooms()
+        if (BookingViewModel) BookingViewModel.fetchBookings()
+        if (NotificationViewModel)
+            NotificationViewModel.getNotificationsByRole(Utils.notificationRoleForViewer())
+        if (DisputesListViewModel) DisputesListViewModel.getDisputes()
         root.refreshAll()
     }
 
     Connections {
+        enabled: root.pageActive
         target: DraftViewModel
-        function onDraftsChanged() { root.refreshAll() }
+        function onDraftsChanged() { root.requestRefreshAll() }
     }
 
     Connections {
+        enabled: root.pageActive
         target: PropertyViewModel
         function onIsLoadingChanged(loading) {
             root.loading = loading
             if (!loading)
                 root.refreshing = false
-            root.refreshAll()
+            root.requestRefreshAll()
         }
     }
 
     Connections {
-        target: PropertyViewModel.propertyListModel
-        function onModelReset() { root.refreshAll() }
-        function onRowsInserted(parent, first, last) { root.refreshAll() }
-        function onRowsRemoved(parent, first, last) { root.refreshAll() }
+        enabled: root.pageActive
+        target: PropertyViewModel ? PropertyViewModel.propertyListModel : null
+        function onModelReset() { root.requestRefreshAll() }
+        function onRowsInserted(parent, first, last) { root.requestRefreshAll() }
+        function onRowsRemoved(parent, first, last) { root.requestRefreshAll() }
     }
 
     background: Rectangle { color: root.pageColor }
@@ -310,6 +403,7 @@ Page {
 
             AgentsDashboardPage {
                 Layout.fillWidth: true
+                refreshAllowed: root.pageActive && root.scrollIdle
 
                 onAddPropertyRequested: root.addPropertyRequested()
                 onAttentionClicked: (kind, targetId) => {

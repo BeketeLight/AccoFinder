@@ -24,7 +24,9 @@ Page {
     anchors.fill: parent
 
     Component.onCompleted: {
-        if (AppSettings.isLoggedIn())
+        // Cached pages are created hidden; a late session change must not let
+        // a hidden creation page pull the user into Profile.
+        if (AppSettings.isLoggedIn() && root.visible)
             NavUtils.resetToProfile();
     }
 

@@ -25,10 +25,12 @@ Item {
     signal menuRequested()
 
     property bool refreshing: false
+    readonly property bool scrollIdle: scrollPage.scrollIdle
 
     // True while any of the dashboard's backing requests are in flight, so a
     // loading indicator is shown instead of a blank screen.
-    readonly property bool loading: DashboardController.isLoading || PropertyViewModel.isLoading
+    readonly property bool loading: ((DashboardController !== null && DashboardController.isLoading)
+                                     || (PropertyViewModel !== null && PropertyViewModel.isLoading))
 
     // Header bell: opens the account-level notification list so announcements
     // broadcast to ALL are visible from the admin dashboard too.
@@ -48,13 +50,13 @@ Item {
         // Admin listing: every verification status, so pending/rejected
         // properties feed the activity list and the all-properties view.
         PropertyViewModel.getAdminProperties()
-        RoomViewModel.loadRooms()
-        BookingViewModel.fetchBookings()
-        NotificationViewModel.getNotifications()
-        DisputesListViewModel.getDisputes()
+        // Bookings, disputes, notifications and rooms are loaded by the
+        // screens that actually display them. Fetching them here made every
+        // dashboard visit fire six requests at once.
     }
 
     AppScrollablePage {
+        id: scrollPage
         anchors.fill: parent
         pullEnabled: true
         refreshing: root.refreshing
@@ -65,6 +67,7 @@ Item {
         AdminsDashboardPage {
             id: adminPage
             Layout.fillWidth: true
+            refreshAllowed: scrollPage.refreshAllowed
 
             onQuickActionTriggered: (actionTitle) => root.quickActionTriggered(actionTitle)
             onUsersRequested: root.usersRequested()

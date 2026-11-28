@@ -1,7 +1,7 @@
 #include "disputeslistviewmodel.h"
 
 DisputesListViewModel::DisputesListViewModel(QObject *parent)
-    : QObject{parent},
+    : QObject(parent),
       m_disputesListModel(new DisputesListModel(this)),
       m_disputeController(new DisputeController(this))
 {
@@ -12,58 +12,91 @@ DisputesListViewModel::DisputesListViewModel(QObject *parent)
     connect(m_disputeController, &DisputeController::disputeResolved,
             this, &DisputesListViewModel::onDisputeResolved);
     connect(m_disputeController, &DisputeController::disputeError,
-            this, [this](const QString& e){ setLoading(false); emit disputeError(e); });
+            this, [this](const QString &error, const QString &operation) {
+                if (operation == QStringLiteral("list")) {
+                    m_listPending = false;
+                } else if ((operation == QStringLiteral("raise")
+                            || operation == QStringLiteral("resolve"))
+                           && m_actionPending > 0) {
+                    --m_actionPending;
+                }
+                updateLoading();
+                emit disputeError(error);
+            });
 }
 
-void DisputesListViewModel::setLoading(bool loading)
+void DisputesListViewModel::updateLoading()
 {
+    const bool loading = m_listPending || m_actionPending > 0;
     if (m_isLoading != loading) {
         m_isLoading = loading;
-        emit isLoadingChanged(loading);
+        emit isLoadingChanged(m_isLoading);
     }
 }
 
 void DisputesListViewModel::raiseDispute(const QString &bookingId, const QString &issue)
 {
-    //m_index = index;
-    if(bookingId.isEmpty() || issue.trimmed().isEmpty()){
+    if (bookingId.isEmpty() || issue.trimmed().isEmpty()) {
         emit disputeError(QStringLiteral("Booking and issue are required"));
         return;
     }
-    setLoading(true);
-    m_disputeController->raiseDispute(bookingId, issue);
+
+    ++m_actionPending;
+    updateLoading();
+    m_disputeController->raiseDispute(bookingId, issue.trimmed());
 }
 
-void DisputesListViewModel::resolveDispute(int index, const QString &disputeId, const QString &status)
+void DisputesListViewModel::resolveDispute(int index, const QString &disputeId,
+                                           const QString &status)
 {
-    m_index = index;
-    setLoading(true);
+    Q_UNUSED(index)
+
+    if (disputeId.isEmpty()) {
+        emit disputeError(QStringLiteral("Dispute id is required"));
+        return;
+    }
+
+    ++m_actionPending;
+    updateLoading();
     m_disputeController->resolveDispute(disputeId, status);
 }
 
 void DisputesListViewModel::getDisputes()
 {
-    setLoading(true);
+    // The repository coalesces in-flight loads; skip duplicates here too so
+    // the loading state stays consistent with the single response we receive.
+    if (m_listPending)
+        return;
+
+    m_listPending = true;
+    updateLoading();
     m_disputeController->getDisputes();
 }
 
-void DisputesListViewModel::onDisputeRaised(Dispute *dispute)
+void DisputesListViewModel::onDisputeRaised(const DisputeDto &dispute)
 {
-    setLoading(false);
-    // A newly raised dispute is appended, not used to overwrite an existing row.
+    if (m_actionPending > 0)
+        --m_actionPending;
+    updateLoading();
     m_disputesListModel->addDispute(dispute);
 }
 
-void DisputesListViewModel::onDisputeResolved(Dispute *dispute)
+void DisputesListViewModel::onDisputeResolved(const DisputeDto &dispute)
 {
-    setLoading(false);
-    // Refresh the affected row in place.
-    if (m_index >= 0 && m_index < m_disputesListModel->rowCount())
-        m_disputesListModel->updateDispute(m_index, dispute);
+    if (m_actionPending > 0)
+        --m_actionPending;
+    updateLoading();
+    // Match by id rather than a cached row index: a reload may have happened
+    // while the resolve request was in flight.
+    m_disputesListModel->updateDispute(dispute);
 }
 
-void DisputesListViewModel::onDisputesLoaded(QList<Dispute *> disputes)
+void DisputesListViewModel::onDisputesLoaded(const QList<DisputeDto> &disputes)
 {
-    setLoading(false);
-    m_disputesListModel->addDisputes(disputes);
+    if (!m_listPending)
+        return;
+
+    m_listPending = false;
+    updateLoading();
+    m_disputesListModel->setDisputes(disputes);
 }

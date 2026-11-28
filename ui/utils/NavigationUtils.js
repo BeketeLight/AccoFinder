@@ -1,10 +1,44 @@
 .pragma library
 
 var stackView = null
+var rootView = null
 
-function init( mainStackview) {
+// Repeated taps on the same root tab should not queue duplicate switches.
+var lastRootRequest = { url: "", at: 0 }
+var ROOT_TAP_DEBOUNCE_MS = 250
+
+function init(mainStackview, appRoot) {
     stackView = mainStackview
+    // MainStackview calls init with only the stack; keep the window once the
+    // application root supplies it.
+    if (appRoot !== undefined && appRoot !== null)
+        rootView = appRoot
     console.log("NavigationUtils Initialized successfully")
+}
+
+// Root-level destinations (footer tabs) live in the window's cached page host.
+// Going through here keeps every caller off the raw root Loader/StackView.
+function showRootScreen(url) {
+    if (!rootView) {
+        console.warn("[NavigationUtils] root view not initialized")
+        return
+    }
+    var source = url.toString()
+    var now = Date.now()
+    if (lastRootRequest.url === source && (now - lastRootRequest.at) < ROOT_TAP_DEBOUNCE_MS)
+        return
+    lastRootRequest = { url: source, at: now }
+    rootView.showRootScreen(source)
+}
+
+// A failed/empty push would otherwise hide the footer and leave only the
+// StackView's blank area on screen. Clear such a stack so the cached root page
+// underneath becomes active again.
+function ensureStackHasCurrentItem() {
+    if (!stackView || stackView.depth === 0 || stackView.currentItem)
+        return
+    console.warn("[NavigationUtils] stack has no current item; clearing it")
+    stackView.clear()
 }
 
 function push(screenUrl, properties = {}){
@@ -12,12 +46,9 @@ function push(screenUrl, properties = {}){
         console.log("NavigationUtils cannot push :Stackview not initialized")
         return
     }
-    if(stackView.depth ===0){
-        stackView.push(screenUrl,properties)
-    }else{
-        stackView.push(screenUrl, properties)
-   }
-    }
+    stackView.push(screenUrl, properties)
+    Qt.callLater(ensureStackHasCurrentItem)
+}
 
 function replace(screenUrl, properties = {}){
     if(!stackView){
@@ -25,6 +56,7 @@ function replace(screenUrl, properties = {}){
         return
     }
     stackView.replace(screenUrl, properties)
+    Qt.callLater(ensureStackHasCurrentItem)
 }
 function replaceAll(screenUrl, properties = {}){
     if(!stackView){
@@ -37,6 +69,7 @@ function replaceAll(screenUrl, properties = {}){
         stackView.replace(stackView.get(0), screenUrl, properties)
     else
         stackView.push(screenUrl, properties)
+    Qt.callLater(ensureStackHasCurrentItem)
 }
 function pop() {
     if (!stackView) {
@@ -267,6 +300,7 @@ function navigateToBookingDetailsForAdmin(data){
 var Navigation = {
     init: init,
     pop: pop,
+    showRootScreen: showRootScreen,
     replaceAll: replaceAll,
     navigateToNotifications: navigateToNotifications,
     navigateToSignIn: navigateToSignIn,

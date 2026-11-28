@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import "../../../utils/NavigationUtils.js" as NavUtils
+import "../../../utils" as UtilsModule
 import "../../properties/components"
 import "../../../components/dialogs"
 import "../../../components/indicators"
@@ -42,6 +43,10 @@ Page {
     property string passwordSuccess: ""
     property bool profileSaveDone: false
     property bool pendingLogout: false
+    readonly property bool pageActive: UtilsModule.Utils.isPageActive(root)
+    readonly property bool scrollIdle: !profileFlick.moving
+                                       && !profileFlick.dragging
+                                       && !profileFlick.flicking
     property string pageTitle: "  Profile"
     property bool showHeader: true
     property bool showBack: false
@@ -74,6 +79,8 @@ Page {
 
     Connections {
         target: AuthController
+        // Cached root pages must not rewrite fields while hidden or covered.
+        enabled: root.pageActive
 
         function onProfileFetched() { root.loadProfile() }
         function onProfileSaved(status) {
@@ -88,10 +95,12 @@ Page {
 
     Connections {
         target: AgentViewModel
+        enabled: root.pageActive
         function onMyCommissionUpdated() { root.refreshCommission() }
     }
 
     Flickable {
+        id: profileFlick
         anchors.fill: parent
         contentWidth: width
         contentHeight: contentColumn.implicitHeight + 36
@@ -685,6 +694,10 @@ Page {
 
     Connections {
         target: AuthController
+        // Cached root pages stay in memory. Only the visible, enabled page may
+        // answer a global logout and navigate; Main.qml already handles logout
+        // centrally for every other case.
+        enabled: root.pageActive
 
         function onUserLoggedOut() {
             root.pendingLogout = false
@@ -698,9 +711,16 @@ Page {
         message: "Ending your session on this device…"
     }
 
+    onPageActiveChanged: {
+        if (!pageActive) {
+            pendingLogout = false
+            logoutDialog.close()
+        }
+    }
+
     Connections {
         target: AuthController
-        enabled: root.pendingLogout
+        enabled: root.pendingLogout && root.pageActive
 
         function onIsLoadingChanged(isLoading) {
             if (isLoading)
@@ -784,9 +804,13 @@ Page {
         Text {
             visible: !field.editable
                      && (field.value === "" || field.value === undefined || field.value === null)
-            anchors.fill: fieldInput
-            anchors.leftMargin: 14
-            anchors.rightMargin: 14
+            // This Text is a direct child of the FieldRow ColumnLayout, so it
+            // must be sized by Layout attached properties rather than anchored
+            // to the sibling input (anchoring a layout-managed item is undefined).
+            Layout.fillWidth: true
+            Layout.leftMargin: 14
+            Layout.rightMargin: 14
+            Layout.preferredHeight: visible ? fieldInput.height : 0
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignLeft
             text: "Not set"

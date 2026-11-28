@@ -62,11 +62,18 @@ void RoomRepositoryImpl::getRooms()
     // NOTE: the backend validator caps `limit` at 100 (queryRoomSchema), so a
     // larger value is REJECTED with 400 and the whole list never loads; request
     // the maximum page instead so counts are accurate for all cards up to 100.
+    const QString url = QStringLiteral("/rooms/?limit=100");
+    if (m_inFlightUrls.contains(url))
+        return;
+    m_inFlightUrls.insert(url);
+
     APIClient::instance().get(
-        "/rooms/?limit=100",
-        [this](bool success,
-               const QJsonObject& response)
+        url.toUtf8(),
+        [this, url](bool success,
+                    const QJsonObject& response)
         {
+            m_inFlightUrls.remove(url);
+
             if(success)
             {
                 // Fresh fetch, so always replace (not append) the cached rooms.
@@ -90,11 +97,18 @@ void RoomRepositoryImpl::getRoomsByProperty(const QString& propertyId)
     // Per-property listing: one indexed query, decorated with hold state by the
     // backend. Used by the detail pages so they never depend on the global
     // /rooms/?limit=100 page (which silently drops rooms on a large platform).
+    const QString url = QStringLiteral("/rooms/property/") + propertyId;
+    if (m_inFlightUrls.contains(url))
+        return;
+    m_inFlightUrls.insert(url);
+
     APIClient::instance().get(
-        "/rooms/property/" + propertyId,
-        [this, propertyId](bool success,
-                           const QJsonObject& response)
+        url.toUtf8(),
+        [this, url, propertyId](bool success,
+                                const QJsonObject& response)
         {
+            m_inFlightUrls.remove(url);
+
             if (!success)
                 return;
             QList<QSharedPointer<Room>> rooms;
@@ -109,11 +123,18 @@ void RoomRepositoryImpl::getRoomsByProperty(const QString& propertyId)
 
 void RoomRepositoryImpl::getRoomById(const QString &id)
 {
+    const QString url = QStringLiteral("/rooms/") + id;
+    if (m_inFlightUrls.contains(url))
+        return;
+    m_inFlightUrls.insert(url);
+
     APIClient::instance().get(
-        "/rooms/" + id,
-        [this](bool success,
-               const QJsonObject& response)
+        url.toUtf8(),
+        [this, url](bool success,
+                    const QJsonObject& response)
         {
+            m_inFlightUrls.remove(url);
+
             if(success)
             {
                 RoomDto roomDTO = RoomDto::fromJson(response["data"].toObject());

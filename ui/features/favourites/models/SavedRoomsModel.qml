@@ -1,4 +1,5 @@
 import QtQuick
+import "../../../utils/Utils.js" as Utils
 
 // Read-only mirror of the saved room rows. Scans the shared home rooms model
 // for ids present in AppSettings.favoriteRoomIds. Each kept row keeps its
@@ -14,8 +15,39 @@ Item {
     readonly property alias model: savedModel
     readonly property int count: savedModel.count
 
+    // The room tab is a cached root page too. Let C++ signals mark the mirror
+    // dirty, but only clear/re-append it once the tab is visible and idle.
+    property bool refreshAllowed: true
+    readonly property bool canRebuild: root.refreshAllowed && Utils.isPageActive(root)
+    property bool _reloadPending: false
+
     ListModel {
         id: savedModel
+    }
+
+    function requestReload() {
+        root._reloadPending = true;
+        if (root.canRebuild && !reloadTimer.running)
+            reloadTimer.start();
+    }
+
+    onCanRebuildChanged: {
+        if (root.canRebuild && root._reloadPending && !reloadTimer.running)
+            reloadTimer.start();
+    }
+
+    Timer {
+        id: reloadTimer
+        interval: 80
+        repeat: true
+        running: false
+        onTriggered: {
+            if (!root.canRebuild)
+                return;
+            stop();
+            root._reloadPending = false;
+            root.reload();
+        }
     }
 
     // Caller supplies this — see SavesScreen. Given a roomId it returns the
@@ -56,11 +88,11 @@ Item {
     Connections {
         target: AppSettings
         function onRoomFavoritesChanged() {
-            root.reload();
+            root.requestReload();
         }
     }
 
-    onLookupRoomChanged: reload()
+    onLookupRoomChanged: root.requestReload()
 
     Component.onCompleted: reload()
 }

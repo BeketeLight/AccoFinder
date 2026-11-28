@@ -27,6 +27,13 @@ Item {
         return page && typeof page.contentY !== "undefined" ? Math.max(0, page.contentY) : 0;
     }
 
+    // Main.qml gates the shared property feed on this so a C++ model signal
+    // cannot rebuild the Home Repeater while the user is flicking a category.
+    readonly property bool scrollIdle: {
+        var page = pager.currentItem;
+        return page && typeof page.scrollIdle !== "undefined" ? page.scrollIdle : true;
+    }
+
     property Component leftComponentAction: Component {
         Label {
             text: qsTr("AccoFinder")
@@ -43,8 +50,8 @@ Item {
         }
     }
 
-    // Host-injectable. main.qml sets this to the window-owned shared model via
-    // loader.onLoaded so SavesScreen sees the same rows HomeScreen does.
+    // Host-injectable. Main.qml sets this to the window-owned shared model when
+    // it creates the cached root page, so SavesScreen sees the same rows.
     // Falls back to a private instance if HomeScreen is ever loaded without
     // that injection (a debug path, a component preview).
     property var propertiesModelRef: null
@@ -53,6 +60,9 @@ Item {
     PropertiesModel {
         id: localProperties
         visible: false
+        // The window injects sharedProperties before this page is created; in
+        // that case the fallback must not fetch the feed a second time.
+        autoFetch: root.propertiesModelRef === null
     }
 
     // Every existing reference to `sharedProperties` in this file keeps
@@ -80,6 +90,9 @@ Item {
     }
 
     Connections {
+        // Cached root pages stay alive while another tab is visible. Do not
+        // let the hidden Home feed react to network signals from that tab.
+        enabled: root.enabled && root.visible
         target: PropertyViewModel
         function onIsLoadingChanged(loading) {
             if (!loading)
@@ -227,8 +240,9 @@ Item {
         sharedProperties.setFilter(t);
     }
     Component.onCompleted: {
+        // The shared model already fetched at window startup. Reload only when
+        // this screen is actually using its private fallback.
         sharedProperties.reload();
-        PropertyViewModel.getProperties();
         applyTabFilter(0);
     }
 }

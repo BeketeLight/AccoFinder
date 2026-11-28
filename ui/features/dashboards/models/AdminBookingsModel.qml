@@ -16,6 +16,14 @@ Item {
     // the affected card shows an inline spinner.
     property string busyBookingId: ""
 
+    // The admin bookings screen can be a cached root tab (via BookingPage) as
+    // well as a pushed page. Wait until it is visible and idle before copying
+    // the C++ rows into the QML mirrors.
+    readonly property bool pageActive: Utils.isPageActive(root)
+    property bool refreshAllowed: true
+    readonly property bool canRebuild: root.pageActive && root.refreshAllowed
+    property bool _reloadPending: false
+
     // Counters read sourceModel, never viewModelId: they describe the whole
     // booking list, so they must not collapse to whatever the active filter
     // happens to let through.
@@ -83,7 +91,7 @@ Item {
     // QAbstractListModel cannot be indexed from QML directly.
     function reload() {
         sourceModel.clear()
-        var m = BookingViewModel.bookingListModel
+        var m = BookingViewModel ? BookingViewModel.bookingListModel : null
         if (!m)
             return
         for (var i = 0; i < m.count; i++) {
@@ -95,14 +103,40 @@ Item {
         root.applyFilters()
     }
 
+    function requestReload() {
+        root._reloadPending = true
+        if (root.canRebuild && !reloadTimer.running)
+            reloadTimer.start()
+    }
+
+    onCanRebuildChanged: {
+        if (root.canRebuild && root._reloadPending && !reloadTimer.running)
+            reloadTimer.start()
+    }
+
+    Timer {
+        id: reloadTimer
+        interval: 80
+        repeat: true
+        running: false
+        onTriggered: {
+            if (!root.canRebuild)
+                return
+            stop()
+            root._reloadPending = false
+            root.reload()
+        }
+    }
+
     ListModel { id: sourceModel }
     ListModel { id: viewModelId }
 
     Connections {
-        target: BookingViewModel.bookingListModel
-        function onCountChanged() { root.reload() }
-        function onDataChanged() { root.reload() }
-        function onModelReset() { root.reload() }
+        enabled: root.pageActive
+        target: BookingViewModel ? BookingViewModel.bookingListModel : null
+        function onCountChanged() { root.requestReload() }
+        function onDataChanged() { root.requestReload() }
+        function onModelReset() { root.requestReload() }
     }
 
     Connections {
@@ -122,5 +156,5 @@ Item {
         onTriggered: root.busyBookingId = ""
     }
 
-    Component.onCompleted: root.reload()
+    Component.onCompleted: root.requestReload()
 }

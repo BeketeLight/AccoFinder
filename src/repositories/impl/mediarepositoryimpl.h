@@ -2,6 +2,7 @@
 #define MEDIAREPOSITORYIMPL_H
 
 #include <QObject>
+#include <QSet>
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QSharedPointer>
@@ -28,6 +29,10 @@ public:
 
 private:
     QList<QSharedPointer<Media>> m_media;
+
+    // Several QML PropertiesModel instances ask for the same property cover.
+    // Only one network request per property should be in flight.
+    QSet<QString> m_inFlightProperties;
 signals:
     void mediaCreated(const QSharedPointer<Media>& media);
     void mediaLoaded(const QList<QSharedPointer<Media>>& media);

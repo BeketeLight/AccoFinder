@@ -20,6 +20,91 @@ Item {
     // view models signal that fresh data has arrived.
     property int refreshTick: 0
 
+    // The Properties tab is a cached root page. While it is hidden (or covered
+    // by a pushed page), model signals from other screens must not rebuild its
+    // QML ListModels on the GUI thread.
+    readonly property bool pageActive: Utils.isPageActive(root)
+    // The screen (or the Properties tab that embeds this dashboard) injects
+    // its idle state so the QML mirrors are not rebuilt under a flick.
+    property bool refreshAllowed: true
+    readonly property bool canRebuild: root.pageActive && root.refreshAllowed
+
+    // C++ models signal once per inserted row. A single refresh of this
+    // dashboard clears and re-appends four QML ListModels, so coalesce the
+    // signals into one update per event-loop turn and remember which sections
+    // actually changed.
+    property bool _attentionDirty: false
+    property bool _bookingsDirty: false
+    property bool _disputesDirty: false
+    property bool _statsDirty: false
+
+    function scheduleRefresh() {
+        if (!root.pageActive)
+            return
+        // repeat:true keeps the timer alive while the page is moving; the
+        // trigger rebuilds only once canRebuild turns true.
+        if (!refreshCoalesceTimer.running)
+            refreshCoalesceTimer.start()
+    }
+
+    function requestRefreshAttention() {
+        root._attentionDirty = true
+        root.scheduleRefresh()
+    }
+
+    function requestRefreshBookings() {
+        root._bookingsDirty = true
+        root._disputesDirty = true // disputes are scoped through bookings
+        root.scheduleRefresh()
+    }
+
+    function requestRefreshDisputes() {
+        root._disputesDirty = true
+        root.scheduleRefresh()
+    }
+
+    function requestRefreshStats() {
+        root._statsDirty = true
+        root.scheduleRefresh()
+    }
+
+    function applyPendingRefresh() {
+        if (!root.canRebuild)
+            return
+        if (root._attentionDirty)
+            root.refreshAttention()
+        if (root._bookingsDirty)
+            root.refreshMyBookings()
+        if (root._disputesDirty)
+            root.refreshMyDisputes()
+        if (root._attentionDirty || root._bookingsDirty || root._disputesDirty || root._statsDirty)
+            root.refreshStats()
+        root._attentionDirty = false
+        root._bookingsDirty = false
+        root._disputesDirty = false
+        root._statsDirty = false
+    }
+
+    Timer {
+        id: refreshCoalesceTimer
+        interval: 80
+        repeat: true
+        running: false
+        onTriggered: {
+            if (!root.canRebuild)
+                return
+            stop()
+            root.applyPendingRefresh()
+        }
+    }
+
+    onCanRebuildChanged: {
+        if (root.canRebuild && (root._attentionDirty || root._bookingsDirty
+                                || root._disputesDirty || root._statsDirty)
+            && !refreshCoalesceTimer.running)
+            refreshCoalesceTimer.start()
+    }
+
     // The dashboard is the current user's own view, so every property stat is
     // computed from the rows belonging to this user (matched by the parsed
     // owner/agentId). The shared C++ PropertyViewModel can hold everyone's
@@ -27,7 +112,8 @@ Item {
     function myProperties() {
         var myId = String(AppSettings.userId())
         var out = []
-        var server = PropertyViewModel.propertiesForView() || []
+        var server = (PropertyViewModel && PropertyViewModel.propertiesForView)
+                     ? PropertyViewModel.propertiesForView() : []
         // Deduplicate by property id (the shared view model can hold the same
         // listing more than once across refreshes), mirroring the dashboard's
         // keyed-uniqueness strategy.
@@ -81,7 +167,8 @@ Item {
             var pid = String(props[p].id || "")
             if (!pid)
                 continue
-            var rs = RoomViewModel.roomsForProperty(pid) || []
+            var rs = (RoomViewModel && RoomViewModel.roomsForProperty)
+                     ? RoomViewModel.roomsForProperty(pid) : []
             for (var r = 0; r < rs.length; r++)
                 rooms.push(rs[r])
         }
@@ -105,7 +192,8 @@ Item {
     function propertyIdsOwned() {
         var myId = String(AppSettings.userId())
         var ids = []
-        var server = PropertyViewModel.propertiesForView() || []
+        var server = (PropertyViewModel && PropertyViewModel.propertiesForView)
+                     ? PropertyViewModel.propertiesForView() : []
         for (var s = 0; s < server.length; s++) {
             var sp = server[s] || {}
             var ownerId = String(sp.ownerId || sp.agentId || "")
@@ -115,11 +203,14 @@ Item {
         }
         return ids
     }
-    function roomBelongsToMe(roomId) {
+    // `ownedIds` is optional. Passing the owner list from myBookings()/refreshMyDisputes()
+    // avoids recomputing it for every row (an O(properties × bookings) scan on
+    // the GUI thread, which made fast scrolling stutter while data arrived).
+    function roomBelongsToMe(roomId, ownedIds) {
         if (!roomId)
             return false
-        var owned = root.propertyIdsOwned()
-        var rm = RoomViewModel.roomListModel
+        var owned = ownedIds || root.propertyIdsOwned()
+        var rm = RoomViewModel ? RoomViewModel.roomListModel : null
         if (!rm)
             return false
         for (var i = 0; i < rm.count; i++) {
@@ -131,12 +222,13 @@ Item {
     }
     function myBookings() {
         var out = []
-        var bm = BookingViewModel.bookingListModel
+        var bm = BookingViewModel ? BookingViewModel.bookingListModel : null
         if (!bm)
             return out
+        var owned = root.propertyIdsOwned()
         for (var i = 0; i < bm.count; i++) {
             var b = bm.at(i)
-            if (root.roomBelongsToMe(b.roomId))
+            if (root.roomBelongsToMe(b.roomId, owned))
                 out.push(b)
         }
         return out
@@ -176,7 +268,9 @@ Item {
     // recent bookings list is owner-scoped; notifications and disputes remain
     // as-is (notifications are account-level; disputes are tenant-raised).
     readonly property var recentBookingsModel: myBookingsModelId
-    readonly property var notificationsModel: NotificationViewModel.notificationListModel
+    readonly property var notificationsModel: NotificationViewModel
+                                              ? NotificationViewModel.notificationListModel
+                                              : null
     readonly property var disputesModel: myDisputesModelId
 
     ListModel {
@@ -210,28 +304,30 @@ Item {
         }
     }
 
-    function bookingBelongsToMe(bookingId) {
+    function bookingBelongsToMe(bookingId, ownedIds) {
         if (!bookingId)
             return false
-        var bm = BookingViewModel.bookingListModel
+        var bm = BookingViewModel ? BookingViewModel.bookingListModel : null
         if (!bm)
             return false
+        var owned = ownedIds || root.propertyIdsOwned()
         for (var i = 0; i < bm.count; i++) {
             var b = bm.at(i)
             if (String(b.bookingId) === String(bookingId))
-                return root.roomBelongsToMe(b.roomId)
+                return root.roomBelongsToMe(b.roomId, owned)
         }
         return false
     }
 
     function refreshMyDisputes() {
         myDisputesModelId.clear()
-        var dm = DisputesListViewModel.disputesListModel
+        var dm = DisputesListViewModel ? DisputesListViewModel.disputesListModel : null
         if (!dm)
             return
+        var owned = root.propertyIdsOwned()
         for (var i = 0; i < dm.count; i++) {
             var d = dm.at(i)
-            if (!root.bookingBelongsToMe(d.bookingId))
+            if (!root.bookingBelongsToMe(d.bookingId, owned))
                 continue
             myDisputesModelId.append({
                 id: d.id || "",
@@ -253,7 +349,8 @@ Item {
 
         // Server-backed properties that need the agent's action. Detection is
         // limited to the fields exposed by propertiesForView(): status + price.
-        var server = PropertyViewModel.propertiesForView() || []
+        var server = (PropertyViewModel && PropertyViewModel.propertiesForView)
+                     ? PropertyViewModel.propertiesForView() : []
         // A property may appear more than once in the shared view model; only
         // process the first occurrence so the attention list is never duped.
         var seenServer = ({})
@@ -310,11 +407,12 @@ Item {
         root.refreshAttention()
         root.refreshMyBookings()
         root.refreshMyDisputes()
-        PropertyViewModel.getProperties()
-        RoomViewModel.loadRooms()
-        BookingViewModel.fetchBookings()
-        NotificationViewModel.getNotificationsByRole(Utils.notificationRoleForViewer())
-        DisputesListViewModel.getDisputes()
+        if (PropertyViewModel) PropertyViewModel.getProperties()
+        if (RoomViewModel) RoomViewModel.loadRooms()
+        if (BookingViewModel) BookingViewModel.fetchBookings()
+        if (NotificationViewModel)
+            NotificationViewModel.getNotificationsByRole(Utils.notificationRoleForViewer())
+        if (DisputesListViewModel) DisputesListViewModel.getDisputes()
     }
 
     // Re-evaluate the stat bindings after fresh data has arrived.
@@ -327,54 +425,71 @@ Item {
     // to avoid a redundant duplicate backend call on every screen entry.
 
     Connections {
+        enabled: root.pageActive
         target: AgentViewModel
-        function onMyCommissionUpdated() { root.refreshStats() }
+        function onMyCommissionUpdated() { root.requestRefreshStats() }
     }
 
     Connections {
+        enabled: root.pageActive
         target: DraftViewModel
-        function onDraftsChanged() { root.refreshAttention() }
+        function onDraftsChanged() { root.requestRefreshAttention() }
     }
 
     Connections {
+        enabled: root.pageActive
         target: PropertyViewModel
         function onIsLoadingChanged(loading) {
             if (!loading)
-                root.refreshStats()
+                root.requestRefreshStats()
         }
     }
 
     Connections {
+        enabled: root.pageActive
         target: RoomViewModel
         function onIsLoadingChanged(loading) {
             if (!loading)
-                root.refreshStats()
+                root.requestRefreshStats()
         }
     }
 
     Connections {
-        target: PropertyViewModel.propertyListModel
-        function onModelReset() { root.refreshAttention(); root.refreshMyBookings(); root.refreshMyDisputes(); root.refreshStats() }
-        function onRowsInserted(parent, first, last) { root.refreshAttention(); root.refreshMyBookings(); root.refreshMyDisputes(); root.refreshStats() }
-        function onRowsRemoved(parent, first, last) { root.refreshAttention(); root.refreshMyBookings(); root.refreshMyDisputes(); root.refreshStats() }
+        enabled: root.pageActive
+        target: PropertyViewModel ? PropertyViewModel.propertyListModel : null
+        function onModelReset() {
+            root.requestRefreshAttention()
+            root.requestRefreshBookings()
+        }
+        function onRowsInserted(parent, first, last) {
+            root.requestRefreshAttention()
+            root.requestRefreshBookings()
+        }
+        function onRowsRemoved(parent, first, last) {
+            root.requestRefreshAttention()
+            root.requestRefreshBookings()
+        }
     }
 
     Connections {
-        target: BookingViewModel.bookingListModel
-        function onCountChanged(newCount) { root.refreshMyBookings(); root.refreshMyDisputes(); root.refreshStats() }
-        function onModelReset() { root.refreshMyBookings(); root.refreshMyDisputes(); root.refreshStats() }
+        enabled: root.pageActive
+        target: BookingViewModel ? BookingViewModel.bookingListModel : null
+        function onCountChanged(newCount) { root.requestRefreshBookings() }
+        function onModelReset() { root.requestRefreshBookings() }
     }
 
     Connections {
-        target: RoomViewModel.roomListModel
-        function onModelReset() { root.refreshMyBookings(); root.refreshMyDisputes(); root.refreshStats() }
-        function onRowsInserted(parent, first, last) { root.refreshMyBookings(); root.refreshMyDisputes(); root.refreshStats() }
-        function onRowsRemoved(parent, first, last) { root.refreshMyBookings(); root.refreshMyDisputes(); root.refreshStats() }
+        enabled: root.pageActive
+        target: RoomViewModel ? RoomViewModel.roomListModel : null
+        function onModelReset() { root.requestRefreshBookings() }
+        function onRowsInserted(parent, first, last) { root.requestRefreshBookings() }
+        function onRowsRemoved(parent, first, last) { root.requestRefreshBookings() }
     }
 
     Connections {
-        target: DisputesListViewModel.disputesListModel
-        function onCountChanged(newCount) { root.refreshMyDisputes(); root.refreshStats() }
-        function onModelReset() { root.refreshMyDisputes(); root.refreshStats() }
+        enabled: root.pageActive
+        target: DisputesListViewModel ? DisputesListViewModel.disputesListModel : null
+        function onCountChanged(newCount) { root.requestRefreshDisputes() }
+        function onModelReset() { root.requestRefreshDisputes() }
     }
 }
