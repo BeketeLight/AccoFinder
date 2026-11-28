@@ -8,6 +8,7 @@ import "./ui/features/home/screens"
 import "./ui/features/home/components"
 import "./ui/features/home/models"
 import "./ui/utils/NavigationUtils.js" as NavUtils
+import "./ui/utils/Utils.js" as Utils
 import "./ui/components/indicators"
 
 ApplicationWindow {
@@ -52,9 +53,8 @@ ApplicationWindow {
         // Google OAuth redirect can land on a cold-started app, and the session
         // it persisted must still route to the right page rather than the
         // public home screen.
+        // The landing page change schedules the correctly scoped bell refresh.
         root.applySessionLanding();
-        if (AppSettings.isLoggedIn())
-            NotificationViewModel.refreshCurrent();
     }
 
     function isRootLandingPage(url) {
@@ -134,6 +134,23 @@ ApplicationWindow {
                                                     && (typeof currentPage.scrollIdle === "undefined"
                                                         || currentPage.scrollIdle)))
 
+    // The notification feed is role-scoped. The admin dashboard bell shows the
+    // account-level feed, while the properties/agent dashboard bell shows the
+    // AGENT feed. Root pages are cached, so switching tabs does not replay their
+    // onCompleted fetches; refresh the shared list here whenever the active root
+    // page changes (or a pushed page is popped back to it). Otherwise the badge
+    // keeps the previous tab's count until the next periodic poll.
+    function refreshNotificationBellForActivePage() {
+        if (!AppSettings.isLoggedIn() || mainStack.depth > 0)
+            return;
+
+        var source = rootPageArea.currentSource;
+        if (source.endsWith("PropertiesScreen.qml") || source.endsWith("AgentsDashboardScreen.qml"))
+            NotificationViewModel.getNotificationsByRole(Utils.notificationRoleForViewer());
+        else if (source.length > 0)
+            NotificationViewModel.getNotifications();
+    }
+
     PropertiesModel {
         id: sharedProperties
         refreshAllowed: root.activeScrollIdle
@@ -170,16 +187,44 @@ ApplicationWindow {
         }
     }
 
-    // Lightweight REST polling for the notification bell badge: refresh the
-    // logged-in user's notifications periodically so the unread count stays
-    // current without requiring a manual pull-to-refresh.
+    // Coalesce tab changes, stack pops and the polling tick into one fetch.
+    // rootPageArea.show() clears the stack before switching pages, so several
+    // signals can arrive in the same event loop; a 0ms timer keeps that to a
+    // single request with the final page's scope.
+    Timer {
+        id: notificationBellRefreshTimer
+        interval: 0
+        repeat: false
+        onTriggered: root.refreshNotificationBellForActivePage()
+    }
+
+    function scheduleNotificationBellRefresh() {
+        notificationBellRefreshTimer.restart()
+    }
+
+    Connections {
+        target: rootPageArea
+        function onCurrentSourceChanged() { root.scheduleNotificationBellRefresh() }
+    }
+
+    Connections {
+        target: mainStack.stackView
+        function onDepthChanged() {
+            if (mainStack.depth === 0)
+                root.scheduleNotificationBellRefresh()
+        }
+    }
+
+    // Lightweight REST polling for the notification bell badge: refresh using
+    // the active page's scope so the unread count stays current without a
+    // manual pull-to-refresh and without showing another tab's count.
     Timer {
         interval: 30000
         repeat: true
         running: true
         onTriggered: {
             if (AppSettings.isLoggedIn())
-                NotificationViewModel.refreshCurrent();
+                root.scheduleNotificationBellRefresh()
         }
     }
 
@@ -401,7 +446,7 @@ ApplicationWindow {
                 // Covers password sign-in and the Google OAuth redirect alike,
                 // since both land here through AuthController.
                 root.applySessionLanding();
-                NotificationViewModel.refreshCurrent();
+                root.scheduleNotificationBellRefresh();
             }
         }
 
