@@ -140,21 +140,21 @@ Page {
             anchors.fill: parent
             anchors.leftMargin: 8
             anchors.rightMargin: 16
-            ToolButton {
-                implicitWidth: 40
-                implicitHeight: 40
-                Image {
-                    width: 24
-                    height: 24
-                    source: "qrc:/ui/assets/back.png"
-                    fillMode: Image.PreserveAspectFit
-                    anchors.centerIn: parent
-                }
-                onClicked: UtilsModule.NavigationUtils.pop({
-                    bookingId: root.bookingId,
-                    returnToBooking: true
-                })
-            }
+            // ToolButton {
+            //     implicitWidth: 40
+            //     implicitHeight: 40
+            //     Image {
+            //         width: 24
+            //         height: 24
+            //         source: "qrc:/ui/assets/back-icon.svg"
+            //         fillMode: Image.PreserveAspectFit
+            //         anchors.centerIn: parent
+            //     }
+            //     onClicked: UtilsModule.NavigationUtils.pop({
+            //         bookingId: root.bookingId,
+            //         returnToBooking: true
+            //     })
+            // }
             Label {
                 Layout.fillWidth: true
                 text: qsTr("Make a payment")
@@ -303,18 +303,18 @@ Page {
                 }
 
                 // ---- Amount summary card ----
-                AppTextInput {
-                    id: summary
-                    Layout.fillWidth: true
-                    label: qsTr("Amount due")
-                    placeholder: qsTr("Enter the amount shown on the button")
-                    fieldHeight: 65
-                    fieldWidth: contentColumn.width
-                    inputMethodHints: Qt.ImhFormattedNumbersOnly
-                    // Prefill so the amount starts correct. Delete this `text:` line if you
-                    // want the user to *type* the amount as a confirmation step.
-                    text: root.amount > 0 ? root.amount.toLocaleString(Qt.locale("en_MW"), 'f', 0) : ""
-                }
+                // AppTextInput {
+                //     id: summary
+                //     Layout.fillWidth: true
+                //     label: qsTr("Amount due")
+                //     placeholder: qsTr("Enter the amount shown on the button")
+                //     fieldHeight: 65
+                //     fieldWidth: contentColumn.width
+                //     inputMethodHints: Qt.ImhFormattedNumbersOnly
+                //     // Prefill so the amount starts correct. Delete this `text:` line if you
+                //     // want the user to *type* the amount as a confirmation step.
+                //     text: root.amount > 0 ? root.amount.toLocaleString(Qt.locale("en_MW"), 'f', 0) : ""
+                // }
 
                 // ---- Method picker ----
                 Label {
@@ -399,7 +399,7 @@ Page {
                     placeholder: qsTr("e.g. 0991234567")
                     fieldHeight: 52
                     fieldWidth: contentColumn.width
-                    text: (typeof AppSettings !== "undefined" && AppSettings.phone) ? AppSettings.phone : ""
+                    // text: (typeof AppSettings !== "undefined" && AppSettings.phone) ? AppSettings.phone : ""
                     inputMethodHints: Qt.ImhDialableCharactersOnly
                 }
 
@@ -416,7 +416,7 @@ Page {
                     // reject the booking anyway, and charging someone for a
                     // room that has already gone to another user is the worst
                     // possible outcome.
-                    enabled: !root.holdExpired && root.amountMatches && root.selectedMethod.length > 0 && root.amount > 0 && !PaymentController.isLoading && (root.selectedMethod !== "mobile_money" || (root.selectedOperatorRefId.length > 0 && phoneField.text.replace(/\s/g, "").length >= 9))
+                    enabled: !root.holdExpired && root.selectedMethod.length > 0 && root.amount > 0 && !PaymentController.isLoading && (root.selectedMethod !== "mobile_money" || (root.selectedOperatorRefId.length > 0 && phoneField.text.replace(/\s/g, "").length >= 9))
 
                     onClicked: {
                         console.log("pay now button clicked");

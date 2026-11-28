@@ -44,7 +44,7 @@ Page {
     property bool isPropertyOnHold: false
     property var propertyHoldExpiresAt: null
 
-    readonly property bool canBookProperty: root.propertyType === "WHOLE" || "QUARTER" && root.isPropertyAvailable && !root.isPropertyOnHold
+    readonly property bool canBookProperty: (root.propertyType === "WHOLE" || "QUARTER") && root.isPropertyAvailable && !root.isPropertyOnHold
 
     // The booking fee is the entire amount due for a whole-property booking.
     // Same admin-set value the room page uses.
@@ -797,9 +797,8 @@ Page {
     // ========== FOOTER (whole-house booking only) ==========
     footer: ToolBar {
         id: bookingBar
-        height: root.propertyType === "WHOLE" || "QUARTER" ? 72 : 0
-        visible: root.propertyType === "WHOLE" || "QUARTER"
-
+        height: (root.propertyType === "WHOLE" || root.propertyType === "QUARTER") ? 72 : 0
+        visible: (root.propertyType === "WHOLE" || root.propertyType === "QUARTER")
         background: Rectangle {
             color: "#FFFFFF"
             Rectangle {
